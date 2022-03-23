@@ -10,3 +10,6 @@ Module.symvers
 ctucanfd*.mod.c
 a.out
 *.ko
+*.dwo
+ctucanfd*.mod
+/.cache

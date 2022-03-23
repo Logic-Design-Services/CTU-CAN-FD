@@ -35,6 +35,7 @@
 #include <linux/io.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/of.h>
 #include <linux/skbuff.h>
 #include <linux/string.h>
 #include <linux/types.h>
@@ -46,6 +47,9 @@
 #include "ctucanfd.h"
 #include "ctucanfd_kregs.h"
 #include "ctucanfd_kframe.h"
+#include "linux/ktime.h"
+#include "linux/math64.h"
+#include "linux/netdevice.h"
 
 #define DRV_NAME "ctucanfd"
 
@@ -164,6 +168,21 @@ static void ctucan_write_txt_buf(struct ctucan_priv *priv, enum ctu_can_fd_can_r
 				 u32 offset, u32 val)
 {
 	priv->write_reg(priv, buf_base + offset, val);
+}
+
+u64 ctucan_read_timestamp_counter(struct ctucan_priv *priv) {
+	u32 ts_low;
+	u32 ts_high;
+	u32 ts_high2;
+
+	ts_high = ctucan_read32(priv, CTUCANFD_TIMESTAMP_HIGH); 
+	ts_low = ctucan_read32(priv, CTUCANFD_TIMESTAMP_LOW);
+	ts_high2 = ctucan_read32(priv, CTUCANFD_TIMESTAMP_HIGH); 
+	
+	if (ts_high2 != ts_high)
+		ts_low = priv->read_reg(priv, CTUCANFD_TIMESTAMP_LOW);
+
+	return (((u64)ts_high2) << 32) | ((u64)ts_low);
 }
 
 #define CTU_CAN_FD_TXTNF(priv) (!!FIELD_GET(REG_STATUS_TXNF, ctucan_read32(priv, CTUCANFD_STATUS)))
@@ -678,12 +697,15 @@ static netdev_tx_t ctucan_start_xmit(struct sk_buff *skb, struct net_device *nde
  * @priv:	Pointer to CTU CAN FD's private data
  * @cf:		Pointer to CAN frame struct
  * @ffw:	Previously read frame format word
+ * @skb:	Pointer to socket buffer.
  *
  * Note: Frame format word must be read separately and provided in 'ffw'.
  */
-static void ctucan_read_rx_frame(struct ctucan_priv *priv, struct canfd_frame *cf, u32 ffw)
+static void ctucan_read_rx_frame(struct ctucan_priv *priv, struct canfd_frame *cf, u32 ffw, struct sk_buff *skb)
 {
 	u32 idw;
+	u32 ts_low;
+	u32 ts_high;
 	unsigned int i;
 	unsigned int wc;
 	unsigned int len;
@@ -720,9 +742,12 @@ static void ctucan_read_rx_frame(struct ctucan_priv *priv, struct canfd_frame *c
 	if (unlikely(len > wc * 4))
 		len = wc * 4;
 
-	/* Timestamp - Read and throw away */
-	ctucan_read32(priv, CTUCANFD_RX_DATA);
-	ctucan_read32(priv, CTUCANFD_RX_DATA);
+	/* Timestamp */
+	ts_low = ctucan_read32(priv, CTUCANFD_RX_DATA);
+	ts_high = ctucan_read32(priv, CTUCANFD_RX_DATA);
+	if (priv->timestamp_possible) {
+		ctucan_skb_set_timestamp(priv, skb, (u64)ts_high << 32 | (u64)ts_low);
+	}
 
 	/* Data */
 	for (i = 0; i < len; i += 4) {
@@ -774,7 +799,7 @@ static int ctucan_rx(struct net_device *ndev)
 		return 0;
 	}
 
-	ctucan_read_rx_frame(priv, cf, ffw);
+	ctucan_read_rx_frame(priv, cf, ffw, skb);
 
 	stats->rx_bytes += cf->len;
 	stats->rx_packets++;
@@ -944,6 +969,7 @@ static void ctucan_err_interrupt(struct net_device *ndev, u32 isr)
 	if (skb) {
 		stats->rx_packets++;
 		stats->rx_bytes += cf->can_dlc;
+		ctucan_skb_set_timestamp(priv, skb, ctucan_read_timestamp_counter(priv));
 		netif_rx(skb);
 	}
 }
@@ -989,6 +1015,7 @@ static int ctucan_rx_poll(struct napi_struct *napi, int quota)
 			cf->data[1] |= CAN_ERR_CRTL_RX_OVERFLOW;
 			stats->rx_packets++;
 			stats->rx_bytes += cf->can_dlc;
+			ctucan_skb_set_timestamp(priv, skb, ctucan_read_timestamp_counter(priv));
 			netif_rx(skb);
 		}
 
@@ -1291,6 +1318,8 @@ static int ctucan_open(struct net_device *ndev)
 		netdev_err(ndev, "ctucan_chip_start failed!\n");
 		goto err_chip_start;
 	}
+	ctucan_timestamp_init(priv);
+	netdev_info(ndev, "ctu_can_fd timestamping set up, bitsize: %d, freq: %d\n", priv->timestamp_bit_size, priv->timestamp_freq);
 
 	netdev_info(ndev, "ctu_can_fd device registered\n");
 	can_led_event(ndev, CAN_LED_EVENT_OPEN);
@@ -1324,6 +1353,7 @@ static int ctucan_close(struct net_device *ndev)
 
 	netif_stop_queue(ndev);
 	napi_disable(&priv->napi);
+	ctucan_timestamp_stop(priv);
 	ctucan_chip_stop(ndev);
 	free_irq(ndev->irq, ndev);
 	close_candev(ndev);
@@ -1502,6 +1532,33 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
 	devm_can_led_init(ndev);
 
 	pm_runtime_put(dev);
+
+	if(dev->of_node) {
+		priv->timestamp_possible = true;
+		if(of_property_read_u32(dev->of_node, "ts_used_bits", &priv->timestamp_bit_size)) {
+			netdev_info(ndev, "failed to read ts_used_bits property from device tree, timestamping will be disabled\n");
+			priv->timestamp_possible = false;
+		}
+		if (priv->timestamp_possible && priv->timestamp_bit_size > 64) {
+			netdev_info(ndev, "ts_used_bits (value: %d) is too large, (max is 64), timestamping will be disabled\n", priv->timestamp_bit_size);
+			priv->timestamp_possible = false;
+		}
+		if (priv->timestamp_possible && priv->timestamp_bit_size == 0) {
+			netdev_info(ndev, "ts_used_bits has to be greater than zero, timestamping will be disabled\n");
+			priv->timestamp_possible = false;
+		}
+		if(of_property_read_u32(dev->of_node, "ts_frequency", &priv->timestamp_freq)) {
+			netdev_info(ndev, "failed to read ts_frequency property from device tree, timestamping will be disabled\n");
+			priv->timestamp_possible = false;
+		}
+		if (priv->timestamp_possible && priv->timestamp_freq == 0) {
+			netdev_info(ndev, "ts_frequency has to be greater than zero, timestamping will be disabled\n");
+			priv->timestamp_possible = false;
+		}
+	}
+	else {
+		priv->timestamp_possible = false;
+	}
 
 	netdev_dbg(ndev, "mem_base=0x%p irq=%d clock=%d, no. of txt buffers:%d\n",
 		   priv->mem_base, ndev->irq, priv->can.clock.freq, priv->ntxbufs);

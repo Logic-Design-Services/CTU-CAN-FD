@@ -30,9 +30,12 @@
 #ifndef __CTUCANFD__
 #define __CTUCANFD__
 
+#include "linux/types.h"
 #include <linux/netdevice.h>
 #include <linux/can/dev.h>
 #include <linux/list.h>
+#include <linux/timecounter.h>
+#include <linux/types.h>
 
 enum ctu_can_fd_can_registers;
 
@@ -61,6 +64,15 @@ struct ctucan_priv {
 	u32 rxfrm_first_word;
 
 	struct list_head peers_on_pdev;
+
+	u32 timestamp_bit_size;
+	u32 timestamp_freq;
+	bool timestamp_possible;
+
+	struct cyclecounter cc;
+	struct timecounter tc;
+	struct delayed_work timestamp;
+	u32 work_delay_sec;
 };
 
 /**
@@ -88,5 +100,12 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr,
 
 int ctucan_suspend(struct device *dev) __maybe_unused;
 int ctucan_resume(struct device *dev) __maybe_unused;
+
+u64 ctucan_read_timestamp_counter(struct ctucan_priv *priv);
+
+void ctucan_skb_set_timestamp(struct ctucan_priv *priv,
+				 struct sk_buff *skb, u64 timestamp);
+void ctucan_timestamp_init(struct ctucan_priv *priv);
+void ctucan_timestamp_stop(struct ctucan_priv *priv);
 
 #endif /*__CTUCANFD__*/
