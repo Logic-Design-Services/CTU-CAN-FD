@@ -255,11 +255,5 @@ begin
     --  (go_to_off = '1' and curr_state = s_oc_receiver)
     --  report "Unit should not become Bus off while receiver!";
 
-    -- psl op_fsm_transmitter_cov : cover
-    --  {curr_state = s_oc_transmitter};
-
-    -- psl op_fsm_received_cov : cover
-    --  {curr_state = s_oc_receiver};
-
     -- <RELEASE_ON>
 end architecture;

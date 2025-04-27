@@ -492,16 +492,6 @@ begin
     -----------------------------------------------------------------------------------------------
     -- psl default clock is rising_edge(clk_sys);
 
-    -- Each FSM state
-    -- psl txtb_fsm_empty_cov : cover {curr_state = s_txt_empty};
-    -- psl txtb_fsm_ready_cov : cover {curr_state = s_txt_ready};
-    -- psl txtb_fsm_tx_prog_cov : cover {curr_state = s_txt_tx_prog};
-    -- psl txtb_fsm_ab_prog_cov : cover {curr_state = s_txt_ab_prog};
-    -- psl txtb_fsm_error_cov : cover {curr_state = s_txt_failed};
-    -- psl txtb_fsm_aborted_cov : cover {curr_state = s_txt_aborted};
-    -- psl txtb_fsm_tx_ok_cov : cover {curr_state = s_txt_ok};
-    -- psl txtb_fsm_parity_err_cov : cover {curr_state = s_txt_parity_err};
-
     -- Parity error during each possible state
     -- psl txtb_perr_txt_ready_cov : cover
     --  {curr_state = s_txt_ready and txtb_parity_error_valid = '1'};
