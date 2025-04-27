@@ -739,6 +739,12 @@ architecture rtl of protocol_control_fsm is
     signal txtb_num_words_gate          : natural range 0 to 19;
     signal txtb_gate_mem_read           : std_logic;
 
+    -- Transmit dominant ACK bit
+    signal tx_dominant_ack              : std_logic;
+
+    -- Allow ACK bit to have other value being received as being transmitted
+    signal allow_flipped_ack            : std_logic;
+
 begin
 
     tx_frame_ready <= '1' when (tran_frame_valid = '1' and
@@ -796,6 +802,20 @@ begin
     frame_start <= '1' when (tx_frame_ready = '1' and go_to_suspend = '0') else
                    '1' when (rx_data_nbs = DOMINANT) else
                    '0';
+
+    tx_dominant_ack <= '1' when  ((crc_match = '1') and
+                                  (is_receiver = '1') and
+                                  (mr_mode_acf = '0'))
+                           else
+                       '0';
+
+    -- ACK may receive different value that transmitted when:
+    --  1. Unit sends recessive (may receive dominant ACK from other nodes)
+    --  2. In bus monitoring. The value does not propagate to the bus, but ACK
+    --     from another node may arrive.
+    allow_flipped_ack <= '1' when (tx_dominant_ack = '0' or mr_mode_bmm = '1')
+                             else
+                         '0';
 
     -----------------------------------------------------------------------------------------------
     -- Signal is not decoded inside curr_state process, because it is sensitive to this signal!
@@ -1333,7 +1353,8 @@ begin
         is_receiver, crc_match, mr_mode_acf, mr_mode_stm, tx_frame_ready, go_to_suspend, frame_start,
         ctrl_ctr_one, mr_command_ercrst_q, reinteg_ctr_expired, first_err_delim_q, go_to_stuff_count,
         ack_err_flag, crc_length_i, data_length_bits_c, ctrl_ctr_mem_index, is_bus_off,
-        block_txtb_unlock, mr_settings_pex, rx_data_nbs_prev, sync_edge, mr_mode_rom)
+        block_txtb_unlock, mr_settings_pex, rx_data_nbs_prev, sync_edge, mr_mode_rom,
+        tx_dominant_ack, allow_flipped_ack)
     begin
 
         -------------------------------------------------------------------------------------------
@@ -2139,12 +2160,11 @@ begin
                 pc_dbg.is_ack <= '1';
                 dbt_ctrs_en <= '1';
 
-                if (is_receiver = '1' and crc_match = '1' and mr_mode_acf = '0') then
+                if (tx_dominant_ack = '1') then
                     tx_dominant <= '1';
+                end if;
 
-                -- Bit Error still shall be detected when unit sends dominant
-                -- (receiver) and receives recessive!
-                else
+                if (allow_flipped_ack = '1') then
                     bit_err_disable <= '1';
                 end if;
 
@@ -2165,12 +2185,11 @@ begin
                 pc_dbg.is_ack <= '1';
                 dbt_ctrs_en <= '1';
 
-                if (is_receiver = '1' and crc_match = '1' and mr_mode_acf = '0') then
+                if (tx_dominant_ack = '1') then
                     tx_dominant <= '1';
+                end if;
 
-                -- Bit Error still shall be detected when unit sends dominant
-                -- (receiver) and receives recessive!
-                else
+                if (allow_flipped_ack = '1') then
                     bit_err_disable <= '1';
                 end if;
 
