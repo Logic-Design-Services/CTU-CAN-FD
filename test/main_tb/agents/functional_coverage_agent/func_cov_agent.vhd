@@ -67,30 +67,46 @@
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
--- Purpose:
---   Declaration of context with agents of CTU CAN FD TB.
+--  @Purpose:
+--    Functional coverage agent
 --
---  Context definitions are used for tests only since free version of Quartus
---  does not support context clause for synthesis.
+--    Functional coverage agent implements functional coverage (PSL assertions)
+--    for CTU CAN FD. The internal signals of the DUT are probed by External
+--    Names.
+--
 --------------------------------------------------------------------------------
 -- Revision History:
---    12.03.2021    Created file
+--    27.4.2025   Created file
 --------------------------------------------------------------------------------
 
-context tb_agents_context is
+Library ctu_can_fd_tb;
+context ctu_can_fd_tb.ieee_context;
+context ctu_can_fd_tb.tb_common_context;
 
-    Library ctu_can_fd_tb;
-    use ctu_can_fd_tb.can_agent_pkg.all;
-    use ctu_can_fd_tb.clk_gen_agent_pkg.all;
-    use ctu_can_fd_tb.interrupt_agent_pkg.all;
-    use ctu_can_fd_tb.mem_bus_agent_pkg.all;
-    use ctu_can_fd_tb.reset_agent_pkg.all;
-    use ctu_can_fd_tb.timestamp_agent_pkg.all;
-    use ctu_can_fd_tb.feature_test_agent_pkg.all;
-    use ctu_can_fd_tb.feature_test_list_pkg.all;
-    use ctu_can_fd_tb.test_controller_agent_pkg.all;
-    use ctu_can_fd_tb.test_probe_agent_pkg.all;
-    use ctu_can_fd_tb.reference_test_agent_pkg.all;
-    use ctu_can_fd_tb.func_cov_agent_pkg.all;
+use ctu_can_fd_tb.clk_gen_agent_pkg.all;
+use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 
-end context;
+entity func_cov_agent is
+    port (
+        -- DUT clock
+        clk    :   in  std_logic
+    );
+end entity;
+
+architecture tb of func_cov_agent is
+
+    signal clk_delayed : std_logic;
+
+begin
+
+    -- Delay the clock so that we always sample stable signals and
+    -- avoid possible delta-races. 1 ps should be "good enogh" that
+    -- no signals
+    clk_delayed <= clk after 1 ps;
+
+    func_cov_can_core : entity ctu_can_fd_tb.func_cov_can_core
+    port map (
+        clk => clk_delayed
+    );
+
+end architecture;

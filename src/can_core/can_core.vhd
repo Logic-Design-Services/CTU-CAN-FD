@@ -967,7 +967,6 @@ begin
     -- Test signals observation
     pc_rx_trigger           <= pc_rx_trigger_i;
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------
     -- Assertions
@@ -1007,41 +1006,5 @@ begin
     -- psl no_tran_frame_valid_in_rom_or_bmm_asrt : assert never
     --  (tran_frame_valid = '1' and (mr_mode_bmm = '1' or mr_mode_rom = '1'))
     --  report "TX frame shall not be ready in MODE[ROM] or MODE[BMM]!";
-
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-    -- Functional coverage
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-
-    -- Transmitted frame combinations (no RTR)
-
-    -- psl tx_base_id_can_2_0_cov : cover
-    --  {tran_ident_type = BASE and tran_frame_type = NORMAL_CAN and tran_is_rtr = '0'};
-
-    -- psl tx_extended_id_can_2_0_cov : cover
-    --  {tran_ident_type = EXTENDED and tran_frame_type = NORMAL_CAN and tran_is_rtr = '0'};
-
-    -- psl tx_base_id_can_fd_cov : cover
-    --  {tran_ident_type = BASE and tran_frame_type = FD_CAN and tran_is_rtr = '0'};
-
-    -- psl tx_extended_id_can_fd_cov : cover
-    --  {tran_ident_type = EXTENDED and tran_frame_type = FD_CAN and tran_is_rtr = '0'};
-
-    -- RTR frames (in combination with FD_CAN, this is ignored!)
-
-    -- psl tx_base_id_can_2_0_rtr_cov : cover
-    --  {tran_ident_type = BASE and tran_frame_type = NORMAL_CAN and tran_is_rtr = '1'};
-
-    -- psl tx_extended_id_can_2_0_rtr_cov : cover
-    --  {tran_ident_type = EXTENDED and tran_frame_type = NORMAL_CAN and tran_is_rtr = '1'};
-
-    -- psl tx_base_id_can_fd_rtr_cov : cover
-    --  {tran_ident_type = BASE and tran_frame_type = FD_CAN and tran_is_rtr = '1'};
-
-    -- psl tx_extended_id_can_fd_rtr_cov : cover
-    --  {tran_ident_type = EXTENDED and tran_frame_type = FD_CAN and tran_is_rtr = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture;

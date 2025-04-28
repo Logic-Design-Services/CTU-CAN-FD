@@ -67,30 +67,97 @@
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
--- Purpose:
---   Declaration of context with agents of CTU CAN FD TB.
+--  @Purpose:
+--    Functional coverage for CAN Core
 --
---  Context definitions are used for tests only since free version of Quartus
---  does not support context clause for synthesis.
 --------------------------------------------------------------------------------
 -- Revision History:
---    12.03.2021    Created file
+--    27.4.2025   Created file
 --------------------------------------------------------------------------------
 
-context tb_agents_context is
+Library ctu_can_fd_tb;
+context ctu_can_fd_tb.ieee_context;
+context ctu_can_fd_tb.tb_common_context;
+context ctu_can_fd_tb.rtl_context;
 
-    Library ctu_can_fd_tb;
-    use ctu_can_fd_tb.can_agent_pkg.all;
-    use ctu_can_fd_tb.clk_gen_agent_pkg.all;
-    use ctu_can_fd_tb.interrupt_agent_pkg.all;
-    use ctu_can_fd_tb.mem_bus_agent_pkg.all;
-    use ctu_can_fd_tb.reset_agent_pkg.all;
-    use ctu_can_fd_tb.timestamp_agent_pkg.all;
-    use ctu_can_fd_tb.feature_test_agent_pkg.all;
-    use ctu_can_fd_tb.feature_test_list_pkg.all;
-    use ctu_can_fd_tb.test_controller_agent_pkg.all;
-    use ctu_can_fd_tb.test_probe_agent_pkg.all;
-    use ctu_can_fd_tb.reference_test_agent_pkg.all;
-    use ctu_can_fd_tb.func_cov_agent_pkg.all;
+use ctu_can_fd_tb.clk_gen_agent_pkg.all;
+use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 
-end context;
+entity func_cov_can_core is
+    port (
+        -- DUT clock
+        clk    :   in  std_logic
+    );
+end entity;
+
+architecture tb of func_cov_can_core is
+
+    alias tran_ident_type is
+        << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_ident_type : std_logic >>;
+
+    alias tran_frame_type is
+        << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_ident_type : std_logic >>;
+
+    alias tran_is_rtr is
+        << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_is_rtr : std_logic >>;
+
+    alias tran_frame_valid is
+        << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_frame_valid : std_logic >>;
+
+begin
+
+    -- psl default clock is rising_edge(clk);
+
+    -----------------------------------------------------------------------------------------------
+    -- Transmitted frame combinations
+    -----------------------------------------------------------------------------------------------
+
+    -- psl tx_base_id_can_2_0_cov : cover
+    --  {tran_ident_type  = BASE        and
+    --   tran_frame_type  = NORMAL_CAN  and
+    --   tran_is_rtr      = '0'         and
+    --   tran_frame_valid = '1'};
+
+    -- psl tx_extended_id_can_2_0_cov : cover
+    --  {tran_ident_type  = EXTENDED    and
+    --   tran_frame_type  = NORMAL_CAN  and
+    --   tran_is_rtr      = '0'         and
+    --   tran_frame_valid = '1'};
+
+    -- psl tx_base_id_can_fd_cov : cover
+    --  {tran_ident_type  = BASE        and
+    --   tran_frame_type  = FD_CAN      and
+    --   tran_is_rtr      = '0'         and
+    --   tran_frame_valid = '1'};
+
+    -- psl tx_extended_id_can_fd_cov : cover
+    --  {tran_ident_type  = EXTENDED    and
+    --   tran_frame_type  = FD_CAN      and
+    --   tran_is_rtr      = '0'         and
+    --   tran_frame_valid = '1'};
+
+    -- psl tx_base_id_can_2_0_rtr_cov : cover
+    --  {tran_ident_type  = BASE        and
+    --   tran_frame_type  = NORMAL_CAN  and
+    --   tran_is_rtr      = '1'         and
+    --   tran_frame_valid = '1'};
+
+    -- psl tx_extended_id_can_2_0_rtr_cov : cover
+    --  {tran_ident_type  = EXTENDED    and
+    --   tran_frame_type  = NORMAL_CAN  and
+    --   tran_is_rtr      = '1'         and
+    --   tran_frame_valid = '1'};
+
+    -- psl tx_base_id_can_fd_rtr_cov : cover
+    --  {tran_ident_type  = BASE        and
+    --   tran_frame_type  = FD_CAN      and
+    --   tran_is_rtr      = '1'         and
+    --   tran_frame_valid = '1'};
+
+    -- psl tx_extended_id_can_fd_rtr_cov : cover
+    --  {tran_ident_type  = EXTENDED    and
+    --   tran_frame_type  = FD_CAN      and
+    --   tran_is_rtr      = '1'         and
+    --   tran_frame_valid = '1'};
+
+end architecture;

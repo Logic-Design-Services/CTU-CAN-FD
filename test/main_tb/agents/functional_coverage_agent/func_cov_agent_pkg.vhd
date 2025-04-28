@@ -67,30 +67,33 @@
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
--- Purpose:
---   Declaration of context with agents of CTU CAN FD TB.
+--  @Purpose:
+--    Package with API for Functional coverage agent.
 --
---  Context definitions are used for tests only since free version of Quartus
---  does not support context clause for synthesis.
 --------------------------------------------------------------------------------
 -- Revision History:
---    12.03.2021    Created file
+--    27.4.2025   Created file
 --------------------------------------------------------------------------------
 
-context tb_agents_context is
+Library ctu_can_fd_tb;
+context ctu_can_fd_tb.ieee_context;
+context ctu_can_fd_tb.tb_common_context;
+use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 
-    Library ctu_can_fd_tb;
-    use ctu_can_fd_tb.can_agent_pkg.all;
-    use ctu_can_fd_tb.clk_gen_agent_pkg.all;
-    use ctu_can_fd_tb.interrupt_agent_pkg.all;
-    use ctu_can_fd_tb.mem_bus_agent_pkg.all;
-    use ctu_can_fd_tb.reset_agent_pkg.all;
-    use ctu_can_fd_tb.timestamp_agent_pkg.all;
-    use ctu_can_fd_tb.feature_test_agent_pkg.all;
-    use ctu_can_fd_tb.feature_test_list_pkg.all;
-    use ctu_can_fd_tb.test_controller_agent_pkg.all;
-    use ctu_can_fd_tb.test_probe_agent_pkg.all;
-    use ctu_can_fd_tb.reference_test_agent_pkg.all;
-    use ctu_can_fd_tb.func_cov_agent_pkg.all;
 
-end context;
+package func_cov_agent_pkg is
+
+    component func_cov_agent is
+        port (
+            -- DUT clock
+            clk    :   in  std_logic
+        );
+    end component;
+
+end package;
+
+
+package body func_cov_agent_pkg is
+
+
+end package body;
