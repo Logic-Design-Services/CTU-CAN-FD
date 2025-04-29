@@ -448,26 +448,4 @@ begin
     stuff_err <= stuff_err_q;
     dst_ctr   <= std_logic_vector(dst_ctr_q);
 
-
-    -- <RELEASE_OFF>
-    -------------------------------------------------------------------------------------------
-    -- Assertions on input settings
-    -------------------------------------------------------------------------------------------
-
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl bds_non_fix_to_fixed_change_cov : cover
-    --  {bds_trigger = '1' and non_fix_to_fix_chng = '1'};
-
-    -- psl bds_stuff_err_detect_cov : cover
-    --  {stuff_err_q = '1'};
-
-    -- psl bds_stuff_lvl_reached_regular_cov : cover
-    --  {stuff_lvl_reached = '1' and fixed_stuff = '0'};
-
-    -- psl bds_stuff_lvl_reached_fixed_cov : cover
-    --  {stuff_lvl_reached = '1' and fixed_stuff = '1'};
-
-    -- <RELEASE_ON>
-
 end architecture;

@@ -406,7 +406,6 @@ begin
     norm_err_ctr <= std_logic_vector(nom_err_ctr_q);
     data_err_ctr <= std_logic_vector(data_err_ctr_q);
 
-   -- <RELEASE_OFF>
    -----------------------------------------------------------------------------------------------
    -- Assertions
    -----------------------------------------------------------------------------------------------
@@ -422,19 +421,5 @@ begin
    -- psl no_simul_transm_rec_asrt : assert never
    --   (is_transmitter = '1' and is_receiver = '1')
    -- report "Unit can't be transmitter and receiver at once";
-
-   -- psl err_ctrs_inc_one_cov : cover
-   --   {inc_one = '1'};
-
-   -- psl err_ctrs_inc_eight_cov : cover
-   --   {inc_eight = '1'};
-
-   -- psl err_ctrs_dec_one_cov : cover
-   --   {dec_one = '1'};
-
-   -- psl err_ctrs_rec_saturation : cover
-   --   {(rx_err_ctr_inc < rx_err_ctr_q) and rx_err_ctr_ce = '1'};
-
-   -- <RELEASE_ON>
 
 end architecture;

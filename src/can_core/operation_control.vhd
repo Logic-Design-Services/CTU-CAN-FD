@@ -229,7 +229,6 @@ begin
         end if;
     end process;
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -- Assertions
     -----------------------------------------------------------------------------------------------
@@ -255,5 +254,4 @@ begin
     --  (go_to_off = '1' and curr_state = s_oc_receiver)
     --  report "Unit should not become Bus off while receiver!";
 
-    -- <RELEASE_ON>
 end architecture;

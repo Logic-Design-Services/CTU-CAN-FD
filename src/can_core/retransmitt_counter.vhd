@@ -174,7 +174,6 @@ begin
     -- Counter status propagation to output
     retr_ctr <= std_logic_vector(retr_ctr_q);
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -- Assertions
     -----------------------------------------------------------------------------------------------
@@ -188,7 +187,5 @@ begin
     -- psl_retr_ctr_no_overflow : assert never
     --  (retr_limit_reached = '1' and retr_ctr_add = '1')
     -- report "Retransmitt counter overflow";
-
-    -- <RELEASE_ON>
 
 end architecture;
