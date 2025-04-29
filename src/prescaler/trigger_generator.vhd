@@ -211,7 +211,6 @@ begin
     tx_trigger <= '0' when (rx_trig_req_q = '1') else
                   tx_trig_req_flag_dq;
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------
     -- Assertions
@@ -229,9 +228,4 @@ begin
     --  report "Sync and Sample trigger should no be requested at once!";
     -----------------------------------------------------------------------------------------------
 
-    -- psl tx_trigger_throttling_cov : cover
-    --  {rx_trig_req_q = '1' and tx_trig_req = '1'}
-    --  report "TX trigger throtlled!";
-
-    -- <RELEASE_ON>
 end architecture rtl;

@@ -109,4 +109,9 @@ begin
         clk => clk_delayed
     );
 
+    func_cov_prescaler : entity ctu_can_fd_tb.func_cov_prescaler
+    port map (
+        clk => clk_delayed
+    );
+
 end architecture;
