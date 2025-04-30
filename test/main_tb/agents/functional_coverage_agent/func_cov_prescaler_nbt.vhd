@@ -68,11 +68,7 @@
 
 --------------------------------------------------------------------------------
 --  @Purpose:
---    Functional coverage agent
---
---    Functional coverage agent implements functional coverage (PSL assertions)
---    for CTU CAN FD. The internal signals of the DUT are probed by External
---    Names.
+--    Functional coverage for Prescaler
 --
 --------------------------------------------------------------------------------
 -- Revision History:
@@ -82,46 +78,97 @@
 Library ctu_can_fd_tb;
 context ctu_can_fd_tb.ieee_context;
 context ctu_can_fd_tb.tb_common_context;
+context ctu_can_fd_tb.rtl_context;
 
 use ctu_can_fd_tb.clk_gen_agent_pkg.all;
 use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 
-entity func_cov_agent is
+entity func_cov_prescaler_nbt is
     port (
         -- DUT clock
         clk    :   in  std_logic
     );
 end entity;
 
-architecture tb of func_cov_agent is
+architecture tb of func_cov_prescaler_nbt is
 
-    signal clk_delayed : std_logic;
+    alias is_tseg1 is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.is_tseg1 : std_logic >>;
+
+    alias is_tseg2 is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.is_tseg2 : std_logic >>;
+
+    alias exp_seg_length_ce is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.exp_seg_length_ce : std_logic >>;
+
+    alias use_basic_segm_length is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.use_basic_segm_length : std_logic >>;
+
+    alias phase_err is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.phase_err : unsigned(7 downto 0) >>;
+
+    alias sjw is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.sjw : std_logic_vector(4 downto 0) >>;
+
+    alias exit_segm_req is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.exit_segm_req : std_logic >>;
+
+    alias exit_ph2_immediate is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.exit_ph2_immediate : std_logic >>;
+
+    alias exit_segm_regular_tseg1 is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.exit_segm_regular_tseg1 : std_logic >>;
+
+    alias exit_segm_regular_tseg2 is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.bit_segment_meter_nbt_inst.exit_segm_regular_tseg2 : std_logic >>;
+
+    alias resync_edge_valid is
+        << signal .tb_top_ctu_can_fd.dut.prescaler_inst.resync_edge_valid : std_logic >>;
 
 begin
 
-    -- Delay the clock so that we always sample stable signals and
-    -- avoid possible delta-races. 1 ps should be "good enogh" that
-    -- no signals
-    clk_delayed <= clk after 1 ps;
+    -- psl default clock is rising_edge(clk);
 
-    func_cov_can_core_inst : entity ctu_can_fd_tb.func_cov_can_core
-    port map (
-        clk => clk_delayed
-    );
+    -- Positive resynchronization with E < SJW
+    -- psl nbt_pos_resync_e_less_than_sjw_cov : cover
+    --  {exp_seg_length_ce = '1' and use_basic_segm_length = '0' and is_tseg1 = '1'
+    --   and resync_edge_valid = '1' and
+    --   (to_integer(unsigned(phase_err)) < to_integer(unsigned(sjw)))};
 
-    func_cov_prescaler_inst : entity ctu_can_fd_tb.func_cov_prescaler
-    port map (
-        clk => clk_delayed
-    );
+    -- Positive resynchronization with E > SJW
+    -- psl nbt_pos_resync_e_more_than_sjw_cov : cover
+    --  {exp_seg_length_ce = '1' and use_basic_segm_length = '0' and is_tseg1 = '1'
+    --   and resync_edge_valid = '1' and
+    --   (to_integer(unsigned(phase_err)) > to_integer(unsigned(sjw)))};
 
-    func_cov_prescaler_nbt_inst : entity ctu_can_fd_tb.func_cov_prescaler_nbt
-    port map (
-        clk => clk_delayed
-    );
+    -- Positive resynchronization with E = SJW
+    -- psl nbt_pos_resync_e_equal_sjw_cov : cover
+    --  {exp_seg_length_ce = '1' and use_basic_segm_length = '0' and is_tseg1 = '1'
+    --   and resync_edge_valid = '1' and
+    --   (to_integer(unsigned(phase_err)) = to_integer(unsigned(sjw)))};
 
-    func_cov_prescaler_dbt_inst : entity ctu_can_fd_tb.func_cov_prescaler_dbt
-    port map (
-        clk => clk_delayed
-    );
+    -- Negative resynchronization with E < SJW
+    -- psl nbt_neg_resync_e_less_than_sjw_cov : cover
+    --  {exp_seg_length_ce = '1' and resync_edge_valid = '1' and is_tseg2 = '1' and
+    --   (to_integer(unsigned(phase_err)) < to_integer(unsigned(sjw)))};
+
+    -- Negative resynchronization with E > SJW
+    -- psl nbt_neg_resync_e_more_than_sjw_cov : cover
+    --  {exp_seg_length_ce = '1' and resync_edge_valid = '1' and is_tseg2 = '1' and
+    --   (to_integer(unsigned(phase_err)) > to_integer(unsigned(sjw)))};
+
+    -- Negative resynchronization with E = SJW
+    -- psl nbt_neg_resync_e_equal_sjw_cov : cover
+    --  {exp_seg_length_ce = '1' and resync_edge_valid = '1' and is_tseg2 = '1' and
+    --   (to_integer(unsigned(phase_err)) = to_integer(unsigned(sjw)))};
+
+    -- psl nbt_exit_segm_immediate_cov : cover
+    --  {exit_segm_req = '1' and exit_ph2_immediate = '1'};
+
+    -- psl nbt_exit_segm_regular_tseg1_cov : cover
+    --  {exit_segm_req = '1' and exit_segm_regular_tseg1 = '1' and exit_segm_regular_tseg2 = '0'};
+
+    -- psl nbt_exit_segm_regular_tseg2_cov : cover
+    --  {exit_segm_req = '1' and exit_segm_regular_tseg1 = '0' and exit_segm_regular_tseg2 = '1'};
 
 end architecture;
