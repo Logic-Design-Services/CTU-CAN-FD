@@ -68,7 +68,7 @@
 
 --------------------------------------------------------------------------------
 --  @Purpose:
---    Functional coverage for Prescaler
+--    Functional coverage for Bus Sampling
 --
 --------------------------------------------------------------------------------
 -- Revision History:
