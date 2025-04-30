@@ -124,4 +124,9 @@ begin
         clk => clk_delayed
     );
 
+    func_cov_bus_sampling_inst : entity ctu_can_fd_tb.func_cov_bus_sampling
+    port map (
+        clk => clk_delayed
+    );
+
 end architecture;

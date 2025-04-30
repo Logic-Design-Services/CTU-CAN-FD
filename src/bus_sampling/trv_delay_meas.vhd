@@ -385,8 +385,6 @@ begin
                          else
                      '0';
 
-    -- <RELEASE_OFF>
-
     -- coverage off
     assert (G_TRV_CTR_WIDTH <= G_SSP_POS_WIDTH)
         report "SSP Position width must be higher or equal to trv counter width!"
@@ -403,24 +401,5 @@ begin
 
     -- psl ssp_offset_sat_asrt : assert never
     -- (unsigned(ssp_delay_shadowed) > to_unsigned(G_SSP_SATURATION_LVL, G_SSP_POS_WIDTH));
-
-    -- psl trv_measurement_cov : cover
-    --  {tran_delay_meas = '1'};
-
-    -- psl ssp_meas_n_offset_cov : cover
-    --  {mr_ssp_cfg_ssp_src = SSP_SRC_MEAS_N_OFFSET and tran_delay_meas = '1'};
-
-    -- psl ssp_offset_cov : cover
-    --  {mr_ssp_cfg_ssp_src = SSP_SRC_OFFSET and tran_delay_meas = '1'};
-
-    -- psl ssp_no_ssp_cov : cover
-    --  {mr_ssp_cfg_ssp_src = SSP_SRC_NO_SSP and tran_delay_meas = '1'};
-    -- Note: Protocol control FSM actually requests the measurement of TRV delay
-    --       even if SSP is not used!
-
-    -- psl ssp_offset_sat_cov : cover
-    --  {ssp_delay_saturated = std_logic_vector(to_unsigned(G_SSP_SATURATION_LVL, G_SSP_POS_WIDTH))};
-
-    -- <RELEASE_ON>
 
 end architecture;

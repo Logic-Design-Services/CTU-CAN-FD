@@ -295,7 +295,6 @@ begin
     sample_sec <= '1' when (sspc_expired = '1' and sspc_ena_q = '1') else
                   '0';
 
-    -- <RELEASE_OFF>
     -------------------------------------------------------------------------------------------
     -- Assertions
     -------------------------------------------------------------------------------------------
@@ -308,13 +307,5 @@ begin
     -- psl no_btmc_overflow : assert never
     --  ((unsigned(btmc_d) < unsigned(btmc_q)) and (btmc_reset /= '1'))
     --  report "BTMC overflow";
-
-    -- psl first_ssp_cov : cover
-    --  {first_ssp_q = '1'};
-
-    -- psl sspc_ena_q_cov : cover
-    --  {sspc_ena_q = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture;

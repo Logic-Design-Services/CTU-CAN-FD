@@ -443,15 +443,4 @@ begin
     -- RX Data for bit destuffing - Output of re-synchroniser.
     rx_data_wbs <= data_rx_synced;
 
-    -- <RELEASE_OFF>
-    -------------------------------------------------------------------------------------------
-    -- Assertions on input signals
-    -------------------------------------------------------------------------------------------
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl tx_trigger_ssp_cov : cover
-    --  {tx_trigger_ssp = '1'};
-
-    -- <RELEASE_ON>
-
 end architecture;

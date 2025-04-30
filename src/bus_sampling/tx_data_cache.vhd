@@ -195,7 +195,6 @@ begin
     -------------------------------------------------------------------------------------------
     data_out <= tx_cache_mem(read_pointer_q);
 
-    -- <RELEASE_OFF>
     -------------------------------------------------------------------------------------------
     -- Assertions on input signals
     -------------------------------------------------------------------------------------------
@@ -214,19 +213,5 @@ begin
     -- Note: When read pointer is equal to write pointer, FIFO is for sure
     -- empty, because we detect error when it is almost full. So we never get
     -- to situation that read pointer equals write pointer when FIFO is full!
-
-    -- psl tx_data_cache_one_bit_on_fly_cov : cover
-    --  {write_pointer_q = read_pointer_q + 1};
-
-    -- psl tx_data_cache_two_bits_on_fly_cov : cover
-    --  {write_pointer_q = read_pointer_q + 2};
-
-    -- psl tx_data_cache_three_bits_on_fly_cov : cover
-    --  {write_pointer_q = read_pointer_q + 3};
-
-    -- psl tx_data_cache_four_bits_on_fly_cov : cover
-    --  {write_pointer_q = read_pointer_q + 4};
-
-    -- <RELEASE_ON>
 
 end architecture;
