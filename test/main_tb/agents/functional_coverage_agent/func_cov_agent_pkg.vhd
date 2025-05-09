@@ -84,6 +84,10 @@ use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 package func_cov_agent_pkg is
 
     component func_cov_agent is
+        generic (
+            -- RX Buffer size
+            G_RX_BUFF_SIZE              :     natural range 32 to 4096
+        );
         port (
             -- DUT clock
             clk    :   in  std_logic
@@ -92,8 +96,6 @@ package func_cov_agent_pkg is
 
 end package;
 
-
 package body func_cov_agent_pkg is
-
 
 end package body;

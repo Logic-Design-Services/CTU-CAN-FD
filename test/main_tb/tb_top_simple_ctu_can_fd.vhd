@@ -169,6 +169,8 @@ architecture tb of tb_top_ctu_can_fd is
        stand_alone_vip_mode    : boolean;
        deposit_to_dut          : boolean;
 
+       rx_buffer_size          : natural;
+
        -- DUT Clock period
        cfg_sys_clk_period      : string;
        finish_on_error         : natural;
@@ -280,6 +282,8 @@ begin
         test_type               => test_type,
         stand_alone_vip_mode    => stand_alone_vip_mode,
         deposit_to_dut          => deposit_to_dut,
+
+        rx_buffer_size          => rx_buffer_size,
 
         cfg_sys_clk_period      => cfg_sys_clk_period,
         finish_on_error         => finish_on_error,

@@ -375,12 +375,11 @@ begin
     rx_fsm_ce <= '1' when (next_state /= curr_state) else
                  '0';
 
-    -- <RELEASE_OFF>
-    -- pragma translate_off
-
     -----------------------------------------------------------------------------------------------
     -- Assertions
     -----------------------------------------------------------------------------------------------
+
+    -- pragma translate_off
 
     assertions_block : block
         -- Joined commands
@@ -447,6 +446,5 @@ begin
     end block assertions_block;
 
     -- pragma translate_on
-    -- <RELEASE_ON>
 
 end architecture;

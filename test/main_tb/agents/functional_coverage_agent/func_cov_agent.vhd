@@ -87,6 +87,10 @@ use ctu_can_fd_tb.clk_gen_agent_pkg.all;
 use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 
 entity func_cov_agent is
+    generic (
+        -- RX Buffer size
+        G_RX_BUFF_SIZE              :     natural range 32 to 4096
+    );
     port (
         -- DUT clock
         clk    :   in  std_logic
@@ -125,6 +129,14 @@ begin
     );
 
     func_cov_bus_sampling_inst : entity ctu_can_fd_tb.func_cov_bus_sampling
+    port map (
+        clk => clk_delayed
+    );
+
+    func_cov_rx_buffer_inst : entity ctu_can_fd_tb.func_cov_rx_buffer
+    generic map (
+        G_RX_BUFF_SIZE => G_RX_BUFF_SIZE
+    )
     port map (
         clk => clk_delayed
     );
