@@ -80,10 +80,8 @@
 context rtl_context is
 
     Library ctu_can_fd_rtl;
-    use ctu_can_fd_rtl.id_transfer_pkg.all;
     use ctu_can_fd_rtl.can_constants_pkg.all;
     use ctu_can_fd_rtl.can_types_pkg.all;
-    use ctu_can_fd_rtl.unary_ops_pkg.all;
     use ctu_can_fd_rtl.can_config_pkg.all;
 
     use ctu_can_fd_rtl.CAN_FD_register_map.all;

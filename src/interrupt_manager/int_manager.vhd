@@ -84,11 +84,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -206,6 +203,17 @@ architecture rtl of int_manager is
 
     -- Internal value of INT_ENA
     signal mr_int_ena_set_int_ena_set_o_i   : std_logic_vector(G_INT_COUNT - 1 downto 0);
+
+    function or_reduce(
+        constant input         : in    std_logic_vector
+    ) return std_logic is
+        variable tmp           :       std_logic := '0';
+    begin
+        for i in input'range loop
+            tmp := tmp or input(i);
+        end loop;
+        return tmp;
+    end function;
 
 begin
 
