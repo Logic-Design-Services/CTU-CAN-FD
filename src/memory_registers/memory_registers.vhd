@@ -894,8 +894,6 @@ begin
     mr_ctrl_in.timestamp_low_timestamp_low   <= timestamp(31 downto 0);
     mr_ctrl_in.timestamp_high_timestamp_high <= timestamp(63 downto 32);
 
-    -- <RELEASE_OFF>
-    -- pragma translate_off
     -----------------------------------------------------------------------------------------------
     -- Assertions / Functional coverage
     -----------------------------------------------------------------------------------------------
@@ -919,6 +917,7 @@ begin
     --  report "TX Double parity error generated when SETTINGS[PCHKE] is disabled.";
 
     -- coverage off
+    -- pragma translate_off
     txtb_func_cov_gen : for i in 0 to G_TXT_BUFFER_COUNT - 1 generate
     begin
 
@@ -932,14 +931,6 @@ begin
 
     end generate;
     -- coverage on
-
-    -- psl rx_buf_automatic_mode_cov : cover
-    --   {mr_ctrl_out_i.mode_rxbam = RXBAM_ENABLED};
-
-    -- psl rx_buf_manual_mode_cov : cover
-    --   {mr_ctrl_out_i.mode_rxbam = RXBAM_DISABLED};
-
     -- pragma translate_on
-    -- <RELEASE_ON>
 
 end architecture;
