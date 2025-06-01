@@ -86,7 +86,10 @@ package func_cov_agent_pkg is
     component func_cov_agent is
         generic (
             -- RX Buffer size
-            G_RX_BUFF_SIZE              :     natural range 32 to 4096
+            G_RX_BUFF_SIZE              :     natural range 32 to 4096;
+
+            -- Number of TXT Buffers
+            G_TXT_BUFFER_COUNT          :     natural range 1 to 8
         );
         port (
             -- DUT clock

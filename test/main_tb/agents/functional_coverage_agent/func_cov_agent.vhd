@@ -89,7 +89,10 @@ use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 entity func_cov_agent is
     generic (
         -- RX Buffer size
-        G_RX_BUFF_SIZE              :     natural range 32 to 4096
+        G_RX_BUFF_SIZE              :     natural range 32 to 4096;
+
+        -- Number of TXT Buffers
+        G_TXT_BUFFER_COUNT          :     natural range 1 to 8
     );
     port (
         -- DUT clock
@@ -136,6 +139,14 @@ begin
     func_cov_rx_buffer_inst : entity ctu_can_fd_tb.func_cov_rx_buffer
     generic map (
         G_RX_BUFF_SIZE => G_RX_BUFF_SIZE
+    )
+    port map (
+        clk => clk_delayed
+    );
+
+    func_cov_tx_arbitrator_inst : entity ctu_can_fd_tb.func_cov_tx_arbitrator
+    generic map (
+        G_TXT_BUFFER_COUNT => G_TXT_BUFFER_COUNT
     )
     port map (
         clk => clk_delayed
