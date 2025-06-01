@@ -152,4 +152,12 @@ begin
         clk => clk_delayed
     );
 
+    func_cov_txt_buffers_inst : entity ctu_can_fd_tb.func_cov_txt_buffers
+    generic map (
+        G_TXT_BUFFER_COUNT => G_TXT_BUFFER_COUNT
+    )
+    port map (
+        clk => clk_delayed
+    );
+
 end architecture;

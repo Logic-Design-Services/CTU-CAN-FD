@@ -211,9 +211,9 @@ source_list:
     - file: main_tb/agents/functional_coverage_agent/func_cov_prescaler_dbt.vhd
     - file: main_tb/agents/functional_coverage_agent/func_cov_prescaler.vhd
     - file: main_tb/agents/functional_coverage_agent/func_cov_bus_sampling.vhd
-    - file: main_tb/agents/functional_coverage_agent/func_cov_int_manager.vhd
     - file: main_tb/agents/functional_coverage_agent/func_cov_rx_buffer.vhd
     - file: main_tb/agents/functional_coverage_agent/func_cov_tx_arbitrator.vhd
+    - file: main_tb/agents/functional_coverage_agent/func_cov_txt_buffers.vhd
     - file: main_tb/agents/functional_coverage_agent/func_cov_agent.vhd
 
     - file: main_tb/ctu_can_fd_vip.vhd

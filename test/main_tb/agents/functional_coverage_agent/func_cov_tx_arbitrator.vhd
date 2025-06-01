@@ -159,7 +159,7 @@ begin
     -- Lock and unlock commands
     -----------------------------------------------------------------------------------------------
 
-    g_lock_each_buf : for i in 0 to G_TXT_BUFFER_COUNT - 1 generate
+    g_each_buf : for i in 0 to G_TXT_BUFFER_COUNT - 1 generate
 
         -- psl txt_lock_buf_cov : cover
         --    {curr_txtb_index_i = i and txtb_hw_cmd.lock = '1'};

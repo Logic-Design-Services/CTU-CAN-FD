@@ -298,13 +298,4 @@ begin
                                                      else
                                      (others => '0');
 
-    -----------------------------------------------------------------------------------------------
-    -- Assertions and functional coverage
-    -----------------------------------------------------------------------------------------------
-
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl txt_ram_0_test_cov : cover
-    --   {tst_ena = '0' and mr_tst_control_twrstb = '1'};
-
 end architecture;
