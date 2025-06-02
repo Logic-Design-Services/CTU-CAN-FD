@@ -68,31 +68,29 @@
 
 --------------------------------------------------------------------------------
 --  @Purpose:
---    Functional coverage agent
---
---    Functional coverage agent implements functional coverage (PSL assertions)
---    for CTU CAN FD. The internal signals of the DUT are probed by External
---    Names.
+--    Functional coverage for TX Arbitrator
 --
 --------------------------------------------------------------------------------
 -- Revision History:
---    27.4.2025   Created file
+--    1.6.2025   Created file
 --------------------------------------------------------------------------------
 
 Library ctu_can_fd_tb;
 context ctu_can_fd_tb.ieee_context;
 context ctu_can_fd_tb.tb_common_context;
+context ctu_can_fd_tb.rtl_context;
 
 use ctu_can_fd_tb.clk_gen_agent_pkg.all;
 use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 
-entity func_cov_agent is
+entity func_cov_tx_arbitrator_per_buf is
     generic (
-        -- RX Buffer size
-        G_RX_BUFF_SIZE              :     natural range 32 to 4096;
-
         -- Number of TXT Buffers
-        G_TXT_BUFFER_COUNT          :     natural range 1 to 8
+        G_TXT_BUFFER_COUNT          :     natural range 1 to 8;
+
+        -- Index of current TXT Buffer
+        G_TXT_BUF_INDEX : natural
+
     );
     port (
         -- DUT clock
@@ -100,67 +98,39 @@ entity func_cov_agent is
     );
 end entity;
 
-architecture tb of func_cov_agent is
+architecture tb of func_cov_tx_arbitrator_per_buf is
 
-    signal clk_delayed : std_logic;
+    alias curr_txtb_index_i is
+        << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.curr_txtb_index_i : natural range 0 to G_TXT_BUFFER_COUNT - 1 >>;
+
+    alias txtb_hw_cmd is
+        << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.txtb_hw_cmd : t_txtb_hw_cmd >>;
+
+    alias txtb_hw_cmd_unlock is
+        << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.txtb_hw_cmd_unlock : std_logic >>;
+
+    alias txtb_available is
+        << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.txtb_available : std_logic_vector(G_TXT_BUFFER_COUNT - 1 downto 0) >>;
+
+    alias select_buf_index is
+        << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.select_buf_index : natural range 0 to G_TXT_BUFFER_COUNT - 1 >>;
 
 begin
 
-    -- Delay the clock so that we always sample stable signals and
-    -- avoid possible delta-races. 1 ps should be "good enogh" that
-    -- no signals
-    clk_delayed <= clk after 1 ps;
+    -- psl default clock is rising_edge(clk);
 
-    func_cov_can_core_inst : entity ctu_can_fd_tb.func_cov_can_core
-    port map (
-        clk => clk_delayed
-    );
+    -- psl txt_lock_buf_cov : cover
+    --    {curr_txtb_index_i = G_TXT_BUF_INDEX and txtb_hw_cmd.lock = '1'};
 
-    func_cov_prescaler_inst : entity ctu_can_fd_tb.func_cov_prescaler
-    port map (
-        clk => clk_delayed
-    );
+    -- psl txt_unlock_buf_cov : cover
+    --    {curr_txtb_index_i = 0 and txtb_hw_cmd_unlock = '1'};
 
-    func_cov_prescaler_nbt_inst : entity ctu_can_fd_tb.func_cov_prescaler_nbt
-    port map (
-        clk => clk_delayed
-    );
+    -- Change of buffer from available to not available but not due to lock
+    -- (e.g. set abort).
 
-    func_cov_prescaler_dbt_inst : entity ctu_can_fd_tb.func_cov_prescaler_dbt
-    port map (
-        clk => clk_delayed
-    );
-
-    func_cov_bus_sampling_inst : entity ctu_can_fd_tb.func_cov_bus_sampling
-    port map (
-        clk => clk_delayed
-    );
-
-    func_cov_rx_buffer_inst : entity ctu_can_fd_tb.func_cov_rx_buffer
-    generic map (
-        G_RX_BUFF_SIZE => G_RX_BUFF_SIZE
-    )
-    port map (
-        clk => clk_delayed
-    );
-
-    func_cov_tx_arbitrator_inst : entity ctu_can_fd_tb.func_cov_tx_arbitrator
-    generic map (
-        G_TXT_BUFFER_COUNT => G_TXT_BUFFER_COUNT
-    )
-    port map (
-        clk => clk_delayed
-    );
-
-    g_each_buf : for i in 0 to G_TXT_BUFFER_COUNT - 1 generate
-    begin
-        func_cov_txt_buffer_inst : entity ctu_can_fd_tb.func_cov_txt_buffer
-        generic map (
-            G_TXT_BUFFER_INDEX => i
-        )
-        port map (
-            clk => clk_delayed
-        );
-    end generate;
+    -- psl buf_ready_to_not_ready_cov : cover
+    --    {txtb_available(G_TXT_BUF_INDEX) = '1' and select_buf_index = G_TXT_BUF_INDEX and
+    --     txtb_hw_cmd.lock = '0'; txtb_available(G_TXT_BUF_INDEX) = '0'}
+    --    report "Buffer became non-ready but not due to lock command";
 
 end architecture;

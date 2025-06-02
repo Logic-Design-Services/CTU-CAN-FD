@@ -99,14 +99,8 @@ architecture tb of func_cov_tx_arbitrator is
     -- Aliases to "tx_arbitrator" top
     -----------------------------------------------------------------------------------------------
 
-    alias curr_txtb_index_i is
-        << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.curr_txtb_index_i : natural range 0 to G_TXT_BUFFER_COUNT - 1 >>;
-
     alias txtb_hw_cmd is
         << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.txtb_hw_cmd : t_txtb_hw_cmd >>;
-
-    alias txtb_hw_cmd_unlock is
-        << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.txtb_hw_cmd_unlock : std_logic >>;
 
     alias tran_frame_valid is
         << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.tran_frame_valid : std_logic >>;
@@ -149,7 +143,7 @@ architecture tb of func_cov_tx_arbitrator is
         << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.tx_arbitrator_fsm_inst.fsm_wait_state_q : std_logic >>;
 
     alias timestamp_valid is
-            << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.tx_arbitrator_fsm_inst.timestamp_valid : std_logic >>;
+        << signal .tb_top_ctu_can_fd.dut.tx_arbitrator_inst.tx_arbitrator_fsm_inst.timestamp_valid : std_logic >>;
 
 begin
 
@@ -160,22 +154,16 @@ begin
     -----------------------------------------------------------------------------------------------
 
     g_each_buf : for i in 0 to G_TXT_BUFFER_COUNT - 1 generate
-
-        -- psl txt_lock_buf_cov : cover
-        --    {curr_txtb_index_i = i and txtb_hw_cmd.lock = '1'};
-
-        -- psl txt_unlock_buf_cov : cover
-        --    {curr_txtb_index_i = 0 and txtb_hw_cmd_unlock = '1'};
-
-        -- Change of buffer from available to not available but not due to lock
-        -- (e.g. set abort).
-
-        -- psl buf_ready_to_not_ready_cov : cover
-        --    {txtb_available(i) = '1' and select_buf_index = i and
-        --     txtb_hw_cmd.lock = '0'; txtb_available(i) = '0'}
-        --    report "Buffer became non-ready but not due to lock command";
-
-    end generate;
+    begin
+        func_cov_tx_arbitrator_per_buf_inst : entity ctu_can_fd_tb.func_cov_tx_arbitrator_per_buf
+        generic map (
+            G_TXT_BUFFER_COUNT  => G_TXT_BUFFER_COUNT,
+            G_TXT_BUF_INDEX     => i
+        )
+        port map (
+            clk                 => clk
+        );
+    end generate g_each_buf;
 
     -----------------------------------------------------------------------------------------------
     -- Modes
@@ -193,15 +181,6 @@ begin
     --    {mr_mode_txbbm = '1' and tran_frame_valid = '1'};
     -- psl txtb_txbbm_dis_cov : cover
     --    {mr_mode_txbbm = '0' and tran_frame_valid = '1'};
-
-    -----------------------------------------------------------------------------------------------
-    -- Change of priority when there is validated TXT buffer
-    -----------------------------------------------------------------------------------------------
-    --
-    -- psl txt_prio_change_cov : cover
-    --    {select_buf_avail = '1';
-    --     select_buf_avail = '1' and (select_buf_index /= select_buf_index'LAST_VALUE);
-    --     select_buf_avail = '1'};
 
     -----------------------------------------------------------------------------------------------
     -- Selected TXT Buffer change corner-cases
