@@ -453,14 +453,7 @@ CTU CAN FD IP Core - Errata
 \begin_inset Text
 
 \begin_layout Plain Layout
-Version 0.1, Commit:
-\begin_inset CommandInset include
-LatexCommand input
-filename "version.tex"
-
-\end_inset
-
-
+Version 0.3, Commit:
 \end_layout
 
 \end_inset
@@ -477,7 +470,7 @@ filename "version.tex"
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="3">
+<lyxtabular version="3" rows="4" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="2cm">
@@ -541,7 +534,7 @@ Initial version describing errata for release 2.5
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -550,7 +543,7 @@ Initial version describing errata for release 2.5
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -559,12 +552,41 @@ Initial version describing errata for release 2.5
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Added Issue 5 - MODE[BMM].
  Added Notes on what has been fixed.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6-6-2025
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Mark Issue 5 as resolved.
 \end_layout
 
 \end_inset
@@ -1384,7 +1406,7 @@ Fixed
 \begin_inset space ~
 \end_inset
 
-in: Not yet
+in: 2.5.2 - Applied fix to be ECOed
 \end_layout
 
 \begin_layout Bibliography
