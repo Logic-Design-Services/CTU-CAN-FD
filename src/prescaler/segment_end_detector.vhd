@@ -83,11 +83,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -318,7 +315,6 @@ begin
     h_sync_valid    <= h_sync_valid_i;
 
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------
     -- Assertions
@@ -329,13 +325,5 @@ begin
 
     -- psl no_h_sync_not_in_time_quanta : assert never
     --  (h_sync_edge_valid = '1' and tq_edge_nbt = '0');
-
-    -- psl segm_end_req_1_capt_cov : cover
-    --  {segm_end_req_capt_q(1) = '1'};
-
-    -- psl segm_end_req_2_capt_cov : cover
-    --  {segm_end_req_capt_q(2) = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture rtl;

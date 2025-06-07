@@ -82,11 +82,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -349,8 +346,6 @@ begin
     -- Assertions
     -----------------------------------------------------------------------------------------------
 
-    -- <RELEASE_OFF>
-
     -- psl default clock is rising_edge(clk_sys);
 
     -- psl no_sim_tx_shift_reg_load_1_asrt : assert never
@@ -388,43 +383,5 @@ begin
     --   (tx_load_base_id = '1' or tx_load_ext_id = '1' or tx_load_dlc = '1'
     --    or tx_load_data_word = '1' or tx_load_stuff_count = '1'))
     --  report "TX SHIFT REG: CRC shall not be loaded simultaneously with other data!";
-
-    -- psl tx_shift_reg_load_base_id_cov : cover
-    --  {tx_load_base_id = '1'};
-
-    -- psl tx_shift_reg_load_extended_id_cov : cover
-    --  {tx_load_ext_id = '1'};
-
-    -- psl tx_shift_reg_load_dlc_cov : cover
-    --  {tx_load_dlc = '1'};
-
-    -- psl tx_shift_reg_load_data_word_cov : cover
-    --  {tx_load_data_word = '1'};
-
-    -- psl tx_shift_reg_load_stuff_count_cov : cover
-    --  {tx_load_stuff_count = '1'};
-
-    -- psl tx_shift_reg_load_crc_cov : cover
-    --  {tx_load_crc = '1'};
-
-    -- psl tx_shift_flip_fstc_cov : cover
-    --  {tran_frame_test.fstc = '1' and mr_mode_tstm = '1'};
-
-    -- psl tx_shift_flip_fcrc_cov : cover
-    --  {tran_frame_test.fcrc = '1' and mr_mode_tstm = '1'};
-
-    -- psl tx_shift_flip_sdlc_cov : cover
-    --  {tran_frame_test.sdlc = '1' and mr_mode_tstm = '1'};
-
-    -- psl tx_shift_flip_fstc_disable_cov : cover
-    --  {tran_frame_test.fstc = '1' and mr_mode_tstm = '0'};
-
-    -- psl tx_shift_flip_fcrc_disable_cov : cover
-    --  {tran_frame_test.fcrc = '1' and mr_mode_tstm = '0'};
-
-    -- psl tx_shift_flip_sdlc_disable_cov : cover
-    --  {tran_frame_test.sdlc = '1' and mr_mode_tstm = '0'};
-
-    -- <RELEASE_ON>
 
 end architecture;

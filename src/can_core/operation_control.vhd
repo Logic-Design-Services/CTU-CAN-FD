@@ -80,11 +80,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -229,7 +226,6 @@ begin
         end if;
     end process;
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -- Assertions
     -----------------------------------------------------------------------------------------------
@@ -255,11 +251,4 @@ begin
     --  (go_to_off = '1' and curr_state = s_oc_receiver)
     --  report "Unit should not become Bus off while receiver!";
 
-    -- psl op_fsm_transmitter_cov : cover
-    --  {curr_state = s_oc_transmitter};
-
-    -- psl op_fsm_received_cov : cover
-    --  {curr_state = s_oc_receiver};
-
-    -- <RELEASE_ON>
 end architecture;

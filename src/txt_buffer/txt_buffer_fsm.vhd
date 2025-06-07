@@ -81,11 +81,8 @@ use ieee.numeric_std.ALL;
 use ieee.math_real.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -483,63 +480,12 @@ begin
                                 else
                             '0';
 
-
-    -- <RELEASE_OFF>
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-    -- Functional coverage
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- Each FSM state
-    -- psl txtb_fsm_empty_cov : cover {curr_state = s_txt_empty};
-    -- psl txtb_fsm_ready_cov : cover {curr_state = s_txt_ready};
-    -- psl txtb_fsm_tx_prog_cov : cover {curr_state = s_txt_tx_prog};
-    -- psl txtb_fsm_ab_prog_cov : cover {curr_state = s_txt_ab_prog};
-    -- psl txtb_fsm_error_cov : cover {curr_state = s_txt_failed};
-    -- psl txtb_fsm_aborted_cov : cover {curr_state = s_txt_aborted};
-    -- psl txtb_fsm_tx_ok_cov : cover {curr_state = s_txt_ok};
-    -- psl txtb_fsm_parity_err_cov : cover {curr_state = s_txt_parity_err};
-
-    -- Parity error during each possible state
-    -- psl txtb_perr_txt_ready_cov : cover
-    --  {curr_state = s_txt_ready and txtb_parity_error_valid = '1'};
-    -- psl txtb_perr_txt_tx_prog_cov : cover
-    --  {curr_state = s_txt_tx_prog and txtb_parity_error_valid = '1'};
-    -- psl txtb_perr_txt_ab_prog_cov : cover
-    --  {curr_state = s_txt_ab_prog and txtb_parity_error_valid = '1'};
-
-    -- Aborting due to being "Backup" buffer and transmission from first
-    -- TXT Buffer finished without any parity error
-    -- psl txtb_skip_backup_buffers : cover
-    --  {curr_state = s_txt_ready and buffer_skipped = '1' and abort_applied = '0'};
-
-    -- Simultaneous HW and SW Commands
-    --
-    -- psl txtb_hw_sw_cmd_txt_ready_hazard_cov : cover
-    --  {txtb_hw_cmd.lock = '1' and txtb_hw_cmd_cs = '1' and abort_applied = '1' and
-    --   curr_state = s_txt_ready};
-    --
-    -- psl txtb_hw_sw_cmd_txt_tx_prog_hazard_cov : cover
-    --  {((txtb_hw_cmd_i.valid = '1' or txtb_hw_cmd_i.err = '1' or
-    --     txtb_hw_cmd_i.arbl = '1' or txtb_hw_cmd_i.failed = '1') and
-    --    abort_applied = '1' and curr_state = s_txt_tx_prog)};
-
-    -- Corner-case transitions of FSM
-    --
-    -- psl txtb_ready_to_abt_in_progress_cov : cover
-    --  {curr_state = s_txt_ready and next_state = s_txt_ab_prog and txt_fsm_ce = '1'};
-    --
-    -- psl txtb_abt_in_progress_to_parity_error_cov : cover
-    --  {curr_state = s_txt_ab_prog and next_state = s_txt_parity_err and txt_fsm_ce = '1'};
-    --
-    -- psl txtb_tx_in_progress_to_aborted_cov : cover
-    --  {curr_state = s_txt_tx_prog and next_state = s_txt_aborted and txt_fsm_ce = '1'};
-
     -----------------------------------------------------------------------------------------------
     -- Assertions
     -----------------------------------------------------------------------------------------------
+
+    -- psl default clock is rising_edge(clk_sys);
+
     -- HW Lock command should never arrive when the buffer is in other state
     -- than ready
     --
@@ -570,5 +516,4 @@ begin
     --  report "Backup TXT Buffer skipped when not in 'Ready' state.";
     -----------------------------------------------------------------------------------------------
 
-    -- <RELEASE_ON>
 end architecture;

@@ -67,78 +67,100 @@
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
---  Purpose:
---    Library with "reduce" functions to support generic OR between elements
---    of std_logic_vector. Unary logic operators are not well supported by
---    synthesis tools, thus this workaround is used!
+--  @Purpose:
+--    Functional coverage agent
+--
+--    Functional coverage agent implements functional coverage (PSL assertions)
+--    for CTU CAN FD. The internal signals of the DUT are probed by External
+--    Names.
 --
 --------------------------------------------------------------------------------
-
-Library ieee;
-USE IEEE.std_logic_1164.all;
-USE IEEE.numeric_std.ALL;
-
-package unary_ops_pkg is
-
-    -----------------------------------------------------------------------------------------------
-    -- Performs OR operation between all elements of vector
-    --
-    -- Arguments:
-    --  period          Period of generated clock in picoseconds.
-    -- Returns: OR of all elements of vector
-    -----------------------------------------------------------------------------------------------
-    function or_reduce (
-        constant input         : in    std_logic_vector
-    ) return std_logic;
-
-    -----------------------------------------------------------------------------------------------
-    -- Performs AND operation between all elements of vector
-    --
-    -- Arguments:
-    --  period          Period of generated clock in picoseconds.
-    -- Returns: AND of all elements of vector
-    -----------------------------------------------------------------------------------------------
-    --function and_reduce(
-    --    constant input         : in    std_logic_vector
-    --) return std_logic;
-
-end package;
-
-
-
-
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
--- Package implementation
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
+-- Revision History:
+--    27.4.2025   Created file
 --------------------------------------------------------------------------------
 
-package body unary_ops_pkg is
+Library ctu_can_fd_tb;
+context ctu_can_fd_tb.ieee_context;
+context ctu_can_fd_tb.tb_common_context;
 
+use ctu_can_fd_tb.clk_gen_agent_pkg.all;
+use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 
-    function or_reduce(
-        constant input         : in    std_logic_vector
-    ) return std_logic is
-        variable tmp           :       std_logic := '0';
+entity func_cov_agent is
+    generic (
+        -- RX Buffer size
+        G_RX_BUFF_SIZE              :     natural range 32 to 4096;
+
+        -- Number of TXT Buffers
+        G_TXT_BUFFER_COUNT          :     natural range 1 to 8
+    );
+    port (
+        -- DUT clock
+        clk    :   in  std_logic
+    );
+end entity;
+
+architecture tb of func_cov_agent is
+
+    signal clk_delayed : std_logic;
+
+begin
+
+    -- Delay the clock so that we always sample stable signals and
+    -- avoid possible delta-races. 1 ps should be "good enogh" that
+    -- no signals
+    clk_delayed <= clk after 1 ps;
+
+    func_cov_can_core_inst : entity ctu_can_fd_tb.func_cov_can_core
+    port map (
+        clk => clk_delayed
+    );
+
+    func_cov_prescaler_inst : entity ctu_can_fd_tb.func_cov_prescaler
+    port map (
+        clk => clk_delayed
+    );
+
+    func_cov_prescaler_nbt_inst : entity ctu_can_fd_tb.func_cov_prescaler_nbt
+    port map (
+        clk => clk_delayed
+    );
+
+    func_cov_prescaler_dbt_inst : entity ctu_can_fd_tb.func_cov_prescaler_dbt
+    port map (
+        clk => clk_delayed
+    );
+
+    func_cov_bus_sampling_inst : entity ctu_can_fd_tb.func_cov_bus_sampling
+    port map (
+        clk => clk_delayed
+    );
+
+    func_cov_rx_buffer_inst : entity ctu_can_fd_tb.func_cov_rx_buffer
+    generic map (
+        G_RX_BUFF_SIZE => G_RX_BUFF_SIZE
+    )
+    port map (
+        clk => clk_delayed
+    );
+
+    func_cov_tx_arbitrator_inst : entity ctu_can_fd_tb.func_cov_tx_arbitrator
+    generic map (
+        G_TXT_BUFFER_COUNT => G_TXT_BUFFER_COUNT
+    )
+    port map (
+        clk => clk_delayed
+    );
+
+    g_each_buf : for i in 0 to G_TXT_BUFFER_COUNT - 1 generate
     begin
-        for i in input'range loop
-            tmp := tmp or input(i);
-        end loop;
-        return tmp;
-    end function;
+        func_cov_txt_buffer_inst : entity ctu_can_fd_tb.func_cov_txt_buffer
+        generic map (
+            G_TXT_BUFFER_INDEX => i
+        )
+        port map (
+            clk => clk_delayed
+        );
+    end generate;
 
-    -- Commented out to clean code coverage, uncomment if needed.
-    --function and_reduce(
-    --    constant input         : in    std_logic_vector
-    --) return std_logic is
-    --    variable tmp           :       std_logic := '1';
-    --begin
-    --    for i in input'range loop
-    --        tmp := tmp and input(i);
-    --    end loop;
-    --    return tmp;
-    --end function;
-
-end package body;
+end architecture;

@@ -6,8 +6,6 @@ source_list:
     - file: packages/can_fd_register_map.vhd
     - file: packages/can_config_pkg.vhd
     - file: packages/can_types_pkg.vhd
-    - file: packages/id_transfer_pkg.vhd
-    - file: packages/unary_ops_pkg.vhd
 
     - file: common_blocks/mux2.vhd
     - file: common_blocks/dff_arst.vhd

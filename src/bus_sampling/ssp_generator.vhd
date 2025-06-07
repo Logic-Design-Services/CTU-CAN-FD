@@ -81,11 +81,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -295,7 +292,6 @@ begin
     sample_sec <= '1' when (sspc_expired = '1' and sspc_ena_q = '1') else
                   '0';
 
-    -- <RELEASE_OFF>
     -------------------------------------------------------------------------------------------
     -- Assertions
     -------------------------------------------------------------------------------------------
@@ -308,13 +304,5 @@ begin
     -- psl no_btmc_overflow : assert never
     --  ((unsigned(btmc_d) < unsigned(btmc_q)) and (btmc_reset /= '1'))
     --  report "BTMC overflow";
-
-    -- psl first_ssp_cov : cover
-    --  {first_ssp_q = '1'};
-
-    -- psl sspc_ena_q_cov : cover
-    --  {sspc_ena_q = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture;

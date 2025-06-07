@@ -82,11 +82,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -186,7 +183,6 @@ begin
     -- Register to output propagation.
     crc <= crc_q;
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -- Assertions on input settings
     -----------------------------------------------------------------------------------------------
@@ -196,10 +192,5 @@ begin
     -- psl no_simul_load_and_calc_asrt : assert never
     --   (enable = '1' and trig = '1' and load_init_vect = '1')
     -- report "Can't load CRC init vector and execute CRC calculation at once!";
-
-    -- psl crc_load_init_vec_cov : cover
-    --  {load_init_vect = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture;

@@ -82,11 +82,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -174,7 +171,6 @@ begin
     -- Counter status propagation to output
     retr_ctr <= std_logic_vector(retr_ctr_q);
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -- Assertions
     -----------------------------------------------------------------------------------------------
@@ -188,7 +184,5 @@ begin
     -- psl_retr_ctr_no_overflow : assert never
     --  (retr_limit_reached = '1' and retr_ctr_add = '1')
     -- report "Retransmitt counter overflow";
-
-    -- <RELEASE_ON>
 
 end architecture;

@@ -81,11 +81,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -203,40 +200,5 @@ begin
     h_sync_edge_valid <= '0' when (no_pos_resync = '1' and is_tseg1 = '1') else
                          '1' when (h_sync_edge = '1' and sync_flag = '0') else
                          '0';
-
-    -- <RELEASE_OFF>
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-    -- Assertions
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl h_sync_ignored_due_to_previous_sync_cov : cover
-    --  {sync_flag = '1' and h_sync_edge = '1'}
-    --  report "Hard synchronisation ignored due to previous synchronization";
-
-    -- psl re_sync_ignored_due_to_previous_sync_cov : cover
-    --  {sync_flag = '1' and resync_edge = '1'}
-    --  report "Re-synchronisation ignored due to previous synchronization";
-
-    -- psl h_sync_in_tseg_1_cov : cover
-    --  {h_sync_edge_valid = '1' and is_tseg1 = '1'}
-    --  report "Hard synchronization in TSEG1";
-
-    -- psl h_sync_in_tseg_2_cov : cover
-    --  {h_sync_edge_valid = '1' and is_tseg2 = '1'}
-    --  report "Hard synchronization in TSEG2";
-
-    -- Hard synchronization in TSEG1
-    -- psl re_sync_in_tseg_1_cov : cover
-    --  {resync_edge_valid = '1' and is_tseg1 = '1'};
-
-    -- psl re_sync_in_tseg_2_cov : cover
-    --  {resync_edge_valid = '1' and is_tseg2 = '1'}
-    --  report "Hard synchronization in TSEG2";
-
-    -- <RELEASE_ON>
 
 end architecture rtl;

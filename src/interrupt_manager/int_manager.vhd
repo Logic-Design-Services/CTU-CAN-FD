@@ -84,11 +84,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -207,6 +204,17 @@ architecture rtl of int_manager is
     -- Internal value of INT_ENA
     signal mr_int_ena_set_int_ena_set_o_i   : std_logic_vector(G_INT_COUNT - 1 downto 0);
 
+    function or_reduce(
+        constant input         : in    std_logic_vector
+    ) return std_logic is
+        variable tmp           :       std_logic := '0';
+    begin
+        for i in input'range loop
+            tmp := tmp or input(i);
+        end loop;
+        return tmp;
+    end function;
+
 begin
 
     -----------------------------------------------------------------------------------------------
@@ -305,98 +313,5 @@ begin
 
     -- Propagation to output
     mr_int_ena_set_int_ena_set_o <= mr_int_ena_set_int_ena_set_o_i;
-
-
-    -- <RELEASE_OFF>
-    -----------------------------------------------------------------------------------------------
-    -- Functional coverage
-    -----------------------------------------------------------------------------------------------
-
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl rxi_set_cov : cover
-    --  {int_status_i(RXI_IND) = '0';int_status_i(RXI_IND) = '1'};
-
-    -- psl rxi_enable_cov : cover
-    --  {int_status_i(RXI_IND) = '1' and mr_int_ena_set_int_ena_set_o(RXI_IND) = '1'};
-
-
-    -- psl txi_set_cov : cover
-    --  {int_status_i(TXI_IND) = '0';int_status_i(TXI_IND) = '1'};
-
-    -- psl txi_enable_cov : cover
-    --  {int_status_i(TXI_IND) = '1' and mr_int_ena_set_int_ena_set_o(TXI_IND) = '1'};
-
-
-    -- psl ewli_int_set_cov : cover
-    --  {int_status_i(EWLI_IND) = '0';int_status_i(EWLI_IND) = '1'};
-
-    -- psl ewli_enable_cov : cover
-    --  {int_status_i(EWLI_IND) = '1' and mr_int_ena_set_int_ena_set_o(EWLI_IND) = '1'};
-
-
-    -- psl doi_int_set_cov : cover
-    --  {int_status_i(DOI_IND) = '0';int_status_i(DOI_IND) = '1'};
-
-    -- psl doi_enable_cov : cover
-    --  {int_status_i(DOI_IND) = '1' and mr_int_ena_set_int_ena_set_o(DOI_IND) = '1'};
-
-
-    -- psl fcsi_int_set_cov : cover
-    --  {int_status_i(FCSI_IND) = '0';int_status_i(FCSI_IND) = '1'};
-
-    -- psl fcsi_enable_cov : cover
-    --  {int_status_i(FCSI_IND) = '1' and mr_int_ena_set_int_ena_set_o(FCSI_IND) = '1'};
-
-
-    -- psl ali_int_set_cov : cover
-    --  {int_status_i(ALI_IND) = '0';int_status_i(ALI_IND) = '1'};
-
-    -- psl ali_enable_cov : cover
-    --  {int_status_i(ALI_IND) = '1' and mr_int_ena_set_int_ena_set_o(ALI_IND) = '1'};
-
-
-    -- psl beu_int_set_cov : cover
-    --  {int_status_i(BEI_IND) = '0';int_status_i(BEI_IND) = '1'};
-
-    -- psl bei_enable_cov : cover
-    --  {int_status_i(BEI_IND) = '1' and mr_int_ena_set_int_ena_set_o(BEI_IND) = '1'};
-
-
-    -- psl rxfi_int_set_cov : cover
-    --  {int_status_i(RXFI_IND) = '0';int_status_i(RXFI_IND) = '1'};
-
-    -- psl rxfi_enable_cov : cover
-    --  {int_status_i(RXFI_IND) = '1' and mr_int_ena_set_int_ena_set_o(RXFI_IND) = '1'};
-
-
-    -- psl bsi_int_set_cov : cover
-    --  {int_status_i(BSI_IND) = '0';int_status_i(BSI_IND) = '1'};
-
-    -- psl bsi_enable_cov : cover
-    --  {int_status_i(BSI_IND) = '1' and mr_int_ena_set_int_ena_set_o(BSI_IND) = '1'};
-
-
-    -- psl rbnei_int_set_cov : cover
-    --  {int_status_i(RBNEI_IND) = '0';int_status_i(RBNEI_IND) = '1'};
-
-    -- psl rbnei_enable_cov : cover
-    --  {int_status_i(RBNEI_IND) = '1' and mr_int_ena_set_int_ena_set_o(RBNEI_IND) = '1'};
-
-
-    -- psl txbhci_int_set_cov : cover
-    --  {int_status_i(TXBHCI_IND) = '0';int_status_i(TXBHCI_IND) = '1'};
-
-    -- psl txbhci_enable_cov : cover
-    --  {int_status_i(TXBHCI_IND) = '1' and mr_int_ena_set_int_ena_set_o(TXBHCI_IND) = '1'};
-
-
-    -- psl ofi_int_set_cov : cover
-    --  {int_status_i(OFI_IND) = '0';int_status_i(OFI_IND) = '1'};
-
-    -- psl ofi_enable_cov : cover
-    --  {int_status_i(OFI_IND) = '1' and mr_int_ena_set_int_ena_set_o(OFI_IND) = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture;

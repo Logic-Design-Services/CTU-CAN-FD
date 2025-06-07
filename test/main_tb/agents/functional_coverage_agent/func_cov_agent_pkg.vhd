@@ -67,24 +67,38 @@
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
--- Purpose:
---  Definition of context for synthesizable RTL of CTU CAN FD.
+--  @Purpose:
+--    Package with API for Functional coverage agent.
 --
---  Context definitions are used for tests only since free version of Quartus
---  does not support context clause for synthesis.
 --------------------------------------------------------------------------------
 -- Revision History:
---   28.12.2018   Created file - Ondrej Ille
+--    27.4.2025   Created file
 --------------------------------------------------------------------------------
 
-context rtl_context is
+Library ctu_can_fd_tb;
+context ctu_can_fd_tb.ieee_context;
+context ctu_can_fd_tb.tb_common_context;
+use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 
-    Library ctu_can_fd_rtl;
-    use ctu_can_fd_rtl.can_constants_pkg.all;
-    use ctu_can_fd_rtl.can_types_pkg.all;
-    use ctu_can_fd_rtl.can_config_pkg.all;
 
-    use ctu_can_fd_rtl.CAN_FD_register_map.all;
-    use ctu_can_fd_rtl.CAN_FD_frame_format.all;
+package func_cov_agent_pkg is
 
-end context;
+    component func_cov_agent is
+        generic (
+            -- RX Buffer size
+            G_RX_BUFF_SIZE              :     natural range 32 to 4096;
+
+            -- Number of TXT Buffers
+            G_TXT_BUFFER_COUNT          :     natural range 1 to 8
+        );
+        port (
+            -- DUT clock
+            clk    :   in  std_logic
+        );
+    end component;
+
+end package;
+
+package body func_cov_agent_pkg is
+
+end package body;

@@ -109,11 +109,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -211,7 +208,6 @@ begin
     tx_trigger <= '0' when (rx_trig_req_q = '1') else
                   tx_trig_req_flag_dq;
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------
     -- Assertions
@@ -229,9 +225,4 @@ begin
     --  report "Sync and Sample trigger should no be requested at once!";
     -----------------------------------------------------------------------------------------------
 
-    -- psl tx_trigger_throttling_cov : cover
-    --  {rx_trig_req_q = '1' and tx_trig_req = '1'}
-    --  report "TX trigger throtlled!";
-
-    -- <RELEASE_ON>
 end architecture rtl;

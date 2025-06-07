@@ -85,10 +85,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -442,16 +440,5 @@ begin
 
     -- RX Data for bit destuffing - Output of re-synchroniser.
     rx_data_wbs <= data_rx_synced;
-
-    -- <RELEASE_OFF>
-    -------------------------------------------------------------------------------------------
-    -- Assertions on input signals
-    -------------------------------------------------------------------------------------------
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl tx_trigger_ssp_cov : cover
-    --  {tx_trigger_ssp = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture;

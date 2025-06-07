@@ -89,11 +89,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -447,27 +444,5 @@ begin
     destuffed <= destuffed_q;
     stuff_err <= stuff_err_q;
     dst_ctr   <= std_logic_vector(dst_ctr_q);
-
-
-    -- <RELEASE_OFF>
-    -------------------------------------------------------------------------------------------
-    -- Assertions on input settings
-    -------------------------------------------------------------------------------------------
-
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl bds_non_fix_to_fixed_change_cov : cover
-    --  {bds_trigger = '1' and non_fix_to_fix_chng = '1'};
-
-    -- psl bds_stuff_err_detect_cov : cover
-    --  {stuff_err_q = '1'};
-
-    -- psl bds_stuff_lvl_reached_regular_cov : cover
-    --  {stuff_lvl_reached = '1' and fixed_stuff = '0'};
-
-    -- psl bds_stuff_lvl_reached_fixed_cov : cover
-    --  {stuff_lvl_reached = '1' and fixed_stuff = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture;

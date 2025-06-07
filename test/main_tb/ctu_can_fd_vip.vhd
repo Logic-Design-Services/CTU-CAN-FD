@@ -92,6 +92,10 @@ entity ctu_can_fd_vip is
         stand_alone_vip_mode    : boolean;
         deposit_to_dut          : boolean;
 
+        -- DUT configuration
+        rx_buffer_size          : natural;
+        txt_buffer_count        : natural range 2 to 8 := 8;
+
         -- DUT Clock period
         cfg_sys_clk_period      : string;
 
@@ -390,6 +394,17 @@ begin
         reference_iterations => reference_iterations
     );
 
+    ---------------------------------------------------------------------------
+    -- Functional coverage agent
+    ---------------------------------------------------------------------------
+    func_cov_agent_inst : func_cov_agent
+    generic map (
+        G_RX_BUFF_SIZE      => rx_buffer_size,
+        G_TXT_BUFFER_COUNT  => txt_buffer_count
+    )
+    port map (
+        clk                 => clk_sys_i
+    );
 
 
     ---------------------------------------------------------------------------

@@ -89,11 +89,8 @@ use ieee.numeric_std.ALL;
 use ieee.math_real.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -300,14 +297,5 @@ begin
     mr_tst_rdata_tst_rdata <= txtb_port_b_data_out_i when (tst_ena = '1')
                                                      else
                                      (others => '0');
-
-    -----------------------------------------------------------------------------------------------
-    -- Assertions and functional coverage
-    -----------------------------------------------------------------------------------------------
-
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl txt_ram_0_test_cov : cover
-    --   {tst_ena = '0' and mr_tst_control_twrstb = '1'};
 
 end architecture;

@@ -81,11 +81,8 @@ use ieee.numeric_std.ALL;
 use ieee.math_real.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -382,36 +379,4 @@ begin
 
     txtb_parity_mismatch <= parity_mismatch;
 
-    -- <RELEASE_OFF>
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-    -- Functional coverage
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-    func_cov_block : block
-    begin
-
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- Each SW command active
-    -- psl txtb_set_ready_cov : cover {mr_tx_command_txcr = '1' and mr_tx_command_txbi = '1'};
-    -- psl txtb_set_empty_cov : cover {mr_tx_command_txce = '1' and mr_tx_command_txbi = '1'};
-    -- psl txtb_set_abort_cov : cover {mr_tx_command_txca = '1' and mr_tx_command_txbi = '1'};
-
-    -- HW Commands
-    -- psl txtb_hw_lock     : cover {txtb_hw_cmd.lock = '1'     and txtb_hw_cmd_cs = '1'};
-    -- psl txtb_hw_valid    : cover {txtb_hw_cmd.valid = '1'    and txtb_hw_cmd_cs = '1'};
-    -- psl txtb_hw_err      : cover {txtb_hw_cmd.err = '1'      and txtb_hw_cmd_cs = '1'};
-    -- psl txtb_hw_arbl     : cover {txtb_hw_cmd.arbl = '1'     and txtb_hw_cmd_cs = '1'};
-    -- psl txtb_hw_failed   : cover {txtb_hw_cmd.failed = '1'   and txtb_hw_cmd_cs = '1'};
-
-    -- psl txtb_double_parity_buf_1_cov : cover
-    --    {txtb_bb_parity_error = '1'};
-
-    -- psl txtb_parity_buf_cov : cover
-    --    {txtb_parity_error_valid = '1'};
-
-    end block;
-
-    -- <RELEASE_ON>
 end architecture;

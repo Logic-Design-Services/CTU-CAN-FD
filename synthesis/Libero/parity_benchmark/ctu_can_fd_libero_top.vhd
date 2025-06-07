@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2021-present Ondrej Ille
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to use, copy, modify, merge, publish, distribute the Component for
 -- educational, research, evaluation, self-interest purposes. Using the
 -- Component for commercial purposes is forbidden unless previously agreed with
 -- Copyright holder.
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,38 +20,38 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 -- -------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2015-2020 MIT License
--- 
+--
 -- Authors:
 --     Ondrej Ille <ondrej.ille@gmail.com>
 --     Martin Jerabek <martin.jerabek01@gmail.com>
--- 
--- Project advisors: 
+--
+-- Project advisors:
 -- 	Jiri Novak <jnovak@fel.cvut.cz>
 -- 	Pavel Pisa <pisa@cmp.felk.cvut.cz>
--- 
+--
 -- Department of Measurement         (http://meas.fel.cvut.cz/)
 -- Faculty of Electrical Engineering (http://www.fel.cvut.cz)
 -- Czech Technical University        (http://www.cvut.cz/)
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to deal in the Component without restriction, including without limitation
 -- the rights to use, copy, modify, merge, publish, distribute, sublicense,
 -- and/or sell copies of the Component, and to permit persons to whom the
 -- Component is furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,11 +59,11 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -78,11 +78,9 @@ use ieee.numeric_std.ALL;
 use ieee.math_real.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
 use ctu_can_fd_rtl.can_types_pkg.all;
 use ctu_can_fd_rtl.drv_stat_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -94,7 +92,7 @@ entity ctu_can_fd_libero_top is
         -----------------------------------------------------------------------
         -- System clock
         clk_sys     : in std_logic;
-        
+
         -- Asynchronous reset
         res_n       : in std_logic;
 
@@ -106,25 +104,25 @@ entity ctu_can_fd_libero_top is
         -----------------------------------------------------------------------
         -- Input data
         data_in     : in  std_logic_vector(31 downto 0);
-        
+
         -- Output data
         data_out    : out std_logic_vector(31 downto 0);
-        
+
         -- Address
         adress      : in  std_logic_vector(15 downto 0);
-        
+
         -- Chip select
         scs         : in  std_logic;
-        
+
         -- Read indication
         srd         : in  std_logic;
-        
+
         -- Write indication
         swr         : in  std_logic;
-        
+
         -- Byte enable
         sbe         : in  std_logic_vector(3 downto 0);
-        
+
         -----------------------------------------------------------------------
         -- Interrupt Interface
         -----------------------------------------------------------------------
@@ -136,7 +134,7 @@ entity ctu_can_fd_libero_top is
         -----------------------------------------------------------------------
         -- TX signal to CAN bus
         can_tx      : out std_logic;
-        
+
         -- RX signal from CAN bus
         can_rx      : in  std_logic;
 
@@ -148,10 +146,10 @@ entity ctu_can_fd_libero_top is
 end entity ctu_can_fd_libero_top;
 
 architecture rtl of ctu_can_fd_libero_top is
-     
+
 begin
 
-    can_top_level_inst : entity ctu_can_fd_rtl.can_top_level 
+    can_top_level_inst : entity ctu_can_fd_rtl.can_top_level
     generic map (
         -- RX Buffer RAM size (32 bit words)
         rx_buffer_size          => 128,
@@ -161,19 +159,19 @@ begin
 
         -- Synthesize Filter A
         sup_filtA               => true,
-        
+
         -- Synthesize Filter B
         sup_filtB               => true,
-        
+
         -- Synthesize Filter C
         sup_filtC               => true,
-        
+
         -- Synthesize Range Filter
         sup_range               => true,
-        
+
         -- Synthesize Test registers
         sup_test_registers      => true,
-        
+
         -- Insert Traffic counters
         sup_traffic_ctrs        => true,
 
@@ -206,7 +204,7 @@ begin
         srd             => srd,
         swr             => swr,
         sbe             => sbe,
-        
+
         -- Interrupt Interface
         int             => int,
 

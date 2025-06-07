@@ -90,11 +90,8 @@ use ieee.numeric_std.ALL;
 use ieee.math_real.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -321,7 +318,7 @@ begin
 
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------
-    -- Assertions and functional coverage
+    -- Assertions
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------
 
@@ -334,8 +331,5 @@ begin
     -- psl rx_ram_port_b_no_addr_overflow : assert never
     --  to_integer(unsigned(rxb_port_b_address)) >= G_RX_BUFF_SIZE
     --  report "RX Buffer RAM - Port B address overflow";
-    --
-    -- psl rx_ram_test_cov : cover
-    --   {tst_ena = '0' and mr_tst_control_twrstb = '1'};
 
 end architecture;

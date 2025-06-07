@@ -81,11 +81,8 @@ use ieee.numeric_std.ALL;
 use ieee.math_real.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -378,12 +375,11 @@ begin
     rx_fsm_ce <= '1' when (next_state /= curr_state) else
                  '0';
 
-    -- <RELEASE_OFF>
-    -- pragma translate_off
-
     -----------------------------------------------------------------------------------------------
     -- Assertions
     -----------------------------------------------------------------------------------------------
+
+    -- pragma translate_off
 
     assertions_block : block
         -- Joined commands
@@ -450,6 +446,5 @@ begin
     end block assertions_block;
 
     -- pragma translate_on
-    -- <RELEASE_ON>
 
 end architecture;

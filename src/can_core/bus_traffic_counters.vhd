@@ -79,11 +79,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -252,8 +249,6 @@ begin
         end if;
     end process;
 
-
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -- Assertions
     -----------------------------------------------------------------------------------------------
@@ -262,13 +257,5 @@ begin
     -- psl no_simul_inc_tx_rx_asrt : assert never
     -- (tran_valid = '1' and rec_valid = '1')
     -- report "Simultaneous increment of TX and RX error traffic counter";
-
-    -- psl traffic_ctrs_tx_inc_cov : cover
-    --  {tran_valid = '1'};
-
-    -- psl traffic_ctrs_rx_inc_cov : cover
-    --  {rec_valid = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture;

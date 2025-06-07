@@ -80,11 +80,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -157,25 +154,5 @@ begin
             end if;
         end if;
     end process;
-
-    -- <RELEASE_OFF>
-    -----------------------------------------------------------------------------------------------
-    -- Assertions
-    -----------------------------------------------------------------------------------------------
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl reinteg_ctr_clr_cov : cover
-    --  {reinteg_ctr_clr = '1'};
-
-    -- psl reinteg_ctr_expired_cov : cover
-    --  {reinteg_ctr_expired = '1'};
-
-    -- psl reinteg_ctr_ce_A : cover
-    --  {(reinteg_ctr_clr = '1') and (not(reinteg_ctr_enable = '1' and rx_trigger = '1'))};
-
-    -- psl reinteg_ctr_ce_B : cover
-    --  {(not(reinteg_ctr_clr = '1')) and (reinteg_ctr_enable = '1' and rx_trigger = '1')};
-
-    -- <RELEASE_ON>
 
 end architecture;

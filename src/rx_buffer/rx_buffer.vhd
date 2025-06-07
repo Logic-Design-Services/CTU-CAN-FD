@@ -84,11 +84,8 @@ use ieee.numeric_std.ALL;
 use ieee.math_real.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -941,11 +938,13 @@ begin
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------
 
+    -- pragma translate_off
 
     -----------------------------------------------------------------------------------------------
     -- RX Buffer size can be only powers of 2. Since modulo arithmetics is used on memory pointers,
     -- using non power of 2 value would result in increased logic usage!
     -----------------------------------------------------------------------------------------------
+
     -- coverage off
     assert ((G_RX_BUFF_SIZE = 32) or
             (G_RX_BUFF_SIZE = 64) or
@@ -959,7 +958,6 @@ begin
         severity failure;
     -- coverage on
 
-    -- <RELEASE_OFF>
 
     -----------------------------------------------------------------------------------------------
     -- Storing sequence is like so:
@@ -972,7 +970,6 @@ begin
     --  This process verifies that "rec_data" command comes expected number of times (RWCNT - 3).
     --  This verifies consistency of storing protocol by CAN Core, as well as RWCNT field!
     -----------------------------------------------------------------------------------------------
-    -- pragma translate_off
     -- coverage off
     rwcnt_assert_proc : process(clk_sys)
         variable exp_data_stores    : natural := 0;
@@ -1009,118 +1006,15 @@ begin
         end if;
     end process;
     -- coverage on
+
     -- pragma translate_on
 
 
-    -----------------------------------------------------------------------------------------------
-    -- Assertions
-    -----------------------------------------------------------------------------------------------
     -- psl default clock is rising_edge(clk_sys);
 
     -- psl read_counter_lt_rwcnt_asrt : assert never
     --  (read_counter_q > 19)
     -- report "Read counter higher than longest RWCNT!";
-
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-    -- Functional coverage
-    -----------------------------------------------------------------------------------------------
-    -----------------------------------------------------------------------------------------------
-    -- psl rx_buf_empty_cov :
-    --      cover {rx_empty = '1'};
-    --
-    -- psl rx_buf_not_empty_to_empty_cov :
-    --      cover {rx_empty = '0'; rx_empty = '1'};
-    --
-    -- psl rx_buf_rx_full_cov :
-    --      cover {rx_full = '1'};
-    --
-    -- psl rx_buf_rx_full_to_not_full_cov :
-    --      cover {(rx_full = '1'); (rx_full = '0')};
-    --
-    -- psl rx_buf_overrun_cov :
-    --      cover {overrun_condition = '1'};
-    --
-    -- psl rx_buf_commit_overrun_abort_cov :
-    --      cover {commit_overrun_abort = '1'};
-    --
-    -- psl rx_buf_overrun_flags_cov :
-    --      cover {data_overrun_i = '1' and data_overrun_flg = '1'};
-    --
-    -- psl rx_buf_overrun_clear_cov :
-    --      cover {mr_command_cdo = '1'};
-    --
-    -- psl rx_buf_select_ts_wptr_cov :
-    --      cover {select_ts_wptr = '1'};
-    --
-    -- psl rx_buf_release_receive_buffer_cov :
-    --      cover {mr_command_rrb = '1'};
-    --
-    -- psl rx_buf_commit_and_read_cov :
-    --      cover {read_increment = '1' and read_counter_q = "00001" and commit_rx_frame = '1'}
-    --      report "RX Buffer Commit and Frame read finish - Simultaneous!";
-    --
-    -- psl rx_buf_write_and_read_cov :
-    --      cover {write_raw_intent = '1' and read_increment = '1'};
-    --
-    -- psl rx_buf_read_after_write_cov :
-    --      cover {write_raw_intent = '1'; read_increment = '1'};
-    --
-    -- psl rx_buf_write_after_read_cov :
-    --      cover {read_increment = '1'; write_raw_intent = '1'};
-    --
-    -- psl rx_buf_sof_timestamp :
-    --      cover {mr_rx_settings_rtsop = RTS_BEG and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_eof_timestamp :
-    --      cover {mr_rx_settings_rtsop = RTS_END and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_burst_read_short_cov :
-    --      cover {(read_increment = '1')[*4]};
-    --
-    -- psl rx_buf_burst_read_max_cov :
-    --      cover {(read_increment = '1')[*16]};
-    -- Note: SW reads the frame like so: Read metadata one by one and then 16 data words.
-    --       Therefore highest burst achievable is 16 with current TB!
-
-    -- psl rx_buf_frame_abort_cov :
-    --      cover {rec_abort_f = '1'};
-    --
-    -- psl rx_buf_store_rtr_cov :
-    --      cover {rec_is_rtr = '1' and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_store_empty_frame_cov :
-    --      cover {rec_dlc = "0000" and rec_is_rtr = '0' and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_store_1_byte_frame_cov :
-    --      cover {rec_dlc = "0001" and rec_is_rtr = '0' and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_store_2_byte_frame_cov :
-    --      cover {rec_dlc = "0010" and rec_is_rtr = '0' and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_store_3_byte_frame_cov :
-    --      cover {rec_dlc = "0011" and rec_is_rtr = '0' and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_store_4_byte_frame_cov :
-    --      cover {rec_dlc = "0100" and rec_is_rtr = '0' and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_store_5_byte_frame_cov :
-    --      cover {rec_dlc = "0101" and rec_is_rtr = '0' and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_store_8_byte_frame_cov :
-    --      cover {rec_dlc = "1000" and rec_is_rtr = '0' and commit_rx_frame = '1'};
-    --
-    -- psl rx_buf_store_64_byte_frame_cov :
-    --      cover {rec_dlc = "1111" and rec_is_rtr = '0' and commit_rx_frame = '1'};
-    --
-    -- psl rx_parity_err_cov :
-    --      cover {rx_parity_error = '1'};
-    --
-    -- psl rx_parity_err_clr_cov :
-    --      cover {rx_parity_error = '1' and mr_command_crxpe = '1'};
-    --
-    -- psl rx_lbpf_cov :
-    --      cover {rec_lbpf = '1'};
 
     -----------------------------------------------------------------------------------------------
     -- "reset_overrun_flag = '1'" only in "s_rxb_idle" state. Therefore we can
@@ -1130,7 +1024,5 @@ begin
     -- psl sof_pulse_asrt_asrt : assert never
     --   (sof_pulse = '1' and reset_overrun_flag = '0')
     -- report "RX Buffer: SOF pulse should come when RX Buffer is idle!";
-
-    -- <RELEASE_ON>
 
 end architecture;

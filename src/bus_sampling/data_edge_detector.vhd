@@ -96,11 +96,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -213,21 +210,5 @@ begin
     -------------------------------------------------------------------------------------------
     rx_edge <= rx_edge_i;
     tx_edge <= tx_edge_i;
-
-
-    -- <RELEASE_OFF>
-    -------------------------------------------------------------------------------------------
-    -- Functional coverge
-    -------------------------------------------------------------------------------------------
-    -- psl default clock is rising_edge(clk_sys);
-
-    -- psl sync_edge_cov : cover
-    --  {sync_edge = '1'};
-
-    -- psl sync_edge_but_prev_sample_the_same_cov : cover
-    --  {(rx_data_sync_prev /= rx_data) and (rx_data_sync_prev = RECESSIVE) and
-    --   (prev_rx_sample = rx_data) and (tq_edge = '1')};
-
-    -- <RELEASE_ON>
 
 end architecture;

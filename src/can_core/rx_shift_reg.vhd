@@ -85,11 +85,8 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.ALL;
 
 Library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.id_transfer_pkg.all;
 use ctu_can_fd_rtl.can_constants_pkg.all;
-
 use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.unary_ops_pkg.all;
 
 use ctu_can_fd_rtl.CAN_FD_register_map.all;
 use ctu_can_fd_rtl.CAN_FD_frame_format.all;
@@ -426,7 +423,6 @@ begin
     -----------------------------------------------------------------------------------------------
     store_data_word <= rx_shift_reg_q;
 
-    -- <RELEASE_OFF>
     -----------------------------------------------------------------------------------------------
     -- Assertions
     -----------------------------------------------------------------------------------------------
@@ -448,53 +444,5 @@ begin
     --   rx_store_dlc = '1' or rx_store_esi = '1' or rx_store_brs = '1' or
     --   rx_store_stuff_count = '1')
     --  report "RX Shift register should not be cleared when RX Data should be stored!";
-
-    -- psl rx_shift_reg_clear_cov : cover
-    --  {rx_clear = '1'};
-
-    -- In linear mode, all bytes are shifting at once!
-    -- psl rx_shift_reg_linear_mode_cov : cover
-    --  {rx_shift_in_sel = '0' and rx_shift_ena = "1111"};
-
-    -- psl rx_shift_reg_byte_mode_byte_1_cov : cover
-    --  {rx_shift_in_sel = '1' and rx_shift_ena = "0001"};
-
-    -- psl rx_shift_reg_byte_mode_byte_2_cov : cover
-    --  {rx_shift_in_sel = '1' and rx_shift_ena = "0010"};
-
-    -- psl rx_shift_reg_byte_mode_byte_3_cov : cover
-    --  {rx_shift_in_sel = '1' and rx_shift_ena = "0100"};
-
-    -- psl rx_shift_reg_byte_mode_byte_4_cov : cover
-    --  {rx_shift_in_sel = '1' and rx_shift_ena = "1000"};
-
-    -- psl rx_shift_reg_store_base_id_cov : cover
-    --  {rx_store_base_id = '1'};
-
-    -- psl rx_shift_reg_store_ext_id_cov : cover
-    --  {rx_store_ext_id = '1'};
-
-    -- psl rx_shift_reg_store_ide_cov : cover
-    --  {rx_store_ide = '1'};
-
-    -- psl rx_shift_reg_store_rtr_cov : cover
-    --  {rx_store_rtr = '1'};
-
-    -- psl rx_shift_reg_store_edl_cov : cover
-    --  {rx_store_edl = '1'};
-
-    -- psl rx_shift_reg_store_dlc_cov : cover
-    --  {rx_store_dlc = '1'};
-
-    -- psl rx_shift_reg_store_esi_cov : cover
-    --  {rx_store_esi = '1'};
-
-    -- psl rx_shift_reg_store_brs_cov : cover
-    --  {rx_store_brs = '1'};
-
-    -- psl rx_shift_reg_store_stuff_count_cov : cover
-    --  {rx_store_stuff_count = '1'};
-
-    -- <RELEASE_ON>
 
 end architecture;
