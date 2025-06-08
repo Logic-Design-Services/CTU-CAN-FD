@@ -98,6 +98,7 @@ entity tb_top_ctu_can_fd is
         stand_alone_vip_mode    : boolean := true;
         log_level               : t_log_verbosity := verbosity_info;
         deposit_to_dut          : boolean := true;
+        func_cov_en             : boolean := false;
 
         iterations              : natural := 1;
         timeout                 : string := "10 ms";
@@ -176,6 +177,7 @@ architecture tb of tb_top_ctu_can_fd is
        test_type               : string;
        stand_alone_vip_mode    : boolean;
        deposit_to_dut          : boolean;
+       func_cov_en             : boolean;
 
        -- DUT configuration
        rx_buffer_size          : natural;
@@ -282,6 +284,7 @@ begin
         test_type               => test_type,
         stand_alone_vip_mode    => stand_alone_vip_mode,
         deposit_to_dut          => deposit_to_dut,
+        func_cov_en             => func_cov_en,
 
         rx_buffer_size          => rx_buffer_size,
         txt_buffer_count        => txt_buffer_count,
