@@ -95,6 +95,7 @@ entity tb_top_ctu_can_fd is
         test_type               : string := "feature"; -- "feature", "compliance" or "reference"
         stand_alone_vip_mode    : boolean := true;
         log_level               : t_log_verbosity := verbosity_info;
+        func_cov_en             : boolean := true;
 
         -- !!! Set to true when running with VCS + Vunit and collecting coverage !!!
         deposit_to_dut          : boolean := false;
@@ -176,7 +177,7 @@ architecture tb of tb_top_ctu_can_fd is
        test_type               : string;
        stand_alone_vip_mode    : boolean;
        deposit_to_dut          : boolean;
-       func_cov_en             : boolean := true;
+       func_cov_en             : boolean;
 
        -- DUT configuration
        rx_buffer_size          : natural;
