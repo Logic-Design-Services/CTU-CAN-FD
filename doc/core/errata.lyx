@@ -352,7 +352,7 @@ CTU CAN
 
 \size default
 \noun on
-Errata
+ Errata For Version 2.5
 \end_layout
 
 \begin_layout Author
@@ -470,7 +470,7 @@ Version 0.3, Commit:
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="4" columns="3">
+<lyxtabular version="3" rows="5" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="2cm">
@@ -564,7 +564,7 @@ Added Issue 5 - MODE[BMM].
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -573,7 +573,7 @@ Added Issue 5 - MODE[BMM].
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -582,11 +582,40 @@ Added Issue 5 - MODE[BMM].
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Mark Issue 5 as resolved.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20-6-2025
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Elaborate on the Workaround of Issue 5
 \end_layout
 
 \end_inset
@@ -1376,13 +1405,6 @@ https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core/-/commit/386337e8dcbb2eddfcbd
 \end_layout
 
 \begin_layout Description
-Workaround: Alternative is to use Listen-only mode in the PHY (physical
- transceiver), and combine it with MODE[STM]=1.
- In such setup, CTU CAN FD an record the frames on the bus without affecting
- the bus in any way.
-\end_layout
-
-\begin_layout Description
 ECO
 \begin_inset space ~
 \end_inset
@@ -1407,6 +1429,100 @@ Fixed
 \end_inset
 
 in: 2.5.2 - Applied fix to be ECOed
+\end_layout
+
+\begin_layout Subsection*
+Workaround in SW
+\end_layout
+
+\begin_layout Standard
+If CTU CAN FD version 2.5 or 2.5.1 was manufactured, the MODE[BMM] bit does
+ not work correctly.
+ For these versions, it is recommended not to include MODE[BMM] in documentation
+ of product that contains CTU CAN FD.
+ It is still possible to get the functionality of 
+\begin_inset Quotes eld
+\end_inset
+
+passive CAN bus logging
+\begin_inset Quotes erd
+\end_inset
+
+, via SW workaround.
+ To get this functionality, the integrating system can apply following workaroun
+d:
+\end_layout
+
+\begin_layout Itemize
+Set MODE[ROM] = 1.
+ Restricted operation mode make sure that CTU CAN FD does not get 
+\begin_inset Quotes eld
+\end_inset
+
+lost
+\begin_inset Quotes erd
+\end_inset
+
+ when it detected error condition.
+ Since CTU CAN FDs shall not 
+\begin_inset Quotes eld
+\end_inset
+
+affect the bus
+\begin_inset Quotes erd
+\end_inset
+
+, it shall not transmit Error frames nor Overload frames.
+\end_layout
+
+\begin_layout Itemize
+Set MODE[ACF] = 1.
+ Since CTU CAN FD shall not 
+\begin_inset Quotes eld
+\end_inset
+
+affect the bus
+\begin_inset Quotes erd
+\end_inset
+
+, it shall not send dominant ACK bits.
+\end_layout
+
+\begin_layout Itemize
+Not transmit any CAN frames.
+\end_layout
+
+\begin_layout Standard
+These countermeasures should be sufficient for CTU CAN FD not to affect
+ the bus.
+ If there is not enough confidence, you can disconnect CAN_TX pin from physical
+ propagation to the bus.
+ There are number of different ways of how to do this:
+\end_layout
+
+\begin_layout Itemize
+Switch the MCU IO pin to another functionality
+\end_layout
+
+\begin_layout Itemize
+Use physical layer transceiver with 
+\begin_inset Quotes eld
+\end_inset
+
+Bus monitoring
+\begin_inset Quotes erd
+\end_inset
+
+ functionality.
+\end_layout
+
+\begin_layout Standard
+If it is desirable to be able to record also CAN frames without acknowledge,
+ you can set:
+\end_layout
+
+\begin_layout Itemize
+MODE[STM]=1
 \end_layout
 
 \begin_layout Bibliography
