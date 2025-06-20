@@ -93,7 +93,6 @@ entity tb_top_ctu_can_fd is
         runner_cfg              : string := runner_cfg_default;
         test_name               : string := "device_id";
         test_type               : string := "feature"; -- "feature", "compliance" or "reference"
-        stand_alone_vip_mode    : boolean := true;
         log_level               : t_log_verbosity := verbosity_info;
         func_cov_en             : boolean := true;
 
@@ -175,7 +174,6 @@ architecture tb of tb_top_ctu_can_fd is
        -- Test details
        test_name               : string;
        test_type               : string;
-       stand_alone_vip_mode    : boolean;
        deposit_to_dut          : boolean;
        func_cov_en             : boolean;
 
@@ -212,8 +210,8 @@ architecture tb of tb_top_ctu_can_fd is
        test_success        : out std_logic := '0';
 
        -- DUT interface
-       clk_sys             : inout std_logic;
-       res_n               : inout std_logic;
+       clk_sys             : out std_logic;
+       res_n               : out std_logic;
 
        scan_enable         : out   std_logic;
 
@@ -292,7 +290,6 @@ begin
     generic map(
         test_name               => test_name,
         test_type               => test_type,
-        stand_alone_vip_mode    => stand_alone_vip_mode,
         deposit_to_dut          => deposit_to_dut,
         func_cov_en             => func_cov_en,
 
@@ -373,7 +370,6 @@ begin
         info_m("  Test type: " & test_type);
         info_m("  Test name: " & test_name);
         info_m("  No. of iterations: " & integer'image(iterations));
-        info_m("  Stand-alone VIP: " & boolean'image(stand_alone_vip_mode));
         info_m("  System clock period: " & cfg_sys_clk_period);
         info_m("  Log level: " & t_log_verbosity'image(log_level));
         info_m("  Seed: " & integer'image(seed));

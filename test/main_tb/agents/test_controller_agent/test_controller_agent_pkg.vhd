@@ -93,7 +93,6 @@ package test_controller_agent_pkg is
         -- Test configuration
         test_name               : string;
         test_type               : string;
-        stand_alone_vip_mode    : boolean;
         seed                    : natural;
 
         -- DUT configuration
