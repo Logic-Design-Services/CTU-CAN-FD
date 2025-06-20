@@ -126,30 +126,27 @@ use ieee.math_real.ALL;
 use ieee.std_logic_textio.all;
 use STD.textio.all;
 
-library ctu_can_fd_rtl;
-use ctu_can_fd_rtl.can_constants_pkg.all;
-use ctu_can_fd_rtl.can_types_pkg.all;
-use ctu_can_fd_rtl.can_config_pkg.all;
+-- Only top level uses Vunit. This allows keeping CTU CAN FD VIP Vunit-less,
+-- when integrating RTL and VIP into other TB!
+library vunit_lib;
+context vunit_lib.vunit_context;
 
-use ctu_can_fd_rtl.CAN_FD_register_map.all;
-use ctu_can_fd_rtl.CAN_FD_frame_format.all;
+-- Common contexts
+Library ctu_can_fd_tb;
+context ctu_can_fd_tb.ieee_context;
+context ctu_can_fd_tb.tb_common_context;
+context ctu_can_fd_tb.tb_agents_context;
+context ctu_can_fd_tb.rtl_context;
 
 library ctu_can_fd_tb_unit;
-use ctu_can_fd_tb_unit.can_unit_test_pkg.all;
 use ctu_can_fd_tb_unit.random_unit_pkg.all;
-
-use ctu_can_fd_rtl.can_registers_pkg.all;
-
-library ctu_can_fd_tb;
-use ctu_can_fd_tb.tb_report_pkg.all;
-
 
 entity rx_buffer_tb is
     generic (
+        runner_cfg      : string         := runner_cfg_default;
         test_name       : string         := "dummy";
         finish_on_error : integer        := 0;
         iterations      : natural        := 1;
-        error_beh       : err_beh_type   := quit;
         error_tol       : natural        := 0;
         timeout         : string         := "0 ms";
         seed            : natural        := 0
@@ -158,11 +155,14 @@ end entity;
 
 architecture test of rx_buffer_tb is
 
+    -- Port width determining constants
+    constant C_RX_BUFF_SIZE             : natural := 256;
+    constant C_RX_BUFF_PTR_WIDTH        : natural := integer(ceil(log2(real(C_RX_BUFF_SIZE))));
+    constant C_RX_BUF_FRAME_CNT_WIDTH   : natural := integer(ceil(log2(real(C_RX_BUFF_SIZE)))) - 1;
+
     -- Common test specific data
     signal error_ctr                : integer := 0;
-    signal rand_ctr                 : integer := 0;
     signal loop_ctr                 : integer := 0;
-    signal status                   : test_status_type;
 
     -- System clock and reset
     signal clk_sys                  : std_logic := '0';
@@ -176,6 +176,8 @@ architecture test of rx_buffer_tb is
     signal rec_is_rtr               : std_logic := '0';
     signal rec_brs                  : std_logic := '0';
     signal rec_esi                  : std_logic := '0';
+    signal rec_lbpf                 : std_logic := '0';
+    signal rec_ivld                 : std_logic := '0';
 
     -- Control signals from CAN Core
     signal store_metadata_f         : std_logic := '0';
@@ -189,10 +191,10 @@ architecture test of rx_buffer_tb is
 
     signal rx_full                  : std_logic;
     signal rx_empty                 : std_logic;
-    signal rx_frame_count           : std_logic_vector(10 downto 0);
-    signal rx_mem_free              : std_logic_vector(12 downto 0);
-    signal rx_read_pointer          : std_logic_vector(11 downto 0);
-    signal rx_write_pointer         : std_logic_vector(11 downto 0);
+    signal rx_frame_count           : std_logic_vector(C_RX_BUF_FRAME_CNT_WIDTH-1 downto 0);
+    signal rx_mem_free              : std_logic_vector(C_RX_BUFF_PTR_WIDTH downto 0);
+    signal rx_read_pointer          : std_logic_vector(C_RX_BUFF_PTR_WIDTH-1 downto 0);
+    signal rx_write_pointer         : std_logic_vector(C_RX_BUFF_PTR_WIDTH-1 downto 0);
     signal rx_data_overrun          : std_logic;
 
     signal rxb_port_b_data_out      : std_logic_vector(31 downto 0);
@@ -229,9 +231,6 @@ architecture test of rx_buffer_tb is
     signal status_errs              : natural     := 0;
     signal cons_errs                : natural     := 0;
 
-    -- Additional random counter
-    signal rand_ctr_3               : natural range 0 to RAND_POOL_SIZE := 0;
-
     ----------------------------------------------------------------------------
     -- Memory declarations for memories where data are read out
     ----------------------------------------------------------------------------
@@ -245,11 +244,8 @@ architecture test of rx_buffer_tb is
     signal out_pointer              : natural := 0;
     signal mod_pointer              : natural := 0;
 
-    constant C_RX_BUFF_SIZE         : natural := 128;
-
     signal ts_preset                : std_logic_vector(2 downto 1) := "00";
     signal ts_preset_val            : std_logic_vector(63 downto 0) := (OTHERS => '0');
-
 
     ----------------------------------------------------------------------------
     -- Insert frame to test memory
@@ -265,14 +261,15 @@ architecture test of rx_buffer_tb is
     begin
         -- FRAME_FORMAT_W
         rwcnt_vect           := std_logic_vector(to_unsigned(frame.rwcnt, 5));
-        memory(in_pointer)   <= "0000000000000000" & rwcnt_vect &
+        memory(in_pointer)   <= "0000000100000000" &
+                              rwcnt_vect &
                               frame.esi &
                               frame.brs &
-                              '1' &
+                              frame.lbpf &
                               frame.frame_format &
                               frame.ident_type &
                               frame.rtr &
-                              '0' &
+                              '0' &  -- No need to support error frames in unit test
                               frame.dlc;
         -- IDENTIFIER_W
         id_sw_to_hw(frame.identifier, frame.ident_type, hw_id);
@@ -322,7 +319,6 @@ architecture test of rx_buffer_tb is
     -- Generates random abort condition as IF coming from CAN Core
     ----------------------------------------------------------------------------
     procedure generate_random_abort(
-        signal   rand_ctr             :inout  natural range 0 to RAND_POOL_SIZE;
         signal   rec_abort_f            :out    std_logic;
         signal   clk_sys              :in     std_logic;
         variable abort_present        :out    boolean;
@@ -330,7 +326,7 @@ architecture test of rx_buffer_tb is
     )is
         variable rand_val             :       std_logic;
     begin
-        rand_logic_v(rand_ctr, rand_val, chances);
+        rand_logic_v(rand_val, chances);
         abort_present := false;
 
         if (rand_val = '1') then
@@ -356,7 +352,6 @@ architecture test of rx_buffer_tb is
     --     are stored to "input memory"!
     ----------------------------------------------------------------------------
     procedure insert_frame_to_RX_Buffer(
-        signal   rand_ctr               :inout  natural range 0 to RAND_POOL_SIZE;
         signal   clk_sys                :in     std_logic;
 
         -- Received Metadata and identifier
@@ -366,6 +361,8 @@ architecture test of rx_buffer_tb is
         signal   rec_ident_type         :out    std_logic;
         signal   rec_brs                :out    std_logic;
         signal   rec_esi                :out    std_logic;
+        signal   rec_lbpf               :out    std_logic;
+        signal   rec_ivld               :out    std_logic;
         signal   rec_rtr                :out    std_logic;
 
         -- Storing protocol between RX Buffer and CAN Core
@@ -390,7 +387,7 @@ architecture test of rx_buffer_tb is
         variable id_out             :       std_logic_vector(28 downto 0);
     begin
 
-        CAN_generate_frame(rand_ctr, CAN_frame);
+        CAN_generate_frame(CAN_frame);
         stored_ts := (OTHERS => '0');
 
         ------------------------------------------------------------------------
@@ -427,9 +424,9 @@ architecture test of rx_buffer_tb is
         -- error frame may come also before any storing started and can not FUCK
         -- UP the buffer.
         ------------------------------------------------------------------------
-        wait_rand_cycles(rand_ctr, clk_sys, 10, 50);
+        wait_rand_cycles(clk_sys, 10, 50);
 
-        generate_random_abort(rand_ctr, rec_abort_f, clk_sys, abort_present, 0.1);
+        generate_random_abort(rec_abort_f, clk_sys, abort_present, 0.1);
 
         if (abort_present) then
             wait until rising_edge(clk_sys);
@@ -437,16 +434,18 @@ architecture test of rx_buffer_tb is
             return;
         end if;
 
-        wait_rand_cycles(rand_ctr, clk_sys, 10, 50);
+        wait_rand_cycles(clk_sys, 10, 50);
 
         -- Put metadata on input of RX Buffer!
         id_sw_to_hw(CAN_frame.identifier, CAN_frame.ident_type, id_out);
-        rec_ident       <= id_out;
-        rec_dlc         <= CAN_frame.dlc;
+        rec_ident          <= id_out;
+        rec_dlc            <= CAN_frame.dlc;
         rec_frame_type     <= CAN_frame.frame_format;
         rec_ident_type     <= CAN_frame.ident_type;
         rec_brs            <= CAN_frame.brs;
         rec_esi            <= CAN_frame.esi;
+        rec_lbpf           <= CAN_frame.lbpf;
+        rec_ivld           <= '1'; -- For data frame IVLD is always 1
         rec_rtr            <= CAN_frame.rtr;
 
         info_m("Storing metadata");
@@ -465,7 +464,7 @@ architecture test of rx_buffer_tb is
             for i in 0 to ((CAN_frame.data_length - 1) / 4) loop
 
                 -- Wait random time between store of individual data bytes!
-                wait_rand_cycles(rand_ctr, clk_sys, 10, 50);
+                wait_rand_cycles(clk_sys, 10, 50);
 
                 -- Send signal to store data
                 store_data_word <= CAN_frame.data((i * 4) + 3) &
@@ -479,8 +478,7 @@ architecture test of rx_buffer_tb is
                 store_data_f      <= '0';
                 wait until rising_edge(clk_sys);
 
-                generate_random_abort(rand_ctr, rec_abort_f, clk_sys, abort_present,
-                                      0.05);
+                generate_random_abort(rec_abort_f, clk_sys, abort_present, 0.05);
                 if (abort_present) then
                     wait until rising_edge(clk_sys);
                     wait until rising_edge(clk_sys);
@@ -489,7 +487,7 @@ architecture test of rx_buffer_tb is
             end loop;
         end if;
 
-        wait_rand_cycles(rand_ctr, clk_sys, 30, 100);
+        wait_rand_cycles(clk_sys, 30, 100);
 
         ------------------------------------------------------------------------
         -- If we got here, no abort was generated, thus frame was stored OK!
@@ -563,7 +561,9 @@ architecture test of rx_buffer_tb is
             info_m("Model output: " & to_hstring(in_mem(out_pointer)));
             info_m("Word nr. :" & integer'image(i));
             check_m(buff_out = in_mem(out_pointer),
-                    "Buffer inconsistency, index: " & integer'image(out_pointer));
+                    "Buffer inconsistency, index: " & integer'image(out_pointer) &
+                    " Expected: " & to_string(in_mem(out_pointer)) &
+                    " Observed: " & to_string(buff_out));
 
             out_pointer           <= out_pointer + 1;
             wait until rising_edge(clk_sys);
@@ -587,6 +587,9 @@ architecture test of rx_buffer_tb is
         cons_res := true;
         for i in 0 to in_mem'length - 1 loop
             if (in_mem(i) /= out_mem(i)) then
+                info_m("Consistency mismatch at index: " & integer'image(i) &
+                       " IN_MEM:  " & to_string(in_mem(i)) &
+                       " OUT_MEM: " & to_string(out_mem(i)));
                 cons_res := false;
             end if;
         end loop;
@@ -599,10 +602,12 @@ begin
     ----------------------------------------------------------------------------
     rx_buffer_inst : entity ctu_can_fd_rtl.rx_buffer
     generic map(
-        G_RX_BUFF_SIZE         => C_RX_BUFF_SIZE,
-        G_SUP_PARITY           => true,
-        G_RESET_RX_BUF_RAM     => false,
-        G_TECHNOLOGY           => C_TECH_FPGA
+        G_RX_BUFF_SIZE              => C_RX_BUFF_SIZE,
+        G_RX_BUFF_PTR_WIDTH         => C_RX_BUFF_PTR_WIDTH,
+        G_RX_BUF_FRAME_CNT_WIDTH    => C_RX_BUF_FRAME_CNT_WIDTH,
+        G_SUP_PARITY                => true,
+        G_RESET_RX_BUF_RAM          => false,
+        G_TECHNOLOGY                => C_TECH_FPGA
     )
     port map(
         clk_sys                  => clk_sys,
@@ -616,11 +621,20 @@ begin
         rec_is_rtr               => rec_is_rtr,
         rec_brs                  => rec_brs,
         rec_esi                  => rec_esi,
+        rec_lbpf                 => rec_lbpf,
+        rec_ivld                 => rec_ivld,
+
+        err_capt_err_type        => (others => '0'),
+        err_capt_err_pos         => (others => '0'),
+        err_capt_err_erp         => '0',
+        curr_txtb_index          => (others => '0'),
+
         store_metadata_f         => store_metadata_f,
         store_data_f             => store_data_f,
         store_data_word          => store_data_word,
         rec_valid_f              => rec_valid_f,
         rec_abort_f              => rec_abort_f,
+
         sof_pulse                => sof_pulse,
         timestamp                => timestamp,
 
@@ -632,6 +646,7 @@ begin
         mr_rx_data_read          => mr_rx_data_read,
         mr_rx_settings_rtsop     => mr_rx_settings_rtsop,
         mr_settings_pchke        => mr_settings_pchke,
+        mr_mode_erfm             => '0',
 
         -- Actually loaded data for reading
         rxb_port_b_data_out     => rxb_port_b_data_out,
@@ -657,9 +672,32 @@ begin
     ----------------------------------------------------------------------------
     -- Clock and timestamp generation
     ----------------------------------------------------------------------------
-    clock_gen_proc(period => f100_Mhz, duty => 50, epsilon_ppm => 0,
-                   out_clk => clk_sys);
-    timestamp_gen_proc(clk_sys, timestamp, ts_preset(1), ts_preset_val);
+    clock_gen_proc : process
+    begin
+        clk_sys       <= '1';
+        wait for 5 ns;
+        clk_sys       <= '0';
+        wait for 5 ns;
+    end process;
+
+    timestamp_gen_proc : process
+        variable ts_lo    : natural := 0;
+        variable tmp      : natural := 0;
+        variable ts_hi    : natural := 0;
+    begin
+        loop
+            -- falling edge, because on rising edge, the value must stay stable
+            -- even after `wait for 0 ns`
+            wait until falling_edge(clk_sys);
+            tmp := ts_lo + 1;
+            if tmp < ts_lo then
+                ts_hi := ts_hi + 1;
+            end if;
+            ts_lo := tmp;
+            timestamp <= std_logic_vector(  to_unsigned(ts_hi, 32)
+                                          & to_unsigned(ts_lo, 32));
+        end loop;
+    end process;
 
     -- Overall amount of errors is sum of errors from all processes
     error_ctr   <=  stim_errs + read_errs + status_errs + cons_errs;
@@ -670,7 +708,7 @@ begin
                    false;
 
     out_mem_full <= true when out_pointer + C_RX_BUFF_SIZE + 1 > 300 else
-                 false;
+                    false;
 
     ----------------------------------------------------------------------------
     -- Stimuli generator - Main test process
@@ -681,13 +719,14 @@ begin
         variable enough_space : boolean := true;
         variable was_inserted : boolean := false;
     begin
+        test_runner_setup(runner, runner_cfg);
         info_m("Restarting RX Buffer test!");
         wait for 5 ns;
         res_n <= '1';
 
-        apply_rand_seed(seed, 0, rand_ctr);
+        apply_rand_seed(seed);
+
         info_m("Restarted RX Bufrer test");
-        print_test_info(iterations, error_beh, error_tol);
 
         ------------------------------------------------------------------------
         -- Main loop of the test
@@ -711,12 +750,12 @@ begin
             -- Start generating the frames on Input as long as there is enough
             -- space available in the common memory.
             --------------------------------------------------------------------
-            while (in_mem_full = false) loop
+            while (not in_mem_full) loop
                 -- Now buffer has for sure space. Frame is inserted into the
                 -- RX Buffer, Model and stored also into common memory
-                insert_frame_to_RX_Buffer(rand_ctr, clk_sys, rec_ident,
+                insert_frame_to_RX_Buffer(clk_sys, rec_ident,
                     rec_dlc, rec_frame_type, rec_ident_type, rec_brs,
-                    rec_esi, rec_is_rtr, sof_pulse, store_metadata_f, store_data_f,
+                    rec_esi, rec_lbpf, rec_ivld, rec_is_rtr, sof_pulse, store_metadata_f, store_data_f,
                     store_data_word, rec_abort_f, rec_valid_f, mr_rx_settings_rtsop,
                     mr_command_cdo, in_mem, in_pointer, timestamp);
             end loop;
@@ -735,9 +774,8 @@ begin
             wait for 10 ns;
         end loop;
 
-        -- This is the main process loop so we evaluate test here
-        evaluate_test(error_tol, error_ctr, status);
-
+        -- Finish test succesfully -> Failure will abort immediately
+        test_runner_cleanup(runner);
         std.env.finish;
     end process;
 
@@ -754,10 +792,6 @@ begin
             wait for 5 ns;
         end if;
 
-        if (res_n = '0') then
-            apply_rand_seed(seed, 1, rand_ctr_3);
-        end if;
-
         ------------------------------------------------------------------------
         -- Read frames as long as Output memory is not filled. Wait random time
         -- in between, to allow for data overrun to occur!
@@ -766,7 +800,7 @@ begin
             if (rx_empty = '0') then
                 read_frame(rxb_port_b_data_out, mr_rx_data_read, clk_sys, out_mem,
                            in_mem, out_pointer);
-                wait_rand_cycles(rand_ctr_3, clk_sys, 200, 250);
+                wait_rand_cycles(clk_sys, 200, 250);
             end if;
             wait until rising_edge(clk_sys);
         end loop;
@@ -806,7 +840,7 @@ begin
         cons_res := false;
         compare_data(in_mem, out_mem, cons_res);
 
-        check_m(cons_res, "Data consistency check failed !");
+        check_m(cons_res, "Data consistency check !");
 
         -- Now we can tell to the other circuits that one iteration is over
         iteration_done <= true;
