@@ -65,12 +65,14 @@ def set_comp_options(sf, file):
     sf.add_compile_option("nvc.a_flags", ['--psl'])
 
 
-def set_elab_options(vu, tgt):
+def set_elab_options(vu, tgt, tgt_name):
     opts = SIM_CFG["elab_options"]["ghdl"].split()
+
     if "elab_options" in tgt:
         if "ghdl" in tgt["elab_options"]:
             tmp = tgt["elab_options"]["ghdl"].split(" ")
             opts.extend(tmp)
+
     # TODO: Add test specific elab options
     #print(f"Adding elab flags: {opts}")
     vu.set_sim_option("ghdl.elab_flags", opts)
@@ -79,6 +81,11 @@ def set_elab_options(vu, tgt):
     nvc_glob_flags.append('-M')
     nvc_glob_flags.append('256M')
     nvc_glob_flags.append('--load=main_tb/iso-16845-compliance-tests/build/Debug/src/cosimulation/libNVC_VHPI_COSIM_LIB.so')
+
+    # Disable IEEE warnings for GLS sims
+    if ("gate" in tgt_name):
+        nvc_glob_flags.append("--ieee-warnings=off")
+
     vu.set_sim_option("nvc.global_flags", nvc_glob_flags)
 
 
@@ -194,7 +201,7 @@ if __name__ == '__main__':
     load_tgt_slfs(vu, tgt)
     load_tgt_tlf(vu, tgt, tgt_name)
 
-    set_elab_options(vu, tgt)
+    set_elab_options(vu, tgt, tgt_name)
 
     vu.set_sim_option("nvc.heap_size", '256m', allow_empty=True)
     vu.set_sim_option("nvc.sim_flags", ['--ieee-warnings=off'], allow_empty=True)
