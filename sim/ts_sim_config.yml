@@ -77,9 +77,12 @@ targets:
     tb_ctu_can_fd_gate_vunit:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
         source_list_files:
-            # RTL is needed for gates to due to packages!! Netlist is compiled to different
-            # library to avoid conflicts
+            # RTL is needed for gates since Test Node in feature test agent is still RTL!
+            # Netlist is compiled to different library (ctu_can_fd_gates) to avoid conflicts.
+            # In "tb_top_ctu_can_fd_gates", explicit library is selected to make sure we
+            # instantiate the netlist as DUT, not the RTL!
             - rtl_ctu_can_fd
+
             - test/slf_gate_xilinx_netlist.yml
             - test/slf_tb_dependencies_vunit.yml
             - test/slf_tb_common.yml
