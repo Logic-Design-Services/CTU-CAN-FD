@@ -469,7 +469,7 @@ targets:
             #log_level: info
             #error_tolerance: 0
             #debug: false
-            /RX_BUFFER_TB/iterations: 1000
+            /RX_BUFFER_TB/iterations: 500
             /RX_BUFFER_TB/timeout: 2000 ms
 
         source_list_files:

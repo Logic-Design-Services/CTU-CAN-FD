@@ -86,6 +86,8 @@ def set_elab_options(vu, tgt, tgt_name):
     if ("gate" in tgt_name):
         nvc_glob_flags.append("--ieee-warnings=off")
 
+    nvc_glob_flags.append("--messages=compact")
+
     vu.set_sim_option("nvc.global_flags", nvc_glob_flags)
 
 
