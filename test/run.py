@@ -150,9 +150,13 @@ def load_tgt_tlf(vu, tgt, tgt_name):
 
         nvc_opts = []
         nvc_opts.append("-V")
-        nvc_opts.append("--cover=all,include-mems,exclude-unreachable")
-        nvc_opts.append("--cover-file={}.ncdb".format(covdb_path))
-        nvc_opts.append("--cover-spec=nvc_cover_spec")
+
+        # Collect code coverage everywhere but in the gate simulations
+        if ("gate" not in tgt_name):
+            nvc_opts.append("--cover=all,include-mems,exclude-unreachable")
+            nvc_opts.append("--cover-file={}.ncdb".format(covdb_path))
+            nvc_opts.append("--cover-spec=nvc_cover_spec")
+
         nvc_opts.append("--no-collapse")
         nvc_opts.append("--jit")
 
