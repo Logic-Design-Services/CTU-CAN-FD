@@ -94,7 +94,6 @@ entity test_controller_agent is
         -- Test configuration
         test_name               : string;
         test_type               : string;
-        stand_alone_vip_mode    : boolean;
         seed                    : natural;
 
         -- DUT configuration
@@ -195,13 +194,11 @@ begin
         -- Configure System clock,
         --  - Period based on generic
         -----------------------------------------------------------------------
-        if (stand_alone_vip_mode) then
-            info_m("Configuring Clock agent");
-            clk_agent_set_period(default_channel, time'value(cfg_sys_clk_period));
-            clk_agent_set_duty(default_channel, 50);
-            clk_agent_set_jitter(default_channel, 0 ns);
-            clk_gen_agent_start(default_channel);
-        end if;
+        info_m("Configuring Clock agent");
+        clk_agent_set_period(default_channel, time'value(cfg_sys_clk_period));
+        clk_agent_set_duty(default_channel, 50);
+        clk_agent_set_jitter(default_channel, 0 ns);
+        clk_gen_agent_start(default_channel);
 
         -----------------------------------------------------------------------
         -- Configure Timestamp generation

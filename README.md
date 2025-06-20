@@ -188,24 +188,6 @@ If you run ``ts_sim_run.py --recompile --clear <TARGET_NAME> --list-tests``` you
 of available tests for given target.
 
 
-## How to integrate CTU CAN FD VIP (experimental) ?
-
-CTU CAN FD testbench is a stand-alone testbench with `ctu_can_fd_tb_top` as top level
-simulated entity. All testing/verification functionality is however implemented in
-CTU CAN FD VIP (`ctu_can_fd_vip` entity). It is possible to integrate CTU CAN FD
-VIP also to your custom testbench if you connect the VIP to DUT via VHDL external names
-(similar to binding System Verilog interfaces in UVM TB).
-
-VIP can be integrated into other test-bench with help of [![Testbench architecture](https://img.shields.io/badge/Testbench--blue.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/Testbench.pdf) document.
-
-To compile the VIP / TB in such scenario, you first need to compile RTL
-(testbench depends on RTL). Then:
-
-1. Compile files from `test/slf_tb_dependencies_simple.yml`
-2. Compile files from `test/slf_tb_common.yml`
-3. Integrate `ctu_can_fd_vip` into your TB, and connect its interface to CTU CAN FD in design.
-
-
 ## Development tools
 
 To simulate CTU CAN FD, following tools are used:

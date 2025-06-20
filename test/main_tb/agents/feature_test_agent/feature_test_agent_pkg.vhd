@@ -1909,7 +1909,6 @@ package feature_test_agent_pkg is
         -- Test details
         test_name               : string;
         test_type               : string;
-        stand_alone_vip_mode    : boolean;
 
         -- DUT config
         cfg_sys_clk_period      : string;

@@ -89,7 +89,6 @@ entity ctu_can_fd_vip is
         -- Test details
         test_name               : string;
         test_type               : string;
-        stand_alone_vip_mode    : boolean;
         deposit_to_dut          : boolean;
         func_cov_en             : boolean;
 
@@ -128,8 +127,8 @@ entity ctu_can_fd_vip is
         test_success        : out std_logic := '0';
 
         -- DUT interface
-        clk_sys             : inout std_logic;
-        res_n               : inout std_logic;
+        clk_sys             : out std_logic;
+        res_n               : out std_logic;
 
         -- DFT support
         scan_enable         : out   std_logic;
@@ -275,7 +274,6 @@ begin
     generic map(
         test_name               => test_name,
         test_type               => test_type,
-        stand_alone_vip_mode    => stand_alone_vip_mode,
         seed                    => seed,
 
         -- DUT configuration
@@ -346,7 +344,6 @@ begin
             -- Test details
             test_name           => test_name,
             test_type           => test_type,
-            stand_alone_vip_mode => stand_alone_vip_mode,
 
             -- DUT configuration
             cfg_sys_clk_period  => cfg_sys_clk_period,
@@ -391,7 +388,6 @@ begin
     generic map(
         test_name            => test_name,
         test_type            => test_type,
-        stand_alone_vip_mode => stand_alone_vip_mode,
         reference_iterations => reference_iterations
     );
 
@@ -417,19 +413,8 @@ begin
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
 
-    ---------------------------------------------------------------------------
-    -- In stand-alone mode clock agent drives clock, in non-stand-alone, it
-    -- receives clock from outside and clock agent is disconnected!
-    ---------------------------------------------------------------------------
-    stand_alone_mode_gen_true : if (stand_alone_vip_mode) generate
-        clk_sys_i <= clk_sys_clock_agent;
-        clk_sys <= clk_sys_clock_agent;
-    end generate;
-
-    stand_alone_mode_gen_false : if (not stand_alone_vip_mode) generate
-        clk_sys_i <= clk_sys;
-    end generate;
-
+    clk_sys_i <= clk_sys_clock_agent;
+    clk_sys <= clk_sys_clock_agent;
     res_n <= res_n_i;
 
     ---------------------------------------------------------------------------
