@@ -13,6 +13,7 @@ before_script:
 stages:
     - precheck
     - build
+    - test_unit
     - test_rtl
     - test_gates
     - coverage
@@ -122,6 +123,25 @@ run_synthesis:
             - synthesis/Vivado/ci_benchmark/*_design_config
         expire_in: 12 hrs
 
+###############################################################################
+# Unit test stage
+###############################################################################
+test_unit_rx_buffer:
+    stage: test_unit
+    tags:
+        - simulation
+    only: *only
+    script:
+        - cd test
+        - make tb_rtl_rx_buffer_unit
+        - make tb_rtl_rx_buffer_unit_logs
+    artifacts:
+        when: always
+        paths:
+            - test/tb_rtl_rx_buffer_unit.xml
+            - test/tb_rtl_rx_buffer_unit_summary
+        reports:
+            junit: test/tb_rtl_rx_buffer_unit.xml
 
 ###############################################################################
 # Test RTL stage (fast + nightly)
