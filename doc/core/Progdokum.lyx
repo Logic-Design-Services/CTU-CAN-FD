@@ -363,15 +363,7 @@ Datasheet
 \begin_inset VSpace defskip
 \end_inset
 
-Czech Technical University in Prague
-\begin_inset Newline newline
-\end_inset
-
-Faculty of Electrical Engineering
-\begin_inset Newline newline
-\end_inset
-
-Department of Measurement
+LOGIC DESIGN SERVICES l.t.d.
 \begin_inset Newline newline
 \end_inset
 
@@ -381,14 +373,6 @@ Department of Measurement
 
 
 \begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Graphics
-	filename ../pics/LEV.bmp
-	lyxscale 20
-	scale 60
-
 \end_inset
 
 
@@ -485,7 +469,7 @@ CTU CAN FD IP Core - Datasheet
 \begin_inset Text
 
 \begin_layout Plain Layout
-Version 2.5.1, Commit:
+Version 2.6.0, Commit:
 \begin_inset CommandInset include
 LatexCommand input
 filename "version.tex"
@@ -509,7 +493,7 @@ filename "version.tex"
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="34" columns="3">
+<lyxtabular version="3" rows="35" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="2cm">
@@ -607,7 +591,7 @@ Added test framework description.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.0.1
+
 \end_layout
 
 \end_inset
@@ -668,7 +652,7 @@ Added Linux driver description
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.1.1
+
 \end_layout
 
 \end_inset
@@ -698,7 +682,7 @@ Added Register map block diagram after re-implementation of registers via
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.1.2
+
 \end_layout
 
 \end_inset
@@ -728,7 +712,7 @@ Added CRC Wrapper.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.1.3
+
 \end_layout
 
 \end_inset
@@ -757,7 +741,7 @@ Added TIMESTAMP_LOW, TIMESTAMP_HIGH registers.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.1.4
+
 \end_layout
 
 \end_inset
@@ -816,7 +800,7 @@ Split functional descripion and register map from original document.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.2.1
+
 \end_layout
 
 \end_inset
@@ -845,7 +829,7 @@ Clarify TXT buffer behaviour when node goes bus-off.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.2.2
+
 \end_layout
 
 \end_inset
@@ -875,7 +859,7 @@ Clarify Bus-off behaviour aftet Start-up.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.2.3
+
 \end_layout
 
 \end_inset
@@ -906,7 +890,7 @@ Clarify behaviour of Transmitter delay measurement.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.2.4
+
 \end_layout
 
 \end_inset
@@ -935,7 +919,7 @@ Clarify that only TEC above 255 will cause node to go Bus off.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.2.5
+
 \end_layout
 
 \end_inset
@@ -964,7 +948,7 @@ Add SETTING[PEX] and Protocol exception support.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.2.6
+
 \end_layout
 
 \end_inset
@@ -994,7 +978,7 @@ Add frame filters examples, add TBFBO and FDRF bits in SETTINGS registers,
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.2.7
+
 \end_layout
 
 \end_inset
@@ -1023,7 +1007,7 @@ Add general overview and TX frame type description.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.2.8
+
 \end_layout
 
 \end_inset
@@ -1081,7 +1065,7 @@ Added MODE[ROM] - Restricted operation mode.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.3.1
+
 \end_layout
 
 \end_inset
@@ -1110,7 +1094,7 @@ Add TXTB_INFO and mention generic number of TXT buffers.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.3.2
+
 \end_layout
 
 \end_inset
@@ -1139,7 +1123,7 @@ Add RETR_CTR register.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.3.3
+
 \end_layout
 
 \end_inset
@@ -1168,7 +1152,7 @@ Add chapter about memory testability.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.3.4
+
 \end_layout
 
 \end_inset
@@ -1197,7 +1181,7 @@ Add STATUfS[STCNT] and STATUS[STRGS] bits.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.3.5
+
 \end_layout
 
 \end_inset
@@ -1226,7 +1210,7 @@ Reduce maximal number of bits on the fly during secondary sampling to 4.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.3.6
+
 \end_layout
 
 \end_inset
@@ -1255,7 +1239,7 @@ Add detailed description of disabling node by SETTINGS[ENA].
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.3.7
+
 \end_layout
 
 \end_inset
@@ -1284,7 +1268,7 @@ Add MODE[RXBAM] and COMMAND[RXRPMV] bits, describe RX buffer modes.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.3.8
+
 \end_layout
 
 \end_inset
@@ -1343,7 +1327,7 @@ Move to new release of CTU CAN FD.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.4.1
+
 \end_layout
 
 \end_inset
@@ -1375,7 +1359,7 @@ Add MODE[TXBBM], MODE[SAM], STATUS[RXPE], STATUS[TXPE], COMMAND [CTPXE]
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.4.2
+-
 \end_layout
 
 \end_inset
@@ -1425,7 +1409,7 @@ active_timestamp_bits
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.4.3
+
 \end_layout
 
 \end_inset
@@ -1484,7 +1468,7 @@ Move to new release of CTU CAN FD.
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.5.1
+
 \end_layout
 
 \end_inset
@@ -1509,16 +1493,16 @@ Add note about TXBHCI interrupt behavior.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
-2.5.2
+
 \end_layout
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1527,7 +1511,7 @@ Add note about TXBHCI interrupt behavior.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1537,6 +1521,35 @@ Add LBPF bit to RX frame.
  Add Error frame reception to RX buffer.
  Add ERR_CAPT[ERR_ERP] bit.
  Add FRAME_FORMAT_W[LBTBI] and FRAME_FORMAT_W[IVLD].
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+19-6-2025
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Move to new relase of CTU CAN FD.
 \end_layout
 
 \end_inset
@@ -1600,7 +1613,7 @@ addcontentsline{toc}{chapter}{Format}
 \end_layout
 
 \begin_layout Standard
-Throughout this datasheet following notations are kept:
+Throughout this datasheet following notation is kept:
 \end_layout
 
 \begin_layout Itemize
@@ -1608,13 +1621,22 @@ Common text is written with this font.
 \end_layout
 
 \begin_layout Itemize
-Memory registers are always described with capital letters e.g.
- REGISTER or REGISTER [BIT_FIELD] to represent register or bit field within
- a register.
+Memory registers are described with capital letters: 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+e.g.
+ REGISTER to describe a register 
 \end_layout
 
 \begin_layout Itemize
-States of modules are written in apostrophe like so: 
+REGISTER [BIT_FIELD] to describe a bit field within a register.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Explicit terms are written in apostrophe like so: 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1651,7 +1673,7 @@ thispagestyle{fancy}
 
 \begin_layout Standard
 This document provides functional description of CTU CAN FD, programmers
- model and parameters of CTU CAN FD.
+ model, and parameters of CTU CAN FD.
  It is intended to be used as a reference for SW driver developers.
  Internal architecture of CTU CAN FD is described in 
 \begin_inset CommandInset citation
@@ -1669,7 +1691,7 @@ General overview
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD is soft IP-core written in VHDL with no vendor-specific libraries
+CTU CAN FD is a soft IP-core written in VHDL with no vendor-specific libraries
  needed.
  It implements CAN FD protocol as specified by ISO11898-1.
 \end_layout
@@ -2595,7 +2617,7 @@ true/false
 \begin_inset Text
 
 \begin_layout Plain Layout
-Add parity bits to each word of TXT Buffer and RX Buffer RAMs.
+Add parity bits to each word of TXT Buffer and RX buffer RAMs.
  If Parity protection is present, STATUS[SPRT] = 1.
 \end_layout
 
@@ -2628,7 +2650,7 @@ true/false
 \begin_inset Text
 
 \begin_layout Plain Layout
-When true, TXT Buffer and RX Buffer RAMs are resettable by HW reset.
+When true, TXT Buffer and RX buffer RAMs are resettable by HW reset.
  
 \end_layout
 
@@ -2730,10 +2752,12 @@ name "sec:Clock"
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD operates with single clock which is called System clock.
- Each other timing parameter is derived from System clock.
- System clock frequency depends on system which is integrating CTU CAN FD
- (it corresponds to frequency of clock signal of CTU CAN FD).
+CTU CAN FD operates with a single clock called System clock.
+ Every other timing parameter is derived from System clock.
+ System clock frequency depends on the system that is integrating CTU CAN
+ FD.
+ System clock frequency corresponds to frequency of clock signal of CTU
+ CAN FD.
 \end_layout
 
 \begin_layout Section
@@ -2749,13 +2773,13 @@ literal "false"
 
 \end_inset
 
-) or by Soft reset.
+), or by Soft reset.
  Soft reset is executed by writing MODE[RST] = 1.
- If HW reset was issued to CTU CAN FD , it shall not be accessed for two
- clock periods of System clock.
- For example if CTU CAN FD System clock is 100 MHz, SW shall wait 20 ns
+ If HW reset was issued to CTU CAN FD , CTU CAN FD shall not be accessed
+ for two clock periods of System clock.
+ For example, if CTU CAN FD System clock is 100 MHz, SW shall wait 20 ns
  after HW reset was released.
- If Soft reset is issued, no waiting is required.
+ If Soft reset was issued, no waiting is required.
  Both, HW Reset and Soft reset have the same effect.
  By applying any reset, CTU CAN FD is put to following state:
 \end_layout
@@ -2765,7 +2789,7 @@ CTU CAN FD is disabled, it is not communicating on CAN bus (bus-off state).
 \end_layout
 
 \begin_layout Itemize
-All memory registers within CTU CAN FD contain reset value.
+All memory registers of CTU CAN FD have reset value.
 \end_layout
 
 \begin_layout Itemize
@@ -2777,12 +2801,12 @@ Memory organization
 \end_layout
 
 \begin_layout Standard
-CTU CAN FDs memory map is organized as little-endian (e.g.
+CTU CAN FD memory map is organized as little-endian (e.g.
  EWL register is at address 0x2C, ERP register at address 0x2D, and FAULT_STATE
  register at address 0x2E).
- Memory within CTU CAN FD is 32-bit memory, but all functionality of CTU
- CAN FD can be used by accessing the core by 8/16 bit accesses (with proper
- configuration, see settings MODE[RXBAM] - RX Buffer Automatic Mode).
+ CTU CAN FD is a 32-bit peripheral, but all functionality of CTU CAN FD
+ can be used by accessing the core by 8/16 bit accesses (with proper configurati
+on, see settings MODE[RXBAM] - RX buffer Automatic Mode).
 \end_layout
 
 \begin_layout Section
@@ -2798,16 +2822,16 @@ name "sec:Time-base"
 
 \begin_layout Standard
 CTU CAN FD can have a time base available for Time triggered transmission
- or Timestamping of received frames.
+ or Timestamping of received CAN frames.
  Availability of such time base depends on integration of CTU CAN FD into
  a system.
  If such time base is available, its immediate value can be read from TIMESTAMP_
 H and TIMESTAMP_L registers.
- Time base is up-counting unsigned counter which measures flow of time within
- a system in which CTU CAN FD is integrated.
- Width of time base ranges from 1 to 64 bits, and it is defined by a system
- integrating CTU CAN FD.
- Number of active bits of time base is available for SW in TS_INFO register.
+ Time base is up-counting unsigned counter which measures flow of a time
+ within the system where CTU CAN FD is integrated.
+ Width of the time base may range from 1 to 64 bits, and it is defined by
+ the system integrating CTU CAN FD.
+ Number of active bits of time base is available in TS_INFO register.
 \end_layout
 
 \begin_layout Section
@@ -2822,9 +2846,9 @@ name "sec:Operating-modes"
 \end_layout
 
 \begin_layout Standard
-After reset, CTU CAN FD is disabled, it does not take part in communication
- on CAN bus (no transmission, reception, monitoring).
- Before CTU CAN FD is enabled, it must be configured as is explained in
+After reset, CTU CAN FD is disabled, and it does not communicate on CAN
+ bus (no transmission, reception, monitoring).
+ Before CTU CAN FD is enabled, it shall be configured as is explained in
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2836,14 +2860,14 @@ noprefix "false"
 \end_inset
 
 .
- Once it was configured, it can be enabled by writing SETTINGS[ENA] = 1.
- When SETTINGS[ENA] = 1 is set, CTU CAN FD starts bus integration and joins
+ Once configured, CTU CAN FD can be enabled by writing SETTINGS[ENA] = 1.
+ When SETTINGS[ENA] = 1 is set, CTU CAN FD starts bus integration, and joins
  CAN bus communication after receiving 11 consecutive recessive bits.
- When CTU CAN FD joins CAN bus communication, it becomes error-active (during
- integration it was bus-off).
- At this moment CTU CAN FD starts communicating on CAN bus.
+ When CTU CAN FD joins CAN bus communication, it becomes error-active.
+ During bus integration CTU CAN FD is bus-off.
+ Once CTU CAN FD becomes error active, it starts communicating on CAN bus.
  The moment when CTU CAN FD joined CAN bus communication can be determined
- by FCS interrupt and subsequent probing of FAULT_STATE register (see 
+ by FCS interrupt, and subsequent probing of FAULT_STATE register (see 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Interrupts"
@@ -2912,17 +2936,17 @@ name "fig:CTU-CAN-FD-operating-modes"
 
 \begin_layout Standard
 When CTU CAN FD is error-active, it takes part in CAN bus communication.
- If CTU CAN FD becomes error-passive and later bus-off, it stops communicating
- on CAN bus and waits before starting Reintegration until it receives Error
- counter reset command (writing COMMAND[ERCRST] = 1).
- Upon this command, CTU CAN FD starts Reintegration.
+ If CTU CAN FD becomes error-passive, and later bus-off, it stops communicating
+ on CAN bus.
+ CTU CAN FD starts reintegrating to the bus when it receives Error counter
+ reset command (writing COMMAND[ERCRST] = 1).
  Reintegration lasts until CTU CAN FD detects 129 sequences of 11 consecutive
  recessive bits.
  After 129 such sequences, CTU CAN FD becomes error-active again.
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD can be at any time disabled by writing logic 0 to SETTINGS[ENA]
+CTU CAN FD can be disabled at any time by writing logic 0 to SETTINGS[ENA]
  register.
  In such case:
 \end_layout
@@ -2976,8 +3000,8 @@ noprefix "false"
 It is recommended for CTU CAN FD not to be transmitting any frame when it
  is disabled by writing SETTINGS[ENA] = 0, as this would result in transmission
  of error frame by other nodes on CAN bus.
- Therefore SW driver operating on CTU CAN FD shall ensure that none of TXT
- buffers within CTU CAN FD is in 
+ SW driver operating on CTU CAN FD shall ensure that none of TXT buffers
+ in CTU CAN FD is in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3024,11 +3048,11 @@ sticky
 \end_inset
 
 .
- This means that if CTU CAN FD is not yet bus-off, and this command is issued,
- it will be remembered by CTU CAN FD and it will automatically start reintegrati
-on upon nearest transition to bus-off.
- The reason is, that command can be issued in advance (during communication),
- and CTU CAN FD will re-integrate as quickly as possible after becoming
+ If CTU CAN FD is not yet bus-off, and this command is issued, it will be
+ remembered by CTU CAN FD, and it will automatically start reintegration
+ upon nearest transition to bus-off.
+ The reason is, that command can be issued in advance (during regular communicat
+ion), and CTU CAN FD will re-integrate as quickly as possible after becoming
  bus-off (without SW additional delay caused by interaction with SW driver).
 \end_layout
 
@@ -3106,7 +3130,7 @@ CTU CAN FD de-initialization sequence shall consist of following steps:
 \end_layout
 
 \begin_layout Enumerate
-Ensures that no TXT buffer is in any of 
+Ensure that no TXT buffer is in any of 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3131,7 +3155,7 @@ Abort in progress
 \end_inset
 
  states.
- This can be done by issuing 
+ To do this SW issues 
 \series bold
 Set abort
 \series default
@@ -3145,7 +3169,7 @@ noprefix "false"
 
 \end_inset
 
-) to TXT buffers, and by not inserting next frames for transmission into
+) to TXT buffers, and does not insert next frames for transmission into
  TXT Buffers.
 \end_layout
 
@@ -3190,7 +3214,7 @@ noprefix "false"
  Basic unit of time on CAN bus is time quanta.
  Time quanta is derived from System clock by dividing its frequency by bit
  rate prescaler.
- CTU CAN FD has separate prescaler for nominal bit rate (BTR[BRP] register)
+ CTU CAN FD has separate prescaler for nominal bit rate (BTR[BRP] register),
  and data bit rate (BTR_FD[BRP_FD] register).
  Bit rate on CTU CAN FD is configured by specifying Prop_Seg, Phase_Seg1
  and Phase_Seg2 durations (as shown in Figure 
@@ -3258,7 +3282,7 @@ name "fig:bit-time"
 
 \begin_layout Standard
 Common configuration of bit rate on CAN bus within automotive industry is
- 500 Kbit in nominal bit rate and 2 Mbit in data bit rate.
+ 500 Kbit in nominal bit rate, and 2 Mbit in data bit rate.
  Following snippet shows example configuration assuming 100 MHz System clock
  frequency with sample point in 80% of bit:
 \end_layout
@@ -3350,8 +3374,8 @@ Transmitter delay
 \end_layout
 
 \begin_layout Standard
-Transmitter delay is propagation delay of signal transmited by CTU CAN FD
- on CAN_TX output back to CAN_RX input as is visualized in Figure 
+Transmitter delay is a propagation delay of signal transmited by CTU CAN
+ FD on CAN_TX output, back to CAN_RX input as is visualized in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:transmitter-delay"
@@ -3362,12 +3386,12 @@ noprefix "false"
 \end_inset
 
 .
- This delay involves propagation of signal to physical layer transceiver,
+ This delay involves propagation of signal to a physical layer transceiver,
  delay of transceiver itself, and delay from transceiver to CAN_RX input
  of CTU CAN FD.
  CTU CAN FD measures its own transmitter delay when it transmitts CAN FD
  frame (regardles of the fact if bit rate is switched in the frame) on recessive
- to dominant edge between FDF (EDL) and r0 bits as is shown in Figure 
+ to dominant edge between FDF (EDL), and r0 bits as is shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:transmitter-delay-measurement"
@@ -3379,7 +3403,7 @@ noprefix "false"
 
 .
  Transmitter delay is readable after its measurement from TRV_DELAY register.
- Transmitter delay is measured in periods of System clock.
+ Transmitter delay is measured in multiples of System clock period.
 \end_layout
 
 \begin_layout Standard
@@ -3473,7 +3497,7 @@ name "fig:transmitter-delay-measurement"
 \begin_layout Description
 Note Measured transmitter delay includes input delay of CTU CAN FD (which
  is 2 clock periods of System clock).
- Therefore measured transmitter delay will be always higher by two than
+ Therefore, measured transmitter delay will be always higher by two than
  actual delay from CAN_TX to CAN_RX (e.g.
  if signal propagation from CAN_TX to CAN_RX takes 110 ns (11 System clock
  periods at 100 MHz), measured transmitter delay will be 13).
@@ -3481,9 +3505,10 @@ Note Measured transmitter delay includes input delay of CTU CAN FD (which
 
 \begin_layout Description
 Note Transmitter delay measurement is saturated to 127 System clock periods.
- If delay between CAN_TX and CAN_RX is longer, only 127 will be measured.
- When System clock frequency is 100 MHz, this gives 1,27 us of maximal measurabl
-e transmitter delay which is more than most CAN transceivers need.
+ If delay between CAN_TX and CAN_RX is higher, only 127 will be measured.
+ With 100 MHz System clock frequency, the maximal measurable transciver
+ delay is 1,27 us.
+ This is more than most of CAN transceivers need.
 \end_layout
 
 \begin_layout Subsection
@@ -3493,8 +3518,8 @@ Secondary sampling point
 \begin_layout Standard
 Secondary sampling point can be used by CTU CAN FD during data bit rate
  to detect bit errors.
- Its position is configured as delay from start of bit time (Sync_Seg) in
- multiples of System clock (not time quanta!).
+ Its position is configured as a delay from start of bit (Sync_Seg) in multiples
+ of System clock (not time quanta!).
  Secondary sampling point position can be fixed (SSP_CFG[SSP_OFFSET] only),
  derived from Transmitter delay (SSP_CFG[SSP_OFFSET] + TRV_DELAY), or it
  can be disabled (No SSP) as is shown in Figure 
@@ -3605,28 +3630,26 @@ name "fig:secondary-sampling-point-2"
 Note Secondary sampling point offset (SSP_CFG[SSP_OFFSET]) is configurable
  between 0 - 255.
  Internal range of secondary sampling point position is also 0 - 255.
- If due to some reason secondary sampling point position would be more than
- 255 clock cycles from start of bit (e.g.
- due to large measured Transmitter delay) it is saturated to 255.
+ Secondary sampling point position is saturated to 255 System clock periods.
 \end_layout
 
 \begin_layout Description
 Note Since CTU CAN FD input delay is 2 System clock periods (minimum time
  quanta), position of Secondary sampling point shall be configured to at
  least 2 to compensate its own input delay (if SSP_CFG[SSP_OFFSET] < 3 and
- SSP_CFG[SSP_SRC] = SSP_SRC_OFFSET], it is impossible to transmitt CAN FD
- frames without detecting bit error on CTU CAN FDs own transmitted frame).
+ SSP_CFG[SSP_SRC] = SSP_SRC_OFFSET], it is impossible to transmit CAN FD
+ frames without detecting bit error in CTU CAN FDs own transmitted frame).
 \end_layout
 
 \begin_layout Description
 Note CTU CAN FD can handle at most 4 bits on flight between CAN_TX and CAN_RX
  pins when using secondary sampling point.
  E.g.
- if System clock = 100 MHz and Data bit rate = 5 Mbit/s, then one data bit
- time = 20 System clock periods.
+ if System clock is 100 MHz, and Data bit rate = 5 Mbit/s, then one data
+ bit time is 20 System clock periods.
  Then, latest possible position of Secondary sampling point is 20 * 4 =
  80 System clock periods.
- This limitation applies on final position of secondary sampling point (with
+ This limitation applies to final position of secondary sampling point (with
  SSP_CFG[SSP_OFFSET]/TRV_DELAY included).
  User shall not configure secondary sample point position later than 4 data
  bit times.
@@ -3637,12 +3660,13 @@ CAN FD support
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD supports both ISO and non-ISO versions of CAN FD protocol.
- When ISO protocol version is chosen, CTU CAN FD is conformant to ISO11898-1
+CTU CAN FD supports both ISO, and non-ISO versions of CAN FD protocol.
+ When ISO protocol version is chosen, CTU CAN FD is compliant to ISO11898-1
  2015.
- When NON ISO version is chosen, CTU CAN FD is conformant to CAN FD specificatio
-n 1.0.
- Selection between these two versions is done via SETTINGS[NISOFD] register.
+ When NON ISO version is chosen, CTU CAN FD is compliant to CAN FD specification
+ 1.0.
+ To choose between ISO and non-ISO variants, configure SETTINGS[NISOFD]
+ bit.
  SETTINGS[NISOFD] shall be modified only when CTU CAN FD is disabled (SETTINGS[E
 NA] = 0).
 \end_layout
@@ -3655,8 +3679,8 @@ Protocol exception handling
 CTU CAN FD supports Protocol exception detection.
  Protocol exception is enabled by MODE[PEX] = 1.
  MODE[PEX] shall be changed only when CTU CAN FD is disabled (SETTINGS[ENA]=0).
- Protocol exception behavior is different for various CAN implementation
- types (see 
+ Protocol exception behavior differs for various CAN implementation types
+ (see 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:can-implementation-type"
@@ -3667,15 +3691,15 @@ noprefix "false"
 \end_inset
 
 ).
- If MODE[PEX] = 1 and CTU CAN FD detects Protocol exception, it enters bus
- integration state and it waits for 11 consecutive recessive bits to be
- monitored on CAN_RX signal.
+ If MODE[PEX] = 1 and CTU CAN FD detects Protocol exception, CTU CAN FD
+ enters bus integration state, and waits for 11 consecutive recessive bits
+ to be monitored on CAN_RX signal.
  REC/TEC counters are not changed upon Protocol exception, nor is Fault
  confinement state of CTU CAN FD.
  When Protocol exception occurs, STATUS[PEXS] flag is set.
- STATUS[PEXS] can be cleared by writing COMMAND[CPEXS] = 1.
- If MODE[PEX] = 0 and conditions for Protocol exception are valid, CTU CAN
- FD transmits error frame instead.
+ To clear STATUS[PEXS], SW shall write COMMAND[CPEXS] = 1.
+ If MODE[PEX] = 0, and conditions for Protocol exception are valid, CTU
+ CAN FD transmits error frame instead.
 \end_layout
 
 \begin_layout Subsection
@@ -4009,29 +4033,28 @@ name "tab:can-implementation-type"
 \begin_layout Description
 Note When CTU CAN FD is configured as Classical CAN / CAN FD tolerant node
  (MODE[FDE] = 0), and user attempts to send CAN FD frame (FRAME_FORMAT_W[FDF_BIT
-] = 1 in TXT buffer), frame type in TXT buffer will be ignored and CAN 2.0
- frame will be sent.
+] = 1 in TXT buffer), CTU CAN FD will ignore frame type in TXT buffer ,
+ and send CAN 2.0 frame.
 \end_layout
 
 \begin_layout Description
 Note When CTU CAN FD is configured as Classical CAN / CAN FD tolerant node,
- SETTINGS[NISOFD] register has no effect.
+ SETTINGS[NISOFD] bit has no effect.
 \end_layout
 
 \begin_layout Description
 Note According to 10.9.10 of ISO11898-1 2015, CAN FD Enabled implementation
  shall not be set to a mode where it behaves as CAN FD tolerant implementation.
  It is therefore users responsibility to use this option only for evaluation
- / debugging purposes!
+ / debugging purposes.
 \end_layout
 
 \begin_layout Description
-Note According original CAN 2.0 specification, R0 and R1 bits of any value
- shall be accepted by receivers, however ISO119898-1 2015 states (Table
- A.1) that Error frames shall be sent by Classical CAN implementation upon
- such event.
- This inconsisency in CAN specifications is resolved to meet ISO11898-1
- 2015.
+Note According to CAN 2.0 specification, R0 and R1 bits of any value shall
+ be accepted by receivers, however ISO119898-1 2015 states (Table A.1) that
+ Error frames shall be sent by Classical CAN implementation upon such event.
+ CTU CAN FD resolves this inconsisency in CAN specifications in favor of
+ ISO11898-1 2015.
 \end_layout
 
 \begin_layout Subsection
@@ -4074,10 +4097,10 @@ noprefix "false"
 \begin_layout Standard
 As an example, when nominal bit rate is 250 Kbit/s, data bit rate is 1 Mbit/s,
  minimal possible System clock frequency is 5 MHz.
- Note that this is absolute maximum and gives very little margin in sample
- point position.
- Therefore it is recommended to use at least 10 MHz System clock for these
- bit rates.
+ Note that this is absolute maximum bit-rate, and gives very little margin
+ in sample point position.
+ Therefore it is recommended to use at least 10 MHz System clock in such
+ case.
 \end_layout
 
 \begin_layout Section
@@ -4092,10 +4115,10 @@ name "sec:CAN-frame-transmission"
 \end_layout
 
 \begin_layout Standard
-CAN frames are transmitted by CTU CAN FD from TXT buffers.
+CTU CAN FD transmits CAN frames from TXT buffers.
  CTU CAN FD contains 2-8 TXT buffers (number of TXT buffers is selected
  at synthesis time).
- Number of TXT buffers present can be read from TXTB_INFO register.
+ To get actual number of TXT Buffers, SW can read TXTB_INFO register.
  If 
 \begin_inset Quotes eld
 \end_inset
@@ -4104,7 +4127,7 @@ N
 \begin_inset Quotes erd
 \end_inset
 
- buffers are present, then its always buffers with indices 1 - 
+ TXT buffers are present, then its always buffers 1 - 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4124,9 +4147,9 @@ noprefix "false"
 \end_inset
 
 .
- State of each TXT buffer can be read from TX_STATUS register.
- SW can control TXT buffer state via TX_COMMAND register, and issue three
- types of commands:
+ TX_STATUS register reflects state of TXT Buffers.
+ To control TXT buffer state, SW issues commands to TX_COMMAND register.
+ There are three types of commands:
 \end_layout
 
 \begin_layout Description
@@ -4187,9 +4210,9 @@ Empty
 
 \begin_layout Standard
 Each TXT buffer stores single CAN frame.
- Whole 64 byte CAN FD frame can fit within single TXT buffer.
- TXT buffer is write only (CAN frame can't be read back), and is accessible
- only when TXT buffer is in 
+ A 64 byte CAN FD frame fits to single TXT buffer.
+ TXT buffer is write only (CAN frame can't be read back).
+ TXT buffer is accessible only when the buffer is in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4213,7 +4236,7 @@ TX failed
 \begin_inset Quotes erd
 \end_inset
 
- or 
+, 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4221,10 +4244,17 @@ Aborted
 \begin_inset Quotes erd
 \end_inset
 
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Parity Error
+\begin_inset Quotes erd
+\end_inset
+
  states.
- CAN frame is stored to TXT buffers via TXT Buffer 1 - TXT Buffer 8 memory
- regions described in Section 3.
- T
+ To store CAN frame to a TXT buffer, SW writes to TXT Buffer 1 - TXT Buffer
+ 8 memory regions described in Section 3.
 \end_layout
 
 \begin_layout Standard
@@ -4271,11 +4301,11 @@ name "fig:txt-buffer-user"
 \end_layout
 
 \begin_layout Standard
-After SW driver stores CAN frame to a TXT buffer, it issues 
+First SW driver stores CAN frame to a TXT buffer, and then issues 
 \series bold
 Set ready
 \series default
- command to this TXT buffer to request transmission of stored CAN frame.
+ command to the TXT buffer to request transmission of CAN frame.
  TXT buffer moves to 
 \begin_inset Quotes eld
 \end_inset
@@ -4285,7 +4315,7 @@ Ready
 \end_inset
 
  state, and CTU CAN FD can transmit frame from this TXT buffer.
- When CTU CAN FD starts transmission from this TXT buffer, it moves to 
+ When CTU CAN FD starts transmission, the TXT buffer moves to 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4294,7 +4324,7 @@ TX in progress
 \end_inset
 
  state.
- CTU CAN FD starts transmission from TXT buffer which is in 
+ CTU CAN FD starts transmission from TXT buffer in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4302,8 +4332,8 @@ Ready
 \begin_inset Quotes erd
 \end_inset
 
- state if it samples dominant bit during third bit of intermission (SOF
- bit is skipped in this case), or as soon as bus is idle.
+ state if it sampled dominant bit during third bit of intermission, or as
+ soon as CAN bus is idle.
  Note that in Time triggered transmission mode, the behavior differs (see
  
 \begin_inset CommandInset ref
@@ -4319,9 +4349,9 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-When CTU CAN FD is error-passive and it was transmitter of previous frame,
+When CTU CAN FD is error-passive, and it was transmitter of previous frame,
  it suspend consecutive transmission for 8 bit times.
- When CTU CAN FD transmitts CAN frame succesfully (no arbitration lost,
+ When CTU CAN FD transmitted CAN frame succesfully (no arbitration lost,
  no error frame), TXT buffer moves to 
 \begin_inset Quotes eld
 \end_inset
@@ -4331,7 +4361,7 @@ TX OK
 \end_inset
 
  state.
- If an error frame occurs or arbitration is lost, TXT buffer moves to 
+ If an error frame occurs, or arbitration is lost, TXT buffer moves to 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4339,13 +4369,13 @@ Ready
 \begin_inset Quotes erd
 \end_inset
 
- state and transmission is attempted again in nearest intermission or bus
- idle\SpecialChar endofsentence
+ state and CTU CAN FD attempts to transmitt again in nearest intermission
+ or bus idle\SpecialChar endofsentence
 
 \end_layout
 
 \begin_layout Description
-Note When CTU CAN FD operates in Bus monitoring mode (MODE[BMM] = 1) or
+Note When CTU CAN FD operates in Bus monitoring mode (MODE[BMM] = 1), or
  Restricted operation mode (MODE[ROM] = 1) it always ends up in 
 \begin_inset Quotes eld
 \end_inset
@@ -4366,7 +4396,7 @@ TXT buffer selection
 \end_layout
 
 \begin_layout Standard
-If there are multiple TXT buffers in 
+When multiple TXT buffers are in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4382,8 +4412,8 @@ Ready
 \begin_inset Quotes erd
 \end_inset
 
- state and transmitts CAN frame from this TXT buffer.
- Priority of TXT buffers is configured in TX_PRIORITY register.
+ state, and transmitts CAN frame from this TXT buffer.
+ SW configures priority of TXT buffers in TX_PRIORITY register.
  If two TXT buffers have equal priority, TXT buffer with lower index has
  precedence.
  The overall flow of transmission is shown in Figure 
@@ -4497,9 +4527,10 @@ name "subsec:Time-triggered-transmission"
 
 \begin_layout Standard
 CTU CAN FD supports time-triggered transmission mode.
- This mode is enabled when MODE[TTTM] = 1.
- In this mode, CTU CAN FD will attempt to transmitt frame from highest priority
- TXT buffer only when value of Time-Base (see 
+ To enable this mode, set MODE[TTTM] = 1.
+ In time-triggered transmission mode, CTU CAN FD will attempt to transmitt
+ frame from highest priority TXT buffer only when value of Time-Base (see
+ 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "sec:Time-base"
@@ -4511,10 +4542,10 @@ noprefix "false"
 
 ) reaches Timestamp stored in TIMESTAMP_L_W and TIMESTAMP_U_W words of this
  TXT Buffer.
- It is assumed that Time base is up-counting unsigned counter.
- When Time base reaches value stored in TIMESTAMP_L_W, TIMESTAMP_U_W, frame
- stored in TXT buffer is allowed for transmission (assuming that it is in
- highest priority TXT buffer in 
+ CTU CAN FD assumes that Time base is an up-counting unsigned counter.
+ When Time base reaches value stored in TIMESTAMP_L_W and TIMESTAMP_U_W,
+ frame stored in TXT buffer is allowed for transmission (assuming that it
+ is in highest priority TXT buffer in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4533,8 +4564,8 @@ noprefix "false"
 \end_inset
 
 .
- Note that this does not mean that CTU CAN FD will transmit the frame immediatel
-y, it will still wait until bus is idle.
+ CTU CAN FD will not transmit the frame immediately, it will transmit the
+ frame when the CAN bus is free.
  If TXT buffer is in 
 \begin_inset Quotes eld
 \end_inset
@@ -4593,9 +4624,8 @@ name "fig:time-triggered-transmission"
 \end_layout
 
 \begin_layout Standard
-If CAN frame shall be transmitted as soon as possible (no time triggered
- transmission), SW driver shall store 0x00000000 to TIMESTAMP_L_W, TIMESTAMP_U_W
- words.
+To transmitt CAN frame as soon as possible (no time triggered transmission),
+ SW driver shall store 0x00000000 to TIMESTAMP_L_W, TIMESTAMP_U_W words.
  Note that time triggered transmission is always considered only from highest
  priority TXT buffer in 
 \begin_inset Quotes eld
@@ -4606,8 +4636,8 @@ Ready
 \end_inset
 
  state.
- At any moment TXT buffer priority is considered first before time triggered
- transmission.
+ TXT buffer priority is always evaluated first before time triggered transmissio
+n.
  The behavior of the TXT buffer priority and time triggered transmission
  is following:
 \end_layout
@@ -4648,9 +4678,8 @@ Type of transmitted CAN frame
 \end_layout
 
 \begin_layout Standard
-Type of transmitted CAN frame by CTU CAN FD is determined by content of
- FRAME_FORMAT_W in TXT buffer, and settings of CTU CAN FD as show in Figure
- 
+SW chooses type of transmitted CAN frame by setting the value of FRAME_FORMAT_W
+ in TXT buffer, and settings of CTU CAN FD as show in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:tx-frame-type"
@@ -4711,12 +4740,12 @@ name "fig:tx-frame-type"
 Note When FRAME_FORMAT_W[FDF] = FD_CAN and MODE[FDE] = 0, CTU CAN FD transmits
  CAN 2.0 frame.
  If in such case TXT buffer contains CAN FD frame with more than 8 bytes
- of data payload, bytes 8 above 8-th bit will not be sent.
+ of data payload, bytes above 8-th byte will not be sent.
 \end_layout
 
 \begin_layout Description
 Note When FRAME_FORMAT_W[RTR] = RTR_FRAME and FRAME_FORMAT_W[FDF] = FD_CAN,
- RTR flag is ignored and CTU CAN FD transmits CAN FD data frame (there are
+ CTU CAN FD ignores RTR flag and transmits CAN FD data frame (there are
  no remote frames in CAN FD protocol).
 \end_layout
 
@@ -4725,7 +4754,7 @@ Retransmitt limitation
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD can limit number of retransmission from a single TXT buffer.
+CTU CAN FD can limit number of retransmissions from single TXT buffer.
  Retransmitt limitation is enabled when SETTINGS[RTRLE] = 1.
  Number of retransmissions is configured in SETTINGS[RTRTH].
  First attempt to transmitt CAN frame does not count as retransmission.
@@ -4951,8 +4980,8 @@ name "tab:retransmitt-counter-configurations"
 
 \begin_layout Standard
 If SETTINGS[RTRTH] consecutive retransmission are not succesfful (error
- frame or arbitration lost) from single TXT buffer, this TXT buffer moves
- to 
+ frame occured or arbitration was lost) from single TXT buffer, this TXT
+ buffer moves to 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4963,22 +4992,11 @@ TX failed
  state.
  If TXT buffer used for transmission changed between two transmissions (e.g
  it was picked due to higher priority), internal counter of retransmissions
- is erased and new frame (from new TXT buffer) has again SETTINGS[RTRTH]+1
+ is erased, and new frame (from new TXT buffer) has again SETTINGS[RTRTH]+1
  transmission attempts.
  If CTU CAN FD returns to transmission from original TXT buffer, it does
  not remember previous number of transmission attempts and again attempts
  to transmitt CAN frame SETTINGS[RTRTH]+1 times.
- If TXT buffer which is currently used for transmission moves to 
-\begin_inset Quotes eld
-\end_inset
-
-Aborted
-\begin_inset Quotes erd
-\end_inset
-
- state, internal counter of retransmissions is also erased.
- If such TXT buffer moves to Ready state again, CTU CAN FD attempts to transmitt
- it SETTINGS[RTRTH]+1 times.
  Current number of transmission attempts of a single frame is held in an
  internal counter which is readable via RETR_CTR register.
 \end_layout
@@ -5035,7 +5053,7 @@ Abort in progress
 \end_inset
 
  state.
- In such case, it will move to 
+ Then the TXT Buffer will move to 
 \begin_inset Quotes eld
 \end_inset
 
@@ -5307,23 +5325,23 @@ name "sec:CAN-frame-reception"
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD contains single RX buffer that stores received CAN frames.
+CTU CAN FD contains single FIFO-like RX buffer for received CAN frames.
  Size of the RX buffer is multiple of 32-bit words.
  SW can read the size of RX buffer from RX_MEM_INFO register.
- RX buffer is organized like a FIFO.
- RX buffer can store two types of CAN frames:
+ RX buffer stores two types of CAN frames:
 \end_layout
 
 \begin_layout Itemize
 Regular frame - CTU CAN FD stores regular CAN frame to RX buffer when a
  CAN frame is received without error frames on CAN bus.
  Regular CAN frames contain all the data exchanged in the CAN communication.
+ Regular frames include Remote Transmission Request frames.
  
 \end_layout
 
 \begin_layout Itemize
-Error frame - CTU CAN FD can store error frame that occured on CAN bus to
- the RX buffer.
+Error frame - CTU CAN FD stores error frame that occured on CAN bus to the
+ RX buffer.
 \end_layout
 
 \begin_layout Standard
@@ -5334,25 +5352,23 @@ CAN frames (regular or error) are read by SW from RX buffer by consecutive
 \end_layout
 
 \begin_layout Itemize
-Automatic mode - When RX_DATA register is read, read pointer of RX buffer
- FIFO is automatically incremented (read has side-effect).
- This mode shall be used only when RX_DATA is read by 32-bit accesses.
+Automatic mode - When SW reads RX_DATA register, CTU CAN FD automatically
+ increments read pointer of RX buffer FIFO.
+ Use this mode only when RX_DATA is read by 32-bit accesses.
  Writes to COMMAND[RXRPMV] = 1 have no effect in this mode.
 \end_layout
 
 \begin_layout Itemize
-Manual mode - When RX_DATA register is read, read pointer of RX buffer FIFO
- is NOT incremented (read has no side-effect).
+Manual mode - When SW reads RX_DATA register, CTU CAN FD does not increment
+ read pointer of RX buffer FIFO.
  To increment read pointer, SW shall write COMMAND[RXRPMV] = 1.
- This mode can be used when RX buffer is read via 8/16/32-bit accesses,
- since it allows reading single RX buffer memory word via 4x8 bit or 2x16
- bit accesses.
+ Use this mode when CTU CAN FD is mapped to a memory space where only 8/16
+ bit accesses are possible.
 \end_layout
 
 \begin_layout Standard
 Mode of RX buffer is configured by MODE[RXBAM] bit.
- CAN frame format within RX buffer is described in Section 3, and it is
- visualized in Figure 
+ Section 3 describes CAN frame format in RX buffer and Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:rx-buffer-frame-visualization"
@@ -5362,8 +5378,8 @@ noprefix "false"
 
 \end_inset
 
-.
- CAN frame within RX buffer spans from 4 to 20 memory words.
+ shows this format.
+ CAN frame in RX buffer spans from 4 to 20 memory words.
  Its size is given as:
 \end_layout
 
@@ -5422,14 +5438,18 @@ Frame count
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD contains counter of CAN frames within the RX buffer.
- The counter value can be read from RX_STATUS[RXFRCE] register.
- Counter is incremented when frame is stored to RX buffer and decremented
- when last word of CAN frame is read from RX buffer.
+CTU CAN FD contains a counter of CAN frames within the RX buffer.
+ To get value of this counter, SW shall read RX_STATUS[RXFRCE] register.
+ CTU CAN FD:
 \end_layout
 
-\begin_layout Description
-Note The frame counter counts regular CAN frames as well as Error frames.
+\begin_layout Itemize
+Increments the counter when it stores a frame to RX buffer (regular or error
+ frame)
+\end_layout
+
+\begin_layout Itemize
+Decremented the counter when SW reads a last word of CAN frame from RX buffer.
 \end_layout
 
 \begin_layout Subsection
@@ -5449,9 +5469,9 @@ _W, IDENTIFIER_W, TIMESTAMP_U_W and TIMESTAMP_L_W).
 \begin_layout Standard
 The error frames are distinguished from regular CAN frames by FRAME_FORMAT_W[ERF
 ] bit.
- In Error frames FRAME_FORMAT_W[ERF] = ERF_ERR_FRAME, while in regular CAN
- frames FRAME_FORMAT_W[ERF] = ERF_CAN_FRAME.
- The error frames have following differences compared to regular CAN frames:
+ In Error frames, FRAME_FORMAT_W[ERF] = ERF_ERR_FRAME, while in regular
+ CAN frames FRAME_FORMAT_W[ERF] = ERF_CAN_FRAME.
+ The error frames have following differences from regular CAN frames:
 \end_layout
 
 \begin_layout Itemize
@@ -5479,16 +5499,16 @@ Note When CTU CAN FD operates in Restricted operation mode (MODE[ROM]=1),
 \end_layout
 
 \begin_layout Description
-Note All rules related to setting of ERR_CAPT (Error type priorities, etc...)
- apply also to Error frames stored in RX buffer.
+Note Rules related to setting of ERR_CAPT (Error type priorities, etc...) apply
+ also to Error frames stored in RX buffer.
 \end_layout
 
 \begin_layout Description
-Note In regular CAN frame FRAME_FORMAT_W[IVLD] is always 1.
- In Error frame FRAME_FORMAT_W[IVLD]=1 if the IDENTIFIER_W contains a valid
- CAN identifier.
- If FRAME_FORMAT_W[IVLD] = 1 then IDENTIFIER_W and can be used to track
- the which CAN frame lead to Error frame.
+Note In regular CAN frame, FRAME_FORMAT_W[IVLD] is always 1.
+ If FRAME_FORMAT_W[IVLD]=1 in Error frame, then the IDENTIFIER_W contains
+ a valid CAN identifier.
+ When FRAME_FORMAT_W[IVLD] = 1, then IDENTIFIER_W can be used to track the
+ CAN frame that lead to Error frame.
 \end_layout
 
 \begin_layout Description
@@ -5508,15 +5528,15 @@ RX buffer memory provides following status information:
 \end_layout
 
 \begin_layout Itemize
-Number of free memory words, readable from RX_MEM_INFO[RX_MEM_FREE].
+Number of free memory words in RX_MEM_INFO[RX_MEM_FREE].
 \end_layout
 
 \begin_layout Itemize
-Write pointer position, readable from RX_POINTERS[RX_WPP].
+Write pointer position in RX_POINTERS[RX_WPP].
 \end_layout
 
 \begin_layout Itemize
-Read pointer position, readable from RX_POINTERS[RX_RPP].
+Read pointer position in RX_POINTERS[RX_RPP].
 \end_layout
 
 \begin_layout Subsection
@@ -5525,9 +5545,9 @@ RX buffer status
 
 \begin_layout Standard
 RX buffer with no stored CAN frames is empty.
- In such state RX_STATUS[RXE]=1.
- RX buffer which has all its memory words occupied by CAN frames is full.
- In such state RX_STATUS[RXF]=1.
+ When RX buffer is empty, then RX_STATUS[RXE]=1.
+ RX buffer with all memory words occupied by CAN frames is full.
+ When RX buffer is full, RX_STATUS[RXF]=1.
  
 \end_layout
 
@@ -5542,13 +5562,13 @@ Overrun
 \end_layout
 
 \begin_layout Standard
-If there is not enough free space in RX buffer during reception of CAN frame,
- Overrun occurs and currently received frame is droped (RX buffer FIFO has
- overflown).
- In such situation Overrun flag is set.
- Overrun flag is sticky (it remains set until it is cleared) and can be
- read from STATUS[DOR].
- Overrun flag is cleared by COMMAND[CDO]=1.
+Overrun occurs when there is not enough free space in RX buffer during reception
+ of CAN frame.
+ Upon overrun, CTU CAN FD drops currently received frame (RX buffer FIFO
+ overflows), and sets Overrun flag.
+ Overrun flag is sticky (it remains set until SW clears it).
+ SW reads Overrun flag from STATUS[DOR].
+ SW clears Overrun flag by writing COMMAND[CDO]=1.
 \end_layout
 
 \begin_layout Subsection
@@ -5563,13 +5583,27 @@ name "subsec:Flush"
 \end_layout
 
 \begin_layout Standard
-RX buffer can be flushed by writing COMMAND[RRB]=1.
- When RX buffer is flushed, content of RX buffer is kept (memory is not
- erased), but read and write pointers are set to 0 and frame counter is
- set to 0.
- RX buffer is as if no frame was received to it yet.
- If this command is issued during CAN frame reception, currently received
- frame is also droped.
+To flush RX buffer, SW shall write COMMAND[RRB]=1.
+ The flush of RX buffer has following effect:
+\end_layout
+
+\begin_layout Itemize
+Content of RX buffer is kept (memory is not erased)
+\end_layout
+
+\begin_layout Itemize
+Read and write pointers become 0
+\end_layout
+
+\begin_layout Itemize
+Frame counter becomes 0.
+ 
+\end_layout
+
+\begin_layout Standard
+After flush RX buffer is as-if there are no frames in it.
+ If SW issues flush during CAN frame reception, currently received frame
+ is also droped.
 \end_layout
 
 \begin_layout Subsection
@@ -5582,18 +5616,34 @@ Reading CAN frame from RX buffer involves multiple reads of RX_DATA register.
  side effect).
  If an error occurs (e.g.
  bus error, ECC error) during read from RX_DATA register, then read data
- can be lost (RX buffer increments read pointer, and SW driver can't read
- the word again).
- As consequence, SW driver and RX buffer can become inconsistent.
- SW driver can use RX_STATUS[RXMOF] to recover from such state.
- When next read from RX_DATA register is about to return other word than
- FRAME_FORMAT_W (RX buffer read pointer points to middle of frame), then
- RX_STATUS[RXMOF] = 1.
- If SW driver gets into inconsistent state during readout of frame, it can
+ could be lost.
+ SW driver now has two problems:
+\end_layout
+
+\begin_layout Itemize
+CTU CAN FD incremented RX buffer read pointer.
+ SW driver lost the word, therefore it can't read the frame correctly.
+\end_layout
+
+\begin_layout Itemize
+SW driver may have lost track on what part of the frame was read from RX
+ buffer.
+ E.g.
+ if an error ocurred during read of FRAME_FORMAT_W, the SW driver does not
+ know how many words does the remaining CAN frame contains.
+\end_layout
+
+\begin_layout Standard
+SW driver can read RX_STATUS[RXMOF] to recover from such state.
+ When next read from RX_DATA register is about to return FRAME_FORMAT_W
+ (beginning of new frame), RX_STATUS[RXMOF] = 0.
+ Otherwise RX_STATUS[RXMOF] = 1 (RX buffer read pointer points to middle
+ of frame).
+ If SW driver gets into inconsistent state during readout of frame, it shall
  repetitively read from RX_DATA until RX_STATUS[RX_MOF] = 0.
- When such condition is detected, RX_DATA points to FRAME_FORMAT_W word
- of new frame, or RX buffer is empty (if the error occured during readout
- of only frame in RX buffer).
+ Upon such condition, RX_DATA points to FRAME_FORMAT_W word of new frame,
+ or RX buffer is empty (if the error occured during readout of only frame
+ in RX buffer).
 \end_layout
 
 \begin_layout Subsection
@@ -5601,13 +5651,22 @@ Timestamping
 \end_layout
 
 \begin_layout Standard
-When CTU CAN FD receives CAN frame, it stores its timestamp (it samples
- value of external Time Base) in TIMESTAMP_L_W, TIMESTAMP_U_W words within
- RX buffer.
- Timestamp of received frame can be sampled in sample point of Start of
- Frame bit, or in 6th bit of End of Frame (moment when received CAN frame
- is considered valid according to ISO11898-1 2015).
- The position where timestamp is sampled is configured by RX_SETTINGS[RTSOP].
+When CTU CAN FD receives CAN frame, it stores its timestamp in TIMESTAMP_L_W,
+ TIMESTAMP_U_W words within RX buffer.
+ CTU CAN FD samples thevalue of external Time Base to obtain the timestamp
+ of CAN frame.
+ CTU CAN FD samples the Timestamp of received frame in:
+\end_layout
+
+\begin_layout Itemize
+Sample point of Start of Frame bit.
+ This mode is configured by RX_SETTINGS[RTSOP]=1
+\end_layout
+
+\begin_layout Itemize
+6th bit of End of Frame (moment when received CAN frame is considered valid
+ according to ISO11898-1 2015).
+ This mode is configured by RX_SETTINGS[RTSOP]=0.
 \end_layout
 
 \begin_layout Subsection
@@ -5615,28 +5674,39 @@ Frame filtering
 \end_layout
 
 \begin_layout Standard
-Received CAN frames are filtered by HW filters.
+CTU CAN FD filters received CAN frames by HW filters.
  There are two types of filters in CTU CAN FD: Bit filter and Range filter.
  There are three instances of Bit filter (A,B,C) and one instance of Range
  filter.
- Received CAN frame is stored to RX buffer if it passes at least one filter
- (logical OR betwen filter results).
- Frame filters are applied on received frame identifier only if Acceptance
- filter mode is enabled (MODE[AFM] = 1).
- MODE[AFM] shall be modified only when CTU CAN FD is disabled (SETTINGS[ENA]
+ If received CAN frame passes at least one filter, CTU CAN FD stores the
+ frame to RX buffer.
+ CTU CAN FD filters the received frames only if Acceptance filter mode is
+ enabled (MODE[AFM] = 1).
+ SW shall modify MODE[AFM] only when CTU CAN FD is disabled (SETTINGS[ENA]
  = 0).
- When Acceptance filter mode is disabled, filtering is not applied, and
- each received CAN frame is stored to RX buffer.
+ When Acceptance filter mode is disabled, CTU CAN FD stores every received
+ CAN frame to RX buffer.
 \end_layout
 
 \begin_layout Standard
-Each filter can be selectively configured to accept only certain types of
- CAN frame types (CAN 2.0 frame / CAN FD frame) and Identifier types (frame
- with Base identifier only, frame with Base + Extended identifier).
- Such configuration is available in FILTER_CONTROL register.
- Each filter is disabled by setting all bits in FILTER_CONTROL register
- belonging to this filter to 0.
- Frame filters operation is described in Figure 
+SW can configure each filter to accept only certain types of:
+\end_layout
+
+\begin_layout Itemize
+CAN frame types (CAN 2.0 frame / CAN FD frame)
+\end_layout
+
+\begin_layout Itemize
+Identifier types (frame with Base identifier only, frame with Base + Extended
+ identifier).
+ 
+\end_layout
+
+\begin_layout Standard
+SW can configure this behavior in FILTER_CONTROL register.
+ SW disables filter by setting all bits in FILTER_CONTROL register belonging
+ to this filter to 0.
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:frame-filters-operation"
@@ -5646,7 +5716,7 @@ noprefix "false"
 
 \end_inset
 
-.
+ describes Frame filters operation.
 \end_layout
 
 \begin_layout Standard
@@ -5720,10 +5790,8 @@ Range filter
 \end_layout
 
 \begin_layout Standard
-Range filter determines if received CAN frame identifier is within certain
- decimal range.
- Lower threshold of this decimal range is given by FILTER_RAN_LOW and upper
- threshold is given by FILTER_RAN_HIGH.
+Range filter checks if received CAN frame identifier is within FILTER_RAN_LOW
+ to FILTER_RAN_HIGH decimal range.
 \end_layout
 
 \begin_layout Description
@@ -5756,7 +5824,7 @@ Sample code 1 - Frame reception in automatic mode (32-bit access)
 \end_layout
 
 \begin_layout LyX-Code
-/* Poll on RX Buffer until there is a frame in it */
+/* Poll on RX buffer until there is a frame in it */
 \end_layout
 
 \begin_layout LyX-Code
@@ -5881,7 +5949,7 @@ Sample code 2 - Frame reception in manual mode (8-bit access)
 \end_layout
 
 \begin_layout LyX-Code
-/* Poll on RX Buffer until there is a frame in it */
+/* Poll on RX buffer until there is a frame in it */
 \end_layout
 
 \begin_layout LyX-Code
@@ -6084,8 +6152,8 @@ Fault confinement
 \end_layout
 
 \begin_layout Standard
-Fault confinement state of CTU CAN FD is readable from FAULT_STATE register.
- Fault confinement state transition diagram is displayed in Figure 
+SW can read Fault confinement state of CTU CAN FD from FAULT_STATE register.
+ Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:fault-confinement"
@@ -6095,27 +6163,26 @@ noprefix "false"
 
 \end_inset
 
-.
- Fault confinement counters are readable from REC and TEC registers.
- These counters correspond to transmitt error counter and receive error
+ shows the Fault confinement state transition diagram.
+ CTU CAN FD shows Fault confinement counters in REC and TEC registers.
+ These counters correspond to transmitt error counter, and receive error
  counter as defined in ISO11898-1.
  CTU CAN FD additionally contains counters distigushing between errors detected
- in nominal bit rate and data bit rate.
- Nominal bit rate error counter is readable from ERR_NORM register and it
- is incremented by 1 for each error detected during nominal bit rate.
- Data bit rate error counter is readable from ERR_FD register and it is
- incremented by 1 due to each error detected during data bit rate.
+ in nominal bit rate, and errors detected in data bit rate.
+ To read Nominal bit rate error counter, SW shall read ERR_NORM register.
+ To read Data bit rate error counter, SW shall read ERR_FD register.
+ CTU CAN FD increments each error counters by 1 when it detects error in
+ the respective bit rate.
 \end_layout
 
 \begin_layout Standard
-All four counters (REC, TEC, ERR_NORM, ERR_FD) can be manipulated by SW.
- As this feature directly affects compliance of CTU CAN FD to ISO11898-1,
- this is only allowed when MODE[TSTM] = 1 (in test mode).
- All counters can be set from SW via CTR_PRES register.
+When CTU CAN FD is in test mode (MODE[TSTM] = 1), SW can change all four
+ counters (REC, TEC, ERR_NORM, ERR_FD).
+ SW can set these counters via CTR_PRES register.
  Thresholds for Error warning limit, and transition to error passive are
- given in EWL and ERP registers.
+ in EWL and ERP registers.
  By default, EWL and ERP corresponds to ISO11898-1.
- In test mode (MODE[TSTM] = 1) EWL and ERP registers are writable.
+ In test mode (MODE[TSTM] = 1), SW can change EWL and ERP registers.
 \end_layout
 
 \begin_layout Standard
@@ -6173,7 +6240,7 @@ name "sec:Interrupts"
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD generates interrupts from various sources.
+CTU CAN FD generates interrupts upon various events.
  Each interrupt source has three parameters:
 \end_layout
 
@@ -6191,7 +6258,7 @@ Interrupt status - Set by HW upon event occurence, cleared by writing to
 \end_layout
 
 \begin_layout Standard
-Relationship of interrupt parameters is shown in Figure 
+Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:interrupts"
@@ -6201,17 +6268,16 @@ noprefix "false"
 
 \end_inset
 
-.
- Interrupt status is set when a certain condition is met within CTU CAN
- FD.
- In order for Interrupt status to be set, its corresponding bit of Interrupt
- mask must be 0 (interrupt is unmasked).
- If Interrupt status is set, and corresponding interrupt is enabled Interrupt
+ shows the relationship between interrupt parameters.
+ CTU CAN FD sets Interrupt status when a certain condition.
+ To set the Interrupt status, its corresponding bit of Interrupt mask must
+ be 0 (interrupt is unmasked).
+ If Interrupt status is set, and corresponding interrupt is enabled, Interrupt
  is generated.
  Interrupt status can be read from CTU CAN FD via INT_STAT register.
  Note that when interrupt status is about to be set by HW at the same moment
- as it is being cleared by writing to INT_STAT register, interrupt remains
- set (set has priority).
+ as it is being cleared by SW, interrupt remains set (set has priority over
+ clear).
 \end_layout
 
 \begin_layout Standard
@@ -6264,9 +6330,9 @@ Frame transmission and reception
 
 \begin_layout Standard
 When CTU CAN FD transmitts CAN frame succesfully (no error frame until the
- end of EOF) TX interrupt is generted (INT_STAT[TXI]).
+ end of EOF), it generates TX interrupt (INT_STAT[TXI]).
  When CTU CAN FD receives CAN frame successfully (no error frame until one
- bit before the end of EOF), RX interrupt is generated (INT_STAT[RXI]).
+ bit before the end of EOF), it generates RX interrupt (INT_STAT[RXI]).
 \end_layout
 
 \begin_layout Subsection
@@ -6274,13 +6340,13 @@ Fault confinement
 \end_layout
 
 \begin_layout Standard
-When Transmitt error counter (TEC) or Receive error counter (REC) are reach
- value in EWL register, Error warning limit interrupt is generated (INT_STAT[EWL
-I]).
- When Fault confinement state of CTU CAN FD changes Fault confinement state
- interrupt is generated (INT_STAT[FCSI]).
- This bit is set upon any Fault confinement state change (even bus-off to
- error-active).
+When Transmitt error counter (TEC), or Receive error counter (REC) reach
+ value in EWL register, CTU CAN FD generates Error warning limit interrupt
+ (INT_STAT[EWLI]).
+ When Fault confinement state changes, CTU CAN FD generates Fault confinement
+ state interrupt (INT_STAT[FCSI]).
+ CTU CAN FD sets INT_STAT[FCSI] upon any Fault confinement state change
+ (even bus-off to error-active).
 \end_layout
 
 \begin_layout Subsection
@@ -6288,13 +6354,14 @@ TXT buffers and RX buffer
 \end_layout
 
 \begin_layout Standard
-When Overrun occurs on RX buffer, Data overrun interrupt is generated (INT_STAT[
-DOI]).
- When RX buffer is full, RX buffer full interrupt is generated (INT_STAT[RXFI]).
- If RX buffer is still full after INT_STAT[RXFI] was cleared, interrupt
- is generated again.
- When there is at least one CAN frame stored in RX buffer, RX buffer not
- empty interrupt is generated (INT_STAT[RBNEI]).
+When Overrun occurs on RX buffer, CTU CAN FD generates data overrun interrupt
+ (INT_STAT[DOI]).
+ When RX buffer is full, CTU CAN FD generates RX buffer full interrupt (INT_STAT
+[RXFI]).
+ If RX buffer is still full after INT_STAT[RXFI] was cleared, CTU CAN FD
+ generates the interrupt again.
+ When there is at least one CAN frame stored in RX buffer, CTU CAN FD generates
+ RX buffer not empty interrupt (INT_STAT[RBNEI]).
  When any TXT buffer moves from 
 \begin_inset Quotes eld
 \end_inset
@@ -6351,11 +6418,11 @@ Parity Err
 \begin_inset Quotes erd
 \end_inset
 
- states TXT buffer HW change interrupt is generated (INT_STAT[TXBHCI]).
+ states, CTU CAN FD generates TXT buffer HW change interrupt (INT_STAT[TXBHCI]).
 \end_layout
 
 \begin_layout Description
-Note The generation of INT_STAT[TXBHCI] has a special case.
+Note The INT_STAT[TXBHCI] has a corner-case.
  When a TXT Buffer is in 
 \begin_inset Quotes eld
 \end_inset
@@ -6364,7 +6431,7 @@ Ready
 \begin_inset Quotes erd
 \end_inset
 
- state and moves to 
+ state, and moves to 
 \begin_inset Quotes eld
 \end_inset
 
@@ -6372,12 +6439,13 @@ Aborted
 \begin_inset Quotes erd
 \end_inset
 
- (due to SW writing TX_COMMAND[TXCA]=1), the INT_STAT[TXBHCI] is not set.
- The meaning of INT_STAT[TXBHCI] is following: The INT_STAT[TXBHCI] is set
+ (due to SW writing TX_COMMAND[TXCA]=1), CTU CAN FD does not set INT_STAT[TXBHCI
+].
+ The meaning of INT_STAT[TXBHCI] is following: CTU CAN FD sets INT_STAT[TXBHCI]
  when TXT Buffer changed its state due to a CAN protocol core event (error
  frame occured on the bus, frame transmission finished, etc...).
  Since writing TX_COMMAND[TXCA]=1 is not a CAN protocol core event (it is
- an event occuring due to SW action), the INT_STAT[TXBHCI] is not set.
+ an event caused by SW action), the INT_STAT[TXBHCI] is not set.
 \end_layout
 
 \begin_layout Subsection
@@ -6385,10 +6453,10 @@ Error and Overload frame
 \end_layout
 
 \begin_layout Standard
-When CTU CAN FD starts Error frame transmission, Bus error interrupt is
- generated (INT_STAT[BEI]).
- When overload frame transmission is started, Overload frame interrupt is
- generated (INT_STAT[OFI]).
+When CTU CAN FD starts Error frame transmission, it generates Bus error
+ interrupt (INT_STAT[BEI]).
+ When CTU CAN FD transmits overload frame, it generates Overload frame interrupt
+ (INT_STAT[OFI]).
 \end_layout
 
 \begin_layout Subsection
@@ -6398,7 +6466,7 @@ Other
 \begin_layout Standard
 When CTU CAN FD switches bit rate on CAN bus, it generates Bit rate switch
  interrupt (INT_STAT[BSI]).
- When CTU CAN FD looses arbitration, Arbitration lost interrupt is generated
+ When CTU CAN FD looses arbitration, it generates Arbitration lost interrupt
  (INT_STAT[ALI]).
 \end_layout
 
@@ -6418,11 +6486,11 @@ CTU CAN FD implements following fault tolerance mechanisms:
 \end_layout
 
 \begin_layout Itemize
-Parity protection on RX Buffer RAM
+Parity protection on RX buffer RAM
 \end_layout
 
 \begin_layout Itemize
-Parity Protection on TXT Buffer RAMs
+Parity protection on TXT Buffer RAMs
 \end_layout
 
 \begin_layout Itemize
@@ -6446,28 +6514,29 @@ SW drivers sets SETTINGS[PCHKE] = 1.
 \end_layout
 
 \begin_layout Subsection
-Parity protection on RX Buffer RAM
+Parity protection on RX buffer RAM
 \end_layout
 
 \begin_layout Standard
-When CTU CAN FD receives CAN Frame and stores it to RX Buffer RAM, it adds
- single parity bit to each word of RX Buffer RAM.
- When SW driver is reading the frame from RX Buffer RAM, it can check for
- if parity error occured in the frame by reading STATUS[RXPRE] bit.
- CTU CAN FD sets STATUS[RXPRE] upon each read from RX_DATA register , if
- parity bit in the word being read from RX Buffer RAM is not matching calculated
- parity bit.
+When CTU CAN FD stores CAN frame to RX buffer RAM, it adds single parity
+ bit to each word of RX buffer RAM.
+ When SW driver reads the frame from RX buffer RAM, it can check if parity
+ error occured in the frame by reading STATUS[RXPRE] bit.
+ If parity bit in the word read from RX buffer RAM is not equal to calculated
+ parity bit, CTU CAN FD sets STATUS[RXPRE].
+ CTU CAN FD sets STATUS[RXPRE] upon each read from RX_DATA register with
+ parity error.
 \end_layout
 
 \begin_layout Standard
-Since a a spurious single-event upset (SEU) in RX Buffer RAM can potentially
- modify FRAME_FORMAT_W[DLC] word of received frame in RX Buffer RAM, it
- may hamper the length of the RX frame as seen by SW driver, and therefore
- get RX Buffer into inconsistent state where SW driver has read only part
- of a received frame.
- In such situation, all further frames read from RX Buffer would be corrupted.
- To avoid this situation, following procedure can be applied when reading
- RX frames from RX Buffer with focus on parity checking:
+A single-event upset (SEU) in RX buffer RAM can potentially modify FRAME_FORMAT_
+W[DLC] word of a frame in RX buffer RAM.
+ Therefore SEU may hamper the length of the RX frame as seen by SW driver,
+ and thus get RX buffer into inconsistent state where SW driver has read
+ only part of a received frame.
+ In this situation, all further frames read from RX buffer would be corrupted.
+ To avoid this situation, SW driver shall use following procedure when reading
+ RX frames from RX buffer:
 \end_layout
 
 \begin_layout LyX-Code
@@ -6498,7 +6567,7 @@ Since a a spurious single-event upset (SEU) in RX Buffer RAM can potentially
 \end_layout
 
 \begin_layout LyX-Code
-/* Read frame from RX Buffer RAM, and check parity error.*/
+/* Read frame from RX buffer RAM, and check parity error.*/
 \end_layout
 
 \begin_layout LyX-Code
@@ -6662,7 +6731,7 @@ can_read_32(RX_DATA_ADDR);
 
 \end_deeper
 \begin_layout LyX-Code
-/* If we get here, there is a danger that RX Buffer is not in consistent
+/* If we get here, there is a danger that RX buffer is not in consistent
  state.
  */
 \end_layout
@@ -6686,9 +6755,9 @@ return RX_BUFFER_RESET;
 
 \end_deeper
 \begin_layout Description
-Note The example above assumes that RX Buffer is read in Automatic mode
+Note The example above assumes that RX buffer is read in Automatic mode
  (MODE[RXBAM]=1).
- However if single word from RX Buffer is read via e.g.
+ However, if single word from RX buffer is read via e.g.
  4 x 8-bit accesses in MODE[RXBAM]=0, CTU CAN FD sets STATUS[RXPE] upon
  each read from a RX_DATA which contains parity error.
 \end_layout
@@ -6703,7 +6772,7 @@ Note When SETTINGS[PCHKE] = 0, CTU CAN FD ignores parity error detected
 \end_layout
 
 \begin_layout Description
-Note When writing RX Buffer RAM via Test Registers (see 
+Note When writing RX buffer RAM via Test Registers (see 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "subsec:Memory-testability"
@@ -6713,7 +6782,7 @@ noprefix "false"
 
 \end_inset
 
-), parity bit of corresponding word of RX Buffer RAM is not updated.
+), parity bit of corresponding word of RX buffer RAM is not updated.
  See 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -6741,8 +6810,8 @@ name "subsec:Parity-protection-on"
 \begin_layout Standard
 When SW stores a CAN frame to TXT Buffer, CTU CAN FD appends a parity bit
  to each word in the TXT Buffer RAM.
- When CTU CAN FD attempts to transmit a frame from TXT Buffer and it detects
- parity error in TXT Buffer RAM, it behaves like so:
+ When CTU CAN FD attempts to transmit a frame from TXT Buffer where the
+ frame contains a bit flip, CTU CAN FD behaves like so:
 \end_layout
 
 \begin_layout Enumerate
@@ -6756,14 +6825,14 @@ If CTU CAN FD does not detect parity error in any of TXT Buffer words mentioned
 \end_layout
 
 \begin_layout Enumerate
-If during transmission of CAN frame CTU CAN FD detects parity error in any
- of DATA_1_4_W - DATA_61_64_W words from which it transmits CAN frame data
- payload, it starts transmitting an error frame.
+If CTU CAN FD detects parity error in any of DATA_1_4_W - DATA_61_64_W words
+ during transmission of CAN frame, CTU CAN FD starts transmitting an error
+ frame.
 \end_layout
 
 \begin_layout Standard
 If CTU CAN FD detects a parity error in TXT Buffer RAM as described in Steps
- 1 or 3, such TXT Buffer moves to 
+ 1 or 3, the TXT Buffer moves to 
 \begin_inset Quotes eld
 \end_inset
 
@@ -6781,7 +6850,7 @@ noprefix "false"
 
 \end_inset
 
- and STATUS[TXPE] bit is set.
+, and CTU CAN FD sets STATUS[TXPE] bit.
 \end_layout
 
 \begin_layout Description
@@ -6791,13 +6860,13 @@ Note If CTU CAN FD detects a parity error in TXT Buffer, SW shall write
 \end_layout
 
 \begin_layout Description
-Note Writing COMMAND[CTXPE]=1 by SW clears STATUS[TXPE] bit.
+Note To clear STATUS[TXPE] bit, SW shall write COMMAND[CTXPE]=1.
 \end_layout
 
 \begin_layout Description
-Note When SETTINGS[PCHKE]=0, CTU CAN FD ignores parity error detected in
- TXT buffers (STATUS[TXPE] is not set, COMMAND[CTXPE] has no effect and
- TXT Buffers do not move to Parity Error state).
+Note When SETTINGS[PCHKE]=0, CTU CAN FD ignores parity errors detected in
+ TXT buffers (STATUS[TXPE] is not set, COMMAND[CTXPE] has no effect, and
+ TXT Buffers never move to Parity Error state).
  
 \end_layout
 
@@ -7258,20 +7327,20 @@ name "subsec:Parity-protection-testing"
 
 \begin_layout Standard
 When Test registers memory region (see Section 3) is present in CTU CAN
- FD (STATUS[STRGS] = 1), write to TXT Buffer / RX Buffer RAMs via this memory
- region does not update parity bit value stored per each memory word of
- TXT Buffer / RX Buffer RAMs.
+ FD (STATUS[STRGS] = 1), write to TXT Buffer / RX buffer RAMs via this memory
+ region does not update parity bit value stored in each memory word of TXT
+ Buffer / RX buffer RAMs.
  This allows on-chip verification of parity detection capabilites on both
- TXT Buffer / RX Buffer RAMs.
- Following sequence checks parity detection capabilities on RX Buffer RAM:
+ TXT Buffer / RX buffer RAMs.
+ Following sequence checks parity detection capabilities on RX buffer RAM:
 \end_layout
 
 \begin_layout Enumerate
-CTU CAN FD receives CAN frame to RX Buffer RAM.
+CTU CAN FD receives CAN frame to RX buffer RAM.
 \end_layout
 
 \begin_layout Enumerate
-SW reads RX Buffer RAM memory via Test Registers memory region (reffer to
+SW reads RX buffer RAM memory via Test Registers memory region (reffer to
  
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -7284,19 +7353,20 @@ literal "false"
 \end_layout
 
 \begin_layout Enumerate
-SW modifies a bit in memory word of CAN frame read in previous step, and
- stores such modified frame back to RX Buffer RAM via Test Registers memory
+SW modifies a bit in a memory word of CAN frame read in previous step, and
+ stores such modified frame back to RX buffer RAM via Test Registers memory
  region.
 \end_layout
 
 \begin_layout Enumerate
-SW reads a frame from RX Buffer via RX_DATA register and then reads STATUS[RXPE].
- If STATUS[RXPE] = 1, then parity error detection mechanism on RX Buffer
+SW reads a frame from RX buffer via RX_DATA register, and then reads STATUS[RXPE
+].
+ If STATUS[RXPE] = 1, then parity error detection mechanism on RX buffer
  RAM works correctly.
 \end_layout
 
 \begin_layout Standard
-Following sequence checks parity detection capabilities on TXT Buffer RAM:
+Following sequence checks parity detection capabilities of TXT Buffer RAM:
 \end_layout
 
 \begin_layout Enumerate
@@ -7304,8 +7374,8 @@ SW inserts CAN frame to TXT Buffer.
 \end_layout
 
 \begin_layout Enumerate
-SW reads such frame via Test Registers memory region, modifies a bit in
- random word, and stores back such word via Test Registers memory region.
+SW reads the frame via Test Registers memory region, modifies a bit in random
+ word, and stores back such word via Test Registers memory region.
 \end_layout
 
 \begin_layout Enumerate
@@ -7350,7 +7420,7 @@ Note When SW flips a random bit in TXT Buffer RAM, it must flip a bit in
 \end_layout
 
 \begin_layout Description
-Note When accessing RX Buffer / TXT Buffer RAMs via Test Registers Memory
+Note When accessing RX buffer / TXT Buffer RAMs via Test Registers Memory
  region, TSTCTRL[TMENA] (test access enable bit) must be set only when the
  access is executed, not during operation of the core.
  Typically, such access consists of:
@@ -7361,7 +7431,7 @@ Set TSTCTRL[TMENA]=1.
 \end_layout
 
 \begin_layout Enumerate
-Read / Write RX Buffer / TXT Buffer RAM via TST_DEST, TST_WDATA, TSTCTRL,
+Read / Write RX buffer / TXT Buffer RAM via TST_DEST, TST_WDATA, TSTCTRL,
  TST_RDATA registers.
 \end_layout
 
@@ -7378,16 +7448,25 @@ Loopback mode
 \end_layout
 
 \begin_layout Standard
-In Loopback mode, any CAN frame transmitted by CTU CAN FD from any of TXT
- buffers, is stored to RX buffer if its transmission is successfull (and
- the frame passes Frame filters).
+In Loopback mode, CTU CAN FD stores every transmitted CAN frame to RX buffer.
  Such frame is called Loopback frame.
  Altough CTU CAN FD receives Loopback frame to RX buffer, CTU CAN FD still
  acts as a transmitter, therefore it does not acknowledge the Loopback frame
  on CAN bus.
- For succesfull transmission of Loopback frame, the frame must be acknowledged
- by other node on CAN bus.
- A Loopback frame differs from CAN frame received on the CAN bus in:
+ To sucesfully transmit Loopback frame, at least one of conditions shall
+ be valid:
+\end_layout
+
+\begin_layout Itemize
+The frame shall be acknowledged by other node on CAN bus.
+\end_layout
+
+\begin_layout Itemize
+CTU CAN FD shall operate in Self-Acknowledge mode (MODE[SAM]=1).
+\end_layout
+
+\begin_layout Standard
+A Loopback frame differs from CAN frame received on the CAN bus in:
 \end_layout
 
 \begin_layout Itemize
@@ -7395,7 +7474,7 @@ FRAME_FORMAT_W[LBPF]=1 - Indicates the frame is a Loopback frame
 \end_layout
 
 \begin_layout Itemize
-FRAME_FORMAT_W[LBTBI] - Indicates index of TXT Buffer used to transmit the
+FRAME_FORMAT_W[LBTBI] - Contains index of TXT Buffer used to transmit the
  Loopback frame.
  This field is reserved when FRAME_FORMAT_W[LBPF]=0.
 \end_layout
@@ -7409,7 +7488,7 @@ regular CAN frame
 \begin_inset Quotes erd
 \end_inset
 
- in context of RX Buffer frame types (see.
+ in context of RX buffer frame types (see.
  
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -7423,10 +7502,14 @@ noprefix "false"
 ).
 \end_layout
 
+\begin_layout Description
+Note The frame filtering applies also on loopback frames.
+\end_layout
+
 \begin_layout Standard
 Loopback mode is enabled when SETTINGS[ILBP]=1.
- SETTINGS[ILBP] shall be modified only when CTU CAN FD is disabled (SETTINGS[ENA
-] = 0).
+ SW shall modify SETTINGS[ILBP] only when CTU CAN FD is disabled (SETTINGS[ENA]
+ = 0).
 \end_layout
 
 \begin_layout Subsection
@@ -7434,12 +7517,12 @@ Self test mode
 \end_layout
 
 \begin_layout Standard
-In Self test mode CTU CAN FD considers transmitted frame valid even if does
- not receive dominant bit during ACK slot.
- This mode can be used along with Loopback mode to verify operation of CTU
- CAN FD when it is single node on a bus.
- Self test mode is enabled when MODE[STM]=1.
- MODE[STM] shall be modified only when CTU CAN FD is disabled (SETTINGS[ENA]
+In Self test mode, CTU CAN FD considers transmitted frame valid even if
+ does not receive dominant bit during ACK slot.
+ SW can use this mode together with Loopback mode to verify operation of
+ CTU CAN FD when it is a single node on a bus.
+ SW enables Self test mode by setting MODE[STM]=1.
+ SW shall modify MODE[STM] only when CTU CAN FD is disabled (SETTINGS[ENA]
  = 0).
 \end_layout
 
@@ -7448,11 +7531,11 @@ Acknowledge forbidden mode
 \end_layout
 
 \begin_layout Standard
-When Acknowledge forbidden mode is enabled, CTU CAN FD acting as receiver
- of CAN frame does not transmitt dominant bit during ACK slot even if received
- CRC matches calculated CRC.
- Acknowledge forbidden mode is enabled when MODE[ACF] = 1.
- MODE[ACF] shall be modified only when CTU CAN FD is disabled (SETTINGS[ENA]
+When Acknowledge forbidden mode is enabled, CTU CAN FD receiving CAN frame
+ does not transmitt dominant bit during ACK slot even if received CRC matches
+ calculated CRC.
+ SW can enable Acknowledge forbidden mode by setting MODE[ACF] = 1.
+ SW shall modify MODE[ACF] only when CTU CAN FD is disabled (SETTINGS[ENA]
  = 0).
 \end_layout
 
@@ -7475,12 +7558,12 @@ Bus monitoring mode
 \begin_layout Standard
 In Bus monitoring mode, CTU CAN FD does not transmit any frames, it only
  receives CAN frames.
- If CAN frame is inserted to TXT buffer and 
+ If SW inserted CAN frame to a TXT buffer and issued 
 \series bold
 Set ready
 \series default
- command is issued, frame will not be transmitted, and TXT buffer will immediate
-ly move to 
+, CTU CAN FD will not transmitt the frame, and TXT buffer will immediately
+ move to 
 \begin_inset Quotes eld
 \end_inset
 
@@ -7489,13 +7572,13 @@ TX failed
 \end_inset
 
  state.
- In Bus monitoring mode, CTU CAN FD does not transmit any dominant bit on
+ In Bus monitoring mode, CTU CAN FD does not transmit any dominant bit to
  the bus.
  If dominant bit is about to be transmitted to the bus (e.g.
  ACK or error frame), it is re-routed internally so that CTU CAN FD receives
  this bit, but other nodes on CAN bus do not see this dominant bit.
- Bus monitoring mode is enabled when MODE[BMM] = 1.
- MODE[BMM] shall be modified only when CTU CAN FD is disabled (SETTINGS[ENA]
+ To enable Bus monitoring mode, SW shall write MODE[BMM] = 1.
+ SW shall modify MODE[BMM] only when CTU CAN FD is disabled (SETTINGS[ENA]
  = 0).
 \end_layout
 
@@ -7506,11 +7589,11 @@ Restricted operation mode
 \begin_layout Standard
 In Restricted operation mode, CTU CAN FD is able to receive frames on CAN
  bus, but it does not transmit any frames.
- If CAN frame is inserted to TXT buffer and 
+ If SW inserts CAN frame to a TXT buffer and issyes 
 \series bold
 Set ready
 \series default
- command is issued, frame will not be transmitted, and TXT buffer will immediate
+ command, CTU CAN FD will not transmitt the frame, and TXT buffer will immediate
 ly move to 
 \begin_inset Quotes eld
 \end_inset
@@ -7522,12 +7605,13 @@ TX failed
  state.
  In Restricted operation mode, CTU CAN FD gives ACK to valid frames, but
  it does not send Error frames nor Overload frames.
- If Error or Overload condition is detected, CTU CAN FD enters bus integration
- state, and waits for 11 consecutive recessive bits.
- In Restricted operation mode, REC and TEC counters are not modified, therefore
- CTU CAN FD will always stay in Error active state.
- Restricted operation mode is enabled when MODE[ROM] = 1.
- MODE[ROM] shall be modified only when CTU CAN FD is disabled (SETTINGS[ENA]
+ If CTU CAN FD detects Error or Overload condition, it enters bus integration
+ state, and waits until it monitors 11 consecutive recessive bits on the
+ bus.
+ CTU CAN FD does not modify REC and TEC counters in Restricted operation
+ mode, therefore CTU CAN FD will always stay Error active.
+ SW can enable Restricted operation mode by setting MODE[ROM] = 1.
+ SW shall modify MODE[ROM] only when CTU CAN FD is disabled (SETTINGS[ENA]
  = 0).
 \end_layout
 
@@ -7536,7 +7620,7 @@ Test mode
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD has Test mode which is enabled when MODE[TSTM] = 1.
+To enable a Test mode, SW shall write MODE[TSTM] = 1.
  In Test mode, CTU CAN FD has the following features:
 \end_layout
 
@@ -7555,10 +7639,16 @@ CTR_PRES register is writable, therefore all error counters can be modified
  by SW driver.
 \end_layout
 
+\begin_layout Itemize
+CTU CAN FD corrupts transmitted CAN frame baesd on FRAME_TEST_W value from
+ TXT buffer.
+ 
+\end_layout
+
 \begin_layout Description
 Note Test mode shall be used for debugging / development purpose only (e.g.
  testing of higher layers behavior during error-passive state).
- It shall not be used during regular operation of CTU CAN FD.
+ SW shall not use Test Mode during regular operation of CTU CAN FD.
 \end_layout
 
 \begin_layout Section
@@ -7587,11 +7677,11 @@ All features for corrupting transmitted CAN frames are configured per each
  transmitted frame in FRAME_TEST_W memory word in TXT Buffer, details are
  explained in following subsections.
  These features are available only in Test mode (MODE[TSTM]=1).
- If MODE[TSTM]=0 , CTU CAN FD ignores this configuration and transmitts
- uncorrupted frames (as in regular operation).
- Corrupting applies only to transmitted frames, if CTU CAN FD is a receiver
- of a frame, it does not corrupt frames such frame (It does not corrupt
- frames transmitted by other CAN nodes on the network).
+ If MODE[TSTM]=0 , CTU CAN FD ignores this configuration, and transmitts
+ uncorrupted frames.
+ If CTU CAN FD is a receiver of a frame, it does not corrupt the frame.
+ Therefore CTU CAN FD does not corrupt frames transmitted by other CAN nodes
+ on the network.
 \end_layout
 
 \begin_layout Description
@@ -7625,7 +7715,7 @@ noprefix "false"
 
 \begin_layout Description
 Note FRAME_TEST_W word of CAN frame is present only in TXT Buffers, it does
- not exist in RX Buffer (longest CAN frame in RX Buffer still has 20 words,
+ not exist in RX buffer (longest CAN frame in RX buffer still has 20 words,
  not 21).
 \end_layout
 
@@ -7686,8 +7776,8 @@ Replace DLC with arbitrary value
 \end_layout
 
 \begin_layout Standard
-When FRAME_TEST_W[SDLC] = 1, FRAME_TEST_W[CPRM][3:0] bits are transmitted
- instead of 
+When FRAME_TEST_W[SDLC] = 1, CTU CAN FD transmitts FRAME_TEST_W[CPRM][3:0]
+ bits instead of 
 \begin_inset Newline newline
 \end_inset
 
@@ -7709,16 +7799,15 @@ Error code capture
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD contains Error code capture register.
- This register stores type and position of last error on CAN bus which caused
- transmission of error frame.
- Error code capture is updated in sample point of bit where error was detected.
- Error code capture is readable via ERR_CAPT register.
- CAN FD standard does not defined types of errors as mutually exclusive
- (e.g.
- bit error and stuff error may occur at the same time when transmitted stuff
- bit value is corrupted to opposite value).
- In such case, Error code capture captures only one type of error with highest
+An Error code capture register stores type, and position of last error on
+ CAN bus which caused transmission of an error frame.
+ CTU CAN FD updates Error code capture in sample point of a bit where it
+ detected the error.
+ SW can read Error code capture from ERR_CAPT.
+ CAN FD standard does not define types of errors as mutually exclusive.
+ For example, a bit error and stuff error may occur at the same time when
+ transmitted stuff bit value is corrupted to opposite value.
+ In such case, Error code capture stores only one type of error with highest
  priority.
  Priorities of error types are defined as (Form error having the highest
  priority):
@@ -7882,14 +7971,15 @@ Stuff error
 \end_layout
 
 \begin_layout Description
-Note Stuff error which occured during fixed bit stuffing method of CAN FD
- frame is reported as Form error in Error code capture register.
+Note CTU CAN FD reports Stuff error which occured during fixed bit stuffing
+ method of CAN FD frame as Form error in Error code capture register.
 \end_layout
 
 \begin_layout Description
 Note There is an exception to above mentioned error priority order.
- If dominant stuff bit is sent during arbitration field and recessive value
- is sampled, then this is captured as Stuff error, not as Bit error.
+ If CTU CAN FD sends dominant stuff bit during arbitration field, and samples
+ recessive value, then Error code capture register stores Stuff error, not
+ Bit error.
 \end_layout
 
 \begin_layout Subsection
@@ -7897,9 +7987,8 @@ Arbitration lost capture
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD contains Arbitration lost capture register (ALC).
- This register stores bit position within CAN arbitration field on which
- CTU CAN FD last time lost arbitration.
+Arbitration lost capture register (ALC) stores bit position within CAN arbitrati
+on field where CTU CAN FD last time lost arbitration.
 \end_layout
 
 \begin_layout Subsection
@@ -7907,17 +7996,18 @@ Traffic counters
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD can measure CAN frames transmitted/received on CAN bus.
- Upon every succesfully transmitted CAN frame, TX_COUNTER register is incremente
-d by 1.
- Upon every successfully received CAN frame, RX_COUNTER register is incremented
- by 1.
- TX_COUNTER register can be cleared by writing COMMAND[TXFCRST]=1.
- RX_COUNTER register can be cleared by writing COMMAND[RXFCRST]=1.
- When CTU CAN FD is in Loopback mode and own transmitted frame is stored
- to RX buffer, RX_COUNTER is also incremented.
+CTU CAN FD can measure number of CAN frames transmitted/received on CAN
+ bus.
+ Upon every succesfully transmitted CAN frame, CTU CAN FD increments TX_COUNTER
+ register by 1.
+ Upon every successfully received CAN frame, CTU CAN FD increments RX_COUNTER
+ register by 1.
+ To clear the TX_COUNTER register, SW shall write COMMAND[TXFCRST]=1.
+ To clear the RX_COUNTER register, SW shall write COMMAND[RXFCRST]=1.
+ When CTU CAN FD is in Loopback mode, and it stores own transmitted frame
+ to RX buffer, CTU CAN FD also increments RX_COUNTER.
  Traffic counters are optional in CTU CAN FD.
- Presence of traffic counters can be determined by reading STATUS[STCNT]
+ To check if traffic counters are available, SW shall read STATUS[STCNT]
  bit.
 \end_layout
 
@@ -7926,7 +8016,7 @@ Debug register
 \end_layout
 
 \begin_layout Standard
-CTU CAN FD contains debug register (DEBUG_REGISTER) which directly reflects
+CTU CAN FD contains a debug register (DEBUG_REGISTER) that directly reflects
  part/field of CAN frame which is currently being transmitted / received.
 \end_layout
 

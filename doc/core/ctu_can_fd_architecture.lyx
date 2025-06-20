@@ -365,7 +365,7 @@ System Architecture
 \begin_inset VSpace defskip
 \end_inset
 
-LOGIC DESIGN SERVICES l.t.d
+LOGIC DESIGN SERVICES l.t.d.
 \begin_inset Newline newline
 \end_inset
 
@@ -471,7 +471,14 @@ CTU CAN FD IP Core - System Architecture
 \begin_inset Text
 
 \begin_layout Plain Layout
-Version 0.20
+Version 0.20, Commit:
+\begin_inset CommandInset include
+LatexCommand input
+filename "version.tex"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1661,12 +1668,10 @@ When CTU CAN FD GIT repository is clonned, register map can be generated
 \end_layout
 
 \begin_layout Verbatim
-
 cd scripts
 \end_layout
 
 \begin_layout Verbatim
-
 ./update_reg_map
 \end_layout
 
@@ -1688,12 +1693,10 @@ src/component.xml
 \end_layout
 
 \begin_layout Verbatim
-
 cd scripts
 \end_layout
 
 \begin_layout Verbatim
-
 python gen_vivado_component.py
 \end_layout
 
