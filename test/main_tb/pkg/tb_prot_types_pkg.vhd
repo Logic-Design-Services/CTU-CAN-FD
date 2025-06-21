@@ -94,39 +94,17 @@ package tb_prot_types_pkg is
     -----------------------------------------------------------------------
     type t_com_channel_data is protected
 
-        -------------------------------------------------------------------
-        --
-        -------------------------------------------------------------------
         procedure set_dest_and_msg_code(
             dest        : in natural range 0 to C_NUM_AGENTS;
             msg_code    : in integer
         );
 
-        -------------------------------------------------------------------
-        --
-        -------------------------------------------------------------------
         impure function get_dest return integer;
-
-        -------------------------------------------------------------------
-        --
-        -------------------------------------------------------------------
         impure function get_msg_code return integer;
 
-        -------------------------------------------------------------------
-        --
-        -------------------------------------------------------------------
-        procedure set_reply_code(
-            reply_code  : in natural
-        );
-
-        -------------------------------------------------------------------
-        --
-        -------------------------------------------------------------------
+        procedure set_reply_code(reply_code  : in natural);
         impure function get_reply_code return natural;
 
-        -------------------------------------------------------------------
-        --
-        -------------------------------------------------------------------
         procedure set_param(param : in  std_logic_vector);
         procedure set_param(param : in  std_logic);
         procedure set_param(param : in  time);
@@ -135,10 +113,6 @@ package tb_prot_types_pkg is
         procedure set_param(param : in  boolean);
         procedure set_param(param : in  string);
 
-
-        -------------------------------------------------------------------
-        --
-        -------------------------------------------------------------------
         impure function get_param return std_logic;
         impure function get_param return std_logic_vector;
         impure function get_param return time;
@@ -150,7 +124,7 @@ package tb_prot_types_pkg is
     end protected;
 
     -----------------------------------------------------------------------
-    --
+    -- Result of test
     -----------------------------------------------------------------------
     type t_ctu_test_result is protected
         procedure set_result(result : boolean);
@@ -159,7 +133,7 @@ package tb_prot_types_pkg is
     end protected;
 
     -----------------------------------------------------------------------
-    --
+    -- Protected variant of boolean
     -----------------------------------------------------------------------
     type t_prot_boolean is protected
         procedure set(new_val : boolean);
@@ -170,15 +144,33 @@ package tb_prot_types_pkg is
     -- Values forced to DUT ingter
     -----------------------------------------------------------------------
     type t_prot_force_values is protected
-        procedure set_tx_counter(val : std_logic_vector(31 downto 0));
-        procedure set_rx_counter(val : std_logic_vector(31 downto 0));
-        procedure set_err_norm(val : std_logic_vector(15 downto 0));
-        procedure set_err_fd(val : std_logic_vector(15 downto 0));
+        procedure force_tx_counter(val : std_logic_vector(31 downto 0));
+        procedure release_tx_counter;
+        impure function get_tx_counter_force_val return std_logic_vector;
+        impure function is_forced_tx_counter     return boolean;
+        impure function is_released_tx_counter   return boolean;
 
-        impure function get_tx_counter return std_logic_vector;
-        impure function get_rx_counter return std_logic_vector;
-        impure function get_err_norm return std_logic_vector;
-        impure function get_err_fd return std_logic_vector;
+        procedure force_rx_counter(val : std_logic_vector(31 downto 0));
+        procedure release_rx_counter;
+        impure function get_rx_counter_force_val return std_logic_vector;
+        impure function is_forced_rx_counter     return boolean;
+        impure function is_released_rx_counter   return boolean;
+
+        procedure force_err_norm(val : std_logic_vector(15 downto 0));
+        procedure release_err_norm;
+        impure function get_err_norm_force_val return std_logic_vector;
+        impure function is_forced_err_norm     return boolean;
+        impure function is_released_err_norm   return boolean;
+
+        procedure force_err_fd(val : std_logic_vector(15 downto 0));
+        procedure release_err_fd;
+        impure function get_err_fd_force_val return std_logic_vector;
+        impure function is_forced_err_fd     return boolean;
+        impure function is_released_err_fd   return boolean;
+
+        impure function something_to_force   return boolean;
+        impure function something_to_release return boolean;
+
     end protected;
 
 end package;
@@ -371,9 +363,6 @@ package body tb_prot_types_pkg is
 
     end protected body;
 
-    -----------------------------------------------------------------------
-    --
-    -----------------------------------------------------------------------
     type t_prot_boolean is protected body
         variable val : boolean;
 
@@ -392,51 +381,165 @@ package body tb_prot_types_pkg is
 
     type t_prot_force_values is protected body
 
-        variable tx_counter : std_logic_vector(31 downto 0);
-        variable rx_counter : std_logic_vector(31 downto 0);
+        variable tx_counter             : std_logic_vector(31 downto 0);
+        variable to_force_tx_counter    : boolean;
+        variable to_release_tx_counter  : boolean;
 
-        variable err_norm   : std_logic_vector(15 downto 0);
-        variable err_fd     : std_logic_vector(15 downto 0);
+        variable rx_counter             : std_logic_vector(31 downto 0);
+        variable to_force_rx_counter    : boolean;
+        variable to_release_rx_counter  : boolean;
 
-        procedure set_tx_counter(val : std_logic_vector(31 downto 0)) is
+        variable err_norm               : std_logic_vector(15 downto 0);
+        variable to_force_err_norm      : boolean;
+        variable to_release_err_norm    : boolean;
+
+        variable err_fd                 : std_logic_vector(15 downto 0);
+        variable to_force_err_fd        : boolean;
+        variable to_release_err_fd      : boolean;
+
+
+        procedure force_tx_counter(val : std_logic_vector(31 downto 0)) is
         begin
             tx_counter := val;
+            to_force_tx_counter := true;
         end procedure;
 
-        procedure set_rx_counter(val : std_logic_vector(31 downto 0)) is
+        procedure release_tx_counter is
         begin
-            rx_counter := val;
+            to_release_tx_counter := true;
         end procedure;
 
-        procedure set_err_norm(val : std_logic_vector(15 downto 0)) is
-        begin
-            err_norm := val;
-        end procedure;
-
-        procedure set_err_fd(val : std_logic_vector(15 downto 0)) is
-        begin
-            err_fd := val;
-        end procedure;
-
-        impure function get_tx_counter return std_logic_vector is
+        impure function get_tx_counter_force_val return std_logic_vector is
         begin
             return tx_counter;
+        end function;
+
+        impure function is_forced_tx_counter return boolean is
+            variable rv : boolean;
+        begin
+            rv := to_force_tx_counter;
+            to_force_tx_counter := false;
+            return rv;
         end;
 
-        impure function get_rx_counter return std_logic_vector is
+        impure function is_released_tx_counter return boolean is
+            variable rv : boolean;
+        begin
+            rv := to_release_tx_counter;
+            to_release_tx_counter := false;
+            return rv;
+        end;
+
+
+        procedure force_rx_counter(val : std_logic_vector(31 downto 0)) is
+        begin
+            rx_counter := val;
+            to_force_rx_counter := true;
+        end procedure;
+
+        procedure release_rx_counter is
+        begin
+            to_force_rx_counter := false;
+        end procedure;
+
+        impure function get_rx_counter_force_val return std_logic_vector is
         begin
             return rx_counter;
+        end function;
+
+        impure function is_forced_rx_counter return boolean is
+            variable rv : boolean;
+        begin
+            rv := to_force_rx_counter;
+            to_force_rx_counter := false;
+            return rv;
         end;
 
-        impure function get_err_norm return std_logic_vector is
+        impure function is_released_rx_counter return boolean is
+            variable rv : boolean;
+        begin
+            rv := to_release_rx_counter;
+            to_release_rx_counter := false;
+            return rv;
+        end;
+
+
+        procedure force_err_norm(val : std_logic_vector(15 downto 0)) is
+        begin
+            err_norm := val;
+            to_force_err_norm := true;
+        end procedure;
+
+        procedure release_err_norm is
+        begin
+            to_force_err_norm := false;
+        end procedure;
+
+        impure function get_err_norm_force_val return std_logic_vector is
         begin
             return err_norm;
+        end function;
+
+        impure function is_forced_err_norm return boolean is
+            variable rv : boolean;
+        begin
+            rv := to_force_err_norm;
+            to_force_err_norm := false;
+            return rv;
         end;
 
-        impure function get_err_fd return std_logic_vector is
+        impure function is_released_err_norm return boolean is
+            variable rv : boolean;
+        begin
+            rv := to_release_err_norm;
+            to_release_err_norm := false;
+            return rv;
+        end;
+
+
+        procedure force_err_fd(val : std_logic_vector(15 downto 0)) is
+        begin
+            err_fd := val;
+            to_force_err_fd := true;
+        end procedure;
+
+        procedure release_err_fd is
+        begin
+            to_force_err_fd := false;
+        end procedure;
+
+        impure function get_err_fd_force_val return std_logic_vector is
         begin
             return err_fd;
+        end function;
+
+        impure function is_forced_err_fd return boolean is
+            variable rv : boolean;
+        begin
+            rv := to_force_err_fd;
+            to_force_err_fd := false;
+            return rv;
         end;
+
+        impure function is_released_err_fd return boolean is
+            variable rv : boolean;
+        begin
+            rv := to_release_err_fd;
+            to_release_err_fd := false;
+            return rv;
+        end;
+
+        impure function something_to_force return boolean is
+        begin
+            return to_force_tx_counter or to_force_rx_counter or
+                   to_force_err_norm   or to_force_err_fd;
+        end function;
+
+        impure function something_to_release return boolean is
+        begin
+            return to_release_tx_counter or to_release_rx_counter or
+                   to_release_err_norm   or to_release_err_fd;
+        end function;
 
     end protected body;
 

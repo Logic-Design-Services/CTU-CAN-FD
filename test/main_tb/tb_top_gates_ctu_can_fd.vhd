@@ -96,7 +96,6 @@ entity tb_top_ctu_can_fd is
         test_name               : string := "device_id";
         test_type               : string := "feature"; -- "feature", "compliance" or "reference"
         log_level               : t_log_verbosity := verbosity_info;
-        deposit_to_dut          : boolean := true;
         func_cov_en             : boolean := false;
 
         iterations              : natural := 1;
@@ -174,7 +173,6 @@ architecture tb of tb_top_ctu_can_fd is
        -- Test details
        test_name               : string;
        test_type               : string;
-       deposit_to_dut          : boolean;
        func_cov_en             : boolean;
 
        -- DUT configuration
@@ -280,7 +278,6 @@ begin
     generic map(
         test_name               => test_name,
         test_type               => test_type,
-        deposit_to_dut          => deposit_to_dut,
         func_cov_en             => func_cov_en,
 
         rx_buffer_size          => rx_buffer_size,
@@ -365,7 +362,6 @@ begin
         info("  Reference test iterations: " & integer'image(reference_iterations));
         info("  Timeout: " & timeout);
         info("  Finish on error: " & integer'image(finish_on_error));
-        info("  Deposit to DUT: " & boolean'image(deposit_to_dut));
         info("");
         info("DUT configuration:");
         info("  RX buffer size: " & integer'image(rx_buffer_size));

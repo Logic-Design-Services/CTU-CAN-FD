@@ -95,7 +95,6 @@ entity tb_top_ctu_can_fd is
         test_type               : string := "feature"; -- "feature", "compliance" or "reference"
         log_level               : t_log_verbosity := verbosity_info;
         func_cov_en             : boolean := true;
-        deposit_to_dut          : boolean := true;
 
         iterations              : natural := 1;
         timeout                 : string := "10 ms";
@@ -172,7 +171,6 @@ architecture tb of tb_top_ctu_can_fd is
        -- Test details
        test_name               : string;
        test_type               : string;
-       deposit_to_dut          : boolean;
        func_cov_en             : boolean;
 
        -- DUT configuration
@@ -288,7 +286,6 @@ begin
     generic map(
         test_name               => test_name,
         test_type               => test_type,
-        deposit_to_dut          => deposit_to_dut,
         func_cov_en             => func_cov_en,
 
         rx_buffer_size          => rx_buffer_size,
@@ -356,7 +353,6 @@ begin
     -- Vunit manager - controls CTU CAN FD VIP
     ---------------------------------------------------------------------------
     vunit_manager_proc : process
-        variable deposit_vect : std_logic_vector(31 downto 0);
     begin
         test_runner_setup(runner, runner_cfg);
         wait for 10 ns;
@@ -374,7 +370,6 @@ begin
         info_m("  Reference test iterations: " & integer'image(reference_iterations));
         info_m("  Timeout: " & timeout);
         info_m("  Finish on error: " & integer'image(finish_on_error));
-        info_m("  Deposit to DUT: " & boolean'image(deposit_to_dut));
         info_m("");
         info_m("DUT configuration:");
         info_m("  RX buffer size: " & integer'image(rx_buffer_size));
@@ -410,37 +405,6 @@ begin
             info_m("***************************************************************");
             info_m(" Iteration nr: " & integer'image(i));
             info_m("***************************************************************");
-
-            -- Test specific deposits
-            -- TODO: Move these to "counters_toggle" feature test procedure once VS
-            --       supports external names with absolute paths to be used from
-            --       packages!
-            if (deposit_to_dut_i.get) then
-
-                if (test_name = "counters_toggle") then
-                    rand_logic_vect_v(deposit_vect, 0.5);
-                    info_m("Depositing TX frame counter to: " & to_hstring(deposit_vect));
-                    <<signal .TB_TOP_CTU_CAN_FD.DUT.CAN_CORE_INST.BUS_TRAFFIC_CTRS_GEN.BUS_TRAFFIC_COUNTERS_INST.tx_frame_ctr_i  : std_logic_vector(31 downto 0) >> <= force deposit_vect;
-                    force_values.set_tx_counter(deposit_vect);
-                    wait for 1 ns;
-
-                    rand_logic_vect_v(deposit_vect, 0.5);
-                    info_m("Depositing RX frame counter to: " & to_hstring(deposit_vect));
-                    <<signal .TB_TOP_CTU_CAN_FD.DUT.CAN_CORE_INST.BUS_TRAFFIC_CTRS_GEN.BUS_TRAFFIC_COUNTERS_INST.rx_frame_ctr_i  : std_logic_vector(31 downto 0) >> <= force deposit_vect;
-                    force_values.set_rx_counter(deposit_vect);
-                    wait for 1 ns;
-
-                    rand_logic_vect_v(deposit_vect, 0.5);
-                    info_m("Depositing ERR NORM counters to: " & integer'image(to_integer(unsigned(deposit_vect(15 downto 0 )))));
-                    info_m("Depositing ERR FD counters to: "   & integer'image(to_integer(unsigned(deposit_vect(31 downto 16)))));
-                    <<signal .TB_TOP_CTU_CAN_FD.DUT.CAN_CORE_INST.FAULT_CONFINEMENT_INST.ERR_COUNTERS_INST.nom_err_ctr_q   : unsigned(15 downto 0) >> <= force unsigned(deposit_vect(15 downto 0));
-                    <<signal .TB_TOP_CTU_CAN_FD.DUT.CAN_CORE_INST.FAULT_CONFINEMENT_INST.ERR_COUNTERS_INST.data_err_ctr_q  : unsigned(15 downto 0) >> <= force unsigned(deposit_vect(31 downto 16));
-                    force_values.set_err_norm(deposit_vect(15 downto 0));
-                    force_values.set_err_fd(deposit_vect(31 downto 16));
-                    wait for 1 ns;
-                end if;
-
-            end if;
 
             -- Execute test
             test_start <= '1';

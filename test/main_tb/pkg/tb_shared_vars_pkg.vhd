@@ -91,11 +91,8 @@ package tb_shared_vars_pkg is
     -- Finish on error
     shared variable finish_on_error_i : t_prot_boolean;
 
-    -- Random deposits to DUT should be attempted
-    shared variable deposit_to_dut_i : t_prot_boolean;
-
-    -- Force values
-    shared variable force_values : t_prot_force_values;
+    -- Force values into the DUT
+    shared variable tb_force : t_prot_force_values;
 
 end package;
 
