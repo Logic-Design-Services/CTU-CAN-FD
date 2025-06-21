@@ -33,8 +33,8 @@ set DESIGN_CONFIGS [list \
          rx_buffer_size         128 \
          txt_buffer_count       4 \
          sup_filtA              "1'b1" \
-         sup_filtB              "1'b0" \
-         sup_filtC              "1'b0" \
+         sup_filtB              "1'b1" \
+         sup_filtC              "1'b1" \
          sup_range              "1'b1" \
          target_technology      1 \
          sup_traffic_ctrs       "1'b1" \
