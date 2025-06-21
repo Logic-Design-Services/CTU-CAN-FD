@@ -14,7 +14,8 @@ stages:
     - precheck
     - build
     - test_unit
-    - test_rtl
+    - test_rtl_feature
+    - test_rtl_compliance
     - test_gates
     - coverage
     - deploy
@@ -143,211 +144,199 @@ test_unit_rx_buffer:
         reports:
             junit: test/tb_rtl_rx_buffer_unit.xml
 
+
 ###############################################################################
-# Test RTL stage (fast + nightly)
+# Test RTL feature stage
 ###############################################################################
-test_fast_asic:
-    stage: test_rtl
+test_rtl_small_asic_max_feature:
+    stage: test_rtl_feature
     tags:
         - simulation
     only: *only
     script:
         - cd test
-        - make tb_rtl_test_fast_asic
-        - make tb_rtl_test_fast_asic_logs
+        - make tb_rtl_small_asic_max_feature
+        - make tb_rtl_small_asic_max_feature_logs
     artifacts:
         when: always
         paths:
-            - test/tb_rtl_test_fast_asic.xml
-            - test/tb_rtl_test_fast_asic_summary
-            - test/tb_rtl_test_fast_asic.sim_time
+            - test/tb_rtl_small_asic_max_feature.xml
+            - test/tb_rtl_small_asic_max_feature_summary
+            - test/tb_rtl_small_asic_max_feature.sim_time
             - test/vunit_out/code_coverage
         reports:
-            junit: test/tb_rtl_test_fast_asic.xml
-
-    # Some gates might fail, TODO: Debug
+            junit: test/tb_rtl_small_asic_max_feature.xml
     allow_failure: true
 
-
-test_fast_fpga:
-    stage: test_rtl
+test_rtl_medium_asic_max_feature:
+    stage: test_rtl_feature
     tags:
         - simulation
     only: *only
     script:
         - cd test
-        - make tb_rtl_test_fast_fpga
-        - make tb_rtl_test_fast_fpga_logs
+        - make tb_rtl_medium_asic_max_feature
+        - make tb_rtl_medium_asic_max_feature_logs
     artifacts:
         when: always
         paths:
-            - test/tb_rtl_test_fast_fpga.xml
-            - test/tb_rtl_test_fast_fpga_summary
-            - test/tb_rtl_test_fast_fpga.sim_time
+            - test/tb_rtl_medium_asic_max_feature.xml
+            - test/tb_rtl_medium_asic_max_feature_summary
+            - test/tb_rtl_medium_asic_max_feature.sim_time
             - test/vunit_out/code_coverage
         reports:
-            junit: test/tb_rtl_test_fast_fpga.xml
-
-    # Some gates might fail, TODO: Debug
+            junit: test/tb_rtl_medium_asic_max_feature.xml
     allow_failure: true
 
-
-test_nightly:
-    stage: test_rtl
+test_rtl_big_asic_max_feature:
+    stage: test_rtl_feature
     tags:
         - simulation
-    only:
-        - master
-    script:
-        - cd test
-        - make tb_rtl_test_nightly
-        - make tb_rtl_test_nightly_logs
-    artifacts:
-        when: always
-        paths:
-            - test/tb_rtl_test_nightly.xml
-            - test/tb_rtl_test_nightly_summary
-            - test/tb_rtl_test_nightly.sim_time
-            - test/vunit_out/code_coverage
-        reports:
-            junit: test/tb_rtl_test_nightly.xml
-
-    # Nightly tests might fail due to randomization. It is not preffered to
-    # kill whole follow-up coverage processing due to this failure!
-    # OTOH, fast pipeline can't fail because it must pass before merge!
-    allow_failure: true
-
-
-###############################################################################
-# Test RTL stage (Compliance test runs)
-###############################################################################
-test_compliance_short:
-    stage: test_rtl
-    tags:
-        - simulation
-    dependencies: [build_compliance_lib]
     only: *only
     script:
         - cd test
-        - make tb_rtl_test_compliance_short
-        - make tb_rtl_test_compliance_short_logs
+        - make tb_rtl_big_asic_max_feature
+        - make tb_rtl_big_asic_max_feature_logs
     artifacts:
         when: always
         paths:
-            - test/tb_rtl_test_compliance_short.xml
-            - test/tb_rtl_test_compliance_short_summary
-            - test/tb_rtl_test_compliance_short.sim_time
+            - test/tb_rtl_big_asic_max_feature.xml
+            - test/tb_rtl_big_asic_max_feature_summary
+            - test/tb_rtl_big_asic_max_feature.sim_time
             - test/vunit_out/code_coverage
         reports:
-            junit: test/tb_rtl_test_compliance_short.xml
-
-    # For now not all compliance tests are debugged, allow failure...
+            junit: test/tb_rtl_big_asic_max_feature.xml
     allow_failure: true
 
-
-test_compliance_full_typ:
-    stage: test_rtl
+test_rtl_medium_fpga_max_feature:
+    stage: test_rtl_feature
     tags:
         - simulation
-    dependencies: [build_compliance_lib]
-    only:
-        - master
+    only: *only
     script:
         - cd test
-        - make tb_rtl_test_compliance_full_typ
-        - make tb_rtl_test_compliance_full_typ_logs
+        - make tb_rtl_medium_fpga_max_feature
+        - make tb_rtl_medium_fpga_max_feature_logs
     artifacts:
         when: always
         paths:
-            - test/tb_rtl_test_compliance_full_typ.xml
-            - test/tb_rtl_test_compliance_full_typ_summary
-            - test/tb_rtl_test_compliance_full_typ.sim_time
+            - test/tb_rtl_medium_fpga_max_feature.xml
+            - test/tb_rtl_medium_fpga_max_feature_summary
+            - test/tb_rtl_medium_fpga_max_feature.sim_time
             - test/vunit_out/code_coverage
         reports:
-            junit: test/tb_rtl_test_compliance_full_typ.xml
-
-    # For now not all compliance tests are debugged, allow failure...
+            junit: test/tb_rtl_medium_fpga_max_feature.xml
     allow_failure: true
-
-test_compliance_full_max:
-    stage: test_rtl
-    tags:
-        - simulation
-    dependencies: [build_compliance_lib]
-    only:
-        - master
-    script:
-        - cd test
-        - make tb_rtl_test_compliance_full_max
-        - make tb_rtl_test_compliance_full_max_logs
-    artifacts:
-        when: always
-        paths:
-            - test/tb_rtl_test_compliance_full_max.xml
-            - test/tb_rtl_test_compliance_full_max_summary
-            - test/tb_rtl_test_compliance_full_max.sim_time
-            - test/vunit_out/code_coverage
-        reports:
-            junit: test/tb_rtl_test_compliance_full_max.xml
-
-    # For now not all compliance tests are debugged, allow failure...
-    allow_failure: true
-
-
-# MIN run is not feasible with GHDL. Min run with VCS on fast machine takes 6-8
-# hours -> TODO: Add min run once we flip to NVC.
 
 
 ###############################################################################
-# Test gates (Gate level simulation on post synthesis netlist)
+# Test RTL compliance stage
 ###############################################################################
-test_gates_simple:
-    stage: test_gates
+test_rtl_small_asic_max_compliance:
+    stage: test_rtl_compliance
+    tags:
+        - simulation
+    only: *only
+    script:
+        - cd test
+        - make tb_rtl_small_asic_max_compliance
+        - make tb_rtl_small_asic_max_compliance_logs
+    artifacts:
+        when: always
+        paths:
+            - test/tb_rtl_small_asic_max_compliance.xml
+            - test/tb_rtl_small_asic_max_compliance_summary
+            - test/tb_rtl_small_asic_max_compliance.sim_time
+            - test/vunit_out/code_coverage
+        reports:
+            junit: test/tb_rtl_small_asic_max_compliance.xml
+    allow_failure: true
+
+test_rtl_small_asic_typ_compliance:
+    stage: test_rtl_compliance
+    tags:
+        - simulation
+    only: *only
+    script:
+        - cd test
+        - make tb_rtl_small_asic_typ_compliance
+        - make tb_rtl_small_asic_typ_compliance_logs
+    artifacts:
+        when: always
+        paths:
+            - test/tb_rtl_small_asic_typ_compliance.xml
+            - test/tb_rtl_small_asic_typ_compliance_summary
+            - test/tb_rtl_small_asic_typ_compliance.sim_time
+            - test/vunit_out/code_coverage
+        reports:
+            junit: test/tb_rtl_small_asic_typ_compliance.xml
+    allow_failure: true
+
+# TODO: Uncomment once we know how long does this take in NVC!
+#test_rtl_small_asic_min_compliance:
+#    stage: test_rtl_compliance
+#    tags:
+#        - simulation
+#    only: *only
+#    script:
+#        - cd test
+#        - make tb_rtl_small_asic_min_compliance
+#        - make tb_rtl_small_asic_min_compliance_logs
+#    artifacts:
+#        when: always
+#        paths:
+#            - test/tb_rtl_small_asic_min_compliance.xml
+#            - test/tb_rtl_small_asic_min_compliance_summary
+#            - test/tb_rtl_small_asic_min_compliance.sim_time
+#            - test/vunit_out/code_coverage
+#        reports:
+#            junit: test/tb_rtl_small_asic_min_compliance.xml
+#    allow_failure: true
+
+
+###############################################################################
+# Test gates stage
+###############################################################################
+test_gate_xilinx_medium_fpga_max_feature:
+    stage: test_rtl_compliance
     tags:
         - simulation
     dependencies: [run_synthesis, build_compliance_lib]
-    timeout: 6h
-    only:
-        - master
+    timeout: 3h
+    only: *only
     script:
         - cd test
-        - make tb_gate_xilinx_test_simple
-        - make tb_gate_xilinx_test_simple_logs
+        - make tb_gate_xilinx_medium_fpga_max_feature
+        - make tb_gate_xilinx_medium_fpga_max_feature_logs
     artifacts:
         when: always
         paths:
-            - test/tb_gate_xilinx_test_simple.xml
-            - test/tb_gate_xilinx_test_simple_summary
-            - test/tb_gate_xilinx_test_simple.sim_time
-            - test/vunit_out/code_coverage
+            - test/tb_gate_xilinx_medium_fpga_max_feature.xml
+            - test/tb_gate_xilinx_medium_fpga_max_feature_summary
+            - test/tb_gate_xilinx_medium_fpga_max_feature.sim_time
         reports:
-            junit: test/tb_gate_xilinx_test_simple.xml
-
-    # Some gates might fail, TODO: Debug
+            junit: test/tb_gate_xilinx_medium_fpga_max_feature.xml
     allow_failure: true
 
-test_gates_compliance:
-    stage: test_gates
+test_gate_xilinx_small_fpga_max_compliance:
+    stage: test_rtl_compliance
     tags:
         - simulation
     dependencies: [run_synthesis, build_compliance_lib]
-    timeout: 6h
-    only:
-        - master
+    timeout: 3h
+    only: *only
     script:
         - cd test
-        - make tb_gate_xilinx_test_compliance
-        - make tb_gate_xilinx_test_compliance_logs
+        - make tb_gate_xilinx_small_fpga_max_compliance
+        - make tb_gate_xilinx_small_fpga_max_compliance_logs
     artifacts:
         when: always
         paths:
-            - test/tb_gate_xilinx_test_compliance.xml
-            - test/tb_gate_xilinx_test_compliance_summary
-            - test/tb_gate_xilinx_test_compliance.sim_time
+            - test/tb_gate_xilinx_small_fpga_max_compliance.xml
+            - test/tb_gate_xilinx_small_fpga_max_compliance_summary
+            - test/tb_gate_xilinx_small_fpga_max_compliance.sim_time
         reports:
-            junit: test/tb_gate_xilinx_test_compliance.xml
-
-    # TODO: Still some compliance tests are not yet fully debugged!
+            junit: test/tb_gate_xilinx_small_fpga_max_compliance.xml
     allow_failure: true
 
 
@@ -361,12 +350,12 @@ process_coverage:
     tags:
         - simulation
     dependencies:
-        - test_fast_fpga
-        - test_fast_asic
-        - test_nightly
-        - test_compliance_short
-        - test_compliance_full_typ
-        - test_compliance_full_max
+        - test_rtl_small_asic_max_feature
+        - test_rtl_medium_asic_max_feature
+        - test_rtl_big_asic_max_feature
+        - test_rtl_medium_fpga_max_feature
+        - test_rtl_small_asic_max_compliance
+        - test_rtl_small_asic_typ_compliance
     only: *only
     script:
         # Merge code coverage and generate report
