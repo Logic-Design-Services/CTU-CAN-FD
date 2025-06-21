@@ -78,9 +78,11 @@
 --      from register map.
 --
 -- @Test sequence:
---  @1. Read expected value of ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR
+--  @1. Force ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR to a random value.
+--  @2. Read expected value of ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR
 --      from DUT and check it matches value forced to DUT. Value forced to
 --      DUT obtained from TB scratchpad (placed there by TB).
+--  @3. Release ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR to a random value.
 --
 -- @TestInfoEnd
 --------------------------------------------------------------------------------
@@ -108,7 +110,29 @@ package body counters_toggle_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable r_data : std_logic_vector(31 downto 0) := (OTHERS => '0');
+
+        variable exp_tx_err_ctr   : std_logic_vector(31 downto 0);
+        variable exp_rx_err_ctr   : std_logic_vector(31 downto 0);
+        variable exp_norm_err_ctr : std_logic_vector(15 downto 0);
+        variable exp_data_err_ctr : std_logic_vector(15 downto 0);
+
     begin
+
+        -----------------------------------------------------------------------
+        -- @1. Force ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR to a random
+        --     value.
+        -----------------------------------------------------------------------
+        info_m("Step 1: Force ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR");
+
+        rand_logic_vect_v(exp_tx_err_ctr, 0.5);
+        rand_logic_vect_v(exp_rx_err_ctr, 0.5);
+        rand_logic_vect_v(exp_norm_err_ctr, 0.5);
+        rand_logic_vect_v(exp_data_err_ctr, 0.5);
+
+        tb_force.force_tx_counter(exp_tx_err_ctr);
+        tb_force.force_rx_counter(exp_rx_err_ctr);
+        tb_force.force_err_norm(exp_norm_err_ctr);
+        tb_force.force_err_fd(exp_data_err_ctr);
 
         -----------------------------------------------------------------------
         -- @1. Read expected value of ERR_NORM, ERR_FD, RX_FR_CTR and
@@ -116,19 +140,29 @@ package body counters_toggle_ftest is
         --     Value forced to DUT obtained from TB scratchpad
         --     (placed there by TB).
         -----------------------------------------------------------------------
-        info_m("Step 1: Check ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR");
+        info_m("Step 2: Check ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR");
 
         CAN_read(r_data, ERR_NORM_ADR, DUT_NODE, chn);
-        check_m(r_data(ERR_NORM_VAL_H downto ERR_NORM_VAL_L) = force_values.get_err_norm,
+        check_m(r_data(ERR_NORM_VAL_H downto ERR_NORM_VAL_L) = exp_norm_err_ctr,
                 "ERR_NORM is OK");
-        check_m(r_data(ERR_FD_VAL_H downto ERR_FD_VAL_L) = force_values.get_err_fd,
+        check_m(r_data(ERR_FD_VAL_H downto ERR_FD_VAL_L) = exp_data_err_ctr,
                 "ERR_FD is OK");
 
-        CAN_read(r_data, RX_FR_CTR_ADR, DUT_NODE, chn);
-        check_m(r_data = force_values.get_rx_counter, "RX_FR_CTR is OK");
+        CAN_read(r_data, TX_FR_CTR_ADR, DUT_NODE, chn);
+        check_m(r_data = exp_tx_err_ctr, "TX_FR_CTR is OK");
 
         CAN_read(r_data, RX_FR_CTR_ADR, DUT_NODE, chn);
-        check_m(r_data = force_values.get_rx_counter, "RX_FR_CTR is OK");
+        check_m(r_data = exp_rx_err_ctr, "RX_FR_CTR is OK");
+
+        -----------------------------------------------------------------------
+        -- @3. Release ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR to a random value.
+        -----------------------------------------------------------------------
+        info_m("Step 3: Release ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR");
+
+        tb_force.release_tx_counter;
+        tb_force.release_rx_counter;
+        tb_force.release_err_norm;
+        tb_force.release_err_fd;
 
   end procedure;
 
