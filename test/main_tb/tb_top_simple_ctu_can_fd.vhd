@@ -402,6 +402,9 @@ begin
             info_m("***************************************************************");
 
             -- Test specific deposits
+            -- TODO: Move these to "counters_toggle" feature test procedure once VS
+            --       supports external names with absolute paths to be used from
+            --       packages!
             if (deposit_to_dut_i.get) then
 
                 if (test_name = "counters_toggle") then

@@ -95,9 +95,7 @@ entity tb_top_ctu_can_fd is
         test_type               : string := "feature"; -- "feature", "compliance" or "reference"
         log_level               : t_log_verbosity := verbosity_info;
         func_cov_en             : boolean := true;
-
-        -- !!! Set to true when running with VCS + Vunit and collecting coverage !!!
-        deposit_to_dut          : boolean := false;
+        deposit_to_dut          : boolean := true;
 
         iterations              : natural := 1;
         timeout                 : string := "10 ms";
@@ -414,6 +412,9 @@ begin
             info_m("***************************************************************");
 
             -- Test specific deposits
+            -- TODO: Move these to "counters_toggle" feature test procedure once VS
+            --       supports external names with absolute paths to be used from
+            --       packages!
             if (deposit_to_dut_i.get) then
 
                 if (test_name = "counters_toggle") then
