@@ -153,6 +153,7 @@ test_rtl_small_asic_max_feature:
     tags:
         - simulation
     only: *only
+    timeout: 2h
     script:
         - cd test
         - make tb_rtl_small_asic_max_feature
@@ -173,6 +174,7 @@ test_rtl_medium_asic_max_feature:
     tags:
         - simulation
     only: *only
+    timeout: 2h
     script:
         - cd test
         - make tb_rtl_medium_asic_max_feature
@@ -193,6 +195,7 @@ test_rtl_big_asic_max_feature:
     tags:
         - simulation
     only: *only
+    timeout: 2h
     script:
         - cd test
         - make tb_rtl_big_asic_max_feature
@@ -213,6 +216,7 @@ test_rtl_medium_fpga_max_feature:
     tags:
         - simulation
     only: *only
+    timeout: 2h
     script:
         - cd test
         - make tb_rtl_medium_fpga_max_feature
@@ -237,6 +241,7 @@ test_rtl_small_asic_max_compliance:
     tags:
         - simulation
     only: *only
+    timeout: 2h
     script:
         - cd test
         - make tb_rtl_small_asic_max_compliance
@@ -257,6 +262,7 @@ test_rtl_small_asic_typ_compliance:
     tags:
         - simulation
     only: *only
+    timeout: 2h
     script:
         - cd test
         - make tb_rtl_small_asic_typ_compliance
@@ -272,26 +278,26 @@ test_rtl_small_asic_typ_compliance:
             junit: test/tb_rtl_small_asic_typ_compliance.xml
     allow_failure: true
 
-# TODO: Uncomment once we know how long does this take in NVC!
-#test_rtl_small_asic_min_compliance:
-#    stage: test_rtl_compliance
-#    tags:
-#        - simulation
-#    only: *only
-#    script:
-#        - cd test
-#        - make tb_rtl_small_asic_min_compliance
-#        - make tb_rtl_small_asic_min_compliance_logs
-#    artifacts:
-#        when: always
-#        paths:
-#            - test/tb_rtl_small_asic_min_compliance.xml
-#            - test/tb_rtl_small_asic_min_compliance_summary
-#            - test/tb_rtl_small_asic_min_compliance.sim_time
-#            - test/vunit_out/code_coverage
-#        reports:
-#            junit: test/tb_rtl_small_asic_min_compliance.xml
-#    allow_failure: true
+test_rtl_small_asic_min_compliance:
+    stage: test_rtl_compliance
+    tags:
+        - simulation
+    only: *only
+    timeout: 3h
+    script:
+        - cd test
+        - make tb_rtl_small_asic_min_compliance
+        - make tb_rtl_small_asic_min_compliance_logs
+    artifacts:
+        when: always
+        paths:
+            - test/tb_rtl_small_asic_min_compliance.xml
+            - test/tb_rtl_small_asic_min_compliance_summary
+            - test/tb_rtl_small_asic_min_compliance.sim_time
+            - test/vunit_out/code_coverage
+        reports:
+            junit: test/tb_rtl_small_asic_min_compliance.xml
+    allow_failure: true
 
 
 ###############################################################################
