@@ -16,7 +16,7 @@ stages:
     - test_unit
     - test_rtl_feature
     - test_rtl_compliance
-    - test_gates
+    - test_gates_xilinx
     - coverage
     - deploy
 
@@ -304,7 +304,7 @@ test_rtl_small_asic_min_compliance:
 # Test gates stage
 ###############################################################################
 test_gate_xilinx_medium_fpga_max_feature:
-    stage: test_rtl_compliance
+    stage: test_gates_xilinx
     tags:
         - simulation
     dependencies: [run_synthesis, build_compliance_lib]
@@ -325,7 +325,7 @@ test_gate_xilinx_medium_fpga_max_feature:
     allow_failure: true
 
 test_gate_xilinx_small_fpga_max_compliance:
-    stage: test_rtl_compliance
+    stage: test_gates_xilinx
     tags:
         - simulation
     dependencies: [run_synthesis, build_compliance_lib]
