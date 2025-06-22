@@ -109,16 +109,16 @@ run_synthesis:
         - source /opt/xilinx/vivado-2018.2/settings.sh
         - cd synthesis/Vivado/ci_benchmark
         - echo "Running minimal configuration..."
-        - vivado -mode tcl -source vivado_benchmark_minimal.tcl
+        - vivado -mode tcl -source vivado_benchmark_small.tcl
         - echo "Running typical configuration..."
-        - vivado -mode tcl -source vivado_benchmark_typical.tcl
+        - vivado -mode tcl -source vivado_benchmark_medium.tcl
         - echo "Running maximal configuration..."
-        - vivado -mode tcl -source vivado_benchmark_maximal.tcl
+        - vivado -mode tcl -source vivado_benchmark_big.tcl
 
         # Remove reference to UNISIM library, all cell models are included in netlist!
-        - sed -i 's\library UNISIM;\\g' maximal_design_config/can_top_level.vhd
-        - sed -i 's\library UNISIM;\\g' typical_design_config/can_top_level.vhd
-        - sed -i 's\library UNISIM;\\g' minimal_design_config/can_top_level.vhd
+        - sed -i 's\library UNISIM;\\g' small_design_config/can_top_level.vhd
+        - sed -i 's\library UNISIM;\\g' medium_design_config/can_top_level.vhd
+        - sed -i 's\library UNISIM;\\g' big_design_config/can_top_level.vhd
     artifacts:
         paths:
             - synthesis/Vivado/ci_benchmark/*_design_config
