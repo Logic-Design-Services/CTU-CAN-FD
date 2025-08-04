@@ -3,7 +3,7 @@
 CTU CAN FD is soft IP-Core written in VHDL which supports ISO and NON-ISO versions
 of CAN FD protocol.
 
-CTU CAN FD is compliant with ISO 1198-1:2015. CTU CAN FD is tested by ISO 16845-1 2016
+CTU CAN FD is compliant with ISO 11898-1:2015. CTU CAN FD is tested by ISO 16845-1 2016
 sequence in digital simulation and it has been used in dozens of FPGA and
 ASIC applications.
 
