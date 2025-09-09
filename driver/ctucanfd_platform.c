@@ -38,6 +38,12 @@
 
 #define DRV_NAME	"ctucanfd"
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,11,0)
+  #define KC_PLATFORM_REMOVE_RET void
+#else /* 6.11.0 */
+  #define KC_PLATFORM_REMOVE_RET int
+#endif /* 6.11.0 */
+
 static void ctucan_platform_set_drvdata(struct device *dev,
 					struct net_device *ndev)
 {
@@ -107,7 +113,7 @@ err:
  * This function frees all the resources allocated to the device.
  * Return: 0 always
  */
-static int ctucan_platform_remove(struct platform_device *pdev)
+static KC_PLATFORM_REMOVE_RET ctucan_platform_remove(struct platform_device *pdev)
 {
 	struct net_device *ndev = platform_get_drvdata(pdev);
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -119,7 +125,7 @@ static int ctucan_platform_remove(struct platform_device *pdev)
 	netif_napi_del(&priv->napi);
 	free_candev(ndev);
 
-	return 0;
+	return (KC_PLATFORM_REMOVE_RET)0;
 }
 
 static SIMPLE_DEV_PM_OPS(ctucan_platform_pm_ops, ctucan_suspend, ctucan_resume);
