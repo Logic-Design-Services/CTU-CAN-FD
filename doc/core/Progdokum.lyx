@@ -493,7 +493,7 @@ filename "version.tex"
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="35" columns="3">
+<lyxtabular version="3" rows="36" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="2cm">
@@ -1527,7 +1527,7 @@ Add LBPF bit to RX frame.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1536,7 +1536,7 @@ Add LBPF bit to RX frame.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1545,11 +1545,40 @@ Add LBPF bit to RX frame.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Move to new relase of CTU CAN FD.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+15-9-2025
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Fix code samples to readout RWCNT - 3 words.
 \end_layout
 
 \end_inset
@@ -5890,7 +5919,7 @@ uint32_t rwcnt = (ffw >> 11) & 0x1F;
 \end_layout
 
 \begin_layout LyX-Code
-for(int i = 0; i < rwcnt; i++){
+for(int i = 0; i < rwcnt - 3; i++){
 \end_layout
 
 \begin_layout LyX-Code
@@ -6046,7 +6075,7 @@ uint16_t rwcnt = (ffw >> 11) & 0x1F;
 \end_layout
 
 \begin_layout LyX-Code
-for(int i = 0; i < rwcnt; i++){
+for(int i = 0; i < rwcnt - 3; i++){
 \end_layout
 
 \begin_layout LyX-Code
@@ -6625,7 +6654,7 @@ uint32_t rwcnt = (ffw >> 11) & 0x1F;
 \end_layout
 
 \begin_layout LyX-Code
-for(int i = 0; i < rwcnt; i++){
+for(int i = 0; i < rwcnt - 3; i++){
 \end_layout
 
 \begin_layout LyX-Code
