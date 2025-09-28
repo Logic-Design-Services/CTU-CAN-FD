@@ -116,15 +116,18 @@ package body mode_self_acknowledge_ftest is
         variable rx_buf_state       :       t_ctu_rx_buf_state;
         variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable ff             :       t_ctu_frame_field;
+        variable ff                 :       t_ctu_frame_field;
 
         variable can_tx             :       std_logic;
+        variable bit_duration       :       time;
     begin
 
         ------------------------------------------------------------------------
         -- @1. Configures Self Acknowledge mode in DUT.
         ------------------------------------------------------------------------
         info_m("Step 1");
+
+        ctu_measure_bit_duration(DUT_NODE, chn, bit_duration);
 
         mode_1.self_acknowledge := true;
         ctu_set_mode(mode_1, DUT_NODE, chn);
@@ -137,8 +140,8 @@ package body mode_self_acknowledge_ftest is
         generate_can_frame(can_tx_frame);
         ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_ff(ff_ack, DUT_NODE, chn);
-        ctu_wait_sync_seg(DUT_NODE, chn);
-        wait for 20 ns;
+        -- Reliable way how to wait until the middle of ACK bit
+        wait for bit_duration / 2;
 
         ------------------------------------------------------------------------
         -- @3. Check that DUT Node is transmitting Dominant value.
