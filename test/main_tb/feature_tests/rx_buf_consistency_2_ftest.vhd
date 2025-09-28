@@ -123,10 +123,10 @@ package body rx_buf_consistency_2_ftest is
     ) is
         variable bus_timing         :       t_ctu_bit_time_cfg;
 
-        variable CAN_TX_frame_1     :       t_ctu_frame;
-        variable CAN_TX_frame_2     :       t_ctu_frame;
-        variable CAN_RX_frame_1     :       t_ctu_frame;
-        variable CAN_RX_frame_2     :       t_ctu_frame;
+        variable can_tx_frame_1     :       t_ctu_frame;
+        variable can_tx_frame_2     :       t_ctu_frame;
+        variable can_rx_frame_1     :       t_ctu_frame;
+        variable can_rx_frame_2     :       t_ctu_frame;
 
         variable rx_buf_state        :       t_ctu_rx_buf_state;
 
@@ -178,23 +178,23 @@ package body rx_buf_consistency_2_ftest is
         ctu_wait_err_active(TEST_NODE, chn);
 
         -- First frame - Will always take 4 words in RX Buffer
-        generate_can_frame(CAN_TX_frame_1);
-        CAN_TX_frame_1.data_length := 0;
-        length_to_dlc(CAN_TX_frame_1.data_length, CAN_TX_frame_1.dlc);
-        dlc_to_rwcnt(CAN_TX_frame_1.dlc, CAN_TX_frame_1.rwcnt);
+        generate_can_frame(can_tx_frame_1);
+        can_tx_frame_1.data_length := 0;
+        length_to_dlc(can_tx_frame_1.data_length, can_tx_frame_1.dlc);
+        dlc_to_rwcnt(can_tx_frame_1.dlc, can_tx_frame_1.rwcnt);
 
         -- Second frame
         -- Make it fixed so that we don't see spurious fails due to immediate
         -- frame on flipped stuff-bit!
-        generate_can_frame(CAN_TX_frame_2);
-        CAN_TX_frame_2.identifier := 0;
-        CAN_TX_frame_2.ident_type := BASE;
-        CAN_TX_frame_2.frame_format := NORMAL_CAN;
-        CAN_TX_frame_2.rtr := NO_RTR_FRAME;
-        CAN_TX_frame_2.data_length := 0;
+        generate_can_frame(can_tx_frame_2);
+        can_tx_frame_2.identifier := 0;
+        can_tx_frame_2.ident_type := BASE;
+        can_tx_frame_2.frame_format := NORMAL_CAN;
+        can_tx_frame_2.rtr := NO_RTR_FRAME;
+        can_tx_frame_2.data_length := 0;
 
-        length_to_dlc(CAN_TX_frame_2.data_length, CAN_TX_frame_2.dlc);
-        dlc_to_rwcnt(CAN_TX_frame_2.dlc, CAN_TX_frame_2.rwcnt);
+        length_to_dlc(can_tx_frame_2.data_length, can_tx_frame_2.dlc);
+        dlc_to_rwcnt(can_tx_frame_2.dlc, can_tx_frame_2.rwcnt);
 
         ------------------------------------------------------------------------
         -- @2. Iterate with incrementing wait time X.
@@ -217,8 +217,8 @@ package body rx_buf_consistency_2_ftest is
             ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
             ctu_set_err_ctrs(err_counters, TEST_NODE, chn);
 
-            ctu_put_tx_frame(CAN_TX_frame_1, 1, TEST_NODE, chn);
-            ctu_put_tx_frame(CAN_TX_frame_2, 2, TEST_NODE, chn);
+            ctu_put_tx_frame(can_tx_frame_1, 1, TEST_NODE, chn);
+            ctu_put_tx_frame(can_tx_frame_2, 2, TEST_NODE, chn);
 
             -- Configure bit-flip in CRC bit 12 from frame 2
             ctu_set_tx_frame_test(2, 12, false, true, false, TEST_NODE, chn);
@@ -264,7 +264,7 @@ package body rx_buf_consistency_2_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.4");
 
-            ctu_read_frame(CAN_RX_frame_1, DUT_NODE, chn);
+            ctu_read_frame(can_rx_frame_1, DUT_NODE, chn);
 
             --------------------------------------------------------------------
             -- @2.5 Wait until Error frame in DUT. Wait until bus is idle!

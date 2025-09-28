@@ -113,8 +113,8 @@ package body ssp_4_bits_flying_ftest is
     procedure ssp_4_bits_flying_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable measured_delay     :       natural;
         variable frames_equal       :       boolean;
@@ -194,12 +194,12 @@ package body ssp_4_bits_flying_ftest is
         -----------------------------------------------------------------------
         info_m("Step 5");
 
-        generate_can_frame(CAN_TX_frame);
-        CAN_TX_frame.rtr := NO_RTR_FRAME;
-        CAN_TX_frame.frame_format := FD_CAN;
-        CAN_TX_frame.brs := BR_SHIFT;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.rtr := NO_RTR_FRAME;
+        can_tx_frame.frame_format := FD_CAN;
+        can_tx_frame.brs := BR_SHIFT;
 
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
 
         ctu_wait_bus_idle(DUT_NODE, chn);
@@ -212,8 +212,8 @@ package body ssp_4_bits_flying_ftest is
               " Measured: " & integer'image(measured_delay));
 
         -- Read from from TEST Node
-        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, TEST_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
         
         check_m(frames_equal, "TX RX frames match");
 

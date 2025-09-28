@@ -119,7 +119,7 @@ package body mode_erfm_ftest is
         variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             : t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable CAN_frame          : t_ctu_frame;
+        variable can_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
 
         variable rx_buf_state        : t_ctu_rx_buf_state;
@@ -144,8 +144,8 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_err_frame(DUT_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
 
@@ -176,8 +176,8 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_err_frame(DUT_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
 
@@ -204,7 +204,7 @@ package body mode_erfm_ftest is
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1',                            "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '1',                           "FRAME_FORMAT_W[IVLD] = 1");
-        check_m(err_frame.identifier = CAN_frame.identifier,    "Identifier match");
+        check_m(err_frame.identifier = can_frame.identifier,    "Identifier match");
 
   end procedure;
 

@@ -119,8 +119,8 @@ package body rx_settings_rtsop_ftest is
     procedure rx_settings_rtsop_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :        t_ctu_frame;
-        variable CAN_RX_frame       :        t_ctu_frame;
+        variable can_tx_frame       :        t_ctu_frame;
+        variable can_rx_frame       :        t_ctu_frame;
         variable frame_sent         :        boolean := false;
         variable options            :        t_ctu_rx_buff_opts;
         variable ts_beg             :        std_logic_vector(31 downto 0);
@@ -163,8 +163,8 @@ package body rx_settings_rtsop_ftest is
         mode_1.internal_loopback := true;
         ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
@@ -176,21 +176,21 @@ package body rx_settings_rtsop_ftest is
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
 
-        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
+        ctu_read_frame(can_rx_frame, DUT_NODE, chn);
 
         -- Calculate difference. Two separate cases are needed to avoid
         -- underflow
-        if (CAN_RX_frame.timestamp > capt_ts) then
-            diff := unsigned(CAN_RX_frame.timestamp) - unsigned(capt_ts);
+        if (can_rx_frame.timestamp > capt_ts) then
+            diff := unsigned(can_rx_frame.timestamp) - unsigned(capt_ts);
         else
-            diff := unsigned(capt_ts) - unsigned(CAN_RX_frame.timestamp);
+            diff := unsigned(capt_ts) - unsigned(can_rx_frame.timestamp);
         end if;
 
         -- Have some margin on check, as we are polling status which takes
         -- non-zero time!
         check_m(diff <= 3, "Timestamp at SOF. " &
                          " Expected: " & to_hstring(capt_ts) & 
-                         " Measured: " & to_hstring(CAN_RX_frame.timestamp) &
+                         " Measured: " & to_hstring(can_rx_frame.timestamp) &
                          " Difference: " & to_hstring(diff));
 
         -----------------------------------------------------------------------
@@ -202,8 +202,8 @@ package body rx_settings_rtsop_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
 
         ctu_wait_frame_start(false, true, DUT_NODE, chn);
 
@@ -214,21 +214,21 @@ package body rx_settings_rtsop_ftest is
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
 
-        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
+        ctu_read_frame(can_rx_frame, DUT_NODE, chn);
 
         -- Calculate difference. Two separate cases are needed to avoid
         -- underflow
-        if (CAN_RX_frame.timestamp > capt_ts) then
-            diff := unsigned(CAN_RX_frame.timestamp) - unsigned(capt_ts);
+        if (can_rx_frame.timestamp > capt_ts) then
+            diff := unsigned(can_rx_frame.timestamp) - unsigned(capt_ts);
         else
-            diff := unsigned(capt_ts) - unsigned(CAN_RX_frame.timestamp);
+            diff := unsigned(capt_ts) - unsigned(can_rx_frame.timestamp);
         end if;
 
         -- Have some margin on check, as we are polling status which takes
         -- non-zero time!
         check_m(diff <= 3, "Timestamp at SOF. " &
                          " Expected: " & to_hstring(capt_ts) & 
-                         " Measured: " & to_hstring(CAN_RX_frame.timestamp) &
+                         " Measured: " & to_hstring(can_rx_frame.timestamp) &
                          " Difference: " & to_hstring(diff));
 
         -----------------------------------------------------------------------
@@ -242,8 +242,8 @@ package body rx_settings_rtsop_ftest is
         rx_options.rx_time_stamp_options := false;
         ctu_set_rx_buf_opts(rx_options, DUT_NODE, chn);
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
         
         ctu_wait_ff(ff_eof, DUT_NODE, chn);
 
@@ -259,21 +259,21 @@ package body rx_settings_rtsop_ftest is
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
 
-        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
+        ctu_read_frame(can_rx_frame, DUT_NODE, chn);
         
         -- Calculate difference. Two separate cases are needed to avoid
         -- underflow
-        if (CAN_RX_frame.timestamp > capt_ts) then
-            diff := unsigned(CAN_RX_frame.timestamp) - unsigned(capt_ts);
+        if (can_rx_frame.timestamp > capt_ts) then
+            diff := unsigned(can_rx_frame.timestamp) - unsigned(capt_ts);
         else
-            diff := unsigned(capt_ts) - unsigned(CAN_RX_frame.timestamp);
+            diff := unsigned(capt_ts) - unsigned(can_rx_frame.timestamp);
         end if;
 
         -- Have some margin on check, as we are polling status which takes
         -- non-zero time!
         check_m(diff <= 3, "Timestamp at SOF. " &
                          " Expected: " & to_hstring(capt_ts) & 
-                         " Measured: " & to_hstring(CAN_RX_frame.timestamp) &
+                         " Measured: " & to_hstring(can_rx_frame.timestamp) &
                          " Difference: " & to_hstring(diff));
 
     end procedure;

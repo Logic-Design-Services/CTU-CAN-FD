@@ -116,7 +116,7 @@ package body rx_err_log_8_ftest is
         variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             : t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable CAN_frame          : t_ctu_frame;
+        variable can_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
 
         variable frames_match       : boolean;
@@ -167,8 +167,8 @@ package body rx_err_log_8_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2");
 
-            generate_can_frame(CAN_frame);
-            ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
             ctu_wait_frame_start(true, false, DUT_NODE, chn);
             ctu_wait_bus_idle(DUT_NODE, chn);
 

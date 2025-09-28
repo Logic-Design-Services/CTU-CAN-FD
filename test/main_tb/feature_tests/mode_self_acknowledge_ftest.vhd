@@ -106,8 +106,8 @@ package body mode_self_acknowledge_ftest is
     procedure mode_self_acknowledge_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -134,8 +134,8 @@ package body mode_self_acknowledge_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_ff(ff_ack, DUT_NODE, chn);
         ctu_wait_sync_seg(DUT_NODE, chn);
         wait for 20 ns;

@@ -111,8 +111,8 @@ package body btr_ftest is
     procedure btr_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       t_ctu_frame;
-        variable CAN_frame_2        :       t_ctu_frame;
+        variable can_frame_1        :       t_ctu_frame;
+        variable can_frame_2        :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
         variable bus_timing         :       t_ctu_bit_time_cfg;
@@ -204,22 +204,22 @@ package body btr_ftest is
         -- that if generated bit rate is too low, and data field length too
         -- high, test run time explodes! It has no sense to test long data fields
         -- on any bit-rate since its functionality should not depend on it!
-        generate_can_frame(CAN_frame_1);
+        generate_can_frame(can_frame_1);
         info_m("Generated frame");
-        CAN_frame_1.frame_format := NORMAL_CAN;
+        can_frame_1.frame_format := NORMAL_CAN;
 
-        if (CAN_frame_1.data_length > 4) then
-            CAN_frame_1.data_length := 4;
-            length_to_dlc(CAN_frame_1.data_length, CAN_frame_1.dlc);
-            dlc_to_rwcnt(CAN_frame_1.dlc, CAN_frame_1.rwcnt);
+        if (can_frame_1.data_length > 4) then
+            can_frame_1.data_length := 4;
+            length_to_dlc(can_frame_1.data_length, can_frame_1.dlc);
+            dlc_to_rwcnt(can_frame_1.dlc, can_frame_1.rwcnt);
         end if;
 
         -- Force frame type to CAN 2.0 since we are measuring nominal bit rate!
-        ctu_send_frame(CAN_frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame_1, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
-        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
 
-        compare_can_frames(CAN_frame_1, CAN_frame_2, false, frames_equal);
+        compare_can_frames(can_frame_1, can_frame_2, false, frames_equal);
         check_m(frames_equal, "TX/RX frame equal!");
 
   end procedure;

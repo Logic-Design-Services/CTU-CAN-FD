@@ -155,8 +155,8 @@ package body frame_test_ignore_ftest is
     procedure frame_test_ignore_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -206,21 +206,21 @@ package body frame_test_ignore_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_TX_frame);
-        CAN_TX_frame.frame_format := FD_CAN;
-        CAN_TX_frame.ident_type := BASE;
-        CAN_TX_frame.identifier := CAN_TX_frame.identifier mod 2**11;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.frame_format := FD_CAN;
+        can_tx_frame.ident_type := BASE;
+        can_tx_frame.identifier := can_tx_frame.identifier mod 2**11;
         info_m("Transmitted frame:");
-        print_can_frame(CAN_TX_frame);
+        print_can_frame(can_tx_frame);
 
-        if (CAN_TX_frame.data_length > 16) then
+        if (can_tx_frame.data_length > 16) then
             crc_length := 21;
         else
             crc_length := 17;
         end if;
 
         ctu_get_rand_txt_buf(txt_buf_index, DUT_NODE, chn);
-        ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+        ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
 
         ctu_set_tx_frame_test(txt_buf_index, 0, false, false, false,
                            DUT_NODE, chn);
@@ -240,7 +240,7 @@ package body frame_test_ignore_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+        ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
 
         -- Attempt to swap DLC, bit-flip CRC and Stuff count fields.
         rand_int_v(15, tprm);

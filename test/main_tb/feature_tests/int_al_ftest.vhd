@@ -124,7 +124,7 @@ package body int_al_ftest is
     procedure int_al_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     t_ctu_frame;
+        variable can_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
@@ -153,11 +153,11 @@ package body int_al_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_frame);
-        rand_int_v(2047, CAN_frame.identifier);
-        ctu_put_tx_frame(CAN_frame, 1, TEST_NODE, chn);
-        CAN_frame.identifier := CAN_frame.identifier + 1;
-        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
+        generate_can_frame(can_frame);
+        rand_int_v(2047, can_frame.identifier);
+        ctu_put_tx_frame(can_frame, 1, TEST_NODE, chn);
+        can_frame.identifier := can_frame.identifier + 1;
+        ctu_put_tx_frame(can_frame, 1, DUT_NODE, chn);
         
         ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;

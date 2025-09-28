@@ -122,7 +122,7 @@ package body rx_err_log_back_to_back_ftest is
         variable tx_val             : std_logic;
         variable status             : t_ctu_status;
         variable rx_buf_state        : t_ctu_rx_buf_state;
-        variable CAN_frame          : t_ctu_frame;
+        variable can_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
         variable err_frame_2        : t_ctu_frame;
         variable rand_bits          : natural;
@@ -176,10 +176,10 @@ package body rx_err_log_back_to_back_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.frame_format := FD_CAN;
-        CAN_frame.brs := BR_SHIFT;
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        can_frame.frame_format := FD_CAN;
+        can_frame.brs := BR_SHIFT;
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_ff(ff_crc, DUT_NODE, chn);
 

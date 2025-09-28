@@ -135,7 +135,7 @@ package body rx_err_log_3_ftest is
         variable mode_2             : t_ctu_mode := t_ctu_mode_rst_val;
         variable status             : t_ctu_status;
         variable frame_sent         : boolean;
-        variable CAN_frame          : t_ctu_frame;
+        variable can_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
         variable rx_buf_state        : t_ctu_rx_buf_state;
         variable can_rx             : std_logic;
@@ -160,14 +160,14 @@ package body rx_err_log_3_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.rtr := NO_RTR_FRAME;
-        CAN_frame.data_length := 2;
-        CAN_frame.data(0) := x"AA";
-        CAN_frame.data(1) := x"AA";
-        length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
+        generate_can_frame(can_frame);
+        can_frame.rtr := NO_RTR_FRAME;
+        can_frame.data_length := 2;
+        can_frame.data(0) := x"AA";
+        can_frame.data(1) := x"AA";
+        length_to_dlc(can_frame.data_length, can_frame.dlc);
 
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_ff(ff_data, DUT_NODE, chn);
         ctu_wait_sample_point(DUT_NODE, chn);
         ctu_wait_sample_point(DUT_NODE, chn);
@@ -208,14 +208,14 @@ package body rx_err_log_3_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.rtr := NO_RTR_FRAME;
-        CAN_frame.data_length := 2;
-        CAN_frame.data(0) := x"5F";
-        CAN_frame.data(1) := x"00";
-        length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
+        generate_can_frame(can_frame);
+        can_frame.rtr := NO_RTR_FRAME;
+        can_frame.data_length := 2;
+        can_frame.data(0) := x"5F";
+        can_frame.data(1) := x"00";
+        length_to_dlc(can_frame.data_length, can_frame.dlc);
 
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_ff(ff_data, DUT_NODE, chn);
 
         -- 0x5F -- 01011111
@@ -269,8 +269,8 @@ package body rx_err_log_3_ftest is
         mode_2.self_test := true;
         ctu_set_mode(mode_2, TEST_NODE, chn);
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_ff(ff_crc, DUT_NODE, chn);
 
         ctu_wait_sample_point(DUT_NODE, chn);
@@ -311,9 +311,9 @@ package body rx_err_log_3_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_ff(ff_ack_delim, DUT_NODE, chn);
 
         wait for 20 ns;
@@ -351,8 +351,8 @@ package body rx_err_log_3_ftest is
         mode_2.acknowledge_forbidden := true;
         ctu_set_mode(mode_2, TEST_NODE, chn);
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_err_frame(DUT_NODE, chn);
 

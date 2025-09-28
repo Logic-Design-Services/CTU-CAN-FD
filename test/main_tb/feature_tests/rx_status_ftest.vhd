@@ -110,7 +110,7 @@ package body rx_status_ftest is
     procedure rx_status_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable send_more          :       boolean := true;
         variable in_RX_buf          :       natural;
         variable frame_sent         :       boolean := false;
@@ -169,39 +169,39 @@ package body rx_status_ftest is
             info_m("Sending frame nr. : " & integer'image(frame_counter));
             frame_counter := frame_counter + 1;
 
-            generate_can_frame(CAN_frame);
+            generate_can_frame(can_frame);
 
             -- If RX buffer of DUT is "big" send only frames with 64 bytes
             -- to reduce total number of sent frames and therefore duration of
             -- the test!
             if big_rx_buffer then
                 info_m("Using BIG RX Buffer settings (long frame) to reduce test time...");
-                CAN_frame.identifier := CAN_frame.identifier mod (2 ** 11);
-                CAN_frame.ident_type := BASE;
-                CAN_frame.frame_format := FD_CAN;
-                CAN_frame.brs := BR_SHIFT;
-                CAN_frame.data_length := 64;
+                can_frame.identifier := can_frame.identifier mod (2 ** 11);
+                can_frame.ident_type := BASE;
+                can_frame.frame_format := FD_CAN;
+                can_frame.brs := BR_SHIFT;
+                can_frame.data_length := 64;
                 -- We dont care about the data content, they are zeroes!
-                length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
-                dlc_to_rwcnt(CAN_frame.dlc, CAN_frame.rwcnt);
+                length_to_dlc(can_frame.data_length, can_frame.dlc);
+                dlc_to_rwcnt(can_frame.dlc, can_frame.rwcnt);
             end if;
 
             -- Evaluate if next frame should be sent
-            if (CAN_frame.rtr = RTR_FRAME and
-                CAN_frame.frame_format = NORMAL_CAN)
+            if (can_frame.rtr = RTR_FRAME and
+                can_frame.frame_format = NORMAL_CAN)
             then
                 if (in_RX_buf + 4 > buf_info.rx_buff_size) then
                     send_more := false;
                 end if;
             else
-                if (CAN_frame.data_length mod 4 = 0) then
-                    if ((in_RX_buf + CAN_frame.data_length / 4 + 4) >
+                if (can_frame.data_length mod 4 = 0) then
+                    if ((in_RX_buf + can_frame.data_length / 4 + 4) >
                         buf_info.rx_buff_size)
                     then
                         send_more := false;
                     end if;
                 else
-                    if ((in_RX_buf + CAN_frame.data_length / 4 + 5) >
+                    if ((in_RX_buf + can_frame.data_length / 4 + 5) >
                         buf_info.rx_buff_size)
                     then
                         send_more := false;
@@ -209,14 +209,14 @@ package body rx_status_ftest is
                 end if;
             end if;
 
-            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
             ctu_wait_frame_sent(DUT_NODE, chn);
 
             ctu_wait_bus_idle(DUT_NODE, chn);
             ctu_wait_bus_idle(TEST_NODE, chn);
 
             number_frms_sent := number_frms_sent + 1;
-            in_RX_buf := in_RX_buf + CAN_frame.rwcnt + 1;
+            in_RX_buf := in_RX_buf + can_frame.rwcnt + 1;
 
             --------------------------------------------------------------------
             -- @4. After each frame amount of remaining memory is checked
@@ -261,7 +261,7 @@ package body rx_status_ftest is
         loop
             ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
             exit when (buf_info.rx_frame_count = 0);
-            ctu_read_frame(CAN_frame, DUT_NODE, chn);
+            ctu_read_frame(can_frame, DUT_NODE, chn);
         end loop;
 
     end procedure;

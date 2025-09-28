@@ -116,8 +116,8 @@ package body int_rxne_ftest is
     procedure int_rxne_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     t_ctu_frame;
-        variable CAN_frame_rx       :     t_ctu_frame;
+        variable can_frame          :     t_ctu_frame;
+        variable can_frame_rx       :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
         variable frames_equal       :     boolean := false;
 
@@ -156,10 +156,10 @@ package body int_rxne_ftest is
                     ---------------------------------------------------------------
                     info_m("Step 2.2");
 
-                    generate_can_frame(CAN_frame);
-                    CAN_frame.data_length := 1;
-                    CAN_frame.frame_format := FD_CAN;
-                    length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
+                    generate_can_frame(can_frame);
+                    can_frame.data_length := 1;
+                    can_frame.frame_format := FD_CAN;
+                    length_to_dlc(can_frame.data_length, can_frame.dlc);
 
                     ctu_send_frame(CAN_Frame, 1, TEST_NODE, chn, frame_sent);
                     ctu_wait_frame_sent(TEST_NODE, chn);
@@ -172,7 +172,7 @@ package body int_rxne_ftest is
                     info_m("Step 2.3");
 
                     if (read_kind = read_before) then
-                        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
+                        ctu_read_frame(can_frame_rx, DUT_NODE, chn);
                     end if;
 
                     ctu_get_int_status(int_stat, DUT_NODE, chn);
@@ -240,7 +240,7 @@ package body int_rxne_ftest is
                     end if;
 
                     if (read_kind = read_after) then
-                        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
+                        ctu_read_frame(can_frame_rx, DUT_NODE, chn);
                     end if;
 
                 end loop;

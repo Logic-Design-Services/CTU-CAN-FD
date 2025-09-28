@@ -136,7 +136,7 @@ package body message_filter_ftest is
     procedure message_filter_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable rx_state           :       t_ctu_rx_buf_state;
@@ -153,8 +153,8 @@ package body message_filter_ftest is
         variable l_th               :       natural := 0;
         variable h_th               :       natural := 0;
     begin
-        generate_can_frame(CAN_frame);
-        CAN_frame.brs := '0';
+        generate_can_frame(can_frame);
+        can_frame.brs := '0';
 
         ------------------------------------------------------------------------
         -- Part 1 (Message filters disabled)
@@ -178,7 +178,7 @@ package body message_filter_ftest is
         command.release_rec_buffer := true;
         ctu_give_cmd(command, DUT_NODE, chn);
         
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
         
         ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
@@ -197,7 +197,7 @@ package body message_filter_ftest is
         mode.acceptance_filter := true;
         ctu_set_mode(mode, DUT_NODE, chn);
 
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
         
         ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
@@ -214,8 +214,8 @@ package body message_filter_ftest is
                 when 2 => mask_filter := filter_B;
                 when 3 => mask_filter := filter_C;
             end case;
-            CAN_frame.ident_type := BASE;
-            CAN_frame.identifier := CAN_frame.identifier mod 2048;
+            can_frame.ident_type := BASE;
+            can_frame.identifier := can_frame.identifier mod 2048;
 
             --------------------------------------------------------------------
             -- First reset value of each filter so that each next iteraion does
@@ -249,7 +249,7 @@ package body message_filter_ftest is
             for j in 1 to 9 loop
                 mask_filt_config.acc_CAN_2_0 := false;
                 mask_filt_config.acc_CAN_FD := false;
-                mask_filt_config.ident_type := CAN_frame.ident_type;
+                mask_filt_config.ident_type := can_frame.ident_type;
 
                 info_m("Starting scenario: " & integer'image(i) & "."); 
 
@@ -265,14 +265,14 @@ package body message_filter_ftest is
 
                 -- Set expected frame types
                 if ((j = 1) or (j = 3) or (j = 5) or (j = 8)) then
-                    CAN_frame.frame_format := FD_CAN;
+                    can_frame.frame_format := FD_CAN;
                 else
-                    CAN_frame.frame_format := NORMAL_CAN;
+                    can_frame.frame_format := NORMAL_CAN;
                 end if;
 
                 -- Generate random mask with one bit set, use only
                 tmp_log_vect := (OTHERS => '0');
-                if (CAN_frame.ident_type = BASE) then
+                if (can_frame.ident_type = BASE) then
                     rand_int_v(10, tmp_int);
                 else
                     rand_int_v(28, tmp_int);
@@ -293,9 +293,9 @@ package body message_filter_ftest is
 
                 -- Set equal for scenarios wher Bit mask is match, set
                 -- opposite where it is not equal!
-                id_sw_to_hw(CAN_frame.identifier, CAN_frame.ident_type,
+                id_sw_to_hw(can_frame.identifier, can_frame.ident_type,
                             tmp_log_vect);
-                if (CAN_frame.ident_type = BASE) then
+                if (can_frame.ident_type = BASE) then
                     tmp_int := tmp_int + 18;
                 end if;
 
@@ -304,9 +304,9 @@ package body message_filter_ftest is
                 else
                     tmp_log_vect(tmp_int) := not tmp_log;
                 end if;
-                id_hw_to_sw(tmp_log_vect, CAN_frame.ident_type,
-                            CAN_frame.identifier);
-                info_m("CAN ID: " & integer'image(CAN_frame.identifier));
+                id_hw_to_sw(tmp_log_vect, can_frame.ident_type,
+                            can_frame.identifier);
+                info_m("CAN ID: " & integer'image(can_frame.identifier));
 
                 -- Calculate whether frame should pass or not
                 should_pass := false;
@@ -321,7 +321,7 @@ package body message_filter_ftest is
                 -- expected or not! Flush RX Buffer first!
                 command.release_rec_buffer := true;
                 ctu_give_cmd(command, DUT_NODE, chn);
-                ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+                ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
                 ctu_wait_frame_sent(DUT_NODE, chn);
 
                 wait for 100 ns;
@@ -353,7 +353,7 @@ package body message_filter_ftest is
         ------------------------------------------------------------------------
         -- Generate random thresholds for identifier!
         ------------------------------------------------------------------------
-        if (CAN_frame.ident_type = BASE) then
+        if (can_frame.ident_type = BASE) then
             rand_int_v((2 ** 6), l_th);
             rand_int_v((2 ** 11) - 1, h_th);
         else
@@ -377,11 +377,11 @@ package body message_filter_ftest is
         range_filt_config.ID_th_high := h_th;
         range_filt_config.ID_th_low := l_th;
         ctu_set_ran_filter(range_filt_config, DUT_NODE, chn);
-        generate_can_frame(CAN_frame);
-        CAN_frame.ident_type := BASE;
-        CAN_frame.rtr := RTR_FRAME;
+        generate_can_frame(can_frame);
+        can_frame.ident_type := BASE;
+        can_frame.rtr := RTR_FRAME;
  
-        info_m("ID value: " & integer'image(CAN_frame.identifier));
+        info_m("ID value: " & integer'image(can_frame.identifier));
         info_m("Low threshold: " & integer'image(l_th));
         info_m("High threshold: " & integer'image(h_th));
 
@@ -396,11 +396,11 @@ package body message_filter_ftest is
         for i in 1 to 5 loop
             
             case i is
-                when 1 => CAN_frame.identifier := l_th - 1;
-                when 2 => CAN_frame.identifier := l_th;
-                when 3 => CAN_frame.identifier := ((h_th - l_th) / 2) + l_th;
-                when 4 => CAN_frame.identifier := h_th;
-                when 5 => CAN_frame.identifier := h_th + 1;
+                when 1 => can_frame.identifier := l_th - 1;
+                when 2 => can_frame.identifier := l_th;
+                when 3 => can_frame.identifier := ((h_th - l_th) / 2) + l_th;
+                when 4 => can_frame.identifier := h_th;
+                when 5 => can_frame.identifier := h_th + 1;
             end case;
 
             if ((i = 2) or (i = 3) or (i = 4)) then
@@ -412,7 +412,7 @@ package body message_filter_ftest is
             command.release_rec_buffer := true;
             ctu_give_cmd(command, DUT_NODE, chn);
 
-            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
             ctu_wait_frame_sent(DUT_NODE, chn);
             ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
 

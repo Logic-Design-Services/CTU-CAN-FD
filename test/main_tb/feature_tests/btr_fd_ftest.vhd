@@ -111,8 +111,8 @@ package body btr_fd_ftest is
     procedure btr_fd_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       t_ctu_frame;
-        variable CAN_frame_2        :       t_ctu_frame;
+        variable can_frame_1        :       t_ctu_frame;
+        variable can_frame_2        :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
         variable bus_timing         :       t_ctu_bit_time_cfg;
@@ -217,29 +217,29 @@ package body btr_fd_ftest is
         info_m("PH2: " & integer'image(bus_timing.ph2_dbt));
         info_m("SJW: " & integer'image(bus_timing.sjw_dbt));
 
-        generate_can_frame(CAN_frame_1);
-        CAN_frame_1.brs := BR_SHIFT;
-        CAN_frame_1.frame_format := FD_CAN;
+        generate_can_frame(can_frame_1);
+        can_frame_1.brs := BR_SHIFT;
+        can_frame_1.frame_format := FD_CAN;
 
         -- Force DLC length to 1 byte only not to have long test run time!
-        CAN_frame_1.dlc := "0001";
-        dlc_to_length(CAN_frame_1.dlc, CAN_frame_1.data_length);
-        CAN_frame_1.data(0) := x"AA";
+        can_frame_1.dlc := "0001";
+        dlc_to_length(can_frame_1.dlc, can_frame_1.data_length);
+        can_frame_1.data(0) := x"AA";
 
         -- We need to make sure that frame is not RTR frame, because CAN FD
         -- frames have no RTR frames! This would lead to fail in check between
         -- TX and RX frame! Also, we have to re-calculate RWCNT for the check
         -- accordingly!
-        CAN_frame_1.rtr := NO_RTR_FRAME;
-        dlc_to_rwcnt(CAN_frame_1.dlc, CAN_frame_1.rwcnt);
+        can_frame_1.rtr := NO_RTR_FRAME;
+        dlc_to_rwcnt(can_frame_1.dlc, can_frame_1.rwcnt);
 
         -- These data bytes are preloaded to have all elements of memory word
         -- defined!
-        CAN_frame_1.data(1) := x"BB";
-        CAN_frame_1.data(2) := x"CC";
-        CAN_frame_1.data(3) := x"DD";
+        can_frame_1.data(1) := x"BB";
+        can_frame_1.data(2) := x"CC";
+        can_frame_1.data(3) := x"DD";
     
-        ctu_send_frame(CAN_frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame_1, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_ff(ff_data, DUT_NODE, chn);
 
         ctu_wait_sample_point(DUT_NODE, chn, false);
@@ -262,9 +262,9 @@ package body btr_fd_ftest is
         info_m("Step 3");
 
         ctu_wait_bus_idle(TEST_NODE, chn);
-        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
 
-        compare_can_frames(CAN_frame_1, CAN_frame_2, false, frames_equal);
+        compare_can_frames(can_frame_1, can_frame_2, false, frames_equal);
         check_m(frames_equal, "TX/RX frame equal!");
 
   end procedure;

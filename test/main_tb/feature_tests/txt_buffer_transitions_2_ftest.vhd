@@ -115,7 +115,7 @@ package body txt_buffer_transitions_2_ftest is
     procedure txt_buffer_transitions_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable command            :       t_ctu_command := t_ctu_command_rst_val;
         variable status             :       t_ctu_status;
 	    variable txt_buf_state	    :	    t_ctu_txt_buff_state;
@@ -149,8 +149,8 @@ package body txt_buffer_transitions_2_ftest is
                 -----------------------------------------------------------------------------------
                 info_m("Step 2.1 with wait cycles: " & integer'image(wait_cycles));
 
-                generate_can_frame(CAN_frame);
-                ctu_put_tx_frame(CAN_frame, txt_buf_index, DUT_NODE, chn);
+                generate_can_frame(can_frame);
+                ctu_put_tx_frame(can_frame, txt_buf_index, DUT_NODE, chn);
 
                 ctu_wait_sync_seg(DUT_NODE, chn);
 

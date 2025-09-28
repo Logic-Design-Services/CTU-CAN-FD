@@ -121,7 +121,7 @@ package body tx_counter_ftest is
     procedure tx_counter_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable rand_value         :       natural;
 
@@ -151,8 +151,8 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Send frame by DUT!");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_ff(ff_eof, DUT_NODE, chn);
         ctu_get_traff_ctrs(ctrs_2, DUT_NODE, chn);
@@ -185,9 +185,9 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Send frame and force ACK recessive!");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_ff(ff_ack, DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
@@ -222,8 +222,8 @@ package body tx_counter_ftest is
 
         rand_int_v(6, rand_value);
         for i in 0 to rand_value - 1 loop
-            generate_can_frame(CAN_frame);
-            ctu_send_frame(CAN_frame, 2, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, 2, DUT_NODE, chn, frame_sent);
             ctu_wait_frame_sent(DUT_NODE, chn);
         end loop;
 

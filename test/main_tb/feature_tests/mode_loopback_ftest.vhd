@@ -132,8 +132,8 @@ package body mode_loopback_ftest is
     procedure mode_loopback_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -166,8 +166,8 @@ package body mode_loopback_ftest is
             ------------------------------------------------------------------------
             info_m("Step 2.1: Sending frame by DUT");
 
-            generate_can_frame(CAN_TX_frame);
-            ctu_send_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_tx_frame);
+            ctu_send_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn, frame_sent);
 
             ------------------------------------------------------------------------
             -- @2.2 Wait until frame is received. Check that DUT has 1 frame in
@@ -189,18 +189,18 @@ package body mode_loopback_ftest is
             ------------------------------------------------------------------------
             info_m("Step 2.3: Read own transmitted frame from RX Buffer");
 
-            ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
-            compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+            ctu_read_frame(can_rx_frame, DUT_NODE, chn);
+            compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
             check_m(frames_equal, "Own frame in Loopback is the same as sent!");
 
-            check_m(CAN_RX_frame.lbpf = '1', "RX Frame has LBPF flag set!");
-            check_m(CAN_RX_frame.lbtbi = txt_buf_index - 1,
+            check_m(can_rx_frame.lbpf = '1', "RX Frame has LBPF flag set!");
+            check_m(can_rx_frame.lbtbi = txt_buf_index - 1,
                         "FRAME_FORMAT_W[LBPF] = Index of TXT Buffer used to transmit loopback frame!");
 
             ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
             check_m(rx_buf_state.rx_frame_count = 0, "Own frame read from RX Buffer");
 
-            ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
+            ctu_read_frame(can_rx_frame, TEST_NODE, chn);
 
         end loop;
 
@@ -212,17 +212,17 @@ package body mode_loopback_ftest is
         ------------------------------------------------------------------------
         info_m("Step 5: Transmit frame by Test Node when DUT has Loopback enabled");
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
 
         ctu_wait_frame_sent(TEST_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
 
-        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, DUT_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
 
         check_m(frames_equal, "Frame sent by Test Node and received by DUT are equal!");
-        check_m(CAN_RX_frame.lbpf = '0', "Frame from Test Node does not have LBPF flag set!");
+        check_m(can_rx_frame.lbpf = '0', "Frame from Test Node does not have LBPF flag set!");
 
         ------------------------------------------------------------------------
         -- @6. Set Test node to Acknowledge forbidden mode. Set DUT to one shot
@@ -239,8 +239,8 @@ package body mode_loopback_ftest is
         ------------------------------------------------------------------------
         info_m("Step 7: Send frame by DUT!");
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
 
         ------------------------------------------------------------------------
         -- @8. Wait until transmission is over. Check that TXT Buffer used for
@@ -276,8 +276,8 @@ package body mode_loopback_ftest is
         ------------------------------------------------------------------------
         info_m("Step 10: Send CAN frame by DUT.");
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_frame_sent(DUT_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
@@ -296,8 +296,8 @@ package body mode_loopback_ftest is
         check_m(rx_buf_state.rx_frame_count = 1,
             "Frame received in Test node!");
 
-        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, TEST_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
         check_m(frames_equal, "TX vs. RX frame matching!");
 
         ------------------------------------------------------------------------
@@ -308,17 +308,17 @@ package body mode_loopback_ftest is
         ------------------------------------------------------------------------
         info_m("Step 12: Transmit frame by Test Node when DUT has Loopback disabled");
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
 
         ctu_wait_frame_sent(TEST_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
 
-        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, DUT_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
 
         check_m(frames_equal, "Frame sent by Test Node and received by DUT are equal!");
-        check_m(CAN_RX_frame.lbpf = '0', "Frame from Test Node does not have LBPF flag set!");
+        check_m(can_rx_frame.lbpf = '0', "Frame from Test Node does not have LBPF flag set!");
 
         wait for 1000 ns;
 

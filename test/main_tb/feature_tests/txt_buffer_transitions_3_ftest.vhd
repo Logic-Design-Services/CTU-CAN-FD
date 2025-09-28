@@ -113,7 +113,7 @@ package body txt_buffer_transitions_3_ftest is
     procedure txt_buffer_transitions_3_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable command            :       t_ctu_command := t_ctu_command_rst_val;
         variable status             :       t_ctu_status;
 	    variable txt_buf_state	    :	    t_ctu_txt_buff_state;
@@ -143,8 +143,8 @@ package body txt_buffer_transitions_3_ftest is
         tseg1 := bus_timing.tq_nbt * (1 + bus_timing.prop_nbt + bus_timing.ph1_nbt);
 
         -- Generate single common frame
-        generate_can_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
 
         for txt_buf_index in 1 to num_txt_bufs loop
             for wait_cycles in 0 to 20 loop
@@ -156,7 +156,7 @@ package body txt_buffer_transitions_3_ftest is
                 -----------------------------------------------------------------------------------
                 info_m("Step 1.1 with wait cycles: " & integer'image(wait_cycles));
 
-                ctu_put_tx_frame(CAN_frame, txt_buf_index, DUT_NODE, chn);
+                ctu_put_tx_frame(can_frame, txt_buf_index, DUT_NODE, chn);
                 ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
                 ctu_wait_frame_start(true, false, DUT_NODE, chn);

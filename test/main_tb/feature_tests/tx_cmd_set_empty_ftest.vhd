@@ -112,7 +112,7 @@ package body tx_cmd_set_empty_ftest is
     procedure tx_cmd_set_empty_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable txt_state          :       t_ctu_txt_buff_state;
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -144,8 +144,8 @@ package body tx_cmd_set_empty_ftest is
             ------------------------------------------------------------------------
             info_m("Step 2");
 
-            generate_can_frame(CAN_frame);
-            ctu_send_frame(CAN_frame, buf_nr, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, buf_nr, DUT_NODE, chn, frame_sent);
             ctu_wait_frame_sent(DUT_NODE, chn);
 
             ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
@@ -162,8 +162,8 @@ package body tx_cmd_set_empty_ftest is
             ------------------------------------------------------------------------
             info_m("Step 3");
 
-            generate_can_frame(CAN_frame);
-            ctu_send_frame(CAN_frame, buf_nr, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, buf_nr, DUT_NODE, chn, frame_sent);
             ctu_wait_frame_start(true, false, DUT_NODE, chn);
             ctu_give_txt_cmd(buf_set_abort, buf_nr, DUT_NODE, chn);
             ctu_wait_bus_idle(DUT_NODE, chn);
@@ -187,8 +187,8 @@ package body tx_cmd_set_empty_ftest is
             mode_2.acknowledge_forbidden := true;
             ctu_set_mode(mode_2, TEST_NODE, chn);
 
-            generate_can_frame(CAN_frame);
-            ctu_send_frame(CAN_frame, buf_nr, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, buf_nr, DUT_NODE, chn, frame_sent);
             ctu_wait_frame_sent(DUT_NODE, chn);
 
             ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);

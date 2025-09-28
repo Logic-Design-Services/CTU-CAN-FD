@@ -111,7 +111,7 @@ package body pc_fsm_transitions_integ_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
-        variable CAN_TX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
         variable status             :       t_ctu_status;
         variable err_capt           :       t_ctu_err_capt;
 
@@ -137,10 +137,10 @@ package body pc_fsm_transitions_integ_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.1");
 
-            generate_can_frame(CAN_TX_frame);
-            CAN_TX_frame.frame_format := frame_format;
+            generate_can_frame(can_tx_frame);
+            can_tx_frame.frame_format := frame_format;
 
-            ctu_put_tx_frame(CAN_TX_frame, 1, TEST_NODE, chn);
+            ctu_put_tx_frame(can_tx_frame, 1, TEST_NODE, chn);
             ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
             ctu_wait_ff(ff_crc_delim, DUT_NODE, chn);

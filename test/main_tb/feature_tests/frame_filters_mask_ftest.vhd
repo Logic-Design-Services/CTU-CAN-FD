@@ -110,8 +110,8 @@ package body frame_filters_mask_ftest is
     procedure frame_filters_mask_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -208,8 +208,8 @@ package body frame_filters_mask_ftest is
                             -------------------------------------------------------------------------------
                             info_m("Step 1.1");
 
-                            generate_can_frame(CAN_TX_frame);
-                            ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+                            generate_can_frame(can_tx_frame);
+                            ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
                             ctu_wait_frame_sent(DUT_NODE, chn);
                             ctu_wait_bus_idle(DUT_NODE, chn);
 
@@ -220,29 +220,29 @@ package body frame_filters_mask_ftest is
 
                             should_pass := true;
 
-                            if (CAN_TX_frame.frame_format = NORMAL_CAN and filt_cfg.acc_CAN_2_0 = false) then
+                            if (can_tx_frame.frame_format = NORMAL_CAN and filt_cfg.acc_CAN_2_0 = false) then
                                 should_pass := false;
                             end if;
 
-                            if (CAN_TX_frame.frame_format = FD_CAN and filt_cfg.acc_CAN_FD = false) then
+                            if (can_tx_frame.frame_format = FD_CAN and filt_cfg.acc_CAN_FD = false) then
                                 should_pass := false;
                             end if;
 
-                            if (CAN_TX_frame.ident_type /= filt_cfg.ident_type) then
+                            if (can_tx_frame.ident_type /= filt_cfg.ident_type) then
                                 should_pass := false;
                             end if;
 
                             if (ident_type = BASE) then
                                 exp_base_mask := std_logic_vector(to_unsigned(filt_cfg.ID_mask, 11));
                                 exp_base_val  := std_logic_vector(to_unsigned(filt_cfg.ID_value, 11));
-                                exp_base_id   := std_logic_vector(to_unsigned(CAN_TX_frame.identifier, 11));
+                                exp_base_id   := std_logic_vector(to_unsigned(can_tx_frame.identifier, 11));
                                 if ((exp_base_val and exp_base_mask) /= (exp_base_id and exp_base_mask)) then
                                     should_pass := false;
                                 end if;
                             else
                                 exp_ext_mask := std_logic_vector(to_unsigned(filt_cfg.ID_mask, 29));
                                 exp_ext_val  := std_logic_vector(to_unsigned(filt_cfg.ID_value, 29));
-                                exp_ext_id   := std_logic_vector(to_unsigned(CAN_TX_frame.identifier, 29));
+                                exp_ext_id   := std_logic_vector(to_unsigned(can_tx_frame.identifier, 29));
                                 if ((exp_ext_val and exp_ext_mask) /= (exp_ext_id and exp_ext_mask)) then
                                     should_pass := false;
                                 end if;
@@ -257,8 +257,8 @@ package body frame_filters_mask_ftest is
                             ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
                             if (should_pass) then
                                 check_m(rx_buf_state.rx_frame_count = 1, "Frame received when expected!");
-                                ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
-                                compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+                                ctu_read_frame(can_rx_frame, DUT_NODE, chn);
+                                compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
                                 check_m(frames_equal, "Frames are equal");
                             else
                                 check_m(rx_buf_state.rx_frame_count = 0, "Frame NOT received when NOT expected!");

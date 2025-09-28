@@ -109,8 +109,8 @@ package body dlc_can20_8_64_bytes_ftest is
     procedure dlc_can20_8_64_bytes_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :        t_ctu_frame;
-        variable CAN_frame_2        :        t_ctu_frame  := SW_CAN_Frame_type_rst_val;
+        variable can_frame          :        t_ctu_frame;
+        variable can_frame_2        :        t_ctu_frame  := SW_CAN_Frame_type_rst_val;
         variable frame_sent         :        boolean;
         variable ff             :        t_ctu_frame_field;
     begin
@@ -121,15 +121,15 @@ package body dlc_can20_8_64_bytes_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Generate frame");
 
-        generate_can_frame(CAN_frame);
-        rand_logic_vect_v(CAN_frame.dlc, 0.5);
+        generate_can_frame(can_frame);
+        rand_logic_vect_v(can_frame.dlc, 0.5);
         -- Set highest bit to 1 -> DLC will be always more than 8!
-        CAN_frame.dlc(3) := '1';
-        CAN_frame.rtr := NO_RTR_FRAME;
-        CAN_frame.frame_format := NORMAL_CAN;
-        dlc_to_length(CAN_frame.dlc, CAN_frame.data_length);
-        for i in 0 to CAN_frame.data_length - 1 loop
-            rand_logic_vect_v(CAN_frame.data(i), 0.5);
+        can_frame.dlc(3) := '1';
+        can_frame.rtr := NO_RTR_FRAME;
+        can_frame.frame_format := NORMAL_CAN;
+        dlc_to_length(can_frame.dlc, can_frame.data_length);
+        for i in 0 to can_frame.data_length - 1 loop
+            rand_logic_vect_v(can_frame.data(i), 0.5);
         end loop;
 
         ------------------------------------------------------------------------
@@ -138,7 +138,7 @@ package body dlc_can20_8_64_bytes_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Send frame");
 
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_ff(ff_data, DUT_NODE, chn);
 
         for i in 0 to 63 loop
@@ -165,12 +165,12 @@ package body dlc_can20_8_64_bytes_ftest is
         --     it has received only 8 bytes of Data!
         ------------------------------------------------------------------------
         info_m("Step 3: Check frame received!");
-        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
-        check_m(CAN_frame_2.dlc = CAN_frame.dlc, "Invalid DLC received!");
-        check_m(CAN_frame_2.rwcnt = 5, "Invalid DLC received!");
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
+        check_m(can_frame_2.dlc = can_frame.dlc, "Invalid DLC received!");
+        check_m(can_frame_2.rwcnt = 5, "Invalid DLC received!");
 
         for i in 8 to 63 loop
-            check_m(CAN_frame_2.data(i) = "00000000",
+            check_m(can_frame_2.data(i) = "00000000",
                     "Byte index " & integer'image(i) & " not zero!");
         end loop;
 

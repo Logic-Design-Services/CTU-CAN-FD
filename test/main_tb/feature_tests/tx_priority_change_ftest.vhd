@@ -115,13 +115,13 @@ package body tx_priority_change_ftest is
         
         -- Assume maximal amount of TXT buffers
         type txt_buffer_priorities is array (1 to 8) of integer range 0 to 7;
-        type CAN_frame_array_type is array (1 to 8) of t_ctu_frame; 
+        type can_frame_array_type is array (1 to 8) of t_ctu_frame; 
         
         variable priorities : txt_buffer_priorities;
         variable txtb_state : t_ctu_txt_buff_state;
 
-        variable CAN_frame_array_tx :       CAN_frame_array_type;        
-        variable CAN_frame_rx       :       t_ctu_frame;
+        variable can_frame_array_tx :       can_frame_array_type;        
+        variable can_frame_rx       :       t_ctu_frame;
 
         variable highest_prio_buf   :       integer := 4;
         variable highest_prio       :       integer := 0;
@@ -149,8 +149,8 @@ package body tx_priority_change_ftest is
         end loop;
 
         for i in 1 to num_txt_bufs loop
-            generate_can_frame(CAN_frame_array_tx(i));
-            ctu_put_tx_frame(CAN_frame_array_tx(i), i, DUT_NODE, chn);
+            generate_can_frame(can_frame_array_tx(i));
+            ctu_put_tx_frame(can_frame_array_tx(i), i, DUT_NODE, chn);
         end loop;
 
         -----------------------------------------------------------------------
@@ -211,8 +211,8 @@ package body tx_priority_change_ftest is
         ctu_wait_sample_point(TEST_NODE, chn, false);
         wait for 100 ns;
 
-        ctu_read_frame(CAN_frame_rx, TEST_NODE, chn);
-        compare_can_frames(CAN_frame_rx, CAN_frame_array_tx(highest_prio_buf),
+        ctu_read_frame(can_frame_rx, TEST_NODE, chn);
+        compare_can_frames(can_frame_rx, can_frame_array_tx(highest_prio_buf),
                             false, frames_equal);
         check_m(frames_equal, "TX/RX buffers matching!");
 
@@ -220,7 +220,7 @@ package body tx_priority_change_ftest is
 
         -- Read the remaining received frames
         for i in 2 to num_txt_bufs loop
-            ctu_read_frame(CAN_frame_rx, TEST_NODE, chn);
+            ctu_read_frame(can_frame_rx, TEST_NODE, chn);
         end loop;
 
     end procedure;

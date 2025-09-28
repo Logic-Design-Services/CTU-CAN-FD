@@ -141,7 +141,7 @@ package body int_fcs_ftest is
     procedure int_fcs_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     t_ctu_frame;
+        variable can_frame          :     t_ctu_frame;
 
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;

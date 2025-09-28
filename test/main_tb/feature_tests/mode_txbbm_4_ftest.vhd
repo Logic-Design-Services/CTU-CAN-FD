@@ -118,8 +118,8 @@ package body mode_txbbm_4_ftest is
     procedure mode_txbbm_4_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -191,15 +191,15 @@ package body mode_txbbm_4_ftest is
 
                 -- We need to generate frame which has some data bytes, to be able
                 -- to corrupt such data bytes
-                generate_can_frame(CAN_TX_frame);
-                CAN_TX_frame.rtr := NO_RTR_FRAME;
-                if CAN_TX_frame.data_length = 0 then
-                    CAN_TX_frame.data_length := 1;
+                generate_can_frame(can_tx_frame);
+                can_tx_frame.rtr := NO_RTR_FRAME;
+                if can_tx_frame.data_length = 0 then
+                    can_tx_frame.data_length := 1;
                 end if;
-                length_to_dlc(CAN_TX_frame.data_length, CAN_TX_frame.dlc);
-                dlc_to_rwcnt(CAN_TX_frame.dlc, CAN_TX_frame.rwcnt);
-                ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
-                ctu_put_tx_frame(CAN_TX_frame, txt_buf_index + 1, DUT_NODE, chn);
+                length_to_dlc(can_tx_frame.data_length, can_tx_frame.dlc);
+                dlc_to_rwcnt(can_tx_frame.dlc, can_tx_frame.rwcnt);
+                ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
+                ctu_put_tx_frame(can_tx_frame, txt_buf_index + 1, DUT_NODE, chn);
 
                 -------------------------------------------------------------------
                 -- @2.2 Enable test access to buffer RAMs. Generate random word
@@ -214,8 +214,8 @@ package body mode_txbbm_4_ftest is
 
                 -- Read, flip, and write back
                 rand_int_v(31, corrupt_bit_index);
-                info_m("RWCNT is: " & integer'image(CAN_TX_frame.rwcnt));
-                rand_int_v(CAN_TX_frame.rwcnt - 4, corrupt_wrd_index);
+                info_m("RWCNT is: " & integer'image(can_tx_frame.rwcnt));
+                rand_int_v(can_tx_frame.rwcnt - 4, corrupt_wrd_index);
                 corrupt_wrd_index := corrupt_wrd_index + 4;
                 ctu_read_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
                 r_data(corrupt_bit_index) := not r_data(corrupt_bit_index);

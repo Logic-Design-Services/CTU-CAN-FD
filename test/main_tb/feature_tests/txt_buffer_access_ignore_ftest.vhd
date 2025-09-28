@@ -122,9 +122,9 @@ package body txt_buffer_access_ignore_ftest is
     ) is
         variable num_txt_bufs       :       natural;
 
-        variable CAN_frame_a        :       t_ctu_frame;
-        variable CAN_frame_b        :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_frame_a        :       t_ctu_frame;
+        variable can_frame_b        :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
 
         variable txtb_state         :       t_ctu_txt_buff_state;
 
@@ -149,34 +149,34 @@ package body txt_buffer_access_ignore_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 1.1");
 
-            generate_can_frame(CAN_frame_a);
-            generate_can_frame(CAN_frame_b);
+            generate_can_frame(can_frame_a);
+            generate_can_frame(can_frame_b);
 
-            CAN_frame_a.frame_format := FD_CAN;
-            CAN_frame_b.frame_format := FD_CAN;
+            can_frame_a.frame_format := FD_CAN;
+            can_frame_b.frame_format := FD_CAN;
 
-            CAN_frame_a.identifier := 0;
-            CAN_frame_b.identifier := 536870911;
+            can_frame_a.identifier := 0;
+            can_frame_b.identifier := 536870911;
 
-            CAN_frame_a.ident_type := BASE;
-            CAN_frame_b.ident_type := EXTENDED;
+            can_frame_a.ident_type := BASE;
+            can_frame_b.ident_type := EXTENDED;
 
-            CAN_frame_a.brs := BR_SHIFT;
-            CAN_frame_b.brs := BR_NO_SHIFT;
+            can_frame_a.brs := BR_SHIFT;
+            can_frame_b.brs := BR_NO_SHIFT;
 
-            CAN_frame_a.data_length := 64;
-            CAN_frame_b.data_length := 64;
+            can_frame_a.data_length := 64;
+            can_frame_b.data_length := 64;
 
             for i in 0 to 63 loop
-                CAN_frame_a.data(i) := x"AA";
-                CAN_frame_b.data(i) := x"55";
+                can_frame_a.data(i) := x"AA";
+                can_frame_b.data(i) := x"55";
             end loop;
 
-            length_to_dlc(CAN_frame_a.data_length, CAN_frame_a.dlc);
-            dlc_to_rwcnt(CAN_frame_a.dlc, CAN_frame_a.rwcnt);
+            length_to_dlc(can_frame_a.data_length, can_frame_a.dlc);
+            dlc_to_rwcnt(can_frame_a.dlc, can_frame_a.rwcnt);
 
-            length_to_dlc(CAN_frame_b.data_length, CAN_frame_b.dlc);
-            dlc_to_rwcnt(CAN_frame_b.dlc, CAN_frame_b.rwcnt);
+            length_to_dlc(can_frame_b.data_length, can_frame_b.dlc);
+            dlc_to_rwcnt(can_frame_b.dlc, can_frame_b.rwcnt);
 
             ---------------------------------------------------------------------------------------
             -- @1.2 Insert Frame A to TXT Buffer. Wait until sample point of DUT
@@ -185,7 +185,7 @@ package body txt_buffer_access_ignore_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 1.2");
 
-            ctu_put_tx_frame(CAN_frame_a, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(can_frame_a, txt_buf_index, DUT_NODE, chn);
 
             ctu_wait_sample_point(DUT_NODE, chn);
             ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
@@ -194,7 +194,7 @@ package body txt_buffer_access_ignore_ftest is
             -- write when the buffer is still in "Empty"
             wait for 20 ns;
 
-            ctu_put_tx_frame(CAN_frame_b, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(can_frame_b, txt_buf_index, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @1.3 Wait until frame transmission starts and attempt to insert then
@@ -208,7 +208,7 @@ package body txt_buffer_access_ignore_ftest is
             ctu_get_txt_buf_state(txt_buf_index, txtb_state, DUT_NODE, chn);
             check_m(txtb_state = buf_tx_progress, "TXT Buffer in TX in Progress");
 
-            ctu_put_tx_frame(CAN_frame_b, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(can_frame_b, txt_buf_index, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @1.4 Wait until data field starts and issue "Set Abort" Command to TXT Buffer.
@@ -224,7 +224,7 @@ package body txt_buffer_access_ignore_ftest is
             ctu_get_txt_buf_state(txt_buf_index, txtb_state, DUT_NODE, chn);
             check_m(txtb_state = buf_ab_progress, "TXT Buffer in Abort in Progress");
 
-            ctu_put_tx_frame(CAN_frame_b, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(can_frame_b, txt_buf_index, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @1.5 Wait until bus is idle. Read the frame from RX Buffer of
@@ -235,9 +235,9 @@ package body txt_buffer_access_ignore_ftest is
             ctu_wait_bus_idle(DUT_NODE, chn);
             ctu_wait_bus_idle(TEST_NODE, chn);
 
-            ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
+            ctu_read_frame(can_rx_frame, TEST_NODE, chn);
 
-            compare_can_frames(CAN_RX_frame, CAN_frame_a, false, frames_match);
+            compare_can_frames(can_rx_frame, can_frame_a, false, frames_match);
             check_m(frames_match, "Frame A not corrupted");
 
             ctu_get_txt_buf_state(txt_buf_index, txtb_state, DUT_NODE, chn);

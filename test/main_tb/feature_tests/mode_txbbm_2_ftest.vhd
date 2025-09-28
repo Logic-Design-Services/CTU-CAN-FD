@@ -114,8 +114,8 @@ package body mode_txbbm_2_ftest is
     procedure mode_txbbm_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -179,9 +179,9 @@ package body mode_txbbm_2_ftest is
                 txt_buf_index := txt_buf_index - 1;
             end if;
 
-            generate_can_frame(CAN_TX_frame);
-            ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
-            ctu_put_tx_frame(CAN_TX_frame, txt_buf_index + 1, DUT_NODE, chn);
+            generate_can_frame(can_tx_frame);
+            ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(can_tx_frame, txt_buf_index + 1, DUT_NODE, chn);
             
             -----------------------------------------------------------------------
             -- @2.2 Send set ready command to selected original TXT Buffer. Wait

@@ -121,8 +121,8 @@ package body trv_delay_ftest is
     procedure trv_delay_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable measured_delay     :       natural;
         variable frames_equal       :       boolean;
@@ -177,12 +177,12 @@ package body trv_delay_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         set_transceiver_delay(1 ns, DUT_NODE, chn);
-        generate_can_frame(CAN_TX_frame);
-        CAN_TX_frame.rtr := NO_RTR_FRAME;
-        CAN_TX_frame.frame_format := FD_CAN;
-        CAN_TX_frame.brs := BR_SHIFT;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.rtr := NO_RTR_FRAME;
+        can_tx_frame.frame_format := FD_CAN;
+        can_tx_frame.brs := BR_SHIFT;
 
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
 
         ctu_wait_bus_idle(DUT_NODE, chn);
@@ -196,8 +196,8 @@ package body trv_delay_ftest is
               " Expected: " & integer'image(2) &
               " Measured: " & integer'image(measured_delay));
 
-        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, TEST_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
         
         check_m(frames_equal, "TX RX frames match");
 
@@ -208,7 +208,7 @@ package body trv_delay_ftest is
         info_m("Step 3");
         set_transceiver_delay(1255 ns, DUT_NODE, chn);
 
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
 
         ctu_wait_bus_idle(DUT_NODE, chn);
@@ -222,8 +222,8 @@ package body trv_delay_ftest is
               " Expected: " & integer'image(127) &
               " Measured: " & integer'image(measured_delay));
 
-        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, TEST_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
 
         check_m(frames_equal, "TX RX frames match");
 
@@ -234,7 +234,7 @@ package body trv_delay_ftest is
         info_m("Step 4");
         set_transceiver_delay(1305 ns, DUT_NODE, chn);
 
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
 
         ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
@@ -247,8 +247,8 @@ package body trv_delay_ftest is
         -- Now CAN frame should pass because SSP Offset is high enough that
         -- it will compensate for missing delay caused by saturation!
 
-        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, TEST_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
 
         check_m(frames_equal, "TX RX frames match");
 
@@ -281,7 +281,7 @@ package body trv_delay_ftest is
         info_m("Random time is: " & integer'image(rand_time) & " ns");
         set_transceiver_delay((rand_time * 1 ns), DUT_NODE, chn);
 
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
 
         ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
@@ -298,8 +298,8 @@ package body trv_delay_ftest is
         -- Now CAN frame should pass because SSP Offset is high enough that
         -- it will compensate for missing delay caused by saturation!
 
-        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, TEST_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
 
         check_m(frames_equal, "TX RX frames match");
 

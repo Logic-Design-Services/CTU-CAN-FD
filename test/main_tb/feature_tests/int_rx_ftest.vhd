@@ -133,8 +133,8 @@ package body int_rx_ftest is
     procedure int_rx_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     t_ctu_frame;
-        variable CAN_frame_rx       :     t_ctu_frame;
+        variable can_frame          :     t_ctu_frame;
+        variable can_frame_rx       :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
         variable frames_equal       :     boolean := false;
 
@@ -163,8 +163,8 @@ package body int_rx_ftest is
         info_m("Step 2: Sending frame");
 
         ctu_set_retr_limit(true, 0, TEST_NODE, chn);
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         
         -----------------------------------------------------------------------
         -- @3. Monitor DUT frame, check that in the beginning of EOF, 
@@ -185,8 +185,8 @@ package body int_rx_ftest is
         -- nothing in RX Buffer of DUT.
         ctu_wait_bus_idle(TEST_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
-        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
-        compare_can_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
+        ctu_read_frame(can_frame_rx, DUT_NODE, chn);
+        compare_can_frames(can_frame, can_frame_rx, false, frames_equal);
         
         check_m(frames_equal, "TX, RX frames should be equal!");
         
@@ -228,8 +228,8 @@ package body int_rx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 6: Check RX Interrupt is not set upon Error Frame!");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
 
         ctu_wait_ff(ff_ack, DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
@@ -255,12 +255,12 @@ package body int_rx_ftest is
         int_ena.receive_int := true;
         ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
 
-        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
-        compare_can_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
+        ctu_read_frame(can_frame_rx, DUT_NODE, chn);
+        compare_can_frames(can_frame, can_frame_rx, false, frames_equal);
         check_m(frames_equal, "TX, RX frames should be equal!");
 
         ctu_get_int_status(int_stat, DUT_NODE, chn);        
@@ -277,12 +277,12 @@ package body int_rx_ftest is
         int_ena.receive_int := true;
         ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
 
-        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
-        compare_can_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
+        ctu_read_frame(can_frame_rx, DUT_NODE, chn);
+        compare_can_frames(can_frame, can_frame_rx, false, frames_equal);
         check_m(frames_equal, "TX, RX frames should be equal!");
 
         ctu_get_int_status(int_stat, DUT_NODE, chn);        
@@ -352,12 +352,12 @@ package body int_rx_ftest is
         int_ena.receive_int := true;
         ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
         
-        ctu_read_frame(CAN_frame_rx, TEST_NODE, chn);
-        compare_can_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
+        ctu_read_frame(can_frame_rx, TEST_NODE, chn);
+        compare_can_frames(can_frame, can_frame_rx, false, frames_equal);
         check_m(frames_equal, "TX, RX frames should be equal!");
         
         ctu_get_int_status(int_stat, DUT_NODE, chn);

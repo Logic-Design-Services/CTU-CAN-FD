@@ -108,8 +108,8 @@ package body stuff_in_data_ftest is
     procedure stuff_in_data_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :        t_ctu_frame;
-        variable CAN_frame_2        :        t_ctu_frame  := SW_CAN_Frame_type_rst_val;
+        variable can_frame          :        t_ctu_frame;
+        variable can_frame_2        :        t_ctu_frame  := SW_CAN_Frame_type_rst_val;
         variable frame_sent         :        boolean;
         variable frames_equal       :        boolean;
     begin
@@ -122,24 +122,24 @@ package body stuff_in_data_ftest is
         ----------------------------------------------------------------------
         info_m("Step 1");
 
-        generate_can_frame(CAN_frame);
+        generate_can_frame(can_frame);
 
         -- Use only DLC of 1, as data byte 1 is set so that stuff bit is
         -- inserted at last bit of data field!
-        CAN_frame.dlc := "0001";
-        CAN_frame.data(0) := x"21";
-        CAN_frame.rtr := NO_RTR_FRAME;
-        CAN_frame.frame_format := FD_CAN;
-        dlc_to_length(CAN_frame.dlc, CAN_frame.data_length);
-        dlc_to_rwcnt(CAN_frame.dlc, CAN_frame.rwcnt);
+        can_frame.dlc := "0001";
+        can_frame.data(0) := x"21";
+        can_frame.rtr := NO_RTR_FRAME;
+        can_frame.frame_format := FD_CAN;
+        dlc_to_length(can_frame.dlc, can_frame.data_length);
+        dlc_to_rwcnt(can_frame.dlc, can_frame.rwcnt);
 
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
 
-        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
-        compare_can_frames(CAN_frame, CAN_frame_2, false, frames_equal);
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
+        compare_can_frames(can_frame, can_frame_2, false, frames_equal);
         check_m(frames_equal, "Frame received OK!");
 
   end procedure;

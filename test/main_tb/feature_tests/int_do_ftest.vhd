@@ -131,7 +131,7 @@ package body int_do_ftest is
     procedure int_do_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     t_ctu_frame;
+        variable can_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
@@ -163,11 +163,11 @@ package body int_do_ftest is
         info_m("Buffer size: " & Integer'image(buf_info.rx_buff_size));
         
         -- Send RTR frames till we fill the buffer
-        generate_can_frame(CAN_frame);
-        CAN_frame.rtr := RTR_FRAME;
-        CAN_frame.frame_format := NORMAL_CAN;
+        generate_can_frame(can_frame);
+        can_frame.rtr := RTR_FRAME;
+        can_frame.frame_format := NORMAL_CAN;
         for i in 0 to (buf_info.rx_buff_size / 4) - 1 loop
-            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
             ctu_wait_frame_sent(TEST_NODE, chn);
 
             ctu_get_int_status(int_stat, DUT_NODE, chn);
@@ -182,7 +182,7 @@ package body int_do_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3: Overruning RX Buffer FIFO");   
         
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
         
         ctu_get_int_status(int_stat, DUT_NODE, chn);
@@ -247,7 +247,7 @@ package body int_do_ftest is
         int_mask.data_overrun_int := true;
         ctu_set_int_mask(int_mask, DUT_NODE, chn);
         
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
         
         ctu_get_int_status(int_stat, DUT_NODE, chn);

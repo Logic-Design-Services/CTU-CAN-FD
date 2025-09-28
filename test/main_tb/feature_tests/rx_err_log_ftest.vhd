@@ -124,7 +124,7 @@ package body rx_err_log_ftest is
         variable tx_val             : std_logic;
         variable status             : t_ctu_status;
         variable rx_buf_state        : t_ctu_rx_buf_state;
-        variable CAN_frame          : t_ctu_frame;
+        variable can_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
     begin
 
@@ -157,13 +157,13 @@ package body rx_err_log_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.1");
 
-            generate_can_frame(CAN_frame);
-            CAN_frame.rtr := NO_RTR_FRAME;
-            CAN_frame.frame_format := NORMAL_CAN;
-            CAN_frame.data_length := 8;     -- To make sure data field is there!
-            length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
+            generate_can_frame(can_frame);
+            can_frame.rtr := NO_RTR_FRAME;
+            can_frame.frame_format := NORMAL_CAN;
+            can_frame.data_length := 8;     -- To make sure data field is there!
+            length_to_dlc(can_frame.data_length, can_frame.dlc);
 
-            ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
             ---------------------------------------------------------------------------------------
             -- @2.2 Wait until Protocol control field being tested and wait until Dominant bit.
@@ -222,7 +222,7 @@ package body rx_err_log_ftest is
             -- All fields apart from arbitration shall have IVLD set!
             if (i > 0) then
                 check_m(err_frame.ivld = '1',                       "FRAME_FORMAT_W[IVLD] = 1");
-                check_m(err_frame.identifier = CAN_frame.identifier,"Identifier match");
+                check_m(err_frame.identifier = can_frame.identifier,"Identifier match");
             else
                 check_m(err_frame.ivld = '0',                       "FRAME_FORMAT_W[IVLD] = 0");
             end if;

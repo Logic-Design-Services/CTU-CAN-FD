@@ -106,8 +106,8 @@ package body btr_maximal_ftest is
     procedure btr_maximal_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       t_ctu_frame;
-        variable CAN_frame_2        :       t_ctu_frame;
+        variable can_frame_1        :       t_ctu_frame;
+        variable can_frame_2        :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
         variable bus_timing         :       t_ctu_bit_time_cfg;
@@ -168,23 +168,23 @@ package body btr_maximal_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        generate_can_frame(CAN_frame_1);
+        generate_can_frame(can_frame_1);
         info_m("Generated frame");
         -- Make frame as short as possible not to have too long test time.
-        CAN_frame_1.frame_format := FD_CAN;
-        CAN_frame_1.brs := BR_SHIFT;
-        CAN_frame_1.rtr := NO_RTR_FRAME;
-        CAN_frame_1.ident_type := BASE;
-        CAN_frame_1.data_length := 0;
-        CAN_frame_1.identifier := CAN_frame_1.identifier mod (2 ** 11);
-        CAN_frame_1.dlc := "0000";
-        dlc_to_rwcnt(CAN_frame_1.dlc, CAN_frame_1.rwcnt);
+        can_frame_1.frame_format := FD_CAN;
+        can_frame_1.brs := BR_SHIFT;
+        can_frame_1.rtr := NO_RTR_FRAME;
+        can_frame_1.ident_type := BASE;
+        can_frame_1.data_length := 0;
+        can_frame_1.identifier := can_frame_1.identifier mod (2 ** 11);
+        can_frame_1.dlc := "0000";
+        dlc_to_rwcnt(can_frame_1.dlc, can_frame_1.rwcnt);
         
-        ctu_send_frame(CAN_frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame_1, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
-        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
         
-        compare_can_frames(CAN_frame_1, CAN_frame_2, false, frames_equal);
+        compare_can_frames(can_frame_1, can_frame_2, false, frames_equal);
         check_m(frames_equal, "TX/RX frame equal!");
 
   end procedure;

@@ -124,7 +124,7 @@ package body int_be_ftest is
     procedure int_be_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     t_ctu_frame;
+        variable can_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
@@ -161,8 +161,8 @@ package body int_be_ftest is
         mode_2.acknowledge_forbidden := true;
         ctu_set_mode(mode_2, TEST_NODE, chn);
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         
         ctu_wait_ff(ff_ack, DUT_NODE, chn);
         ctu_get_int_status(int_stat, DUT_NODE, chn);
@@ -216,7 +216,7 @@ package body int_be_ftest is
         int_mask.bus_error_int := true;
         ctu_set_int_mask(int_mask, DUT_NODE, chn);
         
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         
         ctu_wait_ff(ff_ack, DUT_NODE, chn);
         ctu_get_int_status(int_stat, DUT_NODE, chn);

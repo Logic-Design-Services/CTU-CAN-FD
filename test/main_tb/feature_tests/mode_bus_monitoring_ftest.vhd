@@ -129,8 +129,8 @@ package body mode_bus_monitoring_ftest is
     procedure mode_bus_monitoring_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
         variable err_counters_1     :       t_ctu_err_ctrs;
@@ -162,8 +162,8 @@ package body mode_bus_monitoring_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Checking frame is not transmitted in Bus monitoring mode!");
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
 
         wait for 20 ns;
 
@@ -182,8 +182,8 @@ package body mode_bus_monitoring_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Send frame by Test node, Wait till ACK");
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_ff(ff_ack, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
@@ -212,8 +212,8 @@ package body mode_bus_monitoring_ftest is
         ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         check_m(rx_buf_state.rx_frame_count = 1, "Frame received in BMM");
 
-        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, DUT_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
         check_m(frames_equal, "TX vs. RX frame matching!");
 
         ------------------------------------------------------------------------
@@ -224,11 +224,11 @@ package body mode_bus_monitoring_ftest is
         mode_1.iso_fd_support := false;
         ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        generate_can_frame(CAN_TX_frame);
-        CAN_TX_frame.frame_format := FD_CAN;
-        CAN_TX_frame.rtr := NO_RTR_FRAME;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.frame_format := FD_CAN;
+        can_tx_frame.rtr := NO_RTR_FRAME;
 
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
 
         ------------------------------------------------------------------------
         -- @7. Wait till error frame transmitted by DUT (should come as CRC is
@@ -293,8 +293,8 @@ package body mode_bus_monitoring_ftest is
         -----------------------------------------------------------------------
         info_m("Step 10: Generate random frame and send by Test Node");
 
-        generate_can_frame(CAN_TX_frame);
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
 
         -----------------------------------------------------------------------
@@ -304,8 +304,8 @@ package body mode_bus_monitoring_ftest is
         -----------------------------------------------------------------------
         info_m("Step 11: Read the frame from DUT and compare");
 
-        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
-        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, DUT_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
         check_m(frames_equal, "TX vs. RX frame matching!");
 
         ctu_get_err_ctrs(err_counters_2, DUT_NODE, chn);

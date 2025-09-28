@@ -119,10 +119,10 @@ package body tx_arb_consistency_ftest is
     procedure tx_arb_consistency_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_rx_1     :       t_ctu_frame;
-        variable CAN_frame_rx_2     :       t_ctu_frame;
-        variable CAN_frame_tx_1     :       t_ctu_frame;
-        variable CAN_frame_tx_2     :       t_ctu_frame;
+        variable can_frame_rx_1     :       t_ctu_frame;
+        variable can_frame_rx_2     :       t_ctu_frame;
+        variable can_frame_tx_1     :       t_ctu_frame;
+        variable can_frame_tx_2     :       t_ctu_frame;
         
         variable frame_equal        :       boolean := false;
         variable tmp_int            :       natural := 0;
@@ -140,11 +140,11 @@ package body tx_arb_consistency_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        generate_can_frame(CAN_frame_tx_1);
-        generate_can_frame(CAN_frame_tx_2);
+        generate_can_frame(can_frame_tx_1);
+        generate_can_frame(can_frame_tx_2);
         
-        ctu_put_tx_frame(CAN_frame_tx_1, 1, DUT_NODE, chn);
-        ctu_put_tx_frame(CAN_frame_tx_2, 2, DUT_NODE, chn);
+        ctu_put_tx_frame(can_frame_tx_1, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(can_frame_tx_2, 2, DUT_NODE, chn);
         
         ctu_set_txt_buf_prio(1, 5, DUT_NODE, chn); 
         ctu_set_txt_buf_prio(2, 3, DUT_NODE, chn);
@@ -195,19 +195,19 @@ package body tx_arb_consistency_ftest is
         -----------------------------------------------------------------------
         ctu_wait_frame_sent(TEST_NODE, chn);
         
-        ctu_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
-        compare_can_frames(CAN_frame_rx_1, CAN_frame_tx_1, false, frames_equal_1);
-        compare_can_frames(CAN_frame_rx_1, CAN_frame_tx_2, false, frames_equal_2);
+        ctu_read_frame(can_frame_rx_1, TEST_NODE, chn);
+        compare_can_frames(can_frame_rx_1, can_frame_tx_1, false, frames_equal_1);
+        compare_can_frames(can_frame_rx_1, can_frame_tx_2, false, frames_equal_2);
         
         check_m(frames_equal_1 or frames_equal_2,
                 "First frame was properly received!");
                 
         ctu_wait_frame_sent(TEST_NODE, chn);
-        ctu_read_frame(CAN_frame_rx_2, TEST_NODE, chn);
+        ctu_read_frame(can_frame_rx_2, TEST_NODE, chn);
         if (frames_equal_1) then
-            compare_can_frames(CAN_frame_rx_2, CAN_frame_tx_2, false, frames_equal_1);
+            compare_can_frames(can_frame_rx_2, can_frame_tx_2, false, frames_equal_1);
         elsif (frames_equal_2) then
-            compare_can_frames(CAN_frame_rx_2, CAN_frame_tx_1, false, frames_equal_1);
+            compare_can_frames(can_frame_rx_2, can_frame_tx_1, false, frames_equal_1);
         end if;
 
         check_m(frames_equal_1, "Second frame was properly received!");

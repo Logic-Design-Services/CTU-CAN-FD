@@ -108,8 +108,8 @@ package body btr_minimal_ftest is
     procedure btr_minimal_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       t_ctu_frame;
-        variable CAN_frame_2        :       t_ctu_frame;
+        variable can_frame_1        :       t_ctu_frame;
+        variable can_frame_2        :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
         variable bus_timing         :       t_ctu_bit_time_cfg;
@@ -182,17 +182,17 @@ package body btr_minimal_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
         
-        generate_can_frame(CAN_frame_1);
+        generate_can_frame(can_frame_1);
         info_m("Generated frame");
-        CAN_frame_1.frame_format := FD_CAN;
-        CAN_frame_1.brs := BR_SHIFT;
-        CAN_frame_1.rtr := NO_RTR_FRAME;
+        can_frame_1.frame_format := FD_CAN;
+        can_frame_1.brs := BR_SHIFT;
+        can_frame_1.rtr := NO_RTR_FRAME;
         
-        ctu_send_frame(CAN_frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame_1, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
-        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
         
-        compare_can_frames(CAN_frame_1, CAN_frame_2, false, frames_equal);
+        compare_can_frames(can_frame_1, can_frame_2, false, frames_equal);
         check_m(frames_equal, "TX/RX frame equal!");
 
   end procedure;

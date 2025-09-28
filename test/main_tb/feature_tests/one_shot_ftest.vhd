@@ -125,7 +125,7 @@ package body one_shot_ftest is
     procedure one_shot_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -155,11 +155,11 @@ package body one_shot_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Sending frame by DUT");
         
-        generate_can_frame(CAN_frame);
-        CAN_frame.rtr := RTR_FRAME; -- Use RTR frame to save simulation time
-        CAN_frame.frame_format := NORMAL_CAN;
+        generate_can_frame(can_frame);
+        can_frame.rtr := RTR_FRAME; -- Use RTR frame to save simulation time
+        can_frame.frame_format := NORMAL_CAN;
         
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_err_frame(DUT_NODE, chn);
         
         ctu_wait_bus_idle(DUT_NODE, chn);
@@ -182,7 +182,7 @@ package body one_shot_ftest is
         info_m("Step 4: Testing disabled One shot mode");
         
         ctu_set_retr_limit(false, 0, DUT_NODE, chn);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_err_frame(DUT_NODE, chn);
         
         ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
@@ -212,12 +212,12 @@ package body one_shot_ftest is
         
         ctu_set_retr_limit(true, 0, DUT_NODE, chn);
         
-        CAN_frame.ident_type := BASE;
-        CAN_frame.identifier := 10;
-        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
+        can_frame.ident_type := BASE;
+        can_frame.identifier := 10;
+        ctu_put_tx_frame(can_frame, 1, DUT_NODE, chn);
         
-        CAN_frame.identifier := 9;
-        ctu_put_tx_frame(CAN_frame, 1, TEST_NODE, chn);
+        can_frame.identifier := 9;
+        ctu_put_tx_frame(can_frame, 1, TEST_NODE, chn);
         
         -- TODO: Use atomic procedure after priority test is merged to be sure!
         ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);

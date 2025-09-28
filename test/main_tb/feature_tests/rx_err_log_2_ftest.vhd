@@ -136,7 +136,7 @@ package body rx_err_log_2_ftest is
         variable tx_val             : std_logic;
         variable status             : t_ctu_status;
         variable rx_buf_state        : t_ctu_rx_buf_state;
-        variable CAN_frame          : t_ctu_frame;
+        variable can_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
         variable err_frame_2        : t_ctu_frame;
         variable rand_bits          : natural;
@@ -156,10 +156,10 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_frame);
+        generate_can_frame(can_frame);
         -- NORMAL_CAN to work-around the issue with SSP at the last bit of CRC
-        CAN_frame.frame_format := NORMAL_CAN;
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        can_frame.frame_format := NORMAL_CAN;
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_ff(ff_crc_delim, DUT_NODE, chn);
         wait for 20 ns;
@@ -203,8 +203,8 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 4");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_ff(ff_eof, DUT_NODE, chn);
 
@@ -250,8 +250,8 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 6");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
         ctu_wait_ff(ff_intermission, DUT_NODE, chn);

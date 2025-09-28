@@ -109,8 +109,8 @@ package body mode_fdrf_ftest is
     procedure mode_fdrf_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -146,13 +146,13 @@ package body mode_fdrf_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Check that RTR frame is filtered when FDRF=1.");
         
-        generate_can_frame(CAN_TX_frame);
-        CAN_TX_frame.ident_type := BASE;
-        CAN_TX_frame.frame_format := NORMAL_CAN;
-        CAN_TX_frame.identifier := CAN_TX_frame.identifier mod 2048;
-        CAN_TX_frame.rtr := RTR_FRAME;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.ident_type := BASE;
+        can_tx_frame.frame_format := NORMAL_CAN;
+        can_tx_frame.identifier := can_tx_frame.identifier mod 2048;
+        can_tx_frame.rtr := RTR_FRAME;
         
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
         
         ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
@@ -172,12 +172,12 @@ package body mode_fdrf_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Check that RTR frame is NOT filtered when FDRF=0.");
         
-        generate_can_frame(CAN_TX_frame);
-        CAN_TX_frame.ident_type := BASE;
-        CAN_TX_frame.identifier := CAN_TX_frame.identifier mod 2048;
-        CAN_TX_frame.rtr := RTR_FRAME;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.ident_type := BASE;
+        can_tx_frame.identifier := can_tx_frame.identifier mod 2048;
+        can_tx_frame.rtr := RTR_FRAME;
         
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
         
         ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);

@@ -115,7 +115,7 @@ package body mode_acf_ftest is
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
         variable dut_can_tx         :       std_logic;
@@ -149,9 +149,9 @@ package body mode_acf_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2");
 
-            generate_can_frame(CAN_frame);
-            CAN_frame.frame_format := frame_format;
-            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            can_frame.frame_format := frame_format;
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
 
             ---------------------------------------------------------------------------------------
             -- @2.3. Wait until ACK field in DUT. Check DUT transmitts RECESSIVE.
@@ -181,7 +181,7 @@ package body mode_acf_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.5");
 
-            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
 
             ---------------------------------------------------------------------------------------
             -- @2.6. Wait until ACK field in DUT. Check DUT transmitts DOMINANT.

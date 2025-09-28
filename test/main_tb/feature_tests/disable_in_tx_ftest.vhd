@@ -110,8 +110,8 @@ package body disable_in_tx_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable r_data     : std_logic_vector(31 downto 0) := (OTHERS => '0');
-        variable CAN_frame  : t_ctu_frame;
-        variable CAN_frame_2: t_ctu_frame;
+        variable can_frame  : t_ctu_frame;
+        variable can_frame_2: t_ctu_frame;
         variable outcome    : boolean;
         variable frame_sent : boolean;
     begin
@@ -121,8 +121,8 @@ package body disable_in_tx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         
         -----------------------------------------------------------------------
         -- @2. Wait until frame starts in DUT, and disable DUT.
@@ -150,15 +150,15 @@ package body disable_in_tx_ftest is
         ctu_turn(true, DUT_NODE, chn);
         ctu_wait_err_active(DUT_NODE, chn);
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
 
         ctu_wait_bus_idle(TEST_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
 
-        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
-        compare_can_frames(CAN_frame, CAN_frame_2, false, outcome);
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
+        compare_can_frames(can_frame, can_frame_2, false, outcome);
 
         check_m(outcome, "TX/RX frames equal");
 

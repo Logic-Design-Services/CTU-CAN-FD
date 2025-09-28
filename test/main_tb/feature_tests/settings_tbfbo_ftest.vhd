@@ -122,8 +122,8 @@ package body settings_tbfbo_ftest is
     procedure settings_tbfbo_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -160,8 +160,8 @@ package body settings_tbfbo_ftest is
             err_counters.tx_counter := 254;
             ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
-            generate_can_frame(CAN_TX_frame);
-            ctu_send_frame(CAN_TX_frame, buf_index, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_tx_frame);
+            ctu_send_frame(can_tx_frame, buf_index, DUT_NODE, chn, frame_sent);
 
             -----------------------------------------------------------------------
             -- @2. Wait until first bit of EOF and force CAN RX of DUT to
@@ -228,7 +228,7 @@ package body settings_tbfbo_ftest is
             -----------------------------------------------------------------------
             info_m("Step 4");
 
-            ctu_send_frame(CAN_TX_frame, buf_index, DUT_NODE, chn, frame_sent);
+            ctu_send_frame(can_tx_frame, buf_index, DUT_NODE, chn, frame_sent);
 
             ctu_wait_ff(ff_eof, DUT_NODE, chn);
             wait for 10 ns;

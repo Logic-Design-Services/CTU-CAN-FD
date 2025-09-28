@@ -132,7 +132,7 @@ package body rx_buf_transitions_ftest is
         info_m("Step 1: Send CAN frame");
 
         generate_can_frame(can_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
+        can_frame.frame_format := NORMAL_CAN;
 
         ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_ff(ff_control, DUT_NODE, chn);

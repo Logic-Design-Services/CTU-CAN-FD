@@ -109,8 +109,8 @@ package body settings_nisofd_ftest is
     procedure settings_nisofd_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -139,12 +139,12 @@ package body settings_nisofd_ftest is
         mode_2.iso_fd_support := false;
         ctu_set_mode(mode_2, TEST_NODE, chn);
 
-        generate_can_frame(CAN_TX_frame);
+        generate_can_frame(can_tx_frame);
         CAN_TX_Frame.frame_format := FD_CAN;
         CAN_TX_Frame.data_length := 4;
         length_to_dlc(CAN_TX_Frame.data_length, CAN_TX_Frame.dlc);
 
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
 
         -----------------------------------------------------------------------
         -- @2. Wait until the data field in DUT. Wait until not in the data
@@ -171,7 +171,7 @@ package body settings_nisofd_ftest is
         mode_2.iso_fd_support := true;
         ctu_set_mode(mode_2, TEST_NODE, chn);
 
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
 
         -----------------------------------------------------------------------
         --  @4. Wait until the data field in DUT. Wait until not in the data

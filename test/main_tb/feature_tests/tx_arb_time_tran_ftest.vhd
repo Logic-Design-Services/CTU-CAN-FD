@@ -134,10 +134,10 @@ package body tx_arb_time_tran_ftest is
     procedure tx_arb_time_tran_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
-        variable CAN_frame_2        :       t_ctu_frame;
-        variable CAN_frame_rx_1     :       t_ctu_frame;
-        variable CAN_frame_rx_2     :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
+        variable can_frame_2        :       t_ctu_frame;
+        variable can_frame_rx_1     :       t_ctu_frame;
+        variable can_frame_rx_2     :       t_ctu_frame;
 
         variable frame_sent         :       boolean := false;
         variable act_ts             :       std_logic_vector(63 downto 0);
@@ -195,7 +195,7 @@ package body tx_arb_time_tran_ftest is
         -- value is out of scope of natural!
         ts_rand(31) := '0';
 
-        generate_can_frame(CAN_frame);
+        generate_can_frame(can_frame);
         rand_int_v(10000, ts_offset);
         info_m("Offset from current time of transmission: " &
                 integer'image(ts_offset));
@@ -206,10 +206,10 @@ package body tx_arb_time_tran_ftest is
         ts_offset_padded := (OTHERS => '0');
         ts_offset_padded(31 downto 0) := std_logic_vector(to_unsigned(ts_offset, 32));
         ts_expected := std_logic_vector(unsigned(ts_rand) + to_unsigned(ts_offset, 64));
-        CAN_frame.timestamp := ts_expected;
+        can_frame.timestamp := ts_expected;
         info_m("Expected time of transmission: " & to_hstring(ts_expected));
 
-        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(can_frame, 1, DUT_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
         -- Capture immediate timestamp after set ready and after TX start!
@@ -247,10 +247,10 @@ package body tx_arb_time_tran_ftest is
         info_m("Step 3");
 
         timestamp_agent_get_timestamp(chn, ts_actual);
-        generate_can_frame(CAN_frame);
-        CAN_frame.timestamp := std_logic_vector(unsigned(ts_actual) - 1);
+        generate_can_frame(can_frame);
+        can_frame.timestamp := std_logic_vector(unsigned(ts_actual) - 1);
 
-        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(can_frame, 1, DUT_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
         -- Capture immediate timestamp after set ready and after TX start!
@@ -272,8 +272,8 @@ package body tx_arb_time_tran_ftest is
         ctu_wait_bus_idle(TEST_NODE, chn);
 
         -- Read two dummy frames to empty RX Buffer for further reads!
-        ctu_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
-        ctu_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
+        ctu_read_frame(can_frame_rx_1, TEST_NODE, chn);
+        ctu_read_frame(can_frame_rx_1, TEST_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @4. Configure TXT Buffer 1 to higher priority than TXT Buffer 2. Insert
@@ -295,14 +295,14 @@ package body tx_arb_time_tran_ftest is
         info_m("Higher priority buffer: " & integer'image(buf_1_index));
         info_m("Lower priority buffer: " & integer'image(buf_2_index));
 
-        generate_can_frame(CAN_frame);
-        generate_can_frame(CAN_frame_2);
+        generate_can_frame(can_frame);
+        generate_can_frame(can_frame_2);
 
-        timestamp_agent_get_timestamp(chn, CAN_frame.timestamp);
-        CAN_frame_2.timestamp := std_logic_vector(unsigned(CAN_frame.timestamp) + 3000);
+        timestamp_agent_get_timestamp(chn, can_frame.timestamp);
+        can_frame_2.timestamp := std_logic_vector(unsigned(can_frame.timestamp) + 3000);
 
-        ctu_put_tx_frame(CAN_frame_2, buf_1_index, DUT_NODE, chn);
-        ctu_put_tx_frame(CAN_frame, buf_2_index, DUT_NODE, chn);
+        ctu_put_tx_frame(can_frame_2, buf_1_index, DUT_NODE, chn);
+        ctu_put_tx_frame(can_frame, buf_2_index, DUT_NODE, chn);
 
         ctu_give_txt_cmd(buf_set_ready, buf_1_index, DUT_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, buf_2_index, DUT_NODE, chn);
@@ -310,14 +310,14 @@ package body tx_arb_time_tran_ftest is
         ctu_wait_frame_sent(TEST_NODE, chn);
         ctu_wait_frame_sent(TEST_NODE, chn);
 
-        ctu_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
-        ctu_read_frame(CAN_frame_rx_2, TEST_NODE, chn);
+        ctu_read_frame(can_frame_rx_1, TEST_NODE, chn);
+        ctu_read_frame(can_frame_rx_2, TEST_NODE, chn);
 
-        compare_can_frames(CAN_frame_rx_1, CAN_frame_2, false, frames_equal);
+        compare_can_frames(can_frame_rx_1, can_frame_2, false, frames_equal);
         check_m(frames_equal,
             "Higher priority buffer sent first although it has later timestamp!");
 
-        compare_can_frames(CAN_frame_rx_2, CAN_frame, false, frames_equal);
+        compare_can_frames(can_frame_rx_2, can_frame, false, frames_equal);
         check_m(frames_equal,
             "Lower priority buffer sent second although it has earlier timestamp!");
 

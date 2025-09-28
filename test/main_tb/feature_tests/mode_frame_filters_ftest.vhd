@@ -115,8 +115,8 @@ package body mode_frame_filters_ftest is
     procedure mode_frame_filters_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -171,20 +171,20 @@ package body mode_frame_filters_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Check frame filters mode operation");
         
-        generate_can_frame(CAN_TX_frame);
-        CAN_TX_frame.ident_type := BASE;
-        CAN_TX_frame.identifier := CAN_TX_frame.identifier mod 2048;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.ident_type := BASE;
+        can_tx_frame.identifier := can_tx_frame.identifier mod 2048;
         
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
         
         ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         
         -- Frame should be received
-        if (CAN_TX_frame.identifier mod 2 = 1) then
+        if (can_tx_frame.identifier mod 2 = 1) then
             check_m(rx_buf_state.rx_frame_count = 1, "Frame not filtered out!"); 
-            ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
-            compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+            ctu_read_frame(can_rx_frame, DUT_NODE, chn);
+            compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
             
         -- Frame should not be received
         else
@@ -200,16 +200,16 @@ package body mode_frame_filters_ftest is
         mode_1.acceptance_filter := false;
         ctu_set_mode(mode_1, DUT_NODE, chn);
         
-        CAN_TX_frame.identifier := 10; -- Filter A set to filter it out!
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        can_tx_frame.identifier := 10; -- Filter A set to filter it out!
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
         
         ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         
         check_m(rx_buf_state.rx_frame_count = 1,
             "Frame not filtered out when frame filters mode disabled!"); 
-        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
-            compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, DUT_NODE, chn);
+            compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
         
   end procedure;
 

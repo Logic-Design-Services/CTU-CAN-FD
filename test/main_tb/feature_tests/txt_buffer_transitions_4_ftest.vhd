@@ -110,7 +110,7 @@ package body txt_buffer_transitions_4_ftest is
     procedure txt_buffer_transitions_4_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable command            :       t_ctu_command := t_ctu_command_rst_val;
         variable status             :       t_ctu_status;
 	    variable txt_buf_state	    :	    t_ctu_txt_buff_state;
@@ -141,11 +141,11 @@ package body txt_buffer_transitions_4_ftest is
         ctu_set_mode(mode, DUT_NODE, chn);
 
         -- Generate single common frame
-        generate_can_frame(CAN_frame);
-        CAN_frame.frame_format := FD_CAN;
-        CAN_frame.data_length := 16;
-        CAN_frame.rtr := NO_RTR_FRAME;
-        length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
+        generate_can_frame(can_frame);
+        can_frame.frame_format := FD_CAN;
+        can_frame.data_length := 16;
+        can_frame.rtr := NO_RTR_FRAME;
+        length_to_dlc(can_frame.data_length, can_frame.dlc);
 
         for txt_buf_index in 1 to num_txt_bufs loop
 
@@ -155,7 +155,7 @@ package body txt_buffer_transitions_4_ftest is
             -----------------------------------------------------------------------------------
             info_m("Step 1.1");
 
-            ctu_put_tx_frame(CAN_frame, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(can_frame, txt_buf_index, DUT_NODE, chn);
 
             ctu_set_tst_mem_access(true, DUT_NODE, chn);
 

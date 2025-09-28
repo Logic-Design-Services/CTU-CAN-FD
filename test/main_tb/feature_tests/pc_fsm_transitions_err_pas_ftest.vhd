@@ -113,7 +113,7 @@ package body pc_fsm_transitions_err_pas_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable r_data             :       std_logic_vector(31 downto 0) := (OTHERS => '0');
-        variable CAN_TX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
         variable tx_val             :       std_logic;
         variable err_counters       :       t_ctu_err_ctrs;
         variable status             :       t_ctu_status;
@@ -140,13 +140,13 @@ package body pc_fsm_transitions_err_pas_ftest is
         for frame_format in NORMAL_CAN to FD_CAN loop
         for ident_type in BASE to EXTENDED loop
 
-            generate_can_frame(CAN_TX_frame);
-            CAN_TX_frame.identifier := 0;
-            CAN_TX_frame.frame_format := frame_format;
-            CAN_TX_frame.ident_type := ident_type;
-            CAN_TX_frame.data_length := 1;
-            CAN_TX_frame.rtr := NO_RTR_FRAME;
-            CAN_TX_frame.brs := BR_NO_SHIFT;
+            generate_can_frame(can_tx_frame);
+            can_tx_frame.identifier := 0;
+            can_tx_frame.frame_format := frame_format;
+            can_tx_frame.ident_type := ident_type;
+            can_tx_frame.data_length := 1;
+            can_tx_frame.rtr := NO_RTR_FRAME;
+            can_tx_frame.brs := BR_NO_SHIFT;
 
             bit_index := 0;
             bit_iter_loop: loop
@@ -167,7 +167,7 @@ package body pc_fsm_transitions_err_pas_ftest is
                 info_m("Identifier type: " & std_logic'image(frame_format));
                 info_m("Frame format: " & std_logic'image(ident_type));
 
-                ctu_put_tx_frame(CAN_TX_frame, 1, DUT_NODE, chn);
+                ctu_put_tx_frame(can_tx_frame, 1, DUT_NODE, chn);
                 ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
                 ctu_wait_frame_start(true, false, DUT_NODE, chn);

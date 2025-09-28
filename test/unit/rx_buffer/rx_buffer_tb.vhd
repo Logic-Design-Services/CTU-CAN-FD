@@ -380,14 +380,14 @@ architecture test of rx_buffer_tb is
         signal   in_pointer             :inout  natural;
         signal   timestamp              :in     std_logic_vector(63 downto 0)
    )is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable stored_ts          :       std_logic_vector(63 downto 0);
         variable rand_val           :       natural;
         variable abort_present      :       boolean := false;
         variable id_out             :       std_logic_vector(28 downto 0);
     begin
 
-        generate_can_frame(CAN_frame);
+        generate_can_frame(can_frame);
         stored_ts := (OTHERS => '0');
 
         ------------------------------------------------------------------------
@@ -437,16 +437,16 @@ architecture test of rx_buffer_tb is
         wait_rand_cycles(clk_sys, 10, 50);
 
         -- Put metadata on input of RX Buffer!
-        id_sw_to_hw(CAN_frame.identifier, CAN_frame.ident_type, id_out);
+        id_sw_to_hw(can_frame.identifier, can_frame.ident_type, id_out);
         rec_ident          <= id_out;
-        rec_dlc            <= CAN_frame.dlc;
-        rec_frame_type     <= CAN_frame.frame_format;
-        rec_ident_type     <= CAN_frame.ident_type;
-        rec_brs            <= CAN_frame.brs;
-        rec_esi            <= CAN_frame.esi;
-        rec_lbpf           <= CAN_frame.lbpf;
+        rec_dlc            <= can_frame.dlc;
+        rec_frame_type     <= can_frame.frame_format;
+        rec_ident_type     <= can_frame.ident_type;
+        rec_brs            <= can_frame.brs;
+        rec_esi            <= can_frame.esi;
+        rec_lbpf           <= can_frame.lbpf;
         rec_ivld           <= '1'; -- For data frame IVLD is always 1
-        rec_rtr            <= CAN_frame.rtr;
+        rec_rtr            <= can_frame.rtr;
 
         info_m("Storing metadata");
         wait until rising_edge(clk_sys);
@@ -460,17 +460,17 @@ architecture test of rx_buffer_tb is
         ------------------------------------------------------------------------
         -- Store data words
         ------------------------------------------------------------------------
-        if (CAN_frame.data_length > 0) then
-            for i in 0 to ((CAN_frame.data_length - 1) / 4) loop
+        if (can_frame.data_length > 0) then
+            for i in 0 to ((can_frame.data_length - 1) / 4) loop
 
                 -- Wait random time between store of individual data bytes!
                 wait_rand_cycles(clk_sys, 10, 50);
 
                 -- Send signal to store data
-                store_data_word <= CAN_frame.data((i * 4) + 3) &
-                                   CAN_frame.data((i * 4) + 2) &
-                                   CAN_frame.data((i * 4) + 1) &
-                                   CAN_frame.data((i * 4));
+                store_data_word <= can_frame.data((i * 4) + 3) &
+                                   can_frame.data((i * 4) + 2) &
+                                   can_frame.data((i * 4) + 1) &
+                                   can_frame.data((i * 4));
 
                 store_data_f      <= '1';
                 info_m("Storing data word");
@@ -502,9 +502,9 @@ architecture test of rx_buffer_tb is
         -- Timestamp!
         ------------------------------------------------------------------------
         if (mr_rx_settings_rtsop = RTS_END) then
-            CAN_frame.timestamp  := timestamp;
+            can_frame.timestamp  := timestamp;
         else
-            CAN_frame.timestamp  := stored_ts;
+            can_frame.timestamp  := stored_ts;
         end if;
         rec_valid_f <= '0';
 
@@ -519,7 +519,7 @@ architecture test of rx_buffer_tb is
         -- If overrun did not happend, insert frame to input test memory!
         ------------------------------------------------------------------------
         else
-            insert_frame_test_mem(CAN_frame, memory, in_pointer);
+            insert_frame_test_mem(can_frame, memory, in_pointer);
         end if;
 
         wait until rising_edge(clk_sys);

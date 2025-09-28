@@ -116,7 +116,7 @@ package body retr_limit_3_ftest is
     procedure retr_limit_3_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable retr_th            :       natural;
 
@@ -161,8 +161,8 @@ package body retr_limit_3_ftest is
         ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_passive, "Unit Error Passive!");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_err_frame(DUT_NODE, chn);
 
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
@@ -170,7 +170,7 @@ package body retr_limit_3_ftest is
             "Retransmitt counter 1 after Error frame!");
 
         ctu_wait_ff(ff_suspend, DUT_NODE, chn); -- Wait until suspend
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         
         ------------------------------------------------------------------------
         -- @3. Wait until Arbitration field in DUT, check that DUT is now

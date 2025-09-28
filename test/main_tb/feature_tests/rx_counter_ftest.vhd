@@ -126,8 +126,8 @@ package body rx_counter_ftest is
     procedure rx_counter_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
-        variable RX_CAN_frame       :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
+        variable RX_can_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable rand_value         :       natural;
 
@@ -160,8 +160,8 @@ package body rx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Send frame by Test node!");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 2, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 2, TEST_NODE, chn, frame_sent);
 
         ctu_wait_ff(ff_eof, DUT_NODE, chn);
         ctu_get_traff_ctrs(ctrs_2, DUT_NODE, chn);
@@ -194,9 +194,9 @@ package body rx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Send frame and force ACK recessive!");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
-        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
 
         ctu_wait_ff(ff_ack, TEST_NODE, chn);
         force_bus_level(RECESSIVE, chn);
@@ -231,8 +231,8 @@ package body rx_counter_ftest is
 
         rand_int_v(6, rand_value);
         for i in 0 to rand_value - 1 loop
-            generate_can_frame(CAN_frame);
-            ctu_send_frame(CAN_frame, 3, TEST_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, 3, TEST_NODE, chn, frame_sent);
             ctu_wait_frame_sent(TEST_NODE, chn);
         end loop;
 
@@ -278,7 +278,7 @@ package body rx_counter_ftest is
         ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         if (rx_buf_state.rx_frame_count > 0) then
             for i in 0 to rx_buf_state.rx_frame_count - 1 loop
-                ctu_read_frame(RX_CAN_frame, DUT_NODE, chn);
+                ctu_read_frame(RX_can_frame, DUT_NODE, chn);
             end loop;
         end if;
 
@@ -292,8 +292,8 @@ package body rx_counter_ftest is
         mode_1.internal_loopback := true;
         ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 4, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 4, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
 
         ctu_get_traff_ctrs(ctrs_1, DUT_NODE, chn);

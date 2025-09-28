@@ -123,8 +123,8 @@ package body mode_restr_op_ftest is
     procedure mode_restr_op_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         
@@ -150,10 +150,10 @@ package body mode_restr_op_ftest is
         mode_1.restricted_operation := true;
         ctu_set_mode(mode_1, DUT_NODE, chn);
         
-        generate_can_frame(CAN_TX_frame);
+        generate_can_frame(can_tx_frame);
         -- To make sure we have only one ACK bit
-        CAN_TX_frame.frame_format := NORMAL_CAN;
-        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        can_tx_frame.frame_format := NORMAL_CAN;
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         wait for 20 ns;
         
         for i in 0 to 20 loop
@@ -179,10 +179,10 @@ package body mode_restr_op_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2: Send frame by Test node!");
         
-        CAN_TX_frame.identifier := 0;
-        CAN_TX_frame.ident_type := BASE;
-        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        ctu_send_frame(CAN_TX_frame, 2, TEST_NODE, chn, frame_sent);
+        can_tx_frame.identifier := 0;
+        can_tx_frame.ident_type := BASE;
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 2, TEST_NODE, chn, frame_sent);
         
         -- Following wait ends just after sample point of SOF!
         ctu_wait_frame_start(false, true, DUT_NODE, chn);

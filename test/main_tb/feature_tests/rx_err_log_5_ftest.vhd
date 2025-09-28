@@ -113,7 +113,7 @@ package body rx_err_log_5_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
-        variable CAN_frame          : t_ctu_frame;
+        variable can_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
         variable corrupt_bit_index  : integer;
         variable rx_buf_state        : t_ctu_rx_buf_state;
@@ -136,12 +136,12 @@ package body rx_err_log_5_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.data_length := 8;
-        CAN_frame.rtr := NO_RTR_FRAME;
-        length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
+        generate_can_frame(can_frame);
+        can_frame.data_length := 8;
+        can_frame.rtr := NO_RTR_FRAME;
+        length_to_dlc(can_frame.data_length, can_frame.dlc);
 
-        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(can_frame, 1, DUT_NODE, chn);
 
         -- Enable test access
         ctu_set_tst_mem_access(true, DUT_NODE, chn);

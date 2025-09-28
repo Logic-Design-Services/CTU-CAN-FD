@@ -122,8 +122,8 @@ package body mode_txbbm_ftest is
     procedure mode_txbbm_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -185,8 +185,8 @@ package body mode_txbbm_ftest is
                 txt_buf_index := txt_buf_index - 1;
             end if;
 
-            generate_can_frame(CAN_TX_frame);
-            ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+            generate_can_frame(can_tx_frame);
+            ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
 
             -----------------------------------------------------------------------
             -- @2.2 Send set ready command to selected original TXT Buffer. Wait
@@ -224,8 +224,8 @@ package body mode_txbbm_ftest is
             ctu_get_txt_buf_state(txt_buf_index + 1, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_aborted, "'Backup' TXT Buffer is in 'Aborted'");
 
-            ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
-            compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+            ctu_read_frame(can_rx_frame, TEST_NODE, chn);
+            compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
             check_m(frames_equal, "TX/RX frames match");
 
             ctu_get_status(status_1, DUT_NODE, chn);
@@ -238,7 +238,7 @@ package body mode_txbbm_ftest is
             -----------------------------------------------------------------------
             info_m("Step 2.4");
 
-            ctu_put_tx_frame(CAN_TX_frame, txt_buf_index + 1, DUT_NODE, chn);
+            ctu_put_tx_frame(can_tx_frame, txt_buf_index + 1, DUT_NODE, chn);
 
             txt_buf_vector := x"00";
             txt_buf_vector(txt_buf_index) := '1';
@@ -268,8 +268,8 @@ package body mode_txbbm_ftest is
             ctu_wait_bus_idle(TEST_NODE, chn);
             ctu_wait_bus_idle(DUT_NODE, chn);
 
-            ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
-            compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+            ctu_read_frame(can_rx_frame, TEST_NODE, chn);
+            compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
             check_m(frames_equal, "TX/RX frames match");
 
             ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);

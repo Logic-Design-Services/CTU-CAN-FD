@@ -133,7 +133,7 @@ package body rx_err_log_4_ftest is
     procedure rx_err_log_4_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          : t_ctu_frame;
+        variable can_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
         variable frame_sent         : boolean;
 
@@ -163,8 +163,8 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         ctu_wait_sample_point(DUT_NODE, chn);
@@ -208,13 +208,13 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
-        CAN_frame.ident_type := BASE;
-        CAN_frame.identifier := CAN_frame.identifier mod 2 ** 11;
-        CAN_frame.rtr := NO_RTR_FRAME;
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
+        can_frame.ident_type := BASE;
+        can_frame.identifier := can_frame.identifier mod 2 ** 11;
+        can_frame.rtr := NO_RTR_FRAME;
 
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- SOF + 11 Bits of Base ID
@@ -254,13 +254,13 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 4");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
-        CAN_frame.ident_type := BASE;
-        CAN_frame.identifier := CAN_frame.identifier mod 2 ** 11;
-        CAN_frame.rtr := NO_RTR_FRAME;
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
+        can_frame.ident_type := BASE;
+        can_frame.identifier := can_frame.identifier mod 2 ** 11;
+        can_frame.rtr := NO_RTR_FRAME;
 
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- SOF + 11 Bits of Base ID + RTR bit
@@ -303,10 +303,10 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.ident_type := EXTENDED;
+        generate_can_frame(can_frame);
+        can_frame.ident_type := EXTENDED;
 
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- SOF + 11 Bits of Base ID + RTR bit + IDE bit + First bit of Identifier Extension
@@ -356,10 +356,10 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 6");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.ident_type := EXTENDED;
+        generate_can_frame(can_frame);
+        can_frame.ident_type := EXTENDED;
 
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- SOF + 11 Bits of Base ID + SRR bit + IDE bit + 18 bits + RTR bit

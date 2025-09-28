@@ -118,8 +118,8 @@ package body mode_test_ftest is
     procedure mode_test_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       t_ctu_frame;
-        variable CAN_RX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         

@@ -149,7 +149,7 @@ package body retr_limit_2_ftest is
     procedure retr_limit_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable retr_th            :       natural;
 
@@ -190,15 +190,15 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Sending frame by DUT");
 
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         for i in 0 to 1 loop
             ctu_wait_err_frame(DUT_NODE, chn);
             ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         end loop;
         
-        ctu_send_frame(CAN_frame, 2, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 2, DUT_NODE, chn, frame_sent);
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 2, "Retransmitt counter equal to 2!");
         ctu_wait_not_ff(ff_intermission, DUT_NODE, chn);
@@ -268,8 +268,8 @@ package body retr_limit_2_ftest is
         ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
         check_m(err_counters.tx_counter = 0, "Error counter cleared!");
-        generate_can_frame(CAN_frame);
-        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         ------------------------------------------------------------------------
         -- @7. Wait until error frame (due to ACF in Test node), corrupt bus level
@@ -330,11 +330,11 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 9: Invoking Arbitration!");
 
-        generate_can_frame(CAN_frame);
-        CAN_frame.identifier := 10;
-        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
-        CAN_frame.identifier := 9;
-        ctu_put_tx_frame(CAN_frame, 1, TEST_NODE, chn);
+        generate_can_frame(can_frame);
+        can_frame.identifier := 10;
+        ctu_put_tx_frame(can_frame, 1, DUT_NODE, chn);
+        can_frame.identifier := 9;
+        ctu_put_tx_frame(can_frame, 1, TEST_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
         

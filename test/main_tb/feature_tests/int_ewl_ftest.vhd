@@ -137,7 +137,7 @@ package body int_ewl_ftest is
     procedure int_ewl_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     t_ctu_frame;
+        variable can_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;

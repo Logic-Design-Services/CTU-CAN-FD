@@ -120,7 +120,7 @@ package body txt_buffer_transitions_5_ftest is
     ) is
         variable mode_1               :       t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable CAN_frame            :       t_ctu_frame;
+        variable can_frame            :       t_ctu_frame;
 
         variable txt_buf_state        :       t_ctu_txt_buff_state;
         variable fault_state          :       t_ctu_fault_state;
@@ -186,10 +186,10 @@ package body txt_buffer_transitions_5_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2");
 
-            generate_can_frame(CAN_frame);
+            generate_can_frame(can_frame);
 
             for i in 1 to num_txt_bufs loop
-                ctu_put_tx_frame(CAN_frame, i, DUT_NODE, chn);
+                ctu_put_tx_frame(can_frame, i, DUT_NODE, chn);
             end loop;
 
             -- Send Set Ready to all TXT Buffers simultaneously

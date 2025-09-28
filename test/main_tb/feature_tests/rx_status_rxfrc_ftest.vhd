@@ -105,8 +105,8 @@ package body rx_status_rxfrc_ftest is
     procedure rx_status_rxfrc_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
-        variable RX_CAN_frame       :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
+        variable RX_can_frame       :       t_ctu_frame;
         variable send_more          :       boolean := true;
         variable in_RX_buf          :       natural;
         variable frame_sent         :       boolean := false;
@@ -155,20 +155,20 @@ package body rx_status_rxfrc_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3");
 
-        generate_can_frame(CAN_frame);
+        generate_can_frame(can_frame);
 
         -- No data bytes is minimal frame size to get the highest possible frame
         -- count in RX Buffer!
-        CAN_frame.identifier := CAN_frame.identifier mod (2 ** 11);
-        CAN_frame.ident_type := BASE;
-        CAN_frame.frame_format := NORMAL_CAN;
-        CAN_frame.data_length := 0;
-        length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
-        dlc_to_rwcnt(CAN_frame.dlc, CAN_frame.rwcnt);
+        can_frame.identifier := can_frame.identifier mod (2 ** 11);
+        can_frame.ident_type := BASE;
+        can_frame.frame_format := NORMAL_CAN;
+        can_frame.data_length := 0;
+        length_to_dlc(can_frame.data_length, can_frame.dlc);
+        dlc_to_rwcnt(can_frame.dlc, can_frame.rwcnt);
 
         for i in 1 to buf_info.rx_buff_size/4 loop
             info_m("Sending frame nr: " & integer'image(i));
-            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
             ctu_wait_frame_sent(DUT_NODE, chn);
 
             ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
@@ -185,8 +185,8 @@ package body rx_status_rxfrc_ftest is
 
         for i in 1 to buf_info.rx_buff_size/4 loop
             info_m("Reading frame nr: " & integer'image(i));
-            ctu_read_frame(RX_CAN_frame, DUT_NODE, chn);
-            compare_can_frames(CAN_frame, RX_CAN_frame, false, frames_match);
+            ctu_read_frame(RX_can_frame, DUT_NODE, chn);
+            compare_can_frames(can_frame, RX_can_frame, false, frames_match);
 
             check_m(frames_match, "Frame at position: " & integer'image(i) & " matches");
 

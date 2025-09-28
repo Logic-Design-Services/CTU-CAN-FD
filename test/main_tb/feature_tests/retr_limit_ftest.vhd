@@ -149,7 +149,7 @@ package body retr_limit_ftest is
     procedure retr_limit_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable retr_th            :       natural;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -190,8 +190,8 @@ package body retr_limit_ftest is
             ------------------------------------------------------------------------
             info_m("Step 2: Sending frame by DUT");
 
-            generate_can_frame(CAN_frame);
-            ctu_send_frame(CAN_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
             for i in 0 to 1 loop
                 ctu_wait_err_frame(DUT_NODE, chn);
                 ctu_wait_ff(ff_intermission, DUT_NODE, chn);
@@ -216,7 +216,7 @@ package body retr_limit_ftest is
 
             ctu_set_retr_limit(false, 1, DUT_NODE, chn);
 
-            ctu_send_frame(CAN_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
             ctu_wait_err_frame(DUT_NODE, chn);
 
             ctu_wait_ff(ff_intermission, DUT_NODE, chn);
@@ -258,7 +258,7 @@ package body retr_limit_ftest is
             info_m("Step 7: Checking number of re-transmissions: " &
                     integer'image(retr_th));
 
-            ctu_send_frame(CAN_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
             for i in 0 to retr_th loop
                 info_m("Loop: " & integer'image(i));
                 ctu_wait_frame_sent(DUT_NODE, chn);
@@ -290,7 +290,7 @@ package body retr_limit_ftest is
             info_m("Step 9: Set maximal retransmitt limit (15)");
 
             ctu_set_retr_limit(true, 15, DUT_NODE, chn);
-            ctu_send_frame(CAN_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
 
             err_counters.tx_counter := 0;
             ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
@@ -332,12 +332,12 @@ package body retr_limit_ftest is
             info_m("Step 11: Testing re-transmitt limit due to arbitration loss!");
 
             ctu_set_retr_limit(true, 1, DUT_NODE, chn);
-            CAN_frame.ident_type := BASE;
-            CAN_frame.identifier := 10;
-            ctu_put_tx_frame(CAN_frame, txt_buf_nr, DUT_NODE, chn);
-            CAN_frame.identifier := 9;
-            ctu_put_tx_frame(CAN_frame, 1, TEST_NODE, chn);
-            ctu_put_tx_frame(CAN_frame, 2, TEST_NODE, chn);
+            can_frame.ident_type := BASE;
+            can_frame.identifier := 10;
+            ctu_put_tx_frame(can_frame, txt_buf_nr, DUT_NODE, chn);
+            can_frame.identifier := 9;
+            ctu_put_tx_frame(can_frame, 1, TEST_NODE, chn);
+            ctu_put_tx_frame(can_frame, 2, TEST_NODE, chn);
 
             ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 

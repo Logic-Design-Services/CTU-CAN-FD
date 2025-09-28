@@ -121,10 +121,10 @@ package body rx_buf_consistency_ftest is
     ) is
         variable bus_timing         : t_ctu_bit_time_cfg;
 
-        variable CAN_TX_frame_1     :       t_ctu_frame;
-        variable CAN_TX_frame_2     :       t_ctu_frame;
-        variable CAN_RX_frame_1     :       t_ctu_frame;
-        variable CAN_RX_frame_2     :       t_ctu_frame;
+        variable can_tx_frame_1     :       t_ctu_frame;
+        variable can_tx_frame_2     :       t_ctu_frame;
+        variable can_rx_frame_1     :       t_ctu_frame;
+        variable can_rx_frame_2     :       t_ctu_frame;
 
         variable rx_buf_state        :       t_ctu_rx_buf_state;
 
@@ -168,17 +168,17 @@ package body rx_buf_consistency_ftest is
         -- always the same, and thus delaying the frame readout cycle by cycle
         -- will guarantee to hit the moment when frame is simultaneously
         -- commited and last word is read!
-        generate_can_frame(CAN_TX_frame_1);
+        generate_can_frame(can_tx_frame_1);
 
         -- Restrict to non-CAN FD frames from two reasons:
         --  - Shorter data fields -> Reduces test length
         --  - Avoids ambiguity in length of ACK field.
-        CAN_TX_frame_1.frame_format := NORMAL_CAN;
-        if (CAN_TX_frame_1.data_length > 8) then
-            CAN_TX_frame_1.data_length := 8;
+        can_tx_frame_1.frame_format := NORMAL_CAN;
+        if (can_tx_frame_1.data_length > 8) then
+            can_tx_frame_1.data_length := 8;
         end if;
-        length_to_dlc(CAN_TX_frame_1.data_length, CAN_TX_frame_1.dlc);
-        dlc_to_rwcnt(CAN_TX_frame_1.dlc, CAN_TX_frame_1.rwcnt);
+        length_to_dlc(can_tx_frame_1.data_length, can_tx_frame_1.dlc);
+        dlc_to_rwcnt(can_tx_frame_1.dlc, can_tx_frame_1.rwcnt);
 
         ------------------------------------------------------------------------
         -- @2. Iterate with incrementing wait time X.
@@ -193,11 +193,11 @@ package body rx_buf_consistency_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.1");
 
-            generate_can_frame(CAN_TX_frame_2);
+            generate_can_frame(can_tx_frame_2);
 
-            ctu_send_frame(CAN_TX_frame_1, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_tx_frame_1, 1, TEST_NODE, chn, frame_sent);
             wait for 200 ns;
-            ctu_send_frame(CAN_TX_frame_2, 2, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_tx_frame_2, 2, TEST_NODE, chn, frame_sent);
 
             --------------------------------------------------------------------
             -- @2.2 Wait until first frame is sent by DUT. Check RX Frame count
@@ -230,7 +230,7 @@ package body rx_buf_consistency_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.4");
 
-            ctu_read_frame(CAN_RX_frame_1, DUT_NODE, chn);
+            ctu_read_frame(can_rx_frame_1, DUT_NODE, chn);
 
             --------------------------------------------------------------------
             -- @2.5 Wait until second frame reception is finished in DUT.
@@ -254,15 +254,15 @@ package body rx_buf_consistency_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.7");
 
-            ctu_read_frame(CAN_RX_frame_2, DUT_NODE, chn);
+            ctu_read_frame(can_rx_frame_2, DUT_NODE, chn);
 
             ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
             check_m(rx_buf_state.rx_frame_count = 0, "RX Buffer frame count is 0");
 
-            compare_can_frames(CAN_RX_frame_1, CAN_TX_frame_1, false, frames_match);
+            compare_can_frames(can_rx_frame_1, can_tx_frame_1, false, frames_match);
             check_m(frames_match, "Frame 1 match");
 
-            compare_can_frames(CAN_RX_frame_2, CAN_TX_frame_2, false, frames_match);
+            compare_can_frames(can_rx_frame_2, can_tx_frame_2, false, frames_match);
             check_m(frames_match, "Frame 2 match");
 
         end loop;

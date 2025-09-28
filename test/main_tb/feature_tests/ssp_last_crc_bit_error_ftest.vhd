@@ -119,7 +119,7 @@ package body ssp_last_crc_bit_error_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable r_data             :       std_logic_vector(31 downto 0) := (OTHERS => '0');
-        variable CAN_TX_frame       :       t_ctu_frame;
+        variable can_tx_frame       :       t_ctu_frame;
         variable tx_val             :       std_logic;
         variable err_counters       :       t_ctu_err_ctrs;
         variable status             :       t_ctu_status;
@@ -183,11 +183,11 @@ package body ssp_last_crc_bit_error_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        generate_can_frame(CAN_TX_frame);
-        CAN_TX_frame.identifier := 0;
-        CAN_TX_frame.frame_format := FD_CAN;
-        CAN_TX_frame.data_length := 1;
-        CAN_TX_frame.brs := BR_SHIFT;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.identifier := 0;
+        can_tx_frame.frame_format := FD_CAN;
+        can_tx_frame.data_length := 1;
+        can_tx_frame.brs := BR_SHIFT;
 
         bit_index := 0;
         bit_iter_loop: loop
@@ -205,7 +205,7 @@ package body ssp_last_crc_bit_error_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2: Send a Frame by DUT node. Wait for incrementing number of bits");
 
-            ctu_put_tx_frame(CAN_TX_frame, 1, DUT_NODE, chn);
+            ctu_put_tx_frame(can_tx_frame, 1, DUT_NODE, chn);
             ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
             ctu_wait_frame_start(true, false, DUT_NODE, chn);

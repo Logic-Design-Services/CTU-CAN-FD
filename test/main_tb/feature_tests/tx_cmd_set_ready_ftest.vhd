@@ -113,7 +113,7 @@ package body tx_cmd_set_ready_ftest is
     procedure tx_cmd_set_ready_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       t_ctu_frame;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable txt_state          :       t_ctu_txt_buff_state;
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
@@ -134,8 +134,8 @@ package body tx_cmd_set_ready_ftest is
 
             ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_empty, "TXT Buffer empty upon start");
-            generate_can_frame(CAN_frame);
-            ctu_put_tx_frame(CAN_frame, buf_nr, DUT_NODE, chn);
+            generate_can_frame(can_frame);
+            ctu_put_tx_frame(can_frame, buf_nr, DUT_NODE, chn);
 
             ctu_wait_sample_point(DUT_NODE, chn);
             ctu_give_txt_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
@@ -196,8 +196,8 @@ package body tx_cmd_set_ready_ftest is
             mode_2.acknowledge_forbidden := true;
             ctu_set_mode(mode_2, TEST_NODE, chn);
 
-            generate_can_frame(CAN_frame);
-            ctu_send_frame(CAN_frame, buf_nr, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, buf_nr, DUT_NODE, chn, frame_sent);
             ctu_wait_frame_sent(DUT_NODE, chn);
 
             ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
