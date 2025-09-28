@@ -116,10 +116,10 @@ package body settings_nisofd_ftest is
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable txt_buf_state      :       t_ctu_txt_buff_state;
-        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
         variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       t_ctu_frame_field;
+        variable ff             :       t_ctu_frame_field;
         variable fault_state        :       t_ctu_fault_state;
 
         variable err_counters       :       t_ctu_err_ctrs;
@@ -152,11 +152,11 @@ package body settings_nisofd_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
-        ctu_wait_not_frame_field(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_data, DUT_NODE, chn);
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-        check_m(pc_dbg = pc_deb_crc, "Protocol control in CRC");
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        check_m(ff = ff_crc, "Protocol control in CRC");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
 
@@ -177,11 +177,11 @@ package body settings_nisofd_ftest is
         --  @4. Wait until the data field in DUT. Wait until not in the data
         --      field. Check that DUT is NOT in Stuff count field.
         -----------------------------------------------------------------------
-        ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
-        ctu_wait_not_frame_field(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_data, DUT_NODE, chn);
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-        check_m(pc_dbg = pc_deb_stuff_count, "Protocol Control in Stuff Count");
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        check_m(ff = ff_stuff_count, "Protocol Control in Stuff Count");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
 

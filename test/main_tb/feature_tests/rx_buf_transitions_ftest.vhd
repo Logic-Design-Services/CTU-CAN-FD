@@ -112,7 +112,7 @@ package body rx_buf_transitions_ftest is
         variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean;
-        variable rx_buf_info        :       t_ctu_rx_buff_info;
+        variable rx_buf_state        :       t_ctu_rx_buf_state;
     begin
 
         -----------------------------------------------------------------------
@@ -135,7 +135,7 @@ package body rx_buf_transitions_ftest is
         CAN_frame.frame_format := NORMAL_CAN;
 
         ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
 
         -- Wait until start of last DLC bit
         for i in 1 to 5 loop
@@ -159,12 +159,12 @@ package body rx_buf_transitions_ftest is
         ctu_wait_err_frame(DUT_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size,
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_mem_free = rx_buf_state.rx_buff_size,
                     "RX MEM Free = RX Buffer Size");
-        check_m(rx_buf_info.rx_write_pointer = 0,
+        check_m(rx_buf_state.rx_write_pointer = 0,
                     "RX Buffer write pointer 0");
-        check_m(rx_buf_info.rx_read_pointer = 0,
+        check_m(rx_buf_state.rx_read_pointer = 0,
                     "RX Buffer read pointer 0");
 
   end procedure;

@@ -183,7 +183,7 @@ package body alc_srr_rtr_2_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4: Check arbitration lost on SRR/RTR");
         
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
         for i in 0 to 11 loop
             ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
@@ -244,7 +244,7 @@ package body alc_srr_rtr_2_ftest is
         -----------------------------------------------------------------------
         info_m("Step 7: Check arbitration lost on SRR/RTR");
         
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
         for i in 0 to 11 loop
             ctu_wait_sample_point(DUT_NODE, chn);
         end loop;

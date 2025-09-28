@@ -114,10 +114,10 @@ package body mode_self_test_ftest is
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
         
         variable txt_buf_state      :       t_ctu_txt_buff_state;
-        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
         variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       t_ctu_frame_field;   
+        variable ff             :       t_ctu_frame_field;   
     begin
 
         ------------------------------------------------------------------------
@@ -139,17 +139,17 @@ package body mode_self_test_ftest is
         
         generate_can_frame(CAN_TX_frame);
         ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         
         ------------------------------------------------------------------------
         -- @3. Monitor during whole ACK field that frame bus is RECESSIVE.
         ------------------------------------------------------------------------
         info_m("Step 3: Checking ACK field is recessive"); 
         
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-        while (pc_dbg = pc_deb_ack) loop
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        while (ff = ff_ack) loop
             check_bus_level(RECESSIVE, "Dominant ACK transmitted!", chn);
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
             
             ctu_get_status(status, DUT_NODE, chn);
             check_m(status.transmitter, "DUT receiver!");
@@ -167,14 +167,14 @@ package body mode_self_test_ftest is
         ctu_get_status(status, DUT_NODE, chn);
         check_false_m(status.error_transmission, "Error frame not transmitted!");
         
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         
         -- For CAN FD frames secondary ACK is still marked as ACK to DEBUG
         -- register! From there if this is recessive (it is now, no ACK is sent),
         -- it is interpreted as ACK Delimiter and we move directly to EOF! This
         -- is OK!
-        check_m(pc_dbg = pc_deb_ack_delim or
-                pc_dbg = pc_deb_eof, "ACK delimiter follows recessive ACK!");
+        check_m(ff = ff_ack_delim or
+                ff = ff_eof, "ACK delimiter follows recessive ACK!");
         
         ctu_wait_bus_idle(TEST_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);

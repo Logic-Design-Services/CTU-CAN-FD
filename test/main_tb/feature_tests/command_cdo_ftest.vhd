@@ -122,7 +122,7 @@ package body command_cdo_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
         
-        variable rx_buf_info        :     t_ctu_rx_buff_info;    
+        variable rx_buf_state        :     t_ctu_rx_buf_state;    
 
         variable command            :     t_ctu_command := t_ctu_command_rst_val;
     begin
@@ -135,8 +135,8 @@ package body command_cdo_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_false_m(rx_buf_info.rx_full, "RX full not set!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_false_m(rx_buf_state.rx_full, "RX full not set!");
         
         ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.data_overrun, "DOR flag not set!");
@@ -147,11 +147,11 @@ package body command_cdo_ftest is
         ctu_put_tx_frame(frame_1, 1, TEST_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
         
-        info_m("DUT RX Buffer size: " & integer'image(rx_buf_info.rx_buff_size));
-        info_m("Sending " & integer'image(rx_buf_info.rx_buff_size / 4) &
+        info_m("DUT RX Buffer size: " & integer'image(rx_buf_state.rx_buff_size));
+        info_m("Sending " & integer'image(rx_buf_state.rx_buff_size / 4) &
              " RTR frames");
 
-        for i in 0 to (rx_buf_info.rx_buff_size / 4) - 1 loop
+        for i in 0 to (rx_buf_state.rx_buff_size / 4) - 1 loop
             info_m("Sending frame nr: " & integer'image(i));
             ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
             ctu_wait_frame_sent(TEST_NODE, chn);
@@ -166,8 +166,8 @@ package body command_cdo_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_full, "RX full set");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_full, "RX full set");
 
         ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.data_overrun, "DOR flag not set!");
@@ -185,8 +185,8 @@ package body command_cdo_ftest is
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
         
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_full, "RX full set");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_full, "RX full set");
         ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.data_overrun, "DOR flag set!");       
 

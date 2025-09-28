@@ -129,10 +129,10 @@ package body settings_tbfbo_ftest is
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable txt_buf_state      :       t_ctu_txt_buff_state;
-        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
         variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       t_ctu_frame_field;
+        variable ff             :       t_ctu_frame_field;
         variable fault_state        :       t_ctu_fault_state;
 
         variable err_counters       :       t_ctu_err_ctrs;
@@ -171,7 +171,7 @@ package body settings_tbfbo_ftest is
             -----------------------------------------------------------------------
             info_m("Step 2");
 
-            ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+            ctu_wait_ff(ff_eof, DUT_NODE, chn);
             force_can_rx(DOMINANT, DUT_NODE, chn);
             ctu_wait_sync_seg(DUT_NODE, chn);
             ctu_wait_sync_seg(DUT_NODE, chn);
@@ -230,7 +230,7 @@ package body settings_tbfbo_ftest is
 
             ctu_send_frame(CAN_TX_frame, buf_index, DUT_NODE, chn, frame_sent);
 
-            ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+            ctu_wait_ff(ff_eof, DUT_NODE, chn);
             wait for 10 ns;
             force_can_rx(DOMINANT, DUT_NODE, chn);
             ctu_wait_sync_seg(DUT_NODE, chn);

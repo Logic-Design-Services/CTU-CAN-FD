@@ -122,7 +122,7 @@ package body mode_erfm_ftest is
         variable CAN_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
 
-        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
 
         variable frame_sent         : boolean;
     begin
@@ -155,12 +155,12 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size,
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_mem_free = rx_buf_state.rx_buff_size,
                     "RX Buffer size = RX Buffer Free Memory");
-        check_m(rx_buf_info.rx_frame_count = 0, "RX Frame count = 0");
-        check_m(rx_buf_info.rx_write_pointer = 0, "RX Write pointer = 0");
-        check_m(rx_buf_info.rx_read_pointer = 0, "RX Write pointer = 0");
+        check_m(rx_buf_state.rx_frame_count = 0, "RX Frame count = 0");
+        check_m(rx_buf_state.rx_write_pointer = 0, "RX Write pointer = 0");
+        check_m(rx_buf_state.rx_read_pointer = 0, "RX Write pointer = 0");
 
         -------------------------------------------------------------------------------------------
         -- @4. Set MODE[ERFM] = 1 in DUT.
@@ -187,12 +187,12 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 6");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size - 4,
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_mem_free = rx_buf_state.rx_buff_size - 4,
                     "RX Buffer size - 4 = RX Buffer Free Memory");
-        check_m(rx_buf_info.rx_write_pointer = 4, "RX Buffer Write pointer = 4");
-        check_m(rx_buf_info.rx_read_pointer = 0, "RX Buffer Read pointer = 0");
-        check_m(rx_buf_info.rx_frame_count = 1, "RX Buffer frame count = 1");
+        check_m(rx_buf_state.rx_write_pointer = 4, "RX Buffer Write pointer = 4");
+        check_m(rx_buf_state.rx_read_pointer = 0, "RX Buffer Read pointer = 0");
+        check_m(rx_buf_state.rx_frame_count = 1, "RX Buffer frame count = 1");
 
         -------------------------------------------------------------------------------------------
         -- @7. Read out the frame from RX Buffer and check that:

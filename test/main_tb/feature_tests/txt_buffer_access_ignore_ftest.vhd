@@ -217,7 +217,7 @@ package body txt_buffer_access_ignore_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 1.4");
 
-            ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
+            ctu_wait_ff(ff_data, DUT_NODE, chn);
             ctu_give_txt_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
             wait for 20 ns;
 

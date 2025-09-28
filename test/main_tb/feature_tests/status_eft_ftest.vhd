@@ -120,7 +120,7 @@ package body status_eft_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;        
+        variable ff             :     t_ctu_frame_field;        
 
         variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             :     t_ctu_mode := t_ctu_mode_rst_val;
@@ -164,11 +164,11 @@ package body status_eft_ftest is
         frame_1.frame_format := NORMAL_CAN;
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg /= pc_deb_ack) loop
+        while (ff /= ff_ack) loop
             wait for 200 ns; -- To make checks more sparse!
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
             
             ctu_get_status(stat_1, DUT_NODE, chn);
             check_false_m(stat_1.error_transmission,
@@ -186,26 +186,26 @@ package body status_eft_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg = pc_deb_ack) loop            
+        while (ff = ff_ack) loop            
             wait for 100 ns; -- To make checks more sparse!
             
             ctu_get_status(stat_1, DUT_NODE, chn);
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
             
-            if (pc_dbg = pc_deb_ack) then
+            if (ff = ff_ack) then
                 check_false_m(stat_1.error_transmission, "STAT[EFT] not set in ACK!");
             end if;
         end loop;
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-        while (pc_dbg /= pc_deb_intermission) loop            
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        while (ff /= ff_intermission) loop            
             wait for 100 ns; -- To make checks more sparse!
 
             ctu_get_status(stat_1, DUT_NODE, chn);
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg /= pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff /= ff_intermission) then
                 check_m(stat_1.error_transmission, "STAT[EFT] set during Error frame!");
             end if;
         end loop;

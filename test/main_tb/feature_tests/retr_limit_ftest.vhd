@@ -194,7 +194,7 @@ package body retr_limit_ftest is
             ctu_send_frame(CAN_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
             for i in 0 to 1 loop
                 ctu_wait_err_frame(DUT_NODE, chn);
-                ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+                ctu_wait_ff(ff_intermission, DUT_NODE, chn);
             end loop;
 
             ------------------------------------------------------------------------
@@ -219,7 +219,7 @@ package body retr_limit_ftest is
             ctu_send_frame(CAN_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
             ctu_wait_err_frame(DUT_NODE, chn);
 
-            ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+            ctu_wait_ff(ff_intermission, DUT_NODE, chn);
             ctu_wait_err_frame(DUT_NODE, chn);
 
             ctu_get_txt_buf_state(txt_buf_nr, buf_state, DUT_NODE, chn);
@@ -349,7 +349,7 @@ package body retr_limit_ftest is
 
             ctu_wait_frame_sent(DUT_NODE, chn);
 
-            ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+            ctu_wait_ff(ff_control, DUT_NODE, chn);
             ctu_get_status(status, DUT_NODE, chn);
             check_m(status.receiver, "DUT lost arbitration");
             ctu_get_txt_buf_state(txt_buf_nr, buf_state, DUT_NODE, chn);

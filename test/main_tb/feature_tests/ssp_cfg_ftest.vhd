@@ -440,9 +440,9 @@ package body ssp_cfg_ftest is
         end if;
 
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
 
-        ctu_wait_not_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_control, DUT_NODE, chn);
 
         num_bit_waits_max := frame_1.data_length * 8;
         rand_int_v(num_bit_waits_max, num_bit_waits);

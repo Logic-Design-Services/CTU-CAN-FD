@@ -131,11 +131,11 @@ package body rx_err_log_2_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
-        variable pc_dbg             : t_ctu_frame_field;
+        variable ff             : t_ctu_frame_field;
         variable frame_sent         : boolean;
         variable tx_val             : std_logic;
         variable status             : t_ctu_status;
-        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
         variable CAN_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
         variable err_frame_2        : t_ctu_frame;
@@ -161,7 +161,7 @@ package body rx_err_log_2_ftest is
         CAN_frame.frame_format := NORMAL_CAN;
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_crc_delim, DUT_NODE, chn);
+        ctu_wait_ff(ff_crc_delim, DUT_NODE, chn);
         wait for 20 ns;
         flip_bus_level(chn);
         ctu_wait_sample_point(DUT_NODE, chn, false);
@@ -181,8 +181,8 @@ package body rx_err_log_2_ftest is
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
@@ -206,7 +206,7 @@ package body rx_err_log_2_ftest is
         generate_can_frame(CAN_frame);
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_ff(ff_eof, DUT_NODE, chn);
 
         rand_int_v(4, rand_bits);
         for i in 0 to rand_bits loop
@@ -232,8 +232,8 @@ package body rx_err_log_2_ftest is
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
@@ -254,7 +254,7 @@ package body rx_err_log_2_ftest is
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
-        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         wait for 20 ns;
 
         flip_bus_level(chn);
@@ -283,10 +283,10 @@ package body rx_err_log_2_ftest is
         -- Wait till Error frame is stored;
         wait for 100 ns;
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1,
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1,
                 "Single Error frame in RX Buffer, and it is: " &
-                    integer'image(rx_buf_info.rx_frame_count));
+                    integer'image(rx_buf_state.rx_frame_count));
 
         -------------------------------------------------------------------------------------------
         -- @8. Wait for one more bit and flip bus value again (Bit Error in Error Flag).
@@ -306,8 +306,8 @@ package body rx_err_log_2_ftest is
         -- Wait till Error frame is stored;
         wait for 100 ns;
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 2, "Two Error frames in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 2, "Two Error frames in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
 

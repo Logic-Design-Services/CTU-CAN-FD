@@ -113,10 +113,10 @@ package body mode_self_acknowledge_ftest is
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
 
         variable txt_buf_state      :       t_ctu_txt_buff_state;
-        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
         variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       t_ctu_frame_field;
+        variable ff             :       t_ctu_frame_field;
 
         variable can_tx             :       std_logic;
     begin
@@ -136,7 +136,7 @@ package body mode_self_acknowledge_ftest is
 
         generate_can_frame(CAN_TX_frame);
         ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         ctu_wait_sync_seg(DUT_NODE, chn);
         wait for 20 ns;
 

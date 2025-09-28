@@ -114,7 +114,7 @@ package body err_capt_arb_stuff_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;    
+        variable ff             :     t_ctu_frame_field;    
 
         variable frame_sent         :     boolean;
         
@@ -145,7 +145,7 @@ package body err_capt_arb_stuff_ftest is
         frame_1.identifier := 1; -- First 4 bits should be dominant!
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
 
         for i in 1 to 4 loop
             ctu_wait_sample_point(DUT_NODE, chn);

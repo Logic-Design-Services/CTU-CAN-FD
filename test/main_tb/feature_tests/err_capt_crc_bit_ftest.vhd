@@ -149,9 +149,9 @@ package body err_capt_crc_bit_ftest is
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         if (frame_1.frame_format = FD_CAN) then
-            ctu_wait_frame_field(pc_deb_stuff_count, DUT_NODE, chn);
+            ctu_wait_ff(ff_stuff_count, DUT_NODE, chn);
         else
-            ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
+            ctu_wait_ff(ff_crc, DUT_NODE, chn);
         end if;
 
         -- Wait for random number of bits

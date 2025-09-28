@@ -240,7 +240,7 @@ package body btr_fd_ftest is
         CAN_frame_1.data(3) := x"DD";
     
         ctu_send_frame(CAN_frame_1, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
 
         ctu_wait_sample_point(DUT_NODE, chn, false);
         t_meas_start := now;

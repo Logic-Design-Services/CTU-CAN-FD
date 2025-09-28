@@ -170,7 +170,7 @@ package body alc_rtr_ext_id_ftest is
         --     transmitter. Read ALC from DUT and check it.
         -----------------------------------------------------------------------
         info_m("Step 4: Check arbitration lost on RTR after Extended ID");
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
         for i in 0 to 31 loop
             ctu_wait_sample_point(DUT_NODE, chn);
         end loop;

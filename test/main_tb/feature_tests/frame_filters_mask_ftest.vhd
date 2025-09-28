@@ -138,7 +138,7 @@ package body frame_filters_mask_ftest is
         variable err_capt           :       t_ctu_err_capt;
         variable range_cfg          :       t_ctu_ran_filt_cfg;
         variable should_pass        :       boolean;
-        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
         variable filt_cfg           :       t_ctu_mask_filt_cfg;
 
         variable exp_base_mask      :       std_logic_vector(10 downto 0);

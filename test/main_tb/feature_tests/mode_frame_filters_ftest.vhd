@@ -121,7 +121,7 @@ package body mode_frame_filters_ftest is
         
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         
-        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
         variable frames_equal       :       boolean := false;
         variable filt_A_cfg         :       t_ctu_mask_filt_cfg;
         variable filt_B_C_cfg       :       t_ctu_mask_filt_cfg;

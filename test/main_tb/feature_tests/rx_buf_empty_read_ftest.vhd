@@ -108,7 +108,7 @@ package body rx_buf_empty_read_ftest is
     ) is
         -- Generated frames
         variable frame_rx           :     t_ctu_frame;
-        variable rx_buf_info        :     t_ctu_rx_buff_info;
+        variable rx_buf_state        :     t_ctu_rx_buf_state;
         variable rx_data            :     std_logic_vector(31 downto 0);
     begin
 
@@ -118,9 +118,9 @@ package body rx_buf_empty_read_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1: Reading RX buffer pointers for first time");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_read_pointer = 0, "Read pointer 0!");
-        check_m(rx_buf_info.rx_write_pointer = 0, "Write pointer 0!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_read_pointer = 0, "Read pointer 0!");
+        check_m(rx_buf_state.rx_write_pointer = 0, "Write pointer 0!");
 
         -----------------------------------------------------------------------
         -- @2. Try to read CAN frame from RX Buffer. This should generate at
@@ -138,9 +138,9 @@ package body rx_buf_empty_read_ftest is
         -- @3. Read pointers from RX Buffer, check pointers are still 0.
         ------------------------------------------------------------------------
         info_m("Step 3: Read RX Buffer pointers again!");
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_read_pointer = 0, "Read pointer 0!");
-        check_m(rx_buf_info.rx_write_pointer = 0, "Write pointer 0!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_read_pointer = 0, "Read pointer 0!");
+        check_m(rx_buf_state.rx_write_pointer = 0, "Write pointer 0!");
 
   end procedure;
 

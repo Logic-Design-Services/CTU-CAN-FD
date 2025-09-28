@@ -115,7 +115,7 @@ package body err_capt_ack_ack_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;    
+        variable ff             :     t_ctu_frame_field;    
 
         variable frame_sent         :     boolean;
         
@@ -148,12 +148,12 @@ package body err_capt_ack_ack_ftest is
         generate_can_frame(frame_1);
         frame_1.frame_format := NORMAL_CAN;
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-        while (pc_dbg = pc_deb_ack) loop
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        while (ff = ff_ack) loop
             check_bus_level(RECESSIVE, "Recessive ACK received in DUT!", chn);
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
         end loop;
 
         -- Now state has changed, we should be in Error frame because ACK was

@@ -128,7 +128,7 @@ package body rx_err_log_7_ftest is
         variable frames_match       : boolean;
         variable frame_sent         : boolean;
 
-        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
 
     begin
 
@@ -169,7 +169,7 @@ package body rx_err_log_7_ftest is
 
         ctu_send_frame(tx_frame_2, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
-        ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
 
         -- First 31 bits of data. Just before last bit of 4-th byte of data.
         for i in 1 to 31 loop
@@ -192,8 +192,8 @@ package body rx_err_log_7_ftest is
 
         ctu_wait_err_frame(DUT_NODE, chn);
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 2, "Two frames in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 2, "Two frames in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
 

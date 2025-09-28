@@ -147,9 +147,9 @@ package body status_txpe_ftest is
         variable stat_1             :     t_ctu_status;
         variable command_1          :     t_ctu_command := t_ctu_command_rst_val;
         variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
-        variable rx_buf_status      :     t_ctu_rx_buff_info;
+        variable rx_buf_status      :     t_ctu_rx_buf_state;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
         variable frames_equal       :     boolean;
 

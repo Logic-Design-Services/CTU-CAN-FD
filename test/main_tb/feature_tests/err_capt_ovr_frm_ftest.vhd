@@ -120,7 +120,7 @@ package body err_capt_ovr_frm_ftest is
         variable err_capt           :     t_ctu_err_capt;
         variable mode_2             :     t_ctu_mode;
         
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
     begin
 
         -----------------------------------------------------------------------
@@ -141,7 +141,7 @@ package body err_capt_ovr_frm_ftest is
         -----------------------------------------------------------------------        
         generate_can_frame(frame_1);
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         wait for 20 ns;
         
         -- Cause overload condition
@@ -150,8 +150,8 @@ package body err_capt_ovr_frm_ftest is
         wait for 20 ns; -- To be sure that opposite bit is sampled!
         release_bus_level(chn);
         
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-        check_m(pc_dbg = pc_deb_overload, "Overload frame transmitted!");
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        check_m(ff = ff_overload, "Overload frame transmitted!");
         
         rand_int_v(4, wait_time);
         info_m("Waiting for: " & integer'image(wait_time) & " bits!");

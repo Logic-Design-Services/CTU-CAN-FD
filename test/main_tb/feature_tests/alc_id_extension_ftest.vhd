@@ -134,10 +134,10 @@ package body alc_id_extension_ftest is
         -- Node status
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff                 :     t_ctu_frame_field;
 
         variable txt_buf_state      :     t_ctu_txt_buff_state;
-        variable rx_buf_info        :     t_ctu_rx_buff_info;
+        variable rx_buf_state       :     t_ctu_rx_buf_state;
         variable frames_equal       :     boolean := false;
 
         constant id_template        :     std_logic_vector(28 downto 0) :=
@@ -207,7 +207,7 @@ package body alc_id_extension_ftest is
             --     SOF). Check that DUT is Transmitter.
             --------------------------------------------------------------------
             info_m("Step 2.3: Wait till arbitration!");
-            ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+            ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
             ctu_get_status(stat_2, DUT_NODE, chn);
             check_m(stat_2.transmitter, "DUT transmitting!");
 
@@ -273,14 +273,14 @@ package body alc_id_extension_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2.6: Wait till end of frame!");
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
 
         while true loop
             check_can_tx(RECESSIVE, DUT_NODE, "Recessive transmitted!", chn);
             wait for 100 ns; -- Make checks more sparse to reduce run-time
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg = pc_deb_crc_delim or pc_dbg = pc_deb_ack) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff = ff_crc_delim or ff = ff_ack) then
                 exit;
             end if;
         end loop;
@@ -298,8 +298,8 @@ package body alc_id_extension_ftest is
         ctu_get_txt_buf_state(1, txt_buf_state, TEST_NODE, chn);
         check_m(txt_buf_state = buf_done, "Frame transmitted OK!");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Frame received OK!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Frame received OK!");
 
         ctu_read_frame(frame_rx, DUT_NODE, chn);
         compare_can_frames(frame_rx, frame_1, false, frames_equal);

@@ -216,7 +216,7 @@ package body txt_buffer_transitions_5_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.3");
 
-            ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
+            ctu_wait_ff(ff_crc, DUT_NODE, chn);
 
             flip_bus_level(chn);
 

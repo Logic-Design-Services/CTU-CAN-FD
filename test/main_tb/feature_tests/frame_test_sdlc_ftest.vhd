@@ -169,7 +169,7 @@ package body frame_test_sdlc_ftest is
 
         ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
 
         ctu_wait_bus_idle(DUT_NODE, chn);
 
@@ -188,7 +188,7 @@ package body frame_test_sdlc_ftest is
         ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
         -- We transnmit fixed frame format so that we move exactly to DLC!
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
         wait for 30 ns;
         -- Skip IDE and R0
         ctu_wait_sample_point(DUT_NODE, chn);

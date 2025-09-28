@@ -119,7 +119,7 @@ package body overload_ftest is
         -- Generated frames
         variable frame_1            :     t_ctu_frame;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
         variable command            :     t_ctu_command := t_ctu_command_rst_val;
         variable status             :     t_ctu_status;
@@ -135,7 +135,7 @@ package body overload_ftest is
         generate_can_frame(frame_1);
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         
-        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         wait for 15 ns;
 
         force_bus_level(DOMINANT, chn);
@@ -143,18 +143,18 @@ package body overload_ftest is
         wait for 15 ns; -- To be sure sample point was processed!
         release_bus_level(chn);
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
 
         -- Now we check for whole duration of overload flag! Check that
         -- dominant bit is transmitted!
         for i in 0 to 5 loop
             info_m("Overload flag index: " & integer'image(i));
-            check_m(pc_dbg = pc_deb_overload, "Overload frame transmitted!");
+            check_m(ff = ff_overload, "Overload frame transmitted!");
             ctu_wait_sample_point(DUT_NODE, chn);
             check_can_tx(DOMINANT, DUT_NODE, "Dominant Overload flag transmitted!", chn);
         end loop;
 
-        ctu_wait_not_frame_field(pc_deb_overload, DUT_NODE, chn); 
+        ctu_wait_not_ff(ff_overload, DUT_NODE, chn); 
 
         -----------------------------------------------------------------------
         -- @2. Check that we are in "Intermission field now". Wait until second
@@ -164,8 +164,8 @@ package body overload_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-        check_m(pc_dbg = pc_deb_intermission, "Intermission after Overload frame");
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        check_m(ff = ff_intermission, "Intermission after Overload frame");
 
         ctu_wait_sample_point(DUT_NODE, chn, false);
 
@@ -179,13 +179,13 @@ package body overload_ftest is
         -- dominant bit is transmitted!
         for i in 0 to 5 loop
             info_m("Overload flag index: " & integer'image(i));
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-            check_m(pc_dbg = pc_deb_overload, "Overload frame transmitted!");
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            check_m(ff = ff_overload, "Overload frame transmitted!");
             ctu_wait_sample_point(DUT_NODE, chn, false);
             check_can_tx(DOMINANT, DUT_NODE, "Dominant Overload flag transmitted!", chn);
         end loop;
 
-        ctu_wait_not_frame_field(pc_deb_overload, DUT_NODE, chn); 
+        ctu_wait_not_ff(ff_overload, DUT_NODE, chn); 
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
 
@@ -198,7 +198,7 @@ package body overload_ftest is
         generate_can_frame(frame_1);
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_ff(ff_eof, DUT_NODE, chn);
         for i in 0 to 5 loop
             ctu_wait_sample_point(DUT_NODE, chn, false);
         end loop;
@@ -222,8 +222,8 @@ package body overload_ftest is
         -- Test node is transmitting overload as a result of last bit of EOF
         -- dominant during EOF! 
         ctu_wait_sample_point(DUT_NODE, chn, false);
-        ctu_get_curr_frame_field(pc_dbg, TEST_NODE, chn);
-        check_m(pc_dbg = pc_deb_overload,
+        ctu_get_curr_ff(ff, TEST_NODE, chn);
+        check_m(ff = ff_overload,
             "Receiver sends overload frame due to dominant bit in last bit of EOF!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);

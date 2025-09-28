@@ -120,7 +120,7 @@ package body tx_from_intermission_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
         variable frame_equal        :     boolean;
     begin
@@ -143,7 +143,7 @@ package body tx_from_intermission_ftest is
 
         -- We must wait for Intermission of DUT! Only that way we are sure
         -- we properly measure two bits of its intermission!
-        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Wait for two sample points and force the bus dominant during
@@ -175,9 +175,9 @@ package body tx_from_intermission_ftest is
         -- catch this as second bit of Intermission and Interpret this as
         -- Overload frame ...
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);     
-        check_m(pc_dbg = pc_deb_arbitration, "Test node in arbitration");
-        check_false_m(pc_dbg = pc_deb_sof, "Test node NOT in SOF!");
+        ctu_get_curr_ff(ff, DUT_NODE, chn);     
+        check_m(ff = ff_arbitration, "Test node in arbitration");
+        check_false_m(ff = ff_sof, "Test node NOT in SOF!");
 
         ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.transmitter, "DUT transmitter!");

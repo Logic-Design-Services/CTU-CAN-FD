@@ -112,7 +112,7 @@ package body txt_buffer_byte_access_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
         variable frame_equal        :     boolean;
     begin

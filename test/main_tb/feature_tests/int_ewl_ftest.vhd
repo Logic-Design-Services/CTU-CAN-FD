@@ -144,7 +144,7 @@ package body int_ewl_ftest is
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable mode               :     t_ctu_mode := t_ctu_mode_rst_val;
-        variable buf_info           :     t_ctu_rx_buff_info;
+        variable buf_info           :     t_ctu_rx_buf_state;
         variable err_ctrs           :     t_ctu_err_ctrs;
     begin
 

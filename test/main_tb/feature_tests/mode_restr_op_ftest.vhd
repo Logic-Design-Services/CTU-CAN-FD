@@ -214,7 +214,7 @@ package body mode_restr_op_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3: Wait till ACK of retrasnmitted frame.");
         
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         
         ctu_wait_sync_seg(DUT_NODE, chn);
         wait for 10 ns;

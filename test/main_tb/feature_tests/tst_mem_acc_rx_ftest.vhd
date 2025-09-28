@@ -113,7 +113,7 @@ package body tst_mem_acc_rx_ftest is
         variable r_data  : std_logic_vector(31 downto 0) := (OTHERS => '0');
         variable w_data  : std_logic_vector(31 downto 0) := (OTHERS => '0');
 
-        variable rx_info : t_ctu_rx_buff_info;
+        variable rx_info : t_ctu_rx_buf_state;
 
         type t_test_values is
             array (0 to 4) of std_logic_vector(31 downto 0);

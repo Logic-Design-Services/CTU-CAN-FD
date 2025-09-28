@@ -112,7 +112,7 @@ package body rx_status_rxfrc_ftest is
         variable frame_sent         :       boolean := false;
         variable number_frms_sent   :       natural;
 
-        variable buf_info           :       t_ctu_rx_buff_info;
+        variable buf_info           :       t_ctu_rx_buf_state;
         variable command            :       t_ctu_command := t_ctu_command_rst_val;
         variable status             :       t_ctu_status;
         variable frame_counter      :       natural;

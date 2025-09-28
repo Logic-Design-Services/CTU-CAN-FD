@@ -141,7 +141,7 @@ package body int_rx_ftest is
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
-        variable pc_dbg             :     t_ctu_frame_field;  
+        variable ff             :     t_ctu_frame_field;  
     begin
 
         -----------------------------------------------------------------------
@@ -172,11 +172,11 @@ package body int_rx_ftest is
         -----------------------------------------------------------------------  
         info_m("Step 3: Check RX Interrupt is set in EOF!");
 
-        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_ff(ff_eof, DUT_NODE, chn);
         ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.receive_int,
             "RX Interrupt not set in beginning of EOF");
-        ctu_wait_not_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_eof, DUT_NODE, chn);
         ctu_get_int_status(int_stat, DUT_NODE, chn);
         
         check_m(int_stat.receive_int, "RX Interrupt set at the end of EOF");
@@ -231,10 +231,10 @@ package body int_rx_ftest is
         generate_can_frame(CAN_frame);
         ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
-        ctu_wait_not_frame_field(pc_deb_ack, DUT_NODE, chn);
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_ack, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         release_bus_level(chn);
         
         ctu_wait_bus_idle(TEST_NODE, chn);

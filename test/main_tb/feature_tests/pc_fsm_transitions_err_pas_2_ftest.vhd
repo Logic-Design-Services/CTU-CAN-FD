@@ -139,7 +139,7 @@ package body pc_fsm_transitions_err_pas_2_ftest is
         ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
         -- Overload condition
-        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         wait for 20 ns;
         force_bus_level(DOMINANT, chn);
         ctu_wait_sample_point(DUT_NODE, chn);

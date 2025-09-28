@@ -129,7 +129,7 @@ package body disable_in_tx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
         ctu_turn(false, DUT_NODE, chn);
 
         -----------------------------------------------------------------------

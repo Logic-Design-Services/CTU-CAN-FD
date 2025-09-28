@@ -118,7 +118,7 @@ package body err_capt_crc_err_ftest is
         variable stat_1             :     t_ctu_status;
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
 
         variable frame_sent         :     boolean;
 
@@ -161,7 +161,7 @@ package body err_capt_crc_err_ftest is
         frame_1.rtr := NO_RTR_FRAME;
         ctu_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_ff(ff_crc, DUT_NODE, chn);
         rand_int_v(12, wait_time);
 
         info_m("waiting for:" & integer'image(wait_time) & " bits!");
@@ -188,20 +188,20 @@ package body err_capt_crc_err_ftest is
         --      DUT will transmit recessive ACK, and Error frame after ACK delimiter!
         -------------------------------------------------------------------------------------------
 
-        ctu_wait_not_frame_field(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_crc, DUT_NODE, chn);
         wait for 10 ns;
-        ctu_get_curr_frame_field(pc_fsm_state, DUT_NODE, chn);
+        ctu_get_curr_ff(pc_fsm_state, DUT_NODE, chn);
 
         -- No error frame occured within CRC field -> Expect CRC Error in DUT
-        if (pc_fsm_state = pc_deb_crc_delim) then
+        if (pc_fsm_state = ff_crc_delim) then
 
 
             -- Generate ACK for Test node.
             -- We have to wait till both Nodes are in ACK so
             -- that we don't accidentaly generate it for Test node while it is still in
             -- in CRC Delimiter, that would be form error. Thus we would not ever test form Error!
-            ctu_wait_frame_field(pc_deb_ack, TEST_NODE, chn);
-            ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+            ctu_wait_ff(ff_ack, TEST_NODE, chn);
+            ctu_wait_ff(ff_ack, DUT_NODE, chn);
 
             force_bus_level(DOMINANT, chn);
             check_can_tx(RECESSIVE, DUT_NODE, "Send Recessive ACK upon CRC error [1]!", chn);
@@ -215,8 +215,8 @@ package body err_capt_crc_err_ftest is
             -- error frame from ACK delimiter! But Test node should not have sent ACK
             -- and should have mismatching CRC, therefore after ACK delimiter,
             -- it should send Error frame!
-            ctu_wait_frame_field(pc_deb_ack_delim, DUT_NODE, chn);
-            ctu_wait_not_frame_field(pc_deb_ack_delim, DUT_NODE, chn);
+            ctu_wait_ff(ff_ack_delim, DUT_NODE, chn);
+            ctu_wait_not_ff(ff_ack_delim, DUT_NODE, chn);
             wait for 20 ns;
 
             -- Now state has changed, we should be in Error frame because ACK was

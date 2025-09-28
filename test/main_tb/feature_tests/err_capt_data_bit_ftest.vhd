@@ -151,7 +151,7 @@ package body err_capt_data_bit_ftest is
         
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
-        ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
 
         -- Wait for random number of bits within data field
         rand_int_v((frame_1.data_length * 8) - 1, tmp);

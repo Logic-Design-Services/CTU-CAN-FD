@@ -126,7 +126,7 @@ package body ssp_last_crc_bit_error_ftest is
         variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable frame_bits         :       integer;
         variable bit_index          :       integer;
-        variable pc_dbg             :       t_ctu_frame_field;
+        variable ff             :       t_ctu_frame_field;
         variable bit_timing         :       t_ctu_bit_time_cfg;
     begin
 
@@ -219,8 +219,8 @@ package body ssp_last_crc_bit_error_ftest is
 
             -- If we get up to CRC Delim, we finish, flipping CRC Delimt will not
             -- result in Error frame.
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg = pc_deb_crc_delim) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff = ff_crc_delim) then
                 ctu_wait_bus_idle(DUT_NODE, chn);
                 ctu_wait_bus_idle(TEST_NODE, chn);
                 exit bit_iter_loop;

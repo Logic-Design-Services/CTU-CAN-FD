@@ -245,7 +245,7 @@ package body rx_settings_rtsop_ftest is
         generate_can_frame(CAN_TX_frame);
         ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
         
-        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_ff(ff_eof, DUT_NODE, chn);
 
         -- Wait until one bit before the end of EOF. This is when RX frame
         -- is validated according to CAN standard. 

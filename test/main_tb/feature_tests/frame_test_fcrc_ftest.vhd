@@ -174,7 +174,7 @@ package body frame_test_fcrc_ftest is
 
         ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-        ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_ff(ff_crc, DUT_NODE, chn);
 
         for i in 0 to crc_length - 1 loop
             ctu_wait_sample_point(DUT_NODE, chn);
@@ -204,7 +204,7 @@ package body frame_test_fcrc_ftest is
 
             ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-            ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
+            ctu_wait_ff(ff_crc, DUT_NODE, chn);
 
             for i in 0 to crc_length - 1 loop
                 ctu_wait_sample_point(DUT_NODE, chn);

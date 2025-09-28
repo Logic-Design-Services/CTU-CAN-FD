@@ -143,7 +143,7 @@ package body pc_fsm_transitions_integ_2_ftest is
             ctu_put_tx_frame(CAN_TX_frame, 1, TEST_NODE, chn);
             ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
-            ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+            ctu_wait_ff(ff_ack, DUT_NODE, chn);
             wait for 20 ns;
             force_bus_level(RECESSIVE, chn);
             ctu_wait_sample_point(DUT_NODE, chn);

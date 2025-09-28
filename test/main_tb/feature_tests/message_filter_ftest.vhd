@@ -139,7 +139,7 @@ package body message_filter_ftest is
         variable CAN_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
-        variable rx_state           :       t_ctu_rx_buff_info;
+        variable rx_state           :       t_ctu_rx_buf_state;
         variable mask_filt_config   :       t_ctu_mask_filt_cfg :=
                                                 (0, 0, '0', false, false);
         variable range_filt_config  :       t_ctu_ran_filt_cfg := 

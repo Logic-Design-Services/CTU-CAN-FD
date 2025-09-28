@@ -116,7 +116,7 @@ package body rx_err_log_5_ftest is
         variable CAN_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
         variable corrupt_bit_index  : integer;
-        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
         variable r_data             : std_logic_vector(31 downto 0);
     begin
 
@@ -168,8 +168,8 @@ package body rx_err_log_5_ftest is
 
         wait for 100 ns;
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");

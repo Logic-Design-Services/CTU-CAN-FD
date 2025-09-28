@@ -159,7 +159,7 @@ package body mode_acf_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.3");
 
-            ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+            ctu_wait_ff(ff_ack, DUT_NODE, chn);
             ctu_wait_sync_seg(DUT_NODE, chn);
             wait for 30 ns;
 
@@ -189,7 +189,7 @@ package body mode_acf_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.6");
 
-            ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+            ctu_wait_ff(ff_ack, DUT_NODE, chn);
             ctu_wait_sync_seg(DUT_NODE, chn);
             wait for 30 ns;
 

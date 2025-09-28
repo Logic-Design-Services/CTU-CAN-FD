@@ -115,7 +115,7 @@ package body err_capt_eof_ftest is
         variable stat_1             :     t_ctu_status;
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;    
+        variable ff             :     t_ctu_frame_field;    
 
         variable frame_sent         :     boolean;
         
@@ -144,7 +144,7 @@ package body err_capt_eof_ftest is
         generate_can_frame(frame_1);
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         
-        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_ff(ff_eof, DUT_NODE, chn);
         wait for 30 ns;
 
         rand_int_v(4, wait_time);

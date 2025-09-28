@@ -195,13 +195,13 @@ package body retr_limit_2_ftest is
 
         for i in 0 to 1 loop
             ctu_wait_err_frame(DUT_NODE, chn);
-            ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+            ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         end loop;
         
         ctu_send_frame(CAN_frame, 2, DUT_NODE, chn, frame_sent);
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 2, "Retransmitt counter equal to 2!");
-        ctu_wait_not_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_intermission, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @3. Wait until transmission starts by DUT. Check that TXT Buffer 2
@@ -296,7 +296,7 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 8: Checking Error counters!");
 
-        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 1,
             "Retransmitt counter incremented only once during multiple error frames!");
@@ -338,16 +338,16 @@ package body retr_limit_2_ftest is
         ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
         
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
-        ctu_wait_frame_field(pc_deb_arbitration, TEST_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, TEST_NODE, chn);
 
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.transmitter, "DUT transmitter");
         ctu_get_status(status, TEST_NODE, chn);
         check_m(status.transmitter, "Test node transmitter");
 
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
-        ctu_wait_frame_field(pc_deb_control, TEST_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, TEST_NODE, chn);
 
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.receiver, "DUT receiver");
@@ -369,14 +369,14 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 10: Wait until ACK field");
 
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
-        ctu_wait_not_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_ack, DUT_NODE, chn);
         release_bus_level(chn);
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame being transmitted!");
         
-        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 1,
             "Retransmitt counter incremented only once during arbitration loss" &

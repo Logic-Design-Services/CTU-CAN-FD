@@ -223,7 +223,7 @@ package body one_shot_ftest is
         ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
         
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
         
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.receiver, "DUT lost arbitration");

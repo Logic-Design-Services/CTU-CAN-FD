@@ -154,7 +154,7 @@ package body tx_counter_ftest is
         generate_can_frame(CAN_frame);
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_ff(ff_eof, DUT_NODE, chn);
         ctu_get_traff_ctrs(ctrs_2, DUT_NODE, chn);
 
         check_m(ctrs_1.tx_frames = ctrs_2.tx_frames,
@@ -168,7 +168,7 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Check TX, RX counters after frame.");
 
-        ctu_wait_not_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_eof, DUT_NODE, chn);
         ctu_get_traff_ctrs(ctrs_3, DUT_NODE, chn);
 
         check_m(ctrs_1.tx_frames + 1 = ctrs_3.tx_frames,
@@ -189,9 +189,9 @@ package body tx_counter_ftest is
         CAN_frame.frame_format := NORMAL_CAN;
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
-        ctu_wait_not_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_ack, DUT_NODE, chn);
 
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");

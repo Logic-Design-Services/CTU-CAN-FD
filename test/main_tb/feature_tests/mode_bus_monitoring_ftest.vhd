@@ -139,10 +139,10 @@ package body mode_bus_monitoring_ftest is
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable txt_buf_state      :       t_ctu_txt_buff_state;
-        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
         variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       t_ctu_frame_field;
+        variable ff             :       t_ctu_frame_field;
     begin
 
         ------------------------------------------------------------------------
@@ -184,7 +184,7 @@ package body mode_bus_monitoring_ftest is
 
         generate_can_frame(CAN_TX_frame);
         ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @4. Monitor bus during whole ACK field, check that it is recessive.
@@ -192,10 +192,10 @@ package body mode_bus_monitoring_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Checking ACK field is recessive");
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-        while (pc_dbg = pc_deb_ack) loop
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        while (ff = ff_ack) loop
             check_bus_level(RECESSIVE, "Dominant ACK transmitted!", chn);
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
 
             ctu_get_status(status, DUT_NODE, chn);
             check_m(status.receiver, "DUT receiver!");

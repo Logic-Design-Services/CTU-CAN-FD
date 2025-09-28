@@ -131,7 +131,7 @@ package body int_be_ftest is
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable command            :     t_ctu_command := t_ctu_command_rst_val;
-        variable buf_info           :     t_ctu_rx_buff_info;
+        variable buf_info           :     t_ctu_rx_buf_state;
         variable status             :     t_ctu_status;
         
         variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
@@ -164,7 +164,7 @@ package body int_be_ftest is
         generate_can_frame(CAN_frame);
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.bus_error_int,
                       "BE Interrupt not set before error frame");
@@ -218,7 +218,7 @@ package body int_be_ftest is
         
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.bus_error_int,
                       "BE Interrupt not set before error frame");

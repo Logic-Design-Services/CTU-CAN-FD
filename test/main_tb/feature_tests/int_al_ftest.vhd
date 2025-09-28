@@ -131,7 +131,7 @@ package body int_al_ftest is
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable command            :     t_ctu_command := t_ctu_command_rst_val;
-        variable buf_info           :     t_ctu_rx_buff_info;
+        variable buf_info           :     t_ctu_rx_buf_state;
         variable status             :     t_ctu_status;
     begin
 
@@ -170,8 +170,8 @@ package body int_al_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
-        ctu_wait_not_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_arbitration, DUT_NODE, chn);
         
         ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_m(int_stat.arb_lost_int,
@@ -225,8 +225,8 @@ package body int_al_ftest is
         ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
-        ctu_wait_not_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_arbitration, DUT_NODE, chn);
 
         ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.arb_lost_int,

@@ -125,7 +125,7 @@ package body ssp_last_crc_bit_error_2_ftest is
         variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable frame_bits         :       integer;
         variable bit_index          :       integer;
-        variable pc_dbg             :       t_ctu_frame_field;
+        variable ff             :       t_ctu_frame_field;
         variable bit_timing         :       t_ctu_bit_time_cfg;
     begin
 
@@ -199,7 +199,7 @@ package body ssp_last_crc_bit_error_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        ctu_wait_frame_field(pc_deb_crc_delim, DUT_NODE, chn);
+        ctu_wait_ff(ff_crc_delim, DUT_NODE, chn);
         ctu_wait_sync_seg(DUT_NODE, chn);
 
         flip_bus_level(chn);

@@ -268,7 +268,7 @@ package feature_test_agent_pkg is
     end record;
 
     -- RX Buffer info and status
-    type t_ctu_rx_buff_info is record
+    type t_ctu_rx_buf_state is record
         rx_buff_size            :   natural range 0 to 2 ** 13 - 1;
         rx_mem_free             :   natural range 0 to 2 ** 13 - 1;
         rx_write_pointer        :   natural range 0 to 2 ** 13 - 1;
@@ -321,20 +321,20 @@ package feature_test_agent_pkg is
 
     -- Protocol control Debug values
     type t_ctu_frame_field is (
-        pc_deb_none,
-        pc_deb_sof,
-        pc_deb_arbitration,
-        pc_deb_control,
-        pc_deb_data,
-        pc_deb_stuff_count,
-        pc_deb_crc,
-        pc_deb_crc_delim,
-        pc_deb_ack,
-        pc_deb_ack_delim,
-        pc_deb_eof,
-        pc_deb_intermission,
-        pc_deb_suspend,
-        pc_deb_overload
+        ff_none,
+        ff_sof,
+        ff_arbitration,
+        ff_control,
+        ff_data,
+        ff_stuff_count,
+        ff_crc,
+        ff_crc_delim,
+        ff_ack,
+        ff_ack_delim,
+        ff_eof,
+        ff_intermission,
+        ff_suspend,
+        ff_overload
     );
 
     -- TXT Buffer state (used in test access, not in synthesizable code)
@@ -1266,13 +1266,13 @@ package feature_test_agent_pkg is
     --
     -- Arguments:
     --  buf_index       TXT Buffer number.
-    --  retVal          Variable in which return state of the buffer will be
+    --  rv          Variable in which return state of the buffer will be
     --                  returned.
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure ctu_get_txt_buf_state(
         constant buf_n          : in    t_ctu_txt_buff_index;
-        variable retVal         : out   t_ctu_txt_buff_state;
+        variable rv             : out   t_ctu_txt_buff_state;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1308,12 +1308,12 @@ package feature_test_agent_pkg is
     -- Read state of RX Buffer.
     --
     -- Arguments:
-    --  retVal          Variable in which return state of the buffer will be
+    --  rv          Variable in which return state of the buffer will be
     --                  returned.
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure ctu_get_rx_buf_state(
-        variable retVal         : out   t_ctu_rx_buff_info;
+        variable rv             : out   t_ctu_rx_buf_state;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1338,11 +1338,11 @@ package feature_test_agent_pkg is
     --  MAJOR_VERSION * 10 + MINOR_VERSION.
     --
     -- Arguments:
-    --  retVal          Variable in which return version will be returned.
+    --  rv          Variable in which return version will be returned.
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure ctu_get_version(
-        variable retVal         : out   natural;
+        variable rv             : out   natural;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1755,11 +1755,11 @@ package feature_test_agent_pkg is
     -- Read Debug register to obtain Protocol Control Debug Information.
     --
     -- Arguments:
-    --  pc_dbg          Output value.
+    --  ff          Output value.
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
-    procedure ctu_get_curr_frame_field(
-        variable pc_dbg         : out   t_ctu_frame_field;
+    procedure ctu_get_curr_ff(
+        variable ff         : out   t_ctu_frame_field;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1769,10 +1769,10 @@ package feature_test_agent_pkg is
     -- Poll on Debug register until Protocol control is in desired state.
     --
     -- Arguments:
-    --  pc_dbg          State to poll on.
+    --  ff          State to poll on.
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
-    procedure ctu_wait_frame_field(
+    procedure ctu_wait_ff(
         constant pc_state       : in    t_ctu_frame_field;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -1783,10 +1783,10 @@ package feature_test_agent_pkg is
     -- Poll on Debug register until Protocol control is NOT in desired state.
     --
     -- Arguments:
-    --  pc_dbg          State to poll on.
+    --  ff          State to poll on.
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
-    procedure ctu_wait_not_frame_field(
+    procedure ctu_wait_not_ff(
         constant pc_state       : in    t_ctu_frame_field;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -1826,7 +1826,7 @@ package feature_test_agent_pkg is
     -- Wait until start of bit (Sync Seg), (from Status Bus).
     --
     -- Arguments:
-    --  pc_dbg           State to poll on.
+    --  ff           State to poll on.
     ----------------------------------------------------------------------------
     procedure ctu_wait_sync_seg(
         constant node               : in    t_feature_node;
@@ -3222,10 +3222,10 @@ package body feature_test_agent_pkg is
                                         (OTHERS => '0');
     begin
         -- Wait until Base ID
-        ctu_wait_frame_field(pc_deb_arbitration, node, channel);
+        ctu_wait_ff(ff_arbitration, node, channel);
 
         -- Wait until Intermission
-        ctu_wait_frame_field(pc_deb_intermission, node, channel);
+        ctu_wait_ff(ff_intermission, node, channel);
     end procedure;
 
 
@@ -3471,7 +3471,7 @@ package body feature_test_agent_pkg is
 
     procedure ctu_get_txt_buf_state(
         constant buf_n          : in    t_ctu_txt_buff_index;
-        variable retVal         : out   t_ctu_txt_buff_state;
+        variable rv             : out   t_ctu_txt_buff_state;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3484,15 +3484,15 @@ package body feature_test_agent_pkg is
         b_state   := data((buf_index + 1) * 4 - 1 downto buf_index * 4);
 
         case b_state is
-        when TXT_RDY  => retVal := buf_ready;
-        when TXT_TRAN => retVal := buf_tx_progress;
-        when TXT_ABTP => retVal := buf_ab_progress;
-        when TXT_TOK  => retVal := buf_done;
-        when TXT_ERR  => retVal := buf_failed;
-        when TXT_ABT  => retVal := buf_aborted;
-        when TXT_ETY  => retVal := buf_empty;
-        when TXT_PER  => retVal := buf_parity_err;
-        when TXT_NOT_EXIST => retVal := buf_not_exist;
+        when TXT_RDY  => rv := buf_ready;
+        when TXT_TRAN => rv := buf_tx_progress;
+        when TXT_ABTP => rv := buf_ab_progress;
+        when TXT_TOK  => rv := buf_done;
+        when TXT_ERR  => rv := buf_failed;
+        when TXT_ABT  => rv := buf_aborted;
+        when TXT_ETY  => rv := buf_empty;
+        when TXT_PER  => rv := buf_parity_err;
+        when TXT_NOT_EXIST => rv := buf_not_exist;
         when others =>
         error_m("Invalid TXT Buffer state: " &
               integer'image(to_integer(unsigned(b_state))));
@@ -3538,7 +3538,7 @@ package body feature_test_agent_pkg is
 
 
     procedure ctu_get_rx_buf_state(
-        variable retVal         : out   t_ctu_rx_buff_info;
+        variable rv             : out   t_ctu_rx_buf_state;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3546,37 +3546,37 @@ package body feature_test_agent_pkg is
     begin
         -- Read information about buffer memory first!
         ctu_read(data, RX_MEM_INFO_ADR, node, channel);
-        retVal.rx_buff_size := to_integer(unsigned(
+        rv.rx_buff_size := to_integer(unsigned(
                                  data(RX_BUFF_SIZE_H downto RX_BUFF_SIZE_L)));
-        retVal.rx_mem_free := to_integer(unsigned(
+        rv.rx_mem_free := to_integer(unsigned(
                                  data(RX_MEM_FREE_H downto RX_MEM_FREE_L)));
 
         -- Read memory pointers
         ctu_read(data, RX_POINTERS_ADR, node, channel);
-        retVal.rx_write_pointer := to_integer(unsigned(
+        rv.rx_write_pointer := to_integer(unsigned(
                                      data(RX_WPP_H downto RX_WPP_L)));
-        retVal.rx_read_pointer  := to_integer(unsigned(
+        rv.rx_read_pointer  := to_integer(unsigned(
                                      data(RX_RPP_H downto RX_RPP_L)));
 
         -- Read memory status
         ctu_read(data, RX_STATUS_ADR, node, channel);
-        retVal.rx_full          := false;
-        retVal.rx_empty         := false;
-        retVal.rx_mof           := false;
+        rv.rx_full          := false;
+        rv.rx_empty         := false;
+        rv.rx_mof           := false;
 
         if (data(RXF_IND) = '1') then
-            retVal.rx_full      := true;
+            rv.rx_full      := true;
         end if;
 
         if (data(RXE_IND) = '1') then
-            retVal.rx_empty     := true;
+            rv.rx_empty     := true;
         end if;
 
         if (data(RXMOF_IND) = '1') then
-            retVal.rx_mof       := true;
+            rv.rx_mof       := true;
         end if;
 
-        retVal.rx_frame_count   := to_integer(unsigned(
+        rv.rx_frame_count   := to_integer(unsigned(
                                     data(RXFRC_H downto RXFRC_L)));
     end procedure;
 
@@ -3599,7 +3599,7 @@ package body feature_test_agent_pkg is
 
 
     procedure ctu_get_version(
-        variable retVal         : out   natural;
+        variable rv             : out   natural;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -3615,7 +3615,7 @@ package body feature_test_agent_pkg is
         high_major := VER_MAJOR_H mod 16;
         low_minor := VER_MINOR_L mod 16;
         high_minor := VER_MINOR_H mod 16;
-        retVal := (10 * to_integer(unsigned(data(high_major downto low_major)))) +
+        rv := (10 * to_integer(unsigned(data(high_major downto low_major)))) +
                   to_integer(unsigned(data(high_minor downto low_minor)));
     end procedure;
 
@@ -4597,8 +4597,8 @@ package body feature_test_agent_pkg is
     end procedure;
 
 
-    procedure ctu_get_curr_frame_field(
-        variable pc_dbg         : out   t_ctu_frame_field;
+    procedure ctu_get_curr_ff(
+        variable ff         : out   t_ctu_frame_field;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4607,38 +4607,38 @@ package body feature_test_agent_pkg is
     begin
         ctu_read(data, DEBUG_REGISTER_ADR, node, channel);
 
-        pc_dbg := pc_deb_none;
+        ff := ff_none;
         if (data(PC_ARB_IND) = '1') then
-            pc_dbg := pc_deb_arbitration;
+            ff := ff_arbitration;
         elsif (data(PC_CON_IND) = '1') then
-            pc_dbg := pc_deb_control;
+            ff := ff_control;
         elsif (data(PC_DAT_IND) = '1') then
-            pc_dbg := pc_deb_data;
+            ff := ff_data;
         elsif (data(PC_STC_IND) = '1') then
-            pc_dbg := pc_deb_stuff_count;
+            ff := ff_stuff_count;
         elsif (data(PC_CRC_IND) = '1') then
-            pc_dbg := pc_deb_crc;
+            ff := ff_crc;
         elsif (data(PC_CRCD_IND) = '1') then
-            pc_dbg := pc_deb_crc_delim;
+            ff := ff_crc_delim;
         elsif (data(PC_ACK_IND) = '1') then
-            pc_dbg := pc_deb_ack;
+            ff := ff_ack;
         elsif (data(PC_ACKD_IND) = '1') then
-            pc_dbg := pc_deb_ack_delim;
+            ff := ff_ack_delim;
         elsif (data(PC_EOF_IND) = '1') then
-            pc_dbg := pc_deb_eof;
+            ff := ff_eof;
         elsif (data(PC_INT_IND) = '1') then
-            pc_dbg := pc_deb_intermission;
+            ff := ff_intermission;
         elsif (data(PC_SUSP_IND) = '1') then
-            pc_dbg := pc_deb_suspend;
+            ff := ff_suspend;
         elsif (data(PC_OVR_IND) = '1') then
-            pc_dbg := pc_deb_overload;
+            ff := ff_overload;
         elsif (data(PC_SOF_IND) = '1') then
-            pc_dbg := pc_deb_sof;
+            ff := ff_sof;
         end if;
     end procedure;
 
 
-    procedure ctu_wait_frame_field(
+    procedure ctu_wait_ff(
         constant pc_state       : in    t_ctu_frame_field;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -4649,10 +4649,10 @@ package body feature_test_agent_pkg is
                " is in state: " & t_ctu_frame_field'image(pc_state));
         mem_bus_agent_disable_transaction_reporting(channel);
 
-        ctu_get_curr_frame_field(read_state, node, channel);
+        ctu_get_curr_ff(read_state, node, channel);
         while (read_state /= pc_state) loop
             clk_agent_wait_cycle(channel);
-            ctu_get_curr_frame_field(read_state, node, channel);
+            ctu_get_curr_ff(read_state, node, channel);
         end loop;
 
         mem_bus_agent_enable_transaction_reporting(channel);
@@ -4660,7 +4660,7 @@ package body feature_test_agent_pkg is
     end procedure;
 
 
-    procedure ctu_wait_not_frame_field(
+    procedure ctu_wait_not_ff(
         constant pc_state       : in    t_ctu_frame_field;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -4671,10 +4671,10 @@ package body feature_test_agent_pkg is
                " is NOT in state: " & t_ctu_frame_field'image(pc_state));
         mem_bus_agent_disable_transaction_reporting(channel);
 
-        ctu_get_curr_frame_field(read_state, node, channel);
+        ctu_get_curr_ff(read_state, node, channel);
         while (read_state = pc_state) loop
             clk_agent_wait_cycle(channel);
-            ctu_get_curr_frame_field(read_state, node, channel);
+            ctu_get_curr_ff(read_state, node, channel);
         end loop;
 
         mem_bus_agent_enable_transaction_reporting(channel);

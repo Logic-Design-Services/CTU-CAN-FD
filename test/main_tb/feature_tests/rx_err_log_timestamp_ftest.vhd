@@ -124,14 +124,14 @@ package body rx_err_log_timestamp_ftest is
         variable ts_start           : std_logic_vector(63 downto 0);
         variable n_bits             : natural;
         variable can_tx             : std_logic;
-        variable pc_dbg             : t_ctu_frame_field;
+        variable ff             : t_ctu_frame_field;
         variable exit_flag          : std_logic;
         variable exp_ts             : unsigned(63 downto 0);
         variable bust               : t_ctu_bit_time_cfg;
         variable diff               : unsigned(63 downto 0);
         variable cycles_per_bit     : integer;
 
-        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
         variable err_counters       : t_ctu_err_ctrs;
     begin
 
@@ -187,11 +187,11 @@ package body rx_err_log_timestamp_ftest is
             wait for 20 ns;
 
             get_can_tx(DUT_NODE, can_tx, chn);
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
             rand_logic_v(exit_flag, 0.025);
 
             -- With a chance of 2.5 % quit on a Dominant bit. At latest in CRC Delim!
-            if ((exit_flag = '1' and can_tx = DOMINANT) or (pc_dbg = pc_deb_crc_delim)) then
+            if ((exit_flag = '1' and can_tx = DOMINANT) or (ff = ff_crc_delim)) then
                 exit;
             end if;
         end loop;
@@ -214,8 +214,8 @@ package body rx_err_log_timestamp_ftest is
 
         exp_ts := unsigned(ts_start) + (n_bits + 1) * cycles_per_bit;
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");

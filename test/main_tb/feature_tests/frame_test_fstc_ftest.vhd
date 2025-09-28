@@ -168,7 +168,7 @@ package body frame_test_fstc_ftest is
 
         ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-        ctu_wait_frame_field(pc_deb_stuff_count, DUT_NODE, chn);
+        ctu_wait_ff(ff_stuff_count, DUT_NODE, chn);
         
         for i in 0 to 3 loop
             ctu_wait_sample_point(DUT_NODE, chn);
@@ -194,7 +194,7 @@ package body frame_test_fstc_ftest is
 
         ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-        ctu_wait_frame_field(pc_deb_stuff_count, DUT_NODE, chn);
+        ctu_wait_ff(ff_stuff_count, DUT_NODE, chn);
         
         for i in 0 to 3 loop
             ctu_wait_sample_point(DUT_NODE, chn);

@@ -137,7 +137,7 @@ package body rx_err_log_3_ftest is
         variable frame_sent         : boolean;
         variable CAN_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
-        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
         variable can_rx             : std_logic;
     begin
 
@@ -168,7 +168,7 @@ package body rx_err_log_3_ftest is
         length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
 
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
         ctu_wait_sample_point(DUT_NODE, chn);
         ctu_wait_sample_point(DUT_NODE, chn);
 
@@ -184,8 +184,8 @@ package body rx_err_log_3_ftest is
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
@@ -193,8 +193,8 @@ package body rx_err_log_3_ftest is
         check_m(err_frame.erf_pos = ERC_POS_DATA, "FRAME_FORMAT_W[ERF_POS] = ERC_POS_DATA");
         check_m(err_frame.erf_type = ERC_BIT_ERR, "FRAME_FORMAT_W[ERF_TYPE] = ERC_BIT_ERR");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 0, "No Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
@@ -216,7 +216,7 @@ package body rx_err_log_3_ftest is
         length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
 
         ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
 
         -- 0x5F -- 01011111
         --            -----
@@ -239,8 +239,8 @@ package body rx_err_log_3_ftest is
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
@@ -248,8 +248,8 @@ package body rx_err_log_3_ftest is
         check_m(err_frame.erf_pos = ERC_POS_DATA, "FRAME_FORMAT_W[ERF_POS] = ERC_POS_DATA");
         check_m(err_frame.erf_type = ERC_STUF_ERR, "FRAME_FORMAT_W[ERF_TYPE] = ERC_STUF_ERR");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 0, "No Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
 
@@ -271,7 +271,7 @@ package body rx_err_log_3_ftest is
 
         generate_can_frame(CAN_frame);
         ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_ff(ff_crc, DUT_NODE, chn);
 
         ctu_wait_sample_point(DUT_NODE, chn);
         ctu_wait_sync_seg(DUT_NODE, chn);
@@ -288,8 +288,8 @@ package body rx_err_log_3_ftest is
 
         wait for 200 ns;
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
@@ -298,8 +298,8 @@ package body rx_err_log_3_ftest is
                     "FRAME_FORMAT_W[ERF_TYPE] = ERC_STUF_ERR or " &
                     "FRAME_FORMAT_W[ERF_TYPE] = ERC_CRC_ERR");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 0, "No Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
 
@@ -314,7 +314,7 @@ package body rx_err_log_3_ftest is
         generate_can_frame(CAN_frame);
         CAN_frame.frame_format := NORMAL_CAN;
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_ack_delim, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack_delim, DUT_NODE, chn);
 
         wait for 20 ns;
         flip_bus_level(chn);
@@ -326,8 +326,8 @@ package body rx_err_log_3_ftest is
 
         wait for 200 ns;
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
@@ -335,8 +335,8 @@ package body rx_err_log_3_ftest is
         check_m(err_frame.erf_pos = ERC_POS_ACK, "FRAME_FORMAT_W[ERF_POS] = ERC_POS_CRC");
         check_m(err_frame.erf_type = ERC_FRM_ERR, "FRAME_FORMAT_W[ERF_TYPE] = ERC_FRM_ERR");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 0, "No Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
 
@@ -358,8 +358,8 @@ package body rx_err_log_3_ftest is
 
         wait for 200 ns;
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");

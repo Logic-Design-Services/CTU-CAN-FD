@@ -116,7 +116,7 @@ package body status_txs_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
     begin
 
@@ -131,18 +131,18 @@ package body status_txs_ftest is
         generate_can_frame(frame_1);
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg /= pc_deb_arbitration) loop
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        while (ff /= ff_arbitration) loop
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
         end loop;
 
-        while (pc_dbg /= pc_deb_intermission) loop
+        while (ff /= ff_intermission) loop
             wait for 200 ns;
             ctu_get_status(stat_1, DUT_NODE, chn);
 
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg /= pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff /= ff_intermission) then
                 check_m(stat_1.transmitter, "DUT transmitter!");
             end if;
         end loop;
@@ -150,7 +150,7 @@ package body status_txs_ftest is
 
         -- There should be no Suspend, Overload frames, so after intermission
         -- we should go to idle
-        ctu_wait_not_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_intermission, DUT_NODE, chn);
         ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.transmitter, "DUT not transmitter in idle!");
 
@@ -167,11 +167,11 @@ package body status_txs_ftest is
         ctu_send_frame(frame_1, 2, TEST_NODE, chn, frame_sent);
 
         mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg /= pc_deb_intermission) loop
+        while (ff /= ff_intermission) loop
             wait for 200 ns;
             ctu_get_status(stat_1, DUT_NODE, chn);
 
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
             check_false_m(stat_1.transmitter, "DUT not transmitter!");
         end loop;
         mem_bus_agent_enable_transaction_reporting(chn);

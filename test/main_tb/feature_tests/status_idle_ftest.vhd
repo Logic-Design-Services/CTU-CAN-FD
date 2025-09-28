@@ -119,7 +119,7 @@ package body status_idle_ftest is
         variable stat_1             :     t_ctu_status;
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
 
         variable mode_1             :     t_ctu_mode;
@@ -142,29 +142,29 @@ package body status_idle_ftest is
 
         generate_can_frame(frame_1);
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
         
         ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.bus_status, "DUT not idle after frame started!");
 
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg /= pc_deb_intermission) loop
+        while (ff /= ff_intermission) loop
             wait for 200 ns;
             ctu_get_status(stat_1, DUT_NODE, chn);
 
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg /= pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff /= ff_intermission) then
                 check_false_m(stat_1.bus_status, "DUT not idle during frame!");
             end if;
         end loop;
         
-        while (pc_dbg = pc_deb_intermission) loop
+        while (ff = ff_intermission) loop
             wait for 200 ns;
             ctu_get_status(stat_1, DUT_NODE, chn);
 
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg = pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff = ff_intermission) then
                 check_false_m(stat_1.bus_status, "DUT not idle during frame!");
             end if;
         end loop;
@@ -184,29 +184,29 @@ package body status_idle_ftest is
         
         generate_can_frame(frame_1);
         ctu_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
 
         ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.bus_status, "DUT not idle after frame started!");
         
-        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg /= pc_deb_intermission) loop
+        while (ff /= ff_intermission) loop
             wait for 200 ns;
             ctu_get_status(stat_1, DUT_NODE, chn);
 
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg /= pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff /= ff_intermission) then
                 check_false_m(stat_1.bus_status, "DUT not idle during frame!");
             end if;
         end loop;
 
-        while (pc_dbg = pc_deb_intermission) loop
+        while (ff = ff_intermission) loop
             wait for 200 ns;
             ctu_get_status(stat_1, DUT_NODE, chn);
 
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg = pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff = ff_intermission) then
                 check_false_m(stat_1.bus_status, "DUT not idle during frame!");
             end if;
         end loop;

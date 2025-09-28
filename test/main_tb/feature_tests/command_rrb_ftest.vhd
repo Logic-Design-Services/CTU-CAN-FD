@@ -120,7 +120,7 @@ package body command_rrb_ftest is
         variable frame_1            :     t_ctu_frame;
         variable frame_rx           :     t_ctu_frame;
         
-        variable rx_buf_info        :     t_ctu_rx_buff_info;
+        variable rx_buf_state        :     t_ctu_rx_buf_state;
         variable frames_equal       :     boolean := false;        
 
         variable command            :     t_ctu_command := t_ctu_command_rst_val;
@@ -134,13 +134,13 @@ package body command_rrb_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         
-        check_m(rx_buf_info.rx_write_pointer = 0, "Write pointer 0");
-        check_m(rx_buf_info.rx_read_pointer = 0, "Read pointer 0");
-        check_false_m(rx_buf_info.rx_full, "Full flag not set");
-        check_m(rx_buf_info.rx_empty, "Empty flag set");
-        check_m(rx_buf_info.rx_frame_count = 0, "Frame count 0");
+        check_m(rx_buf_state.rx_write_pointer = 0, "Write pointer 0");
+        check_m(rx_buf_state.rx_read_pointer = 0, "Read pointer 0");
+        check_false_m(rx_buf_state.rx_full, "Full flag not set");
+        check_m(rx_buf_state.rx_empty, "Empty flag set");
+        check_m(rx_buf_state.rx_frame_count = 0, "Frame count 0");
         
         generate_can_frame(frame_1);
         ctu_put_tx_frame(frame_1, 1, TEST_NODE, chn);
@@ -150,13 +150,13 @@ package body command_rrb_ftest is
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         
-        check_m(rx_buf_info.rx_write_pointer /= 0, "Write pointer not 0");
-        check_m(rx_buf_info.rx_read_pointer = 0, "Read pointer still 0");
-        check_false_m(rx_buf_info.rx_full, "Full flag not set");
-        check_false_m(rx_buf_info.rx_empty, "Empty flag not set");
-        check_m(rx_buf_info.rx_frame_count = 1, "Frame count 1");
+        check_m(rx_buf_state.rx_write_pointer /= 0, "Write pointer not 0");
+        check_m(rx_buf_state.rx_read_pointer = 0, "Read pointer still 0");
+        check_false_m(rx_buf_state.rx_full, "Full flag not set");
+        check_false_m(rx_buf_state.rx_empty, "Empty flag not set");
+        check_m(rx_buf_state.rx_frame_count = 1, "Frame count 1");
 
         -----------------------------------------------------------------------
         -- @2. Issue COMMAND[RRB] and check that RX Buffer is empty again!
@@ -166,12 +166,12 @@ package body command_rrb_ftest is
         command.release_rec_buffer := true;
         ctu_give_cmd(command, DUT_NODE, chn);
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_write_pointer = 0, "Write pointer 0");
-        check_m(rx_buf_info.rx_read_pointer = 0, "Read pointer 0");
-        check_false_m(rx_buf_info.rx_full, "Full flag not set");
-        check_m(rx_buf_info.rx_empty, "Empty flag set");
-        check_m(rx_buf_info.rx_frame_count = 0, "Frame count 0");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_write_pointer = 0, "Write pointer 0");
+        check_m(rx_buf_state.rx_read_pointer = 0, "Read pointer 0");
+        check_false_m(rx_buf_state.rx_full, "Full flag not set");
+        check_m(rx_buf_state.rx_empty, "Empty flag set");
+        check_m(rx_buf_state.rx_frame_count = 0, "Frame count 0");
         
         -----------------------------------------------------------------------
         -- @3. Send CAN frame by Test node, wait until frame is sent and check that
@@ -185,12 +185,12 @@ package body command_rrb_ftest is
 
         ctu_wait_frame_sent(DUT_NODE, chn);
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_write_pointer /= 0, "Write pointer not 0");
-        check_m(rx_buf_info.rx_read_pointer = 0, "Read pointer still 0");
-        check_false_m(rx_buf_info.rx_full, "Full flag not set");
-        check_false_m(rx_buf_info.rx_empty, "Empty flag not set");
-        check_m(rx_buf_info.rx_frame_count = 1, "Frame count 1");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_write_pointer /= 0, "Write pointer not 0");
+        check_m(rx_buf_state.rx_read_pointer = 0, "Read pointer still 0");
+        check_false_m(rx_buf_state.rx_full, "Full flag not set");
+        check_false_m(rx_buf_state.rx_empty, "Empty flag not set");
+        check_m(rx_buf_state.rx_frame_count = 1, "Frame count 1");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
@@ -221,21 +221,21 @@ package body command_rrb_ftest is
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
         
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         
         -- Now there could be either one or no frame, if there is one, first
         -- read it out and check it is correct!
-        if (rx_buf_info.rx_frame_count > 0) then
-            check_m(rx_buf_info.rx_frame_count = 1, "RX frame count 1!");
+        if (rx_buf_state.rx_frame_count > 0) then
+            check_m(rx_buf_state.rx_frame_count = 1, "RX frame count 1!");
             ctu_read_frame(frame_rx, DUT_NODE, chn);
             compare_can_frames(frame_rx, frame_1, false, frames_equal);
         end if;
         
         -- Now there shouldbe no frame
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         
-        check_m(rx_buf_info.rx_empty, "Empty flag set");
-        check_m(rx_buf_info.rx_frame_count = 0, "Frame count 0");
+        check_m(rx_buf_state.rx_empty, "Empty flag set");
+        check_m(rx_buf_state.rx_frame_count = 0, "Frame count 0");
         
         -----------------------------------------------------------------------
         -- @5. Send frame by Test node again. Wait until frame is sent and check it
@@ -251,11 +251,11 @@ package body command_rrb_ftest is
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
         
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_write_pointer /= 0, "Write pointer not 0");
-        check_false_m(rx_buf_info.rx_full, "Full flag not set");
-        check_false_m(rx_buf_info.rx_empty, "Empty flag not set");
-        check_m(rx_buf_info.rx_frame_count = 1, "Frame count 1");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_write_pointer /= 0, "Write pointer not 0");
+        check_false_m(rx_buf_state.rx_full, "Full flag not set");
+        check_false_m(rx_buf_state.rx_empty, "Empty flag not set");
+        check_m(rx_buf_state.rx_frame_count = 1, "Frame count 1");
         
         ctu_read_frame(frame_rx, DUT_NODE, chn);
         compare_can_frames(frame_rx, frame_1, false, frames_equal);

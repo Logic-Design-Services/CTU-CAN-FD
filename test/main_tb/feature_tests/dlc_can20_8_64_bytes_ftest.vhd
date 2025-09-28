@@ -112,7 +112,7 @@ package body dlc_can20_8_64_bytes_ftest is
         variable CAN_frame          :        t_ctu_frame;
         variable CAN_frame_2        :        t_ctu_frame  := SW_CAN_Frame_type_rst_val;
         variable frame_sent         :        boolean;
-        variable pc_dbg             :        t_ctu_frame_field;
+        variable ff             :        t_ctu_frame_field;
     begin
 
         ------------------------------------------------------------------------
@@ -139,19 +139,19 @@ package body dlc_can20_8_64_bytes_ftest is
         info_m("Step 2: Send frame");
 
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
 
         for i in 0 to 63 loop
             ctu_wait_sample_point(DUT_NODE, chn);
             wait for 11 ns; -- for DFF to flip
 
-            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
 
             if (i = 63) then
-                check_false_m(pc_dbg = pc_deb_data,
+                check_false_m(ff = ff_data,
                     "After 64 bytes data field ended!");
             else
-                check_m(pc_dbg = pc_deb_data,
+                check_m(ff = ff_data,
                         "Before 64 bytes data field goes on!");
             end if;
         end loop;

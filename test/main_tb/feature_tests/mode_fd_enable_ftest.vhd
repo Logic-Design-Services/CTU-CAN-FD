@@ -159,7 +159,7 @@ package body mode_fd_enable_ftest is
         ctu_set_retr_limit(true, 0, DUT_NODE, chn);
         
         ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @3. Wait till DUT is not in Control field. Check that it is 
@@ -169,7 +169,7 @@ package body mode_fd_enable_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Check error frame is transmitted, Form error occurs!");
         
-        ctu_wait_not_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_control, DUT_NODE, chn);
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission,
             "Error frame transmitted as response to CAN FD frame!");

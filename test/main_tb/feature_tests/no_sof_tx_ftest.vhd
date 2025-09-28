@@ -123,7 +123,7 @@ package body no_sof_tx_ftest is
         variable stat_1             :     t_ctu_status;
         
         variable txt_buf_state      :     t_ctu_txt_buff_state;
-        variable rx_buf_info        :     t_ctu_rx_buff_info;
+        variable rx_buf_state        :     t_ctu_rx_buf_state;
         variable frames_equal       :     boolean := false;
                  
         variable pc_state           :     t_ctu_frame_field;
@@ -173,8 +173,8 @@ package body no_sof_tx_ftest is
             ctu_get_status(stat_1, DUT_NODE, chn);
         end loop;
 
-        ctu_get_curr_frame_field(pc_state, DUT_NODE, chn);
-        check_m(pc_state = pc_deb_arbitration, "DUT did not transmitt SOF!");
+        ctu_get_curr_ff(pc_state, DUT_NODE, chn);
+        check_m(pc_state = ff_arbitration, "DUT did not transmitt SOF!");
         wait for 20 ns;
 
         ------------------------------------------------------------------------
@@ -200,8 +200,8 @@ package body no_sof_tx_ftest is
         ctu_get_txt_buf_state(1, txt_buf_state, DUT_NODE, chn);
         check_m(txt_buf_state = buf_done, "Frame transmitted OK!");
         
-        ctu_get_rx_buf_state(rx_buf_info, TEST_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Frame received OK!");
+        ctu_get_rx_buf_state(rx_buf_state, TEST_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Frame received OK!");
 
         ctu_read_frame(frame_rx, TEST_NODE, chn);
         compare_can_frames(frame_rx, frame_1, false, frames_equal);

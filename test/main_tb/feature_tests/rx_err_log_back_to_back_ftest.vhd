@@ -117,11 +117,11 @@ package body rx_err_log_back_to_back_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
-        variable pc_dbg             : t_ctu_frame_field;
+        variable ff             : t_ctu_frame_field;
         variable frame_sent         : boolean;
         variable tx_val             : std_logic;
         variable status             : t_ctu_status;
-        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
         variable CAN_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
         variable err_frame_2        : t_ctu_frame;
@@ -181,7 +181,7 @@ package body rx_err_log_back_to_back_ftest is
         CAN_frame.brs := BR_SHIFT;
         ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_ff(ff_crc, DUT_NODE, chn);
 
         flip_bus_level(chn);
 
@@ -213,10 +213,10 @@ package body rx_err_log_back_to_back_ftest is
             -- state. This works since readout of RX status is shorter than storing of new
             -- frame!
 
-            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-            check_m(rx_buf_info.rx_frame_count = i,
+            ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+            check_m(rx_buf_state.rx_frame_count = i,
                     "Exptected frames in RX Buffer: " & integer'image(i) &
-                    " Real frames in RX Buffer: " & integer'image(rx_buf_info.rx_frame_count));
+                    " Real frames in RX Buffer: " & integer'image(rx_buf_state.rx_frame_count));
         end loop;
 
         release_bus_level(chn);

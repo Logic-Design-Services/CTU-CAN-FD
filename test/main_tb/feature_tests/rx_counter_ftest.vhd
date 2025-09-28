@@ -140,7 +140,7 @@ package body rx_counter_ftest is
         variable status             :       t_ctu_status;
         variable command            :       t_ctu_command := t_ctu_command_rst_val;
 
-        variable rx_buf_info        :       t_ctu_rx_buff_info;
+        variable rx_buf_state        :       t_ctu_rx_buf_state;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable deposit_vect       :       std_logic_vector(31 downto 0);
     begin
@@ -163,7 +163,7 @@ package body rx_counter_ftest is
         generate_can_frame(CAN_frame);
         ctu_send_frame(CAN_frame, 2, TEST_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_ff(ff_eof, DUT_NODE, chn);
         ctu_get_traff_ctrs(ctrs_2, DUT_NODE, chn);
 
         check_m(ctrs_1.tx_frames = ctrs_2.tx_frames,
@@ -177,7 +177,7 @@ package body rx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Check TX, RX counters after frame.");
 
-        ctu_wait_not_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_eof, DUT_NODE, chn);
         ctu_get_traff_ctrs(ctrs_3, DUT_NODE, chn);
 
         check_m(ctrs_1.tx_frames = ctrs_3.tx_frames,
@@ -198,10 +198,10 @@ package body rx_counter_ftest is
         CAN_frame.frame_format := NORMAL_CAN;
         ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
 
-        ctu_wait_frame_field(pc_deb_ack, TEST_NODE, chn);
+        ctu_wait_ff(ff_ack, TEST_NODE, chn);
         force_bus_level(RECESSIVE, chn);
 
-        ctu_wait_not_frame_field(pc_deb_ack, TEST_NODE, chn);
+        ctu_wait_not_ff(ff_ack, TEST_NODE, chn);
         ctu_get_status(status, TEST_NODE, chn);
 
         check_m(status.error_transmission, "Error frame is being transmitted!");
@@ -275,9 +275,9 @@ package body rx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 10: Read all frames from RX Buffer!");
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        if (rx_buf_info.rx_frame_count > 0) then
-            for i in 0 to rx_buf_info.rx_frame_count - 1 loop
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        if (rx_buf_state.rx_frame_count > 0) then
+            for i in 0 to rx_buf_state.rx_frame_count - 1 loop
                 ctu_read_frame(RX_CAN_frame, DUT_NODE, chn);
             end loop;
         end if;

@@ -124,8 +124,8 @@ package body int_txbhci_ftest is
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
-        variable pc_dbg             :     t_ctu_frame_field;
-        variable rxb_state          :     t_ctu_rx_buff_info;
+        variable ff             :     t_ctu_frame_field;
+        variable rxb_state          :     t_ctu_rx_buf_state;
         variable num_txt_bufs       :     natural;
     begin
 

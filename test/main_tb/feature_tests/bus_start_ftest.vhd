@@ -183,13 +183,13 @@ package body bus_start_ftest is
         info_m("Step 3: Enable node 2");
 
         ctu_turn(true, TEST_NODE, chn);
-        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         force_bus_level(DOMINANT, chn);
-        ctu_wait_not_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_ack, DUT_NODE, chn);
         release_bus_level(chn);
 
-        ctu_get_curr_frame_field(read_state, DUT_NODE, chn);
-        check_m(read_state = pc_deb_ack_delim, "Test node is in ACK delimiter!");
+        ctu_get_curr_ff(read_state, DUT_NODE, chn);
+        check_m(read_state = ff_ack_delim, "Test node is in ACK delimiter!");
 
         ------------------------------------------------------------------------
         -- @4. Wait for 11 sample points in Test node. Check that Test node became

@@ -126,7 +126,7 @@ package body alc_rtr_r0_ftest is
         variable stat_1             :     t_ctu_status;
         variable stat_2             :     t_ctu_status;
         
-        variable rx_buf_info        :     t_ctu_rx_buff_info;
+        variable rx_buf_state        :     t_ctu_rx_buf_state;
         variable frames_equal       :     boolean := false;        
 
     begin
@@ -179,7 +179,7 @@ package body alc_rtr_r0_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4: Check arbitration lost on SRR/RTR");
         
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
         for i in 0 to 31 loop
             ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
@@ -198,8 +198,8 @@ package body alc_rtr_r0_ftest is
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
 
-        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Frame received OK!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Frame received OK!");
 
         ctu_read_frame(frame_rx, DUT_NODE, chn);
         compare_can_frames(frame_rx, frame_2, false, frames_equal);

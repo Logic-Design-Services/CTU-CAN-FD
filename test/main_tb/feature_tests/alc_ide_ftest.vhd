@@ -126,10 +126,10 @@ package body alc_ide_ftest is
         variable stat_1             :     t_ctu_status;
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
 
         variable txt_buf_state      :     t_ctu_txt_buff_state;
-        variable rx_buf_info        :     t_ctu_rx_buff_info;
+        variable rx_buf_state        :     t_ctu_rx_buf_state;
         variable frames_equal       :     boolean := false;
 
         variable num_txt_bufs       :     natural;
@@ -194,7 +194,7 @@ package body alc_ide_ftest is
             --      Read ALC from DUT and check it.
             -----------------------------------------------------------------------
             info_m("Step 4: Check arbitration lost on SRR/RTR");
-            ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+            ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
 
             -- This is to get TXT Buffer into abort in progress to get full
             -- expression coverage on all sub-expressions in TXT Buffer FSM.

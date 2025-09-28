@@ -126,7 +126,7 @@ package body rx_buf_consistency_ftest is
         variable CAN_RX_frame_1     :       t_ctu_frame;
         variable CAN_RX_frame_2     :       t_ctu_frame;
 
-        variable rx_buf_info        :       t_ctu_rx_buff_info;
+        variable rx_buf_state        :       t_ctu_rx_buf_state;
 
         variable frames_match       :       boolean;
         variable frame_sent         :       boolean;
@@ -206,8 +206,8 @@ package body rx_buf_consistency_ftest is
             info_m("Step 2.2");
 
             ctu_wait_frame_sent(DUT_NODE, chn);
-            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-            check_m(rx_buf_info.rx_frame_count = 1, "RX Buffer frame count is 1");
+            ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+            check_m(rx_buf_state.rx_frame_count = 1, "RX Buffer frame count is 1");
 
             --------------------------------------------------------------------
             -- @2.3 Wait until start of End of Frame field in DUT Node. Then
@@ -215,7 +215,7 @@ package body rx_buf_consistency_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.3");
 
-            ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+            ctu_wait_ff(ff_eof, DUT_NODE, chn);
 
             for i in 1 to wait_multiple loop
                 info_m("Waiting for " & integer'image(i) & " clock cycles");
@@ -245,8 +245,8 @@ package body rx_buf_consistency_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.6");
 
-            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-            check_m(rx_buf_info.rx_frame_count = 1, "RX Buffer frame count is 1");
+            ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+            check_m(rx_buf_state.rx_frame_count = 1, "RX Buffer frame count is 1");
 
             --------------------------------------------------------------------
             -- @2.7 Read second frame from DUT. Check RX Frame count in DUT is 0.
@@ -256,8 +256,8 @@ package body rx_buf_consistency_ftest is
 
             ctu_read_frame(CAN_RX_frame_2, DUT_NODE, chn);
 
-            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-            check_m(rx_buf_info.rx_frame_count = 0, "RX Buffer frame count is 0");
+            ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+            check_m(rx_buf_state.rx_frame_count = 0, "RX Buffer frame count is 0");
 
             compare_can_frames(CAN_RX_frame_1, CAN_TX_frame_1, false, frames_match);
             check_m(frames_match, "Frame 1 match");

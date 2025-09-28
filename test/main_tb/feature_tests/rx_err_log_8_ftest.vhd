@@ -122,7 +122,7 @@ package body rx_err_log_8_ftest is
         variable frames_match       : boolean;
         variable frame_sent         : boolean;
 
-        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
 
         variable err_counters       : t_ctu_err_ctrs;
 
@@ -180,8 +180,8 @@ package body rx_err_log_8_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.3");
 
-            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-            check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+            ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+            check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
             ctu_read_frame(err_frame, DUT_NODE, chn);
             check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");

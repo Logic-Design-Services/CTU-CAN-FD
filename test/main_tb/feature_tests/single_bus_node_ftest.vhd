@@ -124,10 +124,10 @@ package body single_bus_node_ftest is
         -- Node status
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;
+        variable ff             :     t_ctu_frame_field;
         
         variable txt_buf_state      :     t_ctu_txt_buff_state;
-        variable rx_buf_info        :     t_ctu_rx_buff_info;
+        variable rx_buf_state        :     t_ctu_rx_buf_state;
         variable frames_equal       :     boolean := false;
         
         variable err_counters       :     t_ctu_err_ctrs;

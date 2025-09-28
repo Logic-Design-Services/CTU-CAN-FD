@@ -119,7 +119,7 @@ package body frame_test_ignore_ftest is
     begin
         -- Record DLC
         output_dlc := (others => '0');
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
         
         -- Fixed frame format assumed since Frame is with Base identifier and CAN FD.
         -- IDE, EDL, r0, BRS, ESI
@@ -134,7 +134,7 @@ package body frame_test_ignore_ftest is
 
         -- Record stuff count
         output_stc := (others => '0');
-        ctu_wait_frame_field(pc_deb_stuff_count, DUT_NODE, chn);
+        ctu_wait_ff(ff_stuff_count, DUT_NODE, chn);
         
         for i in 0 to 3 loop
             ctu_wait_sample_point(DUT_NODE, chn);
@@ -143,7 +143,7 @@ package body frame_test_ignore_ftest is
 
         -- Record CRC
         output_crc := (others => '0');
-        ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_ff(ff_crc, DUT_NODE, chn);
         
         for i in 0 to crc_length - 1 loop
             ctu_wait_sample_point(DUT_NODE, chn);

@@ -232,7 +232,7 @@ package body err_capt_ctrl_bit_ftest is
             end case;
             
             ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-            ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+            ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
             
             info_m("Waiting for: " & integer'image(wait_time) & " bits!");
             for j in 1 to wait_time loop

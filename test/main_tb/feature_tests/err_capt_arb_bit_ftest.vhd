@@ -113,7 +113,7 @@ package body err_capt_arb_bit_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_frame_field;    
+        variable ff             :     t_ctu_frame_field;    
 
         variable id_vect            :     std_logic_vector(28 downto 0);
         variable wait_time          :     natural;
@@ -146,7 +146,7 @@ package body err_capt_arb_bit_ftest is
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
         
-        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
         
         -- Wait time is adjusted so that we are sure that we will still be in
         -- arbitration field (of base or extended). After 26 bits, if there are

@@ -226,8 +226,8 @@ package body err_norm_fd_ftest is
         ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
-        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
-        ctu_wait_not_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_control, DUT_NODE, chn);
 
         -- Now we should be in Data bit rate! This is either CRC or data field!
         rand_int_v(15, wait_time);

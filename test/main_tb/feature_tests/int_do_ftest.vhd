@@ -138,7 +138,7 @@ package body int_do_ftest is
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable command            :     t_ctu_command := t_ctu_command_rst_val;
-        variable buf_info           :     t_ctu_rx_buff_info;
+        variable buf_info           :     t_ctu_rx_buf_state;
         variable status             :     t_ctu_status;
     begin
 

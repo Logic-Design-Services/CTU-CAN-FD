@@ -285,7 +285,7 @@ package body mode_txbbm_4_ftest is
                 end if;
 
                 -- Wait until next "arbitration". This should be during next frame
-                ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+                ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
                 ctu_get_txt_buf_state(txt_buf_index + 1, txt_buf_state, DUT_NODE, chn);
                 check_m(txt_buf_state = buf_tx_progress, "'Backup' TXT Buffer is in 'TX in Progress'");
 

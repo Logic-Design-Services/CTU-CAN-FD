@@ -128,7 +128,7 @@ package body rx_buf_consistency_2_ftest is
         variable CAN_RX_frame_1     :       t_ctu_frame;
         variable CAN_RX_frame_2     :       t_ctu_frame;
 
-        variable rx_buf_info        :       t_ctu_rx_buff_info;
+        variable rx_buf_state        :       t_ctu_rx_buf_state;
 
         variable frames_match       :       boolean;
         variable frame_sent         :       boolean;
@@ -235,8 +235,8 @@ package body rx_buf_consistency_2_ftest is
 
             ctu_wait_frame_sent(DUT_NODE, chn);
 
-            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-            check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size - 4,
+            ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+            check_m(rx_buf_state.rx_mem_free = rx_buf_state.rx_buff_size - 4,
                      "RX MEM Free = RX Buffer Size - 4");
 
             --------------------------------------------------------------------
@@ -245,7 +245,7 @@ package body rx_buf_consistency_2_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.3");
 
-            ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
+            ctu_wait_ff(ff_crc, DUT_NODE, chn);
             for i in 1 to 10 loop
                 ctu_wait_sample_point(DUT_NODE, chn);
             end loop;
@@ -283,8 +283,8 @@ package body rx_buf_consistency_2_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.6");
 
-            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-            check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size,
+            ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+            check_m(rx_buf_state.rx_mem_free = rx_buf_state.rx_buff_size,
                      "RX MEM Free = RX Buffer Size");
 
         end loop;
