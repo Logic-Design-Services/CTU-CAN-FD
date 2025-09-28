@@ -130,13 +130,13 @@ package body txt_buffer_transitions_ftest is
 
         mode.tx_buf_bus_off_failed := true;
         mode.test := true; -- Test mode must be enabled toallow manipulation of Error counters!
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         --  @2. Loop for all TXT Buffers:
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
         for txt_buf_index in 1 to num_txt_bufs loop
 
             ---------------------------------------------------------------------------------------
@@ -148,18 +148,18 @@ package body txt_buffer_transitions_ftest is
             -- Preset the Error counter to just before bus-off
             err_counters.tx_counter := 254;
             err_counters.rx_counter := 0;
-            set_error_counters(err_counters, DUT_NODE, chn);
+            ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
             wait for 20 ns;
 
             -- Send frame
             generate_can_frame(CAN_frame);
-            CAN_send_frame(CAN_frame, txt_buf_index, DUT_NODE, chn, frame_sent);
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+            ctu_send_frame(CAN_frame, txt_buf_index, DUT_NODE, chn, frame_sent);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
             -- Send abort
-            send_TXT_buf_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
             wait for 30 ns;
-            get_tx_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_ab_progress,
                     "TXT Buffer " & integer'image(txt_buf_index) & " abort in progress");
 
@@ -182,11 +182,11 @@ package body txt_buffer_transitions_ftest is
             release_bus_level(chn);
 
             -- Check we are surely in Bus off
-            get_fault_state(fault_state, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state, DUT_NODE, chn);
             check_m(fault_state = fc_bus_off, "DUT is bus-off");
 
             -- Check TXT Buffer is in TX Failed.
-            get_tx_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_failed,
                     "TXT Buffer " & integer'image(txt_buf_index) & " TX failed");
 
@@ -196,26 +196,26 @@ package body txt_buffer_transitions_ftest is
             info_m("Step 3");
 
             command.err_ctrs_rst := true;
-            give_controller_command(command, DUT_NODE, chn);
+            ctu_give_cmd(command, DUT_NODE, chn);
 
             -- Wait until reintegration is over. Add some margin since DUT just started sending
             -- Error frame!
             for i in 1 to 135 loop
                 for j in 1 to 11 loop
-                    CAN_wait_sample_point(DUT_NODE, chn, false);
+                    ctu_wait_sample_point(DUT_NODE, chn, false);
                 end loop;
             end loop;
             info_m("Reintegration done...");
 
             -- Move TXT Buffer back to Empty
-            send_TXT_buf_cmd(buf_set_empty, txt_buf_index, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_empty, txt_buf_index, DUT_NODE, chn);
             wait for 30 ns;
-            get_tx_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_empty,
                     "TXT Buffer " & integer'image(txt_buf_index) & " empty");
 
             -- Check we are back to error active
-            get_fault_state(fault_state, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state, DUT_NODE, chn);
             check_m(fault_state = fc_error_active, "DUT is Error active again");
 
         end loop;

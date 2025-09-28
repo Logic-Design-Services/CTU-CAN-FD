@@ -131,22 +131,22 @@ package body btr_ssp_access_ftest is
         ----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_read(btr, BTR_ADR, DUT_NODE, chn);
-        CAN_read(btr_fd, BTR_FD_ADR, DUT_NODE, chn);
-        CAN_read(ssp_cfg, SSP_CFG_ADR, DUT_NODE, chn);
+        ctu_read(btr, BTR_ADR, DUT_NODE, chn);
+        ctu_read(btr_fd, BTR_FD_ADR, DUT_NODE, chn);
+        ctu_read(ssp_cfg, SSP_CFG_ADR, DUT_NODE, chn);
 
         rand_logic_vect_v(rand_value, 0.5);
         rand_logic_vect_v(rand_value_16, 0.5);
 
-        CAN_write(rand_value, BTR_ADR, DUT_NODE, chn);
+        ctu_write(rand_value, BTR_ADR, DUT_NODE, chn);
         rand_logic_vect_v(rand_value, 0.5);
-        CAN_write(rand_value, BTR_FD_ADR, DUT_NODE, chn);
+        ctu_write(rand_value, BTR_FD_ADR, DUT_NODE, chn);
         rand_logic_vect_v(rand_value, 0.5);
-        CAN_write(rand_value_16, SSP_CFG_ADR, DUT_NODE, chn);
+        ctu_write(rand_value_16, SSP_CFG_ADR, DUT_NODE, chn);
 
-        CAN_read(btr_2, BTR_ADR, DUT_NODE, chn);
-        CAN_read(btr_fd_2, BTR_FD_ADR, DUT_NODE, chn);
-        CAN_read(ssp_cfg_2, SSP_CFG_ADR, DUT_NODE, chn);
+        ctu_read(btr_2, BTR_ADR, DUT_NODE, chn);
+        ctu_read(btr_fd_2, BTR_FD_ADR, DUT_NODE, chn);
+        ctu_read(ssp_cfg_2, SSP_CFG_ADR, DUT_NODE, chn);
 
         check_m(btr = btr_2, "BTR register not written!");
         check_m(btr_fd = btr_fd_2, "BTR FD register not written!");
@@ -158,31 +158,31 @@ package body btr_ssp_access_ftest is
         ----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
         rand_logic_vect_v(rand_value, 0.5);
         rand_logic_vect_v(rand_value_16, 0.5);
 
-        CAN_write(rand_value, BTR_ADR, DUT_NODE, chn);
+        ctu_write(rand_value, BTR_ADR, DUT_NODE, chn);
 
-        CAN_read(btr, BTR_ADR, DUT_NODE, chn);
+        ctu_read(btr, BTR_ADR, DUT_NODE, chn);
         check_m(btr = rand_value, "BTR register written!");
 
         rand_logic_vect_v(rand_value, 0.5);
         rand_value(18) := '0';
         rand_value(12) := '0';
         rand_value(6) := '0'; -- These bits are not implemented!
-        CAN_write(rand_value, BTR_FD_ADR, DUT_NODE, chn);
+        ctu_write(rand_value, BTR_FD_ADR, DUT_NODE, chn);
 
-        CAN_read(btr, BTR_FD_ADR, DUT_NODE, chn);
+        ctu_read(btr, BTR_FD_ADR, DUT_NODE, chn);
         check_m(btr = rand_value, "BTR FD register written!");
 
         rand_logic_vect_v(rand_value, 0.5);
         rand_value_16(15 downto 10) := (OTHERS => '0');
-        CAN_write(rand_value_16, SSP_CFG_ADR, DUT_NODE, chn);
+        ctu_write(rand_value_16, SSP_CFG_ADR, DUT_NODE, chn);
 
-        CAN_read(ssp_cfg, SSP_CFG_ADR, DUT_NODE, chn);
+        ctu_read(ssp_cfg, SSP_CFG_ADR, DUT_NODE, chn);
 
         check_m(ssp_cfg = rand_value_16, "SSP CFG register written!");
 

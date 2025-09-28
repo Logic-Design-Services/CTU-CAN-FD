@@ -126,7 +126,7 @@ package body status_rxpe_ftest is
         variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
         variable rx_buf_status      :     t_ctu_rx_buff_info;
 
-        variable pc_dbg             :     t_ctu_pc_dbg;
+        variable pc_dbg             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
 
         variable rptr_pos           :     integer := 0;
@@ -145,8 +145,8 @@ package body status_rxpe_ftest is
         -- @1. Set DUT to test mode.
         -----------------------------------------------------------------------
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
-        get_rx_buf_state(rx_buf_status, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_status, DUT_NODE, chn);
 
         for i in 1 to 10 loop
             info_m("Loop nr.: " & integer'image(i));
@@ -162,7 +162,7 @@ package body status_rxpe_ftest is
             else
                 mode_1.parity_check := false;
             end if;
-            set_core_mode(mode_1, DUT_NODE, chn);
+            ctu_set_mode(mode_1, DUT_NODE, chn);
 
             -------------------------------------------------------------------
             -- @2.2. Generate random CAN Frame, and send it by Test node. Wait
@@ -171,8 +171,8 @@ package body status_rxpe_ftest is
             info_m("Step 2.2");
 
             generate_can_frame(frame_1);
-            CAN_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
             -- Disable due to many transfers when reading whole RX Buffer RAM!
             mem_bus_agent_disable_transaction_reporting(chn);
@@ -186,14 +186,14 @@ package body status_rxpe_ftest is
 
             -- Read FRAME_FORMAT_W and Decode number of remaining words in
             -- the frame
-            set_test_mem_access(true, DUT_NODE, chn);
-            test_mem_read(r_data, rptr_pos, TST_TGT_RX_BUF, DUT_NODE, chn);
+            ctu_set_tst_mem_access(true, DUT_NODE, chn);
+            ctu_read_tst_mem(r_data, rptr_pos, TST_TGT_RX_BUF, DUT_NODE, chn);
             rx_frame_buffer(0) := r_data;
-            decode_dlc_rx_buff(r_data(DLC_H downto DLC_L), rwcnt);
+            dlc_to_rwcnt(r_data(DLC_H downto DLC_L), rwcnt);
 
             -- Read rest of the frame
             for j in 1 to rwcnt loop
-                test_mem_read(r_data, rptr_pos + j, TST_TGT_RX_BUF, DUT_NODE, chn);
+                ctu_read_tst_mem(r_data, rptr_pos + j, TST_TGT_RX_BUF, DUT_NODE, chn);
                 rx_frame_buffer(j) := r_data;
             end loop;
 
@@ -211,18 +211,18 @@ package body status_rxpe_ftest is
 
             -- Write frame back
             for j in 0 to rwcnt loop
-                test_mem_write(rx_frame_buffer(j), rptr_pos + j, TST_TGT_RX_BUF, DUT_NODE, chn);
+                ctu_write_tst_mem(rx_frame_buffer(j), rptr_pos + j, TST_TGT_RX_BUF, DUT_NODE, chn);
             end loop;
 
             -- We must read once again from FRAME_FORMAT_W position to get RX Buffer RAM
             -- register output at FRAME_FORMAT_W position.
-            test_mem_read(r_data, rptr_pos, TST_TGT_RX_BUF, DUT_NODE, chn);
+            ctu_read_tst_mem(r_data, rptr_pos, TST_TGT_RX_BUF, DUT_NODE, chn);
 
             rptr_pos := (rptr_pos + rwcnt + 1) mod rx_buf_status.rx_buff_size;
 
             -- We must disable test memory access, since it has priority over regular
             -- access!
-            set_test_mem_access(false, DUT_NODE, chn);
+            ctu_set_tst_mem_access(false, DUT_NODE, chn);
 
             -------------------------------------------------------------------
             -- @2.4 Read CAN frame via RX_DATA register.
@@ -235,10 +235,10 @@ package body status_rxpe_ftest is
             -- than the frame contains, we would read from un-initialized
             -- memory, and get parity error set!
             for j in 0 to rwcnt loop
-                CAN_read(r_data, RX_DATA_ADR, DUT_NODE, chn);
+                ctu_read(r_data, RX_DATA_ADR, DUT_NODE, chn);
             end loop;
 
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
 
             if (corrupt_insert = '1') then
                 if (mode_1.parity_check) then
@@ -265,8 +265,8 @@ package body status_rxpe_ftest is
             info_m("Step 2.5");
 
             command_1.clear_rxpe := true;
-            give_controller_command(command_1, DUT_NODE, chn);
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_give_cmd(command_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_false_m(stat_1.rx_parity_error, "DUT: STATUS[RXPE] not cleared!");
 
             -- Datasheet, section 2.13.1
@@ -292,7 +292,7 @@ package body status_rxpe_ftest is
             -- if the error occured during FRAME_FORMAT_W.
             command_1.clear_rxpe := false;
             command_1.release_rec_buffer := true;
-            give_controller_command(command_1, DUT_NODE, chn);
+            ctu_give_cmd(command_1, DUT_NODE, chn);
             rptr_pos := 0;
 
         end loop;

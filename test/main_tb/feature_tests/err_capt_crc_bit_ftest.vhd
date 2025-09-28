@@ -127,7 +127,7 @@ package body err_capt_crc_bit_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
 
         -----------------------------------------------------------------------
@@ -145,13 +145,13 @@ package body err_capt_crc_bit_ftest is
         -- Don't sample by SSP!
         frame_1.brs := BR_NO_SHIFT;
 
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         if (frame_1.frame_format = FD_CAN) then
-            CAN_wait_pc_state(pc_deb_stuff_count, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_stuff_count, DUT_NODE, chn);
         else
-            CAN_wait_pc_state(pc_deb_crc, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
         end if;
 
         -- Wait for random number of bits
@@ -169,22 +169,22 @@ package body err_capt_crc_bit_ftest is
         rand_int_v(crc_len - 1, tmp);
         info_m("Waiting for: " & integer'image(tmp) & " bits!");
         for i in 1 to tmp loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
-        CAN_wait_sync_seg(DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
         wait for 20 ns;
 
         get_can_tx(DUT_NODE, can_tx_val, chn);
         force_bus_level(not can_tx_val, chn);
-        CAN_wait_sample_point(DUT_NODE, chn, skip_stuff_bits => false);
+        ctu_wait_sample_point(DUT_NODE, chn, skip_stuff_bits => false);
         wait for 20 ns; -- To be sure that opposite bit is sampled!
         release_bus_level(chn);
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.error_transmission, "Error frame is being transmitted!");
 
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- It might happend that we corrupt a bit which is just stuff bit (due
@@ -203,7 +203,7 @@ package body err_capt_crc_bit_ftest is
 
         check_m(err_capt.err_pos = err_pos_crc, "Error detected in CRC field!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
   end procedure;
 

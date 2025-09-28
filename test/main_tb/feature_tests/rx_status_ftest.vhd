@@ -130,10 +130,10 @@ package body rx_status_ftest is
         info_m("Step 1");
 
         command.release_rec_buffer := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         command.release_rec_buffer := false;
 
-        get_rx_buf_state(buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Free memory, buffer status and message count is checked.
@@ -182,8 +182,8 @@ package body rx_status_ftest is
                 CAN_frame.brs := BR_SHIFT;
                 CAN_frame.data_length := 64;
                 -- We dont care about the data content, they are zeroes!
-                decode_length(CAN_frame.data_length, CAN_frame.dlc);
-                decode_dlc_rx_buff(CAN_frame.dlc, CAN_frame.rwcnt);
+                length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
+                dlc_to_rwcnt(CAN_frame.dlc, CAN_frame.rwcnt);
             end if;
 
             -- Evaluate if next frame should be sent
@@ -209,11 +209,11 @@ package body rx_status_ftest is
                 end if;
             end if;
 
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
             number_frms_sent := number_frms_sent + 1;
             in_RX_buf := in_RX_buf + CAN_frame.rwcnt + 1;
@@ -223,7 +223,7 @@ package body rx_status_ftest is
             --     towards expected value.
             --------------------------------------------------------------------
             info_m("Step 4");
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
             check_m((number_frms_sent = buf_info.rx_frame_count) or (not send_more),
                     "Number of frames in RX Buffer not incremented");
 
@@ -238,7 +238,7 @@ package body rx_status_ftest is
         ------------------------------------------------------------------------
         info_m("Step 5");
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.data_overrun, "Data overrun not ocurred as expected!");
 
         ------------------------------------------------------------------------
@@ -247,10 +247,10 @@ package body rx_status_ftest is
         info_m("Step 6");
 
         command.clear_data_overrun := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         command.clear_data_overrun := false;
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_false_m(status.data_overrun, "Data Overrun flag not cleared!");
 
         ------------------------------------------------------------------------
@@ -259,9 +259,9 @@ package body rx_status_ftest is
         info_m("Step 7");
 
         loop
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
             exit when (buf_info.rx_frame_count = 0);
-            CAN_read_frame(CAN_frame, DUT_NODE, chn);
+            ctu_read_frame(CAN_frame, DUT_NODE, chn);
         end loop;
 
     end procedure;

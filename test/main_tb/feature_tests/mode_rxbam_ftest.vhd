@@ -126,12 +126,12 @@ package body mode_rxbam_ftest is
         info_m("Step 1");
 
         mode_1.rx_buffer_automatic := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         generate_can_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
         
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Read the received frame from DUT (by using manual mode), and
@@ -139,8 +139,8 @@ package body mode_rxbam_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_read_frame(CAN_RX_frame, DUT_NODE, chn, automatic_mode => false);
-        CAN_compare_frames(CAN_TX_frame, CAN_RX_frame, false, frames_equal);
+        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn, automatic_mode => false);
+        compare_can_frames(CAN_TX_frame, CAN_RX_frame, false, frames_equal);
         
         check_m(frames_equal, "TX/RX frames match");
 

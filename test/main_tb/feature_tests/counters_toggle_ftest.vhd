@@ -142,16 +142,16 @@ package body counters_toggle_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2: Check ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR");
 
-        CAN_read(r_data, ERR_NORM_ADR, DUT_NODE, chn);
+        ctu_read(r_data, ERR_NORM_ADR, DUT_NODE, chn);
         check_m(r_data(ERR_NORM_VAL_H downto ERR_NORM_VAL_L) = exp_norm_err_ctr,
                 "ERR_NORM is OK");
         check_m(r_data(ERR_FD_VAL_H downto ERR_FD_VAL_L) = exp_data_err_ctr,
                 "ERR_FD is OK");
 
-        CAN_read(r_data, TX_FR_CTR_ADR, DUT_NODE, chn);
+        ctu_read(r_data, TX_FR_CTR_ADR, DUT_NODE, chn);
         check_m(r_data = exp_tx_err_ctr, "TX_FR_CTR is OK");
 
-        CAN_read(r_data, RX_FR_CTR_ADR, DUT_NODE, chn);
+        ctu_read(r_data, RX_FR_CTR_ADR, DUT_NODE, chn);
         check_m(r_data = exp_rx_err_ctr, "RX_FR_CTR is OK");
 
         -----------------------------------------------------------------------

@@ -135,17 +135,17 @@ package body command_cdo_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_false_m(rx_buf_info.rx_full, "RX full not set!");
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.data_overrun, "DOR flag not set!");
         
         generate_can_frame(frame_1);
         frame_1.rtr := RTR_FRAME;
         frame_1.frame_format := NORMAL_CAN;
-        CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_put_tx_frame(frame_1, 1, TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
         
         info_m("DUT RX Buffer size: " & integer'image(rx_buf_info.rx_buff_size));
         info_m("Sending " & integer'image(rx_buf_info.rx_buff_size / 4) &
@@ -153,12 +153,12 @@ package body command_cdo_ftest is
 
         for i in 0 to (rx_buf_info.rx_buff_size / 4) - 1 loop
             info_m("Sending frame nr: " & integer'image(i));
-            send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
-            CAN_wait_frame_sent(TEST_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
+            ctu_wait_frame_sent(TEST_NODE, chn);
         end loop;
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Read status of RX Buffer in DUT. Check that RX Buffer full is
@@ -166,10 +166,10 @@ package body command_cdo_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_full, "RX full set");
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.data_overrun, "DOR flag not set!");
 
         -----------------------------------------------------------------------
@@ -179,21 +179,21 @@ package body command_cdo_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
-        CAN_wait_frame_sent(TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_wait_frame_sent(TEST_NODE, chn);
         
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
         
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_full, "RX full set");
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.data_overrun, "DOR flag set!");       
 
         command.clear_data_overrun := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.data_overrun, "DOR flag was cleared!");
 
         -----------------------------------------------------------------------
@@ -202,20 +202,20 @@ package body command_cdo_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4");
 
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_wait_frame_sent(DUT_NODE, chn);
         
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.data_overrun, "DOR flag set!");
 
         command.clear_data_overrun := false;
         command.release_rec_buffer := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.data_overrun, "DOR flag cleared by COMMAND[RRB]!");
 
   end procedure;

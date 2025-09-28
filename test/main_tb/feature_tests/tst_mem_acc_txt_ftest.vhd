@@ -144,11 +144,11 @@ package body tst_mem_acc_txt_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
         info_m("Number of TXT buffers: " & integer'image(num_txt_bufs));
 
         -- First we must disable DUT
-        CAN_turn_controller(false, DUT_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Iterate for each: TXT Buffer, MODE[TSTM], TST_CONTROL[TMAEN] and
@@ -167,9 +167,9 @@ package body tst_mem_acc_txt_ftest is
 
                         -- Configure test mode
                         mode.test := mode_tstm_ena;
-                        set_core_mode(mode, DUT_NODE, chn);
+                        ctu_set_mode(mode, DUT_NODE, chn);
 
-                        set_test_mem_access(true, DUT_NODE, chn);
+                        ctu_set_tst_mem_access(true, DUT_NODE, chn);
                         wait for 50 ns;
 
                         -- Fill test data
@@ -199,7 +199,7 @@ package body tst_mem_acc_txt_ftest is
                         -- @2.1 Take content and write it to TXT Buffer RAM.
                         -----------------------------------------------------------
                         for addr in 0 to 20 loop
-                            test_mem_write(w_content(addr), addr, tgt_mtm, DUT_NODE, chn, mode_tma_ena);
+                            ctu_write_tst_mem(w_content(addr), addr, tgt_mtm, DUT_NODE, chn, mode_tma_ena);
                         end loop;
 
                         wait for 100 ns;
@@ -225,7 +225,7 @@ package body tst_mem_acc_txt_ftest is
                             end case;
 
                             for addr in 0 to 19 loop
-                                test_mem_read(r_data, addr, tgt_mtm, DUT_NODE, chn);
+                                ctu_read_tst_mem(r_data, addr, tgt_mtm, DUT_NODE, chn);
 
                                 -- Only check in test mode!
                                 if (buf_ind = used_txt_buf and mode_tstm_ena and mode_tma_ena) then
@@ -263,7 +263,7 @@ package body tst_mem_acc_txt_ftest is
                         end case;
 
                         for addr in 0 to 19 loop
-                            test_mem_write(x"00000000", addr, tgt_mtm, DUT_NODE, chn, mode_tma_ena);
+                            ctu_write_tst_mem(x"00000000", addr, tgt_mtm, DUT_NODE, chn, mode_tma_ena);
                         end loop;
 
                         wait for 100 ns;

@@ -141,13 +141,13 @@ package body tx_arb_consistency_2_ftest is
             generate_can_frame(CAN_frame_tx_1);
             generate_can_frame(CAN_frame_tx_2);
 
-            CAN_insert_TX_frame(CAN_frame_tx_1, 1, DUT_NODE, chn);
-            CAN_insert_TX_frame(CAN_frame_tx_2, 2, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_frame_tx_1, 1, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_frame_tx_2, 2, DUT_NODE, chn);
 
-            CAN_configure_tx_priority(1, 5, DUT_NODE, chn);
-            CAN_configure_tx_priority(2, 3, DUT_NODE, chn);
+            ctu_set_txt_buf_prio(1, 5, DUT_NODE, chn);
+            ctu_set_txt_buf_prio(2, 3, DUT_NODE, chn);
 
-            CAN_read_timing_v(bus_timing, DUT_NODE, chn);
+            ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
 
             -----------------------------------------------------------------------
             -- @2. Wait until sample point and issue Set ready command to TXT
@@ -155,8 +155,8 @@ package body tx_arb_consistency_2_ftest is
             -----------------------------------------------------------------------
             info_m("Step 2");
 
-            CAN_wait_sample_point(DUT_NODE, chn, false);
-            send_TXT_buf_cmd(buf_set_ready, 2, DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn, false);
+            ctu_give_txt_cmd(buf_set_ready, 2, DUT_NODE, chn);
 
             -----------------------------------------------------------------------
             -- @3. Wait number of cycles given by iteration, and issue Set Ready
@@ -170,27 +170,27 @@ package body tx_arb_consistency_2_ftest is
                 end loop;
             end if;
 
-            send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
             -----------------------------------------------------------------------
             -- @4. Wait until frame is sent, and verify that frame from TXT Buffer 1
             --      was succesfully sent (wait times are shorter than bit time!)
             -----------------------------------------------------------------------
-            CAN_wait_frame_sent(TEST_NODE, chn);
+            ctu_wait_frame_sent(TEST_NODE, chn);
 
-            CAN_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
-            CAN_compare_frames(CAN_frame_rx_1, CAN_frame_tx_1, false, frames_equal_1);
+            ctu_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
+            compare_can_frames(CAN_frame_rx_1, CAN_frame_tx_1, false, frames_equal_1);
 
             check_m(frames_equal_1, "First frame was properly received!");
 
-            CAN_wait_frame_sent(TEST_NODE, chn);
-            CAN_read_frame(CAN_frame_rx_2, TEST_NODE, chn);
-            CAN_compare_frames(CAN_frame_rx_2, CAN_frame_tx_2, false, frames_equal_2);
+            ctu_wait_frame_sent(TEST_NODE, chn);
+            ctu_read_frame(CAN_frame_rx_2, TEST_NODE, chn);
+            compare_can_frames(CAN_frame_rx_2, CAN_frame_tx_2, false, frames_equal_2);
 
             check_m(frames_equal_2, "Second frame was properly received!");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
         end loop;
 

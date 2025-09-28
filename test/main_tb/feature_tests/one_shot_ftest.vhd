@@ -141,13 +141,13 @@ package body one_shot_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Configuring One shot Mode (DUT), ACF (Test node)");
         
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
         
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
         
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
         ------------------------------------------------------------------------
         -- @2. Generate frame and start sending the frame by DUT. Wait until
@@ -159,10 +159,10 @@ package body one_shot_ftest is
         CAN_frame.rtr := RTR_FRAME; -- Use RTR frame to save simulation time
         CAN_frame.frame_format := NORMAL_CAN;
         
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_error_frame(DUT_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_err_frame(DUT_NODE, chn);
         
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @3. Check transmission failed and transmitting TXT Buffer is
@@ -170,7 +170,7 @@ package body one_shot_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Checking transmission failed.");
         
-        get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         check_m(buf_state = buf_failed, "TXT Buffer failed!");
         
         ------------------------------------------------------------------------
@@ -181,11 +181,11 @@ package body one_shot_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Testing disabled One shot mode");
         
-        CAN_enable_retr_limit(false, 0, DUT_NODE, chn);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_error_frame(DUT_NODE, chn);
+        ctu_set_retr_limit(false, 0, DUT_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_err_frame(DUT_NODE, chn);
         
-        get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         check_m(buf_state = buf_ready, "TXT Buffer ready!");
         
         ------------------------------------------------------------------------
@@ -193,12 +193,12 @@ package body one_shot_ftest is
         ------------------------------------------------------------------------
         info_m("Step 5: Aborting transmission");
         
-        send_TXT_buf_cmd(buf_set_abort, 1, DUT_NODE, chn);
-        get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_abort, 1, DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         while (buf_state /= buf_aborted) loop
-            get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         end loop;        
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @6. Insert frames for transmission to DUT and Test node simultaneously
@@ -210,27 +210,27 @@ package body one_shot_ftest is
         ------------------------------------------------------------------------
         info_m("Step 6: Testing One shot due to arbitration loss!");
         
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
         
         CAN_frame.ident_type := BASE;
         CAN_frame.identifier := 10;
-        CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
         
         CAN_frame.identifier := 9;
-        CAN_insert_TX_frame(CAN_frame, 1, TEST_NODE, chn);
+        ctu_put_tx_frame(CAN_frame, 1, TEST_NODE, chn);
         
         -- TODO: Use atomic procedure after priority test is merged to be sure!
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
         
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
         
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.receiver, "DUT lost arbitration");
         
-        get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         check_m(buf_state = buf_failed, "TXT Buffer failed");
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
         
   end procedure;
 

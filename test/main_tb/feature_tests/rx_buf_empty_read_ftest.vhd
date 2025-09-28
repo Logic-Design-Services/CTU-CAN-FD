@@ -118,7 +118,7 @@ package body rx_buf_empty_read_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1: Reading RX buffer pointers for first time");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_read_pointer = 0, "Read pointer 0!");
         check_m(rx_buf_info.rx_write_pointer = 0, "Write pointer 0!");
 
@@ -129,16 +129,16 @@ package body rx_buf_empty_read_ftest is
         info_m("Step 2: Try to read frame from empty RX Buffer!");
 
         -- Use purposefully "raw" reads instead of CAN_Read_frame
-        CAN_read(rx_data, RX_DATA_ADR, DUT_NODE, chn);
-        CAN_read(rx_data, RX_DATA_ADR, DUT_NODE, chn);
-        CAN_read(rx_data, RX_DATA_ADR, DUT_NODE, chn);
-        CAN_read(rx_data, RX_DATA_ADR, DUT_NODE, chn);
+        ctu_read(rx_data, RX_DATA_ADR, DUT_NODE, chn);
+        ctu_read(rx_data, RX_DATA_ADR, DUT_NODE, chn);
+        ctu_read(rx_data, RX_DATA_ADR, DUT_NODE, chn);
+        ctu_read(rx_data, RX_DATA_ADR, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @3. Read pointers from RX Buffer, check pointers are still 0.
         ------------------------------------------------------------------------
         info_m("Step 3: Read RX Buffer pointers again!");
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_read_pointer = 0, "Read pointer 0!");
         check_m(rx_buf_info.rx_write_pointer = 0, "Write pointer 0!");
 

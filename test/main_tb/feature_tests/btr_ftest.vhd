@@ -136,10 +136,10 @@ package body btr_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
-        CAN_generate_random_bit_timing(bus_timing, chn);
+        generate_rand_bit_time_cfg(bus_timing, chn);
         
         -----------------------------------------------------------------------
         -- Configure delay of TX -> RX so that for any generated bit-rate, it
@@ -152,21 +152,21 @@ package body btr_ftest is
         tx_delay := (((1 + bus_timing.prop_nbt + bus_timing.ph1_nbt) *
                        bus_timing.tq_nbt) / 3) * 10 ns;
         info_m("TX delay is: " & time'image(tx_delay));
-        ftr_tb_set_tran_delay(tx_delay, DUT_NODE, chn);
-        ftr_tb_set_tran_delay(tx_delay, TEST_NODE, chn);
+        set_transceiver_delay(tx_delay, DUT_NODE, chn);
+        set_transceiver_delay(tx_delay, TEST_NODE, chn);
 
         -- Pre-calculate expected number of clock cycles after all corrections!
         clock_per_bit := (1 + bus_timing.prop_nbt + bus_timing.ph1_nbt +
                           bus_timing.ph2_nbt) * bus_timing.tq_nbt;
 
-        CAN_configure_timing(bus_timing, DUT_NODE, chn);
-        CAN_configure_timing(bus_timing, TEST_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
 
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_turn_controller(true, TEST_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
 
-        CAN_wait_bus_on(DUT_NODE, chn);
-        CAN_wait_bus_on(TEST_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
 
         info_m("CAN bus nominal bit-rate:");
         info_m("PROP: " & integer'image(bus_timing.prop_nbt));
@@ -181,9 +181,9 @@ package body btr_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         t_meas_start := now;
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         t_meas_stop := now;
 
         clk_agent_get_period(chn, clk_sys_period);
@@ -210,16 +210,16 @@ package body btr_ftest is
 
         if (CAN_frame_1.data_length > 4) then
             CAN_frame_1.data_length := 4;
-            decode_length(CAN_frame_1.data_length, CAN_frame_1.dlc);
-            decode_dlc_rx_buff(CAN_frame_1.dlc, CAN_frame_1.rwcnt);
+            length_to_dlc(CAN_frame_1.data_length, CAN_frame_1.dlc);
+            dlc_to_rwcnt(CAN_frame_1.dlc, CAN_frame_1.rwcnt);
         end if;
 
         -- Force frame type to CAN 2.0 since we are measuring nominal bit rate!
-        CAN_send_frame(CAN_frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(TEST_NODE, chn);
-        CAN_read_frame(CAN_frame_2, TEST_NODE, chn);
+        ctu_send_frame(CAN_frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(TEST_NODE, chn);
+        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
 
-        CAN_compare_frames(CAN_frame_1, CAN_frame_2, false, frames_equal);
+        compare_can_frames(CAN_frame_1, CAN_frame_2, false, frames_equal);
         check_m(frames_equal, "TX/RX frame equal!");
 
   end procedure;

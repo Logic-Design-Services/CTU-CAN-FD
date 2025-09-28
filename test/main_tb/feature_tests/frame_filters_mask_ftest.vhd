@@ -160,13 +160,13 @@ package body frame_filters_mask_ftest is
 
         -- Filters Need to be globally enabled, otherwise they are ignored.
         mode_1.acceptance_filter := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         -- Disable Range filter here
         range_cfg.acc_CAN_2_0 := false;
         range_cfg.acc_CAN_2_0 := false;
         range_cfg.ident_type := BASE;
-        CAN_set_range_filter(range_cfg, DUT_NODE, chn);
+        ctu_set_ran_filter(range_cfg, DUT_NODE, chn);
 
         for filter in t_ctu_mask_filt_kind'left to t_ctu_mask_filt_kind'right loop
             for ident_type in BASE to EXTENDED loop
@@ -180,9 +180,9 @@ package body frame_filters_mask_ftest is
                             filt_cfg.ident_type := BASE;
                             filt_cfg.ID_value := 0;
                             filt_cfg.ID_mask := 0;
-                            CAN_set_mask_filter(filter_A, filt_cfg, DUT_NODE, chn);
-                            CAN_set_mask_filter(filter_B, filt_cfg, DUT_NODE, chn);
-                            CAN_set_mask_filter(filter_C, filt_cfg, DUT_NODE, chn);
+                            ctu_set_mask_filter(filter_A, filt_cfg, DUT_NODE, chn);
+                            ctu_set_mask_filter(filter_B, filt_cfg, DUT_NODE, chn);
+                            ctu_set_mask_filter(filter_C, filt_cfg, DUT_NODE, chn);
 
                             -- Only enable the target filter
                             if (ident_type = BASE) then
@@ -200,7 +200,7 @@ package body frame_filters_mask_ftest is
                             filt_cfg.ident_type := ident_type;
                             filt_cfg.acc_CAN_2_0 := can_2_0_en;
                             filt_cfg.acc_CAN_FD := can_fd_en;
-                            CAN_set_mask_filter(filter, filt_cfg, DUT_NODE, chn);
+                            ctu_set_mask_filter(filter, filt_cfg, DUT_NODE, chn);
 
                             -------------------------------------------------------------------------------
                             -- @1.1 Generate Random frame and send it by Test node. Wait until the
@@ -209,9 +209,9 @@ package body frame_filters_mask_ftest is
                             info_m("Step 1.1");
 
                             generate_can_frame(CAN_TX_frame);
-                            CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-                            CAN_wait_frame_sent(DUT_NODE, chn);
-                            CAN_wait_bus_idle(DUT_NODE, chn);
+                            ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+                            ctu_wait_frame_sent(DUT_NODE, chn);
+                            ctu_wait_bus_idle(DUT_NODE, chn);
 
                             -------------------------------------------------------------------------------
                             -- @1.2 Pre-compute the expected result of filtering.
@@ -254,11 +254,11 @@ package body frame_filters_mask_ftest is
                             -------------------------------------------------------------------------------
                             info_m("Step 1.3");
 
-                            get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+                            ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
                             if (should_pass) then
                                 check_m(rx_buf_state.rx_frame_count = 1, "Frame received when expected!");
-                                CAN_read_frame(CAN_RX_frame, DUT_NODE, chn);
-                                CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+                                ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
+                                compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
                                 check_m(frames_equal, "Frames are equal");
                             else
                                 check_m(rx_buf_state.rx_frame_count = 0, "Frame NOT received when NOT expected!");

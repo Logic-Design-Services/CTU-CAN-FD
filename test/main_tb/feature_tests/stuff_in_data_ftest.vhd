@@ -130,16 +130,16 @@ package body stuff_in_data_ftest is
         CAN_frame.data(0) := x"21";
         CAN_frame.rtr := NO_RTR_FRAME;
         CAN_frame.frame_format := FD_CAN;
-        decode_dlc(CAN_frame.dlc, CAN_frame.data_length);
-        decode_dlc_rx_buff(CAN_frame.dlc, CAN_frame.rwcnt);
+        dlc_to_length(CAN_frame.dlc, CAN_frame.data_length);
+        dlc_to_rwcnt(CAN_frame.dlc, CAN_frame.rwcnt);
 
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
-        CAN_read_frame(CAN_frame_2, TEST_NODE, chn);
-        CAN_compare_frames(CAN_frame, CAN_frame_2, false, frames_equal);
+        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
+        compare_can_frames(CAN_frame, CAN_frame_2, false, frames_equal);
         check_m(frames_equal, "Frame received OK!");
 
   end procedure;

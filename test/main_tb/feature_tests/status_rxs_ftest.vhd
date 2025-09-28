@@ -115,7 +115,7 @@ package body status_rxs_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_pc_dbg;
+        variable pc_dbg             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
     begin
 
@@ -129,18 +129,18 @@ package body status_rxs_ftest is
         info_m("Step 1");
         
         generate_can_frame(frame_1);
-        CAN_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
         while (pc_dbg /= pc_deb_arbitration) loop
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
         end loop;
 
         while (pc_dbg /= pc_deb_intermission) loop
             wait for 200 ns;
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
 
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
             if (pc_dbg /= pc_deb_intermission) then
                 check_m(stat_1.receiver, "DUT receiver");
             end if;
@@ -148,12 +148,12 @@ package body status_rxs_ftest is
 
         -- There should be no Suspend, Overload frames, so after intermission
         -- we should go to idle
-        CAN_wait_not_pc_state(pc_deb_intermission, DUT_NODE, chn);
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.receiver, "DUT not receiver in idle!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Send frame by Test node. Monitor STATUS[RXS] of DUT until Inter-
@@ -163,13 +163,13 @@ package body status_rxs_ftest is
         info_m("Step 2");
         
         generate_can_frame(frame_1);
-        CAN_send_frame(frame_1, 4, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(frame_1, 4, DUT_NODE, chn, frame_sent);
 
         while (pc_dbg /= pc_deb_intermission) loop
             wait for 200 ns;
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
 
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
             check_false_m(stat_1.receiver, "DUT not transmitter!");
         end loop;
 

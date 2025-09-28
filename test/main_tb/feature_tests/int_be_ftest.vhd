@@ -146,8 +146,8 @@ package body int_be_ftest is
         
         int_mask.bus_error_int := false;
         int_ena.bus_error_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Set Test Node to Acknowledge forbidden mode. Set DUT to One shot
@@ -157,25 +157,25 @@ package body int_be_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.bus_error_int,
                       "BE Interrupt not set before error frame");
 
-        CAN_wait_error_frame(DUT_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
         wait for 10 ns;
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_m(int_stat.bus_error_int, "BE Interrupt set by error frame");
         
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
         
         -----------------------------------------------------------------------
         -- @3. Disable BE Interrupt and check INT pin goes low. Enable BE
@@ -184,12 +184,12 @@ package body int_be_ftest is
         info_m("Step 3");
         
         int_ena.bus_error_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_not_asserted(chn);
         
         int_ena.bus_error_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_asserted(chn);
         
@@ -200,8 +200,8 @@ package body int_be_ftest is
         info_m("Step 4");
         
         int_stat.bus_error_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
 
         check_false_m(int_stat.bus_error_int, "BE Interrupt cleared!");
         interrupt_agent_check_not_asserted(chn);  
@@ -214,21 +214,21 @@ package body int_be_ftest is
         info_m("Step 5");
 
         int_mask.bus_error_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.bus_error_int,
                       "BE Interrupt not set before error frame");
         
-        CAN_wait_error_frame(DUT_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
         wait for 10 ns;
         check_false_m(int_stat.bus_error_int, "BE Interrupt not set when masked");
         
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
         
         -----------------------------------------------------------------------
         -- @6. Disable BE Interrupt and check it was disabled. Enable BE 
@@ -237,16 +237,16 @@ package body int_be_ftest is
         info_m("Step 6");
 
         int_ena.bus_error_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.bus_error_int := true;
 
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_false_m(int_ena.bus_error_int, "BE Interrupt Disabled!");
 
         int_ena.bus_error_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.bus_error_int := false;
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_m(int_ena.bus_error_int, "BE Interrupt Enabled!");
         
         -----------------------------------------------------------------------
@@ -256,15 +256,15 @@ package body int_be_ftest is
         info_m("Step 7");
         
         int_mask.bus_error_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.bus_error_int := false;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_m(int_mask.bus_error_int, "BE Interrupt masked!");
 
         int_mask.bus_error_int := false;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.bus_error_int := true;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_false_m(int_mask.bus_error_int, "BE Interrupt masked!");
 
         info_m("Finished BE interrupt test");

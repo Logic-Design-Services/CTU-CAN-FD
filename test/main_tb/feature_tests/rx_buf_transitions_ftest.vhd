@@ -123,7 +123,7 @@ package body rx_buf_transitions_ftest is
         info_m("Step 1: Set DUT to loopback");
 
         mode.internal_loopback := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Send CAN frame by DUT Node. Wait until last bit of DLC and flip
@@ -134,17 +134,17 @@ package body rx_buf_transitions_ftest is
         generate_can_frame(can_frame);
         CAN_frame.frame_format := NORMAL_CAN;
 
-        CAN_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
 
         -- Wait until start of last DLC bit
         for i in 1 to 5 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
         wait for 20 ns;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
 
         wait for 20 ns;
         release_bus_level(chn);
@@ -156,10 +156,10 @@ package body rx_buf_transitions_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3: Wait till Error frame");
 
-        CAN_wait_error_frame(DUT_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size,
                     "RX MEM Free = RX Buffer Size");
         check_m(rx_buf_info.rx_write_pointer = 0,

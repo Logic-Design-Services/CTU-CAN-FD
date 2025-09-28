@@ -131,7 +131,7 @@ package body rx_err_log_2_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
-        variable pc_dbg             : t_ctu_pc_dbg;
+        variable pc_dbg             : t_ctu_frame_field;
         variable frame_sent         : boolean;
         variable tx_val             : std_logic;
         variable status             : t_ctu_status;
@@ -148,7 +148,7 @@ package body rx_err_log_2_ftest is
         info_m("Step 1");
 
         mode_1.error_logging := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Generate CAN frame and send it by DUT Node. Wait until CRC delimiter
@@ -159,12 +159,12 @@ package body rx_err_log_2_ftest is
         generate_can_frame(CAN_frame);
         -- NORMAL_CAN to work-around the issue with SSP at the last bit of CRC
         CAN_frame.frame_format := NORMAL_CAN;
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_wait_pc_state(pc_deb_crc_delim, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_crc_delim, DUT_NODE, chn);
         wait for 20 ns;
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         wait for 20 ns;
         release_bus_level(chn);
 
@@ -178,13 +178,13 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '1', "FRAME_FORMAT_W[IVLD] = 1");
         check_m(err_frame.erf_pos = ERC_POS_ACK, "FRAME_FORMAT_W[ERF_POS] = ERC_POS_ACK");
@@ -194,7 +194,7 @@ package body rx_err_log_2_ftest is
         check_m(err_frame.erf_type = ERC_FRM_ERR or err_frame.erf_type = ERC_STUF_ERR,
                 "FRAME_FORMAT_W[ERF_TYPE] = ERC_FRM_ERR or FRAME_FORMAT_W[ERF_TYPE] = ERC_STUF_ERR");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @4. Generate CAN frame and send it by DUT Node. Wait until End of frame field
@@ -204,18 +204,18 @@ package body rx_err_log_2_ftest is
         info_m("Step 4");
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
 
         rand_int_v(4, rand_bits);
         for i in 0 to rand_bits loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
         wait for 20 ns;
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
         release_bus_level(chn);
 
@@ -229,19 +229,19 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '1', "FRAME_FORMAT_W[IVLD] = 1");
         check_m(err_frame.erf_pos = ERC_POS_EOF, "FRAME_FORMAT_W[ERF_POS] = ERC_POS_EOF");
         check_m(err_frame.erf_type = ERC_FRM_ERR, "FRAME_FORMAT_W[ERF_TYPE] = ERC_FRM_ERR");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @6. Generate CAN frame amd send it by DUT node. Wait until DUT Node is
@@ -251,14 +251,14 @@ package body rx_err_log_2_ftest is
         info_m("Step 6");
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-        CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
         wait for 20 ns;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
         release_bus_level(chn);
 
@@ -269,21 +269,21 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 7");
 
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
         release_bus_level(chn);
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
         -- Wait till Error frame is stored;
         wait for 100 ns;
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_frame_count = 1,
                 "Single Error frame in RX Buffer, and it is: " &
                     integer'image(rx_buf_info.rx_frame_count));
@@ -295,21 +295,21 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 8");
 
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
         release_bus_level(chn);
 
         -- Wait till Error frame is stored;
         wait for 100 ns;
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_frame_count = 2, "Two Error frames in RX Buffer!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @9. Read out both Error frames from DUTs RX Buffer, check first has
@@ -318,14 +318,14 @@ package body rx_err_log_2_ftest is
         info_m("Step 9");
 
         -- Read first one
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "Error Frame 1: FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '1', "Error Frame 1: FRAME_FORMAT_W[IVLD] = 1");
         check_m(err_frame.erf_pos = ERC_POS_OVRL, "Error Frame 1: FRAME_FORMAT_W[ERF_POS] = ERC_POS_OVRL");
         check_m(err_frame.erf_type = ERC_BIT_ERR, "Error Frame 1: FRAME_FORMAT_W[ERF_TYPE] = ERC_BIT_ERR");
 
         -- Read second one
-        CAN_read_frame(err_frame_2, DUT_NODE, chn);
+        ctu_read_frame(err_frame_2, DUT_NODE, chn);
         check_m(err_frame_2.erf = '1', "Error Frame 2: FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame_2.ivld = '1', "Error Frame 2: FRAME_FORMAT_W[IVLD] = 1");
         check_m(err_frame_2.erf_pos = ERC_POS_ERR, "Error Frame 2: FRAME_FORMAT_W[ERF_POS] = ERC_POS_ERR");

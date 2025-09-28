@@ -158,30 +158,30 @@ package body rx_buf_consistency_2_ftest is
         bus_timing.ph2_dbt    := 3;
         bus_timing.sjw_dbt    := 1;
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
-        CAN_configure_timing(bus_timing, DUT_NODE, chn);
-        CAN_configure_timing(bus_timing, TEST_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
 
-        CAN_configure_ssp(ssp_no_ssp, x"00", DUT_NODE, chn);
-        CAN_configure_ssp(ssp_no_ssp, x"00", TEST_NODE, chn);
+        ctu_set_ssp(ssp_no_ssp, x"00", DUT_NODE, chn);
+        ctu_set_ssp(ssp_no_ssp, x"00", TEST_NODE, chn);
 
         mode.test := true;
-        set_core_mode(mode, DUT_NODE, chn);
-        set_core_mode(mode, TEST_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, TEST_NODE, chn);
 
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_turn_controller(true, TEST_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
 
-        CAN_wait_bus_on(DUT_NODE, chn);
-        CAN_wait_bus_on(TEST_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
 
         -- First frame - Will always take 4 words in RX Buffer
         generate_can_frame(CAN_TX_frame_1);
         CAN_TX_frame_1.data_length := 0;
-        decode_length(CAN_TX_frame_1.data_length, CAN_TX_frame_1.dlc);
-        decode_dlc_rx_buff(CAN_TX_frame_1.dlc, CAN_TX_frame_1.rwcnt);
+        length_to_dlc(CAN_TX_frame_1.data_length, CAN_TX_frame_1.dlc);
+        dlc_to_rwcnt(CAN_TX_frame_1.dlc, CAN_TX_frame_1.rwcnt);
 
         -- Second frame
         -- Make it fixed so that we don't see spurious fails due to immediate
@@ -193,8 +193,8 @@ package body rx_buf_consistency_2_ftest is
         CAN_TX_frame_2.rtr := NO_RTR_FRAME;
         CAN_TX_frame_2.data_length := 0;
 
-        decode_length(CAN_TX_frame_2.data_length, CAN_TX_frame_2.dlc);
-        decode_dlc_rx_buff(CAN_TX_frame_2.dlc, CAN_TX_frame_2.rwcnt);
+        length_to_dlc(CAN_TX_frame_2.data_length, CAN_TX_frame_2.dlc);
+        dlc_to_rwcnt(CAN_TX_frame_2.dlc, CAN_TX_frame_2.rwcnt);
 
         ------------------------------------------------------------------------
         -- @2. Iterate with incrementing wait time X.
@@ -214,18 +214,18 @@ package body rx_buf_consistency_2_ftest is
             err_counters.err_norm   := 0;
             err_counters.err_fd     := 0;
 
-            set_error_counters(err_counters, DUT_NODE, chn);
-            set_error_counters(err_counters, TEST_NODE, chn);
+            ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
+            ctu_set_err_ctrs(err_counters, TEST_NODE, chn);
 
-            CAN_insert_TX_frame(CAN_TX_frame_1, 1, TEST_NODE, chn);
-            CAN_insert_TX_frame(CAN_TX_frame_2, 2, TEST_NODE, chn);
+            ctu_put_tx_frame(CAN_TX_frame_1, 1, TEST_NODE, chn);
+            ctu_put_tx_frame(CAN_TX_frame_2, 2, TEST_NODE, chn);
 
             -- Configure bit-flip in CRC bit 12 from frame 2
-            CAN_set_frame_test(2, 12, false, true, false, TEST_NODE, chn);
+            ctu_set_tx_frame_test(2, 12, false, true, false, TEST_NODE, chn);
 
-            send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
             wait for 100 ns;
-            send_TXT_buf_cmd(buf_set_ready, 2, TEST_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 2, TEST_NODE, chn);
 
             --------------------------------------------------------------------
             -- @2.2 Wait until first frame is sent by DUT. Check that RX Mem Free
@@ -233,9 +233,9 @@ package body rx_buf_consistency_2_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.2");
 
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
-            get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
             check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size - 4,
                      "RX MEM Free = RX Buffer Size - 4");
 
@@ -245,9 +245,9 @@ package body rx_buf_consistency_2_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.3");
 
-            CAN_wait_pc_state(pc_deb_crc, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
             for i in 1 to 10 loop
-                CAN_wait_sample_point(DUT_NODE, chn);
+                ctu_wait_sample_point(DUT_NODE, chn);
             end loop;
 
             for i in 1 to wait_multiple loop
@@ -264,7 +264,7 @@ package body rx_buf_consistency_2_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.4");
 
-            CAN_read_frame(CAN_RX_frame_1, DUT_NODE, chn);
+            ctu_read_frame(CAN_RX_frame_1, DUT_NODE, chn);
 
             --------------------------------------------------------------------
             -- @2.5 Wait until Error frame in DUT. Wait until bus is idle!
@@ -272,10 +272,10 @@ package body rx_buf_consistency_2_ftest is
             info_m("Step 2.5");
 
             -- This will stuck and time-out if error frame is not transmitted!
-            CAN_wait_error_frame(DUT_NODE, chn);
+            ctu_wait_err_frame(DUT_NODE, chn);
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
             --------------------------------------------------------------------
             -- @2.6 Check that RX Mem Free of DUT node is equal to
@@ -283,7 +283,7 @@ package body rx_buf_consistency_2_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.6");
 
-            get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
             check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size,
                      "RX MEM Free = RX Buffer Size");
 

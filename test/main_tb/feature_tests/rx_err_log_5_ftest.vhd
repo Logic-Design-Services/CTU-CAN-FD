@@ -128,7 +128,7 @@ package body rx_err_log_5_ftest is
         mode_1.error_logging := true;
         mode_1.test := true;
         mode_1.parity_check := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Generate CAN frame, and insert it to DUTs TXT Buffer. Use Test Registers
@@ -139,21 +139,21 @@ package body rx_err_log_5_ftest is
         generate_can_frame(CAN_frame);
         CAN_frame.data_length := 8;
         CAN_frame.rtr := NO_RTR_FRAME;
-        decode_length(CAN_frame.data_length, CAN_frame.dlc);
+        length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
 
-        CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
 
         -- Enable test access
-        set_test_mem_access(true, DUT_NODE, chn);
+        ctu_set_tst_mem_access(true, DUT_NODE, chn);
 
         -- Read, flip, and write back
         rand_int_v(31, corrupt_bit_index);
-        test_mem_read(r_data, 5, txt_buf_to_test_mem_tgt(1), DUT_NODE, chn);
+        ctu_read_tst_mem(r_data, 5, txt_buf_to_test_mem_tgt(1), DUT_NODE, chn);
         r_data(corrupt_bit_index) := not r_data(corrupt_bit_index);
-        test_mem_write(r_data, 5, txt_buf_to_test_mem_tgt(1), DUT_NODE, chn);
+        ctu_write_tst_mem(r_data, 5, txt_buf_to_test_mem_tgt(1), DUT_NODE, chn);
 
         -- Disable test mem access
-        set_test_mem_access(false, DUT_NODE, chn);
+        ctu_set_tst_mem_access(false, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @3. Give DUTs TXT Buffer a "Set Ready" Command. Wait until Error frame occurs in DUT
@@ -163,20 +163,20 @@ package body rx_err_log_5_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
-        CAN_wait_error_frame(DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
 
         wait for 100 ns;
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.erf_type = ERC_PRT_ERR, "FRAME_FORMAT_W[ERF_TYPE] = ERC_PRT_ERR");
         check_m(err_frame.ivld = '1', "FRAME_FORMAT_W[IVLD] = 1");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
     end procedure;
 

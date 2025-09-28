@@ -118,7 +118,7 @@ package body err_capt_crc_err_ftest is
         variable stat_1             :     t_ctu_status;
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_pc_dbg;
+        variable pc_dbg             :     t_ctu_frame_field;
 
         variable frame_sent         :     boolean;
 
@@ -127,7 +127,7 @@ package body err_capt_crc_err_ftest is
         variable wait_time          :     natural;
         variable can_rx_val         :     std_logic;
 
-        variable pc_fsm_state       :     t_ctu_pc_dbg;
+        variable pc_fsm_state       :     t_ctu_frame_field;
     begin
 
         -----------------------------------------------------------------------
@@ -135,7 +135,7 @@ package body err_capt_crc_err_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_read_error_code_capture(err_capt, TEST_NODE, chn);
+        ctu_get_err_capt(err_capt, TEST_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
 
         -----------------------------------------------------------------------
@@ -159,23 +159,23 @@ package body err_capt_crc_err_ftest is
         frame_1.data_length := 1;
         frame_1.data(0) :=  x"55";
         frame_1.rtr := NO_RTR_FRAME;
-        CAN_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
 
-        CAN_wait_pc_state(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
         rand_int_v(12, wait_time);
 
         info_m("waiting for:" & integer'image(wait_time) & " bits!");
         wait_time := wait_time + 1;
         for i in 1 to wait_time loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
-        CAN_wait_sync_seg(DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
         wait for 100 ns; -- To be sure we are ssuficiently far in the bit!
 
         -- Force can_rx of Test node to oposite value!
         get_can_rx(DUT_NODE, can_rx_val, chn);
         force_can_rx(not can_rx_val, DUT_NODE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
         release_can_rx(chn);
 
@@ -188,9 +188,9 @@ package body err_capt_crc_err_ftest is
         --      DUT will transmit recessive ACK, and Error frame after ACK delimiter!
         -------------------------------------------------------------------------------------------
 
-        CAN_wait_not_pc_state(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_crc, DUT_NODE, chn);
         wait for 10 ns;
-        CAN_read_pc_debug_m(pc_fsm_state, DUT_NODE, chn);
+        ctu_get_curr_frame_field(pc_fsm_state, DUT_NODE, chn);
 
         -- No error frame occured within CRC field -> Expect CRC Error in DUT
         if (pc_fsm_state = pc_deb_crc_delim) then
@@ -200,12 +200,12 @@ package body err_capt_crc_err_ftest is
             -- We have to wait till both Nodes are in ACK so
             -- that we don't accidentaly generate it for Test node while it is still in
             -- in CRC Delimiter, that would be form error. Thus we would not ever test form Error!
-            CAN_wait_pc_state(pc_deb_ack, TEST_NODE, chn);
-            CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_ack, TEST_NODE, chn);
+            ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
 
             force_bus_level(DOMINANT, chn);
             check_can_tx(RECESSIVE, DUT_NODE, "Send Recessive ACK upon CRC error [1]!", chn);
-            CAN_wait_sample_point(TEST_NODE, chn);
+            ctu_wait_sample_point(TEST_NODE, chn);
             check_can_tx(RECESSIVE, DUT_NODE, "Send Recessive ACK upon CRC error [2]!", chn);
             wait for 20 ns;
             release_bus_level(chn);
@@ -215,32 +215,32 @@ package body err_capt_crc_err_ftest is
             -- error frame from ACK delimiter! But Test node should not have sent ACK
             -- and should have mismatching CRC, therefore after ACK delimiter,
             -- it should send Error frame!
-            CAN_wait_pc_state(pc_deb_ack_delim, DUT_NODE, chn);
-            CAN_wait_not_pc_state(pc_deb_ack_delim, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_ack_delim, DUT_NODE, chn);
+            ctu_wait_not_frame_field(pc_deb_ack_delim, DUT_NODE, chn);
             wait for 20 ns;
 
             -- Now state has changed, we should be in Error frame because ACK was
             -- recessive
-            get_controller_status(stat_2, DUT_NODE, chn);
+            ctu_get_status(stat_2, DUT_NODE, chn);
             check_m(stat_2.error_transmission, "Error frame transmitted by Test node!");
 
-            CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+            ctu_get_err_capt(err_capt, DUT_NODE, chn);
             check_m(err_capt.err_type = can_err_crc, "CRC error detected!");
             check_m(err_capt.err_pos = err_pos_ack,
                 "Error detected in CRC Delim/ACK/ACK Delim field!");
 
         -- Error frame occcured within CRC, it should be stuff error !
         else
-            get_controller_status(stat_2, DUT_NODE, chn);
+            ctu_get_status(stat_2, DUT_NODE, chn);
             check_m(stat_2.error_transmission, "Error frame transmitted by Test node!");
 
-            CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+            ctu_get_err_capt(err_capt, DUT_NODE, chn);
             check_m(err_capt.err_type = can_err_stuff, "Stuff error detected!");
             check_m(err_capt.err_pos = err_pos_crc, "Error detected in CRC field!");
         end if;
 
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
   end procedure;
 

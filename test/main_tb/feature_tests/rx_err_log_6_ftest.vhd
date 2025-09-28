@@ -138,9 +138,9 @@ package body rx_err_log_6_ftest is
 
         mode_1.error_logging := true;
         mode_1.internal_loopback := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Generate CAN frame and send it byt Test Node. Wait until frame is sent.
@@ -148,8 +148,8 @@ package body rx_err_log_6_ftest is
         info_m("Step 2");
 
         generate_can_frame(tx_frame_1);
-        CAN_send_frame(tx_frame_1, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(tx_frame_1, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @3. Generate CAN frame and send it by DUT Node. Wait until last bit of
@@ -163,18 +163,18 @@ package body rx_err_log_6_ftest is
         tx_frame_2.ident_type := BASE;
         tx_frame_2.identifier := tx_frame_2.identifier mod 2**11;
 
-        CAN_send_frame(tx_frame_2, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_send_frame(tx_frame_2, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
 
         -- IDE, r0, 3 bits of DLC
         for i in 1 to 5 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
-        CAN_wait_sync_seg(DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         wait for 20 ns;
         release_bus_level(chn);
 
@@ -186,12 +186,12 @@ package body rx_err_log_6_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 4");
 
-        CAN_wait_error_frame(DUT_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_frame_count = 2, "Two frames in RX Buffer!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @5. Generate CAN frame and send it byt Test Node. Wait until frame is sent.
@@ -199,8 +199,8 @@ package body rx_err_log_6_ftest is
         info_m("Step 5");
 
         generate_can_frame(tx_frame_3);
-        CAN_send_frame(tx_frame_3, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(tx_frame_3, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @6. Read all 3 frames from DUTs RX Buffer, and check that first and third
@@ -209,17 +209,17 @@ package body rx_err_log_6_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 6");
 
-        CAN_read_frame(rx_frame_1, DUT_NODE, chn);
-        CAN_read_frame(rx_frame_2, DUT_NODE, chn);
-        CAN_read_frame(rx_frame_3, DUT_NODE, chn);
+        ctu_read_frame(rx_frame_1, DUT_NODE, chn);
+        ctu_read_frame(rx_frame_2, DUT_NODE, chn);
+        ctu_read_frame(rx_frame_3, DUT_NODE, chn);
 
-        CAN_compare_frames(rx_frame_1, tx_frame_1, false, frames_match);
+        compare_can_frames(rx_frame_1, tx_frame_1, false, frames_match);
         check_m(frames_match, "RX Frame 1 = TX Frame 1");
         check_m(rx_frame_1.erf = '0', "RX Frame 1 is CAN frame");
 
         check_m(rx_frame_2.erf = '1', "RX Frame 2 is Error frame");
 
-        CAN_compare_frames(rx_frame_3, tx_frame_3, false, frames_match);
+        compare_can_frames(rx_frame_3, tx_frame_3, false, frames_match);
         check_m(frames_match, "RX Frame 3 = TX Frame 3");
         check_m(rx_frame_1.erf = '0', "RX Frame 3 is CAN frame");
 

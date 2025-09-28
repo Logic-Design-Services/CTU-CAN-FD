@@ -293,7 +293,7 @@ architecture test of rx_buffer_tb is
         if (frame.rtr = RTR_FRAME) then
             length := 0;
         else
-            decode_dlc(frame.dlc, length);
+            dlc_to_length(frame.dlc, length);
         end if;
 
         -- Store the data

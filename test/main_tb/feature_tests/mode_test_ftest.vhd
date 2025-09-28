@@ -137,9 +137,9 @@ package body mode_test_ftest is
         info_m("Step 1: Configure test mode, check EWL/ERP!");
         
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
-        get_fault_thresholds(fault_th, DUT_NODE, chn);
+        ctu_get_fault_thresholds(fault_th, DUT_NODE, chn);
         check_m(fault_th.ewl = to_integer(unsigned(EW_LIMIT_RSTVAL)), 
             "EWL equal to reset value!");
         check_m(fault_th.erp = to_integer(unsigned(ERP_LIMIT_RSTVAL)), 
@@ -152,8 +152,8 @@ package body mode_test_ftest is
         info_m("Step 2: Store random values to EWL/ERP!");
         rand_int_v(255, fault_th.ewl);
         rand_int_v(255, fault_th.erp); 
-        set_fault_thresholds(fault_th, DUT_NODE, chn);
-        get_fault_thresholds(fault_th_2, DUT_NODE, chn);
+        ctu_set_fault_thresholds(fault_th, DUT_NODE, chn);
+        ctu_get_fault_thresholds(fault_th_2, DUT_NODE, chn);
         
         check_m(fault_th.ewl = fault_th_2.ewl, "EWL written in test mode!");
         check_m(fault_th.erp = fault_th_2.erp, "ERP written in test mode!");
@@ -166,12 +166,12 @@ package body mode_test_ftest is
         info_m("Step 3: Disable test mode, check EWL/ERP not written!"); 
         
         mode_1.test := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
         rand_int_v(255, fault_th_2.ewl);
         rand_int_v(255, fault_th_2.erp);
-        set_fault_thresholds(fault_th_2, DUT_NODE, chn);
-        get_fault_thresholds(fault_th_2, DUT_NODE, chn);
+        ctu_set_fault_thresholds(fault_th_2, DUT_NODE, chn);
+        ctu_get_fault_thresholds(fault_th_2, DUT_NODE, chn);
         
         check_m(fault_th.ewl = fault_th_2.ewl,
             "EWL not written when not in test mode!");
@@ -186,9 +186,9 @@ package body mode_test_ftest is
         info_m("Step 4: Enable test mode, check CTR_PRES written!");
         
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
-        read_error_counters(err_counters, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
         check_m(err_counters.rx_counter = 0, "REC = 0");
         check_m(err_counters.tx_counter = 0, "TEC = 0");
         check_m(err_counters.err_norm = 0, "Errors in Nominal bit rate = 0");
@@ -197,8 +197,8 @@ package body mode_test_ftest is
         rand_int_v(511, err_counters.rx_counter);
         rand_int_v(511, err_counters.tx_counter);
 
-        set_error_counters(err_counters, DUT_NODE, chn);
-        read_error_counters(err_counters_2, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2, DUT_NODE, chn);
         
         check_m(err_counters.rx_counter = err_counters_2.rx_counter,
             "RX Error counter set!");
@@ -215,13 +215,13 @@ package body mode_test_ftest is
         info_m("Step 5: Disable test mode, check CTR_PRES not written!");
         
         mode_1.test := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         rand_int_v(511, err_counters_2.rx_counter);
         rand_int_v(511, err_counters_2.tx_counter);
         
-        set_error_counters(err_counters_2, DUT_NODE, chn);
-        read_error_counters(err_counters_2, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters_2, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2, DUT_NODE, chn);
         
         check_m(err_counters.rx_counter = err_counters_2.rx_counter,
             "RX Error counter set!");

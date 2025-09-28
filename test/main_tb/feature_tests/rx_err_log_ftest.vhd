@@ -119,7 +119,7 @@ package body rx_err_log_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
-        variable pc_dbg             : t_ctu_pc_dbg;
+        variable pc_dbg             : t_ctu_frame_field;
         variable frame_sent         : boolean;
         variable tx_val             : std_logic;
         variable status             : t_ctu_status;
@@ -134,7 +134,7 @@ package body rx_err_log_ftest is
         info_m("Step 1");
 
         mode_1.error_logging := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Iterate through Arbitration, Control, Data and CRC fields of
@@ -150,7 +150,7 @@ package body rx_err_log_ftest is
             when others => pc_dbg := pc_deb_crc;
             end case;
 
-            info_m("Testing ERF_POS in: " & t_ctu_pc_dbg'image(pc_dbg));
+            info_m("Testing ERF_POS in: " & t_ctu_frame_field'image(pc_dbg));
 
             ---------------------------------------------------------------------------------------
             -- @2.1 Generate CAN frame and send it by DUT.
@@ -161,20 +161,20 @@ package body rx_err_log_ftest is
             CAN_frame.rtr := NO_RTR_FRAME;
             CAN_frame.frame_format := NORMAL_CAN;
             CAN_frame.data_length := 8;     -- To make sure data field is there!
-            decode_length(CAN_frame.data_length, CAN_frame.dlc);
+            length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
 
-            CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+            ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
             ---------------------------------------------------------------------------------------
             -- @2.2 Wait until Protocol control field being tested and wait until Dominant bit.
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2");
 
-            CAN_wait_pc_state(pc_dbg, DUT_NODE, chn);
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_frame_field(pc_dbg, DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
 
             dom_bit_wait : while (true) loop
-                CAN_wait_sync_seg(DUT_NODE, chn);
+                ctu_wait_sync_seg(DUT_NODE, chn);
                 wait for 20 ns;
                 get_can_tx(DUT_NODE, tx_val, chn);
                 if (tx_val = DOMINANT) then
@@ -189,7 +189,7 @@ package body rx_err_log_ftest is
 
             flip_bus_level(chn);
 
-            CAN_wait_sample_point(DUT_NODE, chn, false);
+            ctu_wait_sample_point(DUT_NODE, chn, false);
             wait for 20 ns;
 
             release_bus_level(chn);
@@ -202,10 +202,10 @@ package body rx_err_log_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.4");
 
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_m(status.error_transmission, "Error frame is being transmitted!");
 
-            get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
             check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
             ---------------------------------------------------------------------------------------
@@ -215,8 +215,8 @@ package body rx_err_log_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.5");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_read_frame(err_frame, DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_read_frame(err_frame, DUT_NODE, chn);
             check_m(err_frame.erf = '1',                            "FRAME_FORMAT_W[ERF] = 1");
 
             -- All fields apart from arbitration shall have IVLD set!

@@ -140,17 +140,17 @@ package body tx_priority_change_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
 
         for i in 1 to num_txt_bufs loop
             rand_int_v(7, priorities(i));
             -- Write generated priority TX_PRIORITY
-            CAN_configure_tx_priority(i, priorities(i), DUT_NODE, chn);
+            ctu_set_txt_buf_prio(i, priorities(i), DUT_NODE, chn);
         end loop;
 
         for i in 1 to num_txt_bufs loop
             generate_can_frame(CAN_frame_array_tx(i));
-            CAN_insert_TX_frame(CAN_frame_array_tx(i), i, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_frame_array_tx(i), i, DUT_NODE, chn);
         end loop;
 
         -----------------------------------------------------------------------
@@ -160,14 +160,14 @@ package body tx_priority_change_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         -- If there is less buffers than 8, other bits should be reserved and
         -- have no effect!
-        send_TXT_buf_cmd(buf_set_ready, "11111111", DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, "11111111", DUT_NODE, chn);
         wait for 15 ns;
         
         for i in 1 to num_txt_bufs loop
-            get_tx_buf_state(i, txtb_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(i, txtb_state, DUT_NODE, chn);
             check_m(txtb_state = buf_ready, "TXT Buffer ready!");
         end loop;
         
@@ -179,7 +179,7 @@ package body tx_priority_change_ftest is
         for i in 1 to num_txt_bufs loop
             rand_int_v(7, priorities(i));
             -- Write generated priority TX_PRIORITY
-            CAN_configure_tx_priority(i, priorities(i), DUT_NODE, chn);
+            ctu_set_txt_buf_prio(i, priorities(i), DUT_NODE, chn);
         end loop;
         
         -- Note: From CAN_Wait_sample_point in Step 2, till here, all this
@@ -197,7 +197,7 @@ package body tx_priority_change_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4");
 
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
         -- Pick highest priority buffer
         highest_prio_buf := num_txt_bufs;
@@ -208,19 +208,19 @@ package body tx_priority_change_ftest is
             end if;
         end loop;
 
-        CAN_wait_sample_point(TEST_NODE, chn, false);
+        ctu_wait_sample_point(TEST_NODE, chn, false);
         wait for 100 ns;
 
-        CAN_read_frame(CAN_frame_rx, TEST_NODE, chn);
-        CAN_compare_frames(CAN_frame_rx, CAN_frame_array_tx(highest_prio_buf),
+        ctu_read_frame(CAN_frame_rx, TEST_NODE, chn);
+        compare_can_frames(CAN_frame_rx, CAN_frame_array_tx(highest_prio_buf),
                             false, frames_equal);
         check_m(frames_equal, "TX/RX buffers matching!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -- Read the remaining received frames
         for i in 2 to num_txt_bufs loop
-            CAN_read_frame(CAN_frame_rx, TEST_NODE, chn);
+            ctu_read_frame(CAN_frame_rx, TEST_NODE, chn);
         end loop;
 
     end procedure;

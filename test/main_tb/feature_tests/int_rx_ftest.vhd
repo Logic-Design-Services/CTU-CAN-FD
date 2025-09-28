@@ -141,7 +141,7 @@ package body int_rx_ftest is
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
-        variable pc_dbg             :     t_ctu_pc_dbg;  
+        variable pc_dbg             :     t_ctu_frame_field;  
     begin
 
         -----------------------------------------------------------------------
@@ -151,10 +151,10 @@ package body int_rx_ftest is
         info_m("Step 1: Setting RX Interrupt");
 
         int_mask.receive_int := false;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
         int_ena.receive_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         
         -----------------------------------------------------------------------
         --  @2. Set Retransmitt limit to 0 on Test node (One shot-mode). Enable 
@@ -162,9 +162,9 @@ package body int_rx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2: Sending frame");
 
-        CAN_enable_retr_limit(true, 0, TEST_NODE, chn);
+        ctu_set_retr_limit(true, 0, TEST_NODE, chn);
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
         
         -----------------------------------------------------------------------
         -- @3. Monitor DUT frame, check that in the beginning of EOF, 
@@ -172,21 +172,21 @@ package body int_rx_ftest is
         -----------------------------------------------------------------------  
         info_m("Step 3: Check RX Interrupt is set in EOF!");
 
-        CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.receive_int,
             "RX Interrupt not set in beginning of EOF");
-        CAN_wait_not_pc_state(pc_deb_eof, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_eof, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         
         check_m(int_stat.receive_int, "RX Interrupt set at the end of EOF");
         
         -- Wait till bus is idle, read-out received frame so that there is
         -- nothing in RX Buffer of DUT.
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_read_frame(CAN_frame_rx, DUT_NODE, chn);
-        CAN_compare_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
+        compare_can_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
         
         check_m(frames_equal, "TX, RX frames should be equal!");
         
@@ -198,13 +198,13 @@ package body int_rx_ftest is
 
         interrupt_agent_check_asserted(chn);
         int_ena.receive_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         
         interrupt_agent_check_not_asserted(chn);
         
         int_ena.receive_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         
         interrupt_agent_check_asserted(chn);
@@ -215,8 +215,8 @@ package body int_rx_ftest is
         info_m("Step 4: Clear RX Interrupt, Check INT pin toggles");
 
         int_stat.receive_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         
         check_false_m(int_mask.receive_int, "RX Interrupt status should be 0!");
         interrupt_agent_check_not_asserted(chn);
@@ -229,18 +229,18 @@ package body int_rx_ftest is
         info_m("Step 6: Check RX Interrupt is not set upon Error Frame!");
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
 
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
-        CAN_wait_not_pc_state(pc_deb_ack, DUT_NODE, chn);
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
         release_bus_level(chn);
         
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         
         check_false_m(int_stat.receive_int, "RX Interrupt status should be 0!");
         interrupt_agent_check_not_asserted(chn);
@@ -253,17 +253,17 @@ package body int_rx_ftest is
 
         int_mask.receive_int := true;
         int_ena.receive_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(TEST_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(TEST_NODE, chn);
 
-        CAN_read_frame(CAN_frame_rx, DUT_NODE, chn);
-        CAN_compare_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
+        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
+        compare_can_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
         check_m(frames_equal, "TX, RX frames should be equal!");
 
-        read_int_status(int_stat, DUT_NODE, chn);        
+        ctu_get_int_status(int_stat, DUT_NODE, chn);        
         check_false_m(int_stat.receive_int, "RX Interrupt status should be 0!");
         interrupt_agent_check_not_asserted(chn);
 
@@ -275,17 +275,17 @@ package body int_rx_ftest is
 
         int_mask.receive_int := false;
         int_ena.receive_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(TEST_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(TEST_NODE, chn);
 
-        CAN_read_frame(CAN_frame_rx, DUT_NODE, chn);
-        CAN_compare_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
+        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
+        compare_can_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
         check_m(frames_equal, "TX, RX frames should be equal!");
 
-        read_int_status(int_stat, DUT_NODE, chn);        
+        ctu_get_int_status(int_stat, DUT_NODE, chn);        
         check_m(int_stat.receive_int, "RX Interrupt status should be 1!");
         interrupt_agent_check_asserted(chn);
         
@@ -295,10 +295,10 @@ package body int_rx_ftest is
         info_m("Step 9: Check RX Interrupt Enable Set");
 
         int_ena.receive_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.receive_int := true;
 
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_false_m(int_ena.receive_int, "RX Interrupt should be disabled!");
         
         -----------------------------------------------------------------------
@@ -307,10 +307,10 @@ package body int_rx_ftest is
         info_m("Step 10: Check RX Interrupt Enable Clear");
 
         int_ena.receive_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.receive_int := false;
 
-        read_int_enable(int_ena, DUT_NODE, chn);        
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);        
         check_m(int_ena.receive_int, "RX Interrupt should be enabled!");        
         
         -----------------------------------------------------------------------
@@ -319,9 +319,9 @@ package body int_rx_ftest is
         info_m("Step 11: Check RX Interrupt Mask Set");
 
         int_mask.receive_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.receive_int := false;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         
         check_m(int_ena.receive_int, "RX Interrupt should be masked!");        
         
@@ -331,9 +331,9 @@ package body int_rx_ftest is
         info_m("Step 12: Check RX Interrupt Mask Clear");
 
         int_mask.receive_int := false;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.receive_int := true;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         
         check_false_m(int_mask.receive_int, "RX Interrupt should be unmasked!");
         
@@ -344,23 +344,23 @@ package body int_rx_ftest is
         info_m("Step 13: Check TX does not cause RX Interrupt to be captured!");
 
         int_stat.receive_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
         
         int_mask.receive_int := false;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         
         int_ena.receive_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
         
-        CAN_read_frame(CAN_frame_rx, TEST_NODE, chn);
-        CAN_compare_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
+        ctu_read_frame(CAN_frame_rx, TEST_NODE, chn);
+        compare_can_frames(CAN_frame, CAN_frame_rx, false, frames_equal);
         check_m(frames_equal, "TX, RX frames should be equal!");
         
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.receive_int, "RX Interrupt should not be set after TX!");
         interrupt_agent_check_not_asserted(chn);
         

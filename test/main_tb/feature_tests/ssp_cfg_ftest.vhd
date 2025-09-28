@@ -256,8 +256,8 @@ package body ssp_cfg_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
         -- Should be 250 Kbit/s
         bus_timing.prop_nbt := 37;
@@ -316,8 +316,8 @@ package body ssp_cfg_ftest is
 
         -- We configure Nominal bit-rate to 500 Kbit/s so that generated
         -- TRV_DELAY will not cause error frames in arbitration bit-rate!
-        CAN_configure_timing(bus_timing, DUT_NODE, chn);
-        CAN_configure_timing(bus_timing, TEST_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
 
         -- Generate random transceiver delay
         generate_trv_delay(rand_trv_delay, bus_timing);
@@ -365,7 +365,7 @@ package body ssp_cfg_ftest is
             info_m("NO SSP");
             ssp_source := ssp_no_ssp;
 
-            CAN_read_timing_v(bus_timing, DUT_NODE, chn);
+            ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
             ssp_pos := bus_timing.tq_dbt *
                         (bus_timing.prop_dbt + bus_timing.ph1_dbt + 1);
 
@@ -409,18 +409,18 @@ package body ssp_cfg_ftest is
         end if;
 
         info_m("Random TRV_DELAY is: " & integer'image(rand_trv_delay) & " ns");
-        ftr_tb_set_tran_delay((rand_trv_delay * 1 ns), DUT_NODE, chn);
+        set_transceiver_delay((rand_trv_delay * 1 ns), DUT_NODE, chn);
 
         info_m("SSP position: " & integer'image(ssp_pos));
-        CAN_configure_ssp(ssp_source, ssp_offset_var, DUT_NODE, chn);
-        CAN_configure_ssp(ssp_source, ssp_offset_var, TEST_NODE, chn);
+        ctu_set_ssp(ssp_source, ssp_offset_var, DUT_NODE, chn);
+        ctu_set_ssp(ssp_source, ssp_offset_var, TEST_NODE, chn);
 
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_turn_controller(true, TEST_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
 
         -- Wait till integration is over!
-        CAN_wait_bus_on(DUT_NODE, chn);
-        CAN_wait_bus_on(TEST_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Generate random CAN FD frame with bit-rate shift. Wait until
@@ -436,13 +436,13 @@ package body ssp_cfg_ftest is
         frame_1.brs := BR_SHIFT;
         if (frame_1.data_length = 0) then
             frame_1.data_length := 1;
-            decode_length(frame_1.data_length, frame_1.dlc);
+            length_to_dlc(frame_1.data_length, frame_1.dlc);
         end if;
 
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
 
-        CAN_wait_not_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_control, DUT_NODE, chn);
 
         num_bit_waits_max := frame_1.data_length * 8;
         rand_int_v(num_bit_waits_max, num_bit_waits);
@@ -451,11 +451,11 @@ package body ssp_cfg_ftest is
               " bits");
         info_m("Waiting for: " & integer'image(num_bit_waits) & " bits");
         for i in 0 to num_bit_waits - 1 loop
-            CAN_wait_sample_point(DUT_NODE, chn, false);
+            ctu_wait_sample_point(DUT_NODE, chn, false);
         end loop;
 
         -- Wait until SYNC segment. This is 1 clock cycle after start of bit.
-        CAN_wait_sync_seg(DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
         wait for (ssp_pos - 2) * 10 ns;
 
         -----------------------------------------------------------------------
@@ -485,22 +485,22 @@ package body ssp_cfg_ftest is
 
         if (ssp_source = ssp_no_ssp) then
             wait for 20 ns;
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_m(stat_1.error_transmission,
                     "Error frame transmitted with NO_SSP");
         else
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_false_m(stat_1.error_transmission,
                           "Error frame NOT transmitted yet!");
-            CAN_wait_sample_point(DUT_NODE, chn, false);
+            ctu_wait_sample_point(DUT_NODE, chn, false);
             wait for 21 ns;
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_m(stat_1.error_transmission,
                     "Error frame transmitted after nearest sample point!");
         end if;
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
     end procedure;
 

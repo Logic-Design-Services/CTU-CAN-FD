@@ -120,7 +120,7 @@ package body pc_fsm_transitions_err_act_ftest is
         variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable frame_bits         :       integer;
         variable bit_index          :       integer;
-        variable pc_dbg             :       t_ctu_pc_dbg;
+        variable pc_dbg             :       t_ctu_frame_field;
     begin
 
         -------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ package body pc_fsm_transitions_err_act_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 1: Set DUT to test mode");
         mode.test := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Loop through all combinations of frames:
@@ -157,7 +157,7 @@ package body pc_fsm_transitions_err_act_ftest is
                 info_m("Step 2.1.1: Set DUT node to Error Active.");
 
                 err_counters.rx_counter := 0;
-                set_error_counters(err_counters, DUT_NODE, chn);
+                ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
                 -----------------------------------------------------------------------
                 -- @2.1.2 Send a Frame by DUT node. Wait for incrementing number of bits
@@ -167,24 +167,24 @@ package body pc_fsm_transitions_err_act_ftest is
                 info_m("Identifier type: " & std_logic'image(frame_format));
                 info_m("Frame format: " & std_logic'image(ident_type));
 
-                CAN_insert_TX_frame(CAN_TX_frame, 1, DUT_NODE, chn);
-                send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+                ctu_put_tx_frame(CAN_TX_frame, 1, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
-                CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+                ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
                 info_m("Waiting for " & integer'image(bit_index) & " bits!");
                 for j in 0 to bit_index loop
-                    CAN_wait_sync_seg(DUT_NODE, chn);
+                    ctu_wait_sync_seg(DUT_NODE, chn);
                 end loop;
 
                 wait for 20 ns;
 
                 -- If we get up to ACK, we finish, flipping ACK will not result in
                 -- immediate Error frame!
-                CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+                ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
                 if (pc_dbg = pc_deb_ack) then
-                    CAN_wait_bus_idle(DUT_NODE, chn);
-                    CAN_wait_bus_idle(TEST_NODE, chn);
+                    ctu_wait_bus_idle(DUT_NODE, chn);
+                    ctu_wait_bus_idle(TEST_NODE, chn);
                     exit bit_iter_loop;
                 end if;
 
@@ -194,10 +194,10 @@ package body pc_fsm_transitions_err_act_ftest is
                 info_m("Step 2.1.3 Flip a bit on DUT CAN RX.");
 
                 flip_bus_level(chn);
-                CAN_wait_sync_seg(DUT_NODE, chn);
+                ctu_wait_sync_seg(DUT_NODE, chn);
                 release_bus_level(chn);
 
-                CAN_wait_sync_seg(DUT_NODE, chn);
+                ctu_wait_sync_seg(DUT_NODE, chn);
 
                 -----------------------------------------------------------------------
                 -- @2.1.4 Check that DUT is either transmitting an error frame, or it
@@ -205,7 +205,7 @@ package body pc_fsm_transitions_err_act_ftest is
                 -----------------------------------------------------------------------
                 info_m("Step 2.1.4 Check error frame or arbitration lost");
 
-                get_controller_status(status, DUT_NODE, chn);
+                ctu_get_status(status, DUT_NODE, chn);
 
                 check_m(status.receiver or status.error_transmission,
                         "DUT either lost arbitration or is transmitting error frame");
@@ -215,7 +215,7 @@ package body pc_fsm_transitions_err_act_ftest is
                 -----------------------------------------------------------------------
                 info_m("Step 2.1.5 Wait until bus is idle.");
 
-                CAN_wait_bus_idle(DUT_NODE, chn);
+                ctu_wait_bus_idle(DUT_NODE, chn);
 
                 bit_index := bit_index + 1;
 

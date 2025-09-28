@@ -148,21 +148,21 @@ package body mode_restr_op_ftest is
         info_m("Step 1: Configure ROM mode in DUT. Try to send frame in ROM!");
         
         mode_1.restricted_operation := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
         generate_can_frame(CAN_TX_frame);
         -- To make sure we have only one ACK bit
         CAN_TX_frame.frame_format := NORMAL_CAN;
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
         wait for 20 ns;
         
         for i in 0 to 20 loop
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_false_m(status.transmitter, "Node does not transmitt in ROM!");
             check_false_m(status.receiver, "Node turned receiver in ROM -> WTF?");
             check_m(status.bus_status, "Node remains idle");
             
-            get_tx_buf_state(1, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(1, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_failed, "TXT buffer went to failed in ROM!");
             
             wait for 100 ns;
@@ -181,29 +181,29 @@ package body mode_restr_op_ftest is
         
         CAN_TX_frame.identifier := 0;
         CAN_TX_frame.ident_type := BASE;
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_send_frame(CAN_TX_frame, 2, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_TX_frame, 2, TEST_NODE, chn, frame_sent);
         
         -- Following wait ends just after sample point of SOF!
-        CAN_wait_tx_rx_start(false, true, DUT_NODE, chn);
+        ctu_wait_frame_start(false, true, DUT_NODE, chn);
         
         -- 5th bit of Base ID should be recessive stuff bit.
         for i in 0 to 3 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
         
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
 
-        CAN_wait_sample_point(DUT_NODE, chn);      
+        ctu_wait_sample_point(DUT_NODE, chn);      
         wait for 10 ns;
         release_bus_level(chn);
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.bus_status, "Node became idle after Error in ROM mod!");
         
-        read_error_counters(err_counters, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
         check_m(err_counters.rx_counter = 0, "REC not incremented in ROM!");
         check_m(err_counters.tx_counter = 0, "TEC not incremented in ROM!");
 
@@ -214,13 +214,13 @@ package body mode_restr_op_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3: Wait till ACK of retrasnmitted frame.");
         
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
         
-        CAN_wait_sync_seg(DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
         wait for 10 ns;
         check_can_tx(DOMINANT, DUT_NODE, "Send Dominant ACK after Error in ROM!", chn);
         
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @4. Wait until EOF field of DUT. Wait randomly for 7,8,9 bits to
@@ -236,20 +236,20 @@ package body mode_restr_op_ftest is
         
         -- This should offset to last bit of EOF, first or second bit of interm.
         for i in 0 to bit_waits - 1 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
         
-        CAN_wait_sync_seg(DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
         
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 40 ns;
         release_bus_level(chn);
         
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.bus_status, "Node became idle after Error in ROM mod!");
         
-        read_error_counters(err_counters, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
         check_m(err_counters.rx_counter = 0, "REC not incremented in ROM!");
         check_m(err_counters.tx_counter = 0, "TEC not incremented in ROM!");
 

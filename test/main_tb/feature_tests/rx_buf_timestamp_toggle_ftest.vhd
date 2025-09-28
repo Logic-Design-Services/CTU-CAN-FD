@@ -123,7 +123,7 @@ package body rx_buf_timestamp_toggle_ftest is
         -- 64 byte long frame, and thus bits 64:16 will always stay at 0xFF.
         ts_val := x"FFFFFFFFFFFF0000";
         info_m("Forcing start timestamp in DUT to: " & to_hstring(ts_val));
-        ftr_tb_set_timestamp(ts_val, chn);
+        set_timestamp(ts_val, chn);
 
         -----------------------------------------------------------------------
         -- @2. Generate CAN frame and send it by Test Node. Wait until the
@@ -133,9 +133,9 @@ package body rx_buf_timestamp_toggle_ftest is
 
         generate_can_frame(tx_can_frame);
 
-        CAN_send_frame(tx_can_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_send_frame(tx_can_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Read frame from DUT and check highest bits of timestamp are set
@@ -143,7 +143,7 @@ package body rx_buf_timestamp_toggle_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_read_frame(rx_can_frame, DUT_NODE, chn);
+        ctu_read_frame(rx_can_frame, DUT_NODE, chn);
         check_m(rx_can_frame.timestamp(63 downto 16) = x"FFFFFFFFFFFF",
                     "Highest RX Buffer timestamp bits all 0xFFF");
 
@@ -152,7 +152,7 @@ package body rx_buf_timestamp_toggle_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4");
 
-        ftr_tb_set_timestamp(x"0000000000000000", chn);
+        set_timestamp(x"0000000000000000", chn);
 
     end procedure;
 

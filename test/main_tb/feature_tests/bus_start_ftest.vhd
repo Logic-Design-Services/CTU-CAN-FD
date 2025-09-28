@@ -120,7 +120,7 @@ package body bus_start_ftest is
         variable fault_state_1      :       t_ctu_fault_state;
         variable fault_state_2      :       t_ctu_fault_state;
         
-        variable read_state         :       t_ctu_pc_dbg;
+        variable read_state         :       t_ctu_frame_field;
         variable status             :       t_ctu_status;
     begin
 
@@ -130,25 +130,25 @@ package body bus_start_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Disable both nodes!");
 
-        get_fault_state(fault_state_1, DUT_NODE, chn);
-        get_fault_state(fault_state_2, TEST_NODE, chn);
+        ctu_get_fault_state(fault_state_1, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state_2, TEST_NODE, chn);
         check_m(fault_state_1 = fc_error_active, "DUT Error active!");
         check_m(fault_state_2 = fc_error_active, "Test node Error active!");
         
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
         generate_can_frame(CAN_frame_1);
         generate_can_frame(CAN_frame_2);
-        CAN_insert_TX_frame(CAN_frame_1, 1, DUT_NODE, chn);
-        CAN_insert_TX_frame(CAN_frame_2, 2, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame_1, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame_2, 2, DUT_NODE, chn);
 
-        get_fault_state(fault_state_1, DUT_NODE, chn);
-        get_fault_state(fault_state_2, TEST_NODE, chn);
+        ctu_get_fault_state(fault_state_1, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state_2, TEST_NODE, chn);
         check_m(fault_state_1 = fc_bus_off, "DUT Bus off!");
         check_m(fault_state_2 = fc_bus_off, "Test node Bus off!");
         
         wait for 1000 ns;
-        CAN_turn_controller(true, DUT_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Wait till sample point in DUT 11 times, check that after 11
@@ -158,9 +158,9 @@ package body bus_start_ftest is
         info_m("Step 2: Check integration of DUT");
 
         for i in 0 to 10 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             wait for 21 ns; -- For DFF to update
-            get_fault_state(fault_state_1, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state_1, DUT_NODE, chn);
             
             if (i = 10) then
                 check_m(fault_state_1 = fc_error_active,
@@ -171,9 +171,9 @@ package body bus_start_ftest is
             end if;
         end loop;
 
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 2, DUT_NODE, chn);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 2, DUT_NODE, chn);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @3. Enable Test node, wait until ACK field in Test node. Force the
@@ -182,13 +182,13 @@ package body bus_start_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Enable node 2");
 
-        CAN_turn_controller(true, TEST_NODE, chn);
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
         force_bus_level(DOMINANT, chn);
-        CAN_wait_not_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_ack, DUT_NODE, chn);
         release_bus_level(chn);
 
-        CAN_read_pc_debug_m(read_state, DUT_NODE, chn);
+        ctu_get_curr_frame_field(read_state, DUT_NODE, chn);
         check_m(read_state = pc_deb_ack_delim, "Test node is in ACK delimiter!");
 
         ------------------------------------------------------------------------
@@ -199,9 +199,9 @@ package body bus_start_ftest is
         info_m("Step 4: Check integration of Test node");
 
         for i in 0 to 10 loop
-            CAN_wait_sample_point(TEST_NODE, chn);
+            ctu_wait_sample_point(TEST_NODE, chn);
             wait for 21 ns; -- For DFF to flip
-            get_fault_state(fault_state_1, TEST_NODE, chn);
+            ctu_get_fault_state(fault_state_1, TEST_NODE, chn);
             
             if (i = 10) then
                 check_m(fault_state_1 = fc_error_active,
@@ -218,8 +218,8 @@ package body bus_start_ftest is
         ------------------------------------------------------------------------
         info_m("Step 5: Check Test node joined bus communication!");
 
-        CAN_wait_tx_rx_start(true, true, TEST_NODE, chn);
-        get_controller_status(status, TEST_NODE, chn);
+        ctu_wait_frame_start(true, true, TEST_NODE, chn);
+        ctu_get_status(status, TEST_NODE, chn);
         
         check_m(status.receiver, "Test node joined bus communication!");
 

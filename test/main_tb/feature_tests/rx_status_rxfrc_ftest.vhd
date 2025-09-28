@@ -127,10 +127,10 @@ package body rx_status_rxfrc_ftest is
         info_m("Step 1");
 
         command.release_rec_buffer := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         command.release_rec_buffer := false;
 
-        get_rx_buf_state(buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Free memory, buffer status and message count is checked.
@@ -163,15 +163,15 @@ package body rx_status_rxfrc_ftest is
         CAN_frame.ident_type := BASE;
         CAN_frame.frame_format := NORMAL_CAN;
         CAN_frame.data_length := 0;
-        decode_length(CAN_frame.data_length, CAN_frame.dlc);
-        decode_dlc_rx_buff(CAN_frame.dlc, CAN_frame.rwcnt);
+        length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
+        dlc_to_rwcnt(CAN_frame.dlc, CAN_frame.rwcnt);
 
         for i in 1 to buf_info.rx_buff_size/4 loop
             info_m("Sending frame nr: " & integer'image(i));
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
 
             check_m(buf_info.rx_frame_count = i,
                     "RX Buffer frame count incremented");
@@ -185,12 +185,12 @@ package body rx_status_rxfrc_ftest is
 
         for i in 1 to buf_info.rx_buff_size/4 loop
             info_m("Reading frame nr: " & integer'image(i));
-            CAN_read_frame(RX_CAN_frame, DUT_NODE, chn);
-            CAN_compare_frames(CAN_frame, RX_CAN_frame, false, frames_match);
+            ctu_read_frame(RX_CAN_frame, DUT_NODE, chn);
+            compare_can_frames(CAN_frame, RX_CAN_frame, false, frames_match);
 
             check_m(frames_match, "Frame at position: " & integer'image(i) & " matches");
 
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
 
             check_m(buf_info.rx_frame_count = buf_info.rx_buff_size/4 - i,
                     "RX Buffer frame count decremented");

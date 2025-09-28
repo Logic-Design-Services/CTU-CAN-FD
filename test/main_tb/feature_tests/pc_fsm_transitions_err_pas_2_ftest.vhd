@@ -122,10 +122,10 @@ package body pc_fsm_transitions_err_pas_2_ftest is
         info_m("Step 1: Set DUT to Error Passive state");
 
         mode.test := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         err_counters.tx_counter := 180;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Send CAN frame by DUT. Wait until Intermission and force bus level to dominant
@@ -135,14 +135,14 @@ package body pc_fsm_transitions_err_pas_2_ftest is
 
         generate_can_frame(CAN_TX_frame);
 
-        CAN_insert_TX_frame(CAN_TX_frame, 1, TEST_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_put_tx_frame(CAN_TX_frame, 1, TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
         -- Overload condition
-        CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
         wait for 20 ns;
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         release_bus_level(chn);
         wait for 100 ns;
 
@@ -154,18 +154,18 @@ package body pc_fsm_transitions_err_pas_2_ftest is
 
         -- Wait till overload delimiter
         for i in 1 to 10 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         release_bus_level(chn);
         wait for 100 ns;
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
   end procedure;
 

@@ -139,13 +139,13 @@ package body retr_limit_3_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Configuring retransmitt limit to 1 (DUT), ACF (Test node)");
 
-        CAN_enable_retr_limit(true, retr_th, DUT_NODE, chn);
+        ctu_set_retr_limit(true, retr_th, DUT_NODE, chn);
 
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
         ------------------------------------------------------------------------
         -- @2. Set DUT TX Error counter to 150. Check that DUT is Error
@@ -156,21 +156,21 @@ package body retr_limit_3_ftest is
         info_m("Step 2: Set DUT to Error passive");
         
         err_counters.tx_counter := 150;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_passive, "Unit Error Passive!");
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_error_frame(DUT_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_err_frame(DUT_NODE, chn);
 
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 1,
             "Retransmitt counter 1 after Error frame!");
 
-        CAN_wait_pc_state(pc_deb_suspend, DUT_NODE, chn); -- Wait until suspend
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_field(pc_deb_suspend, DUT_NODE, chn); -- Wait until suspend
+        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
         
         ------------------------------------------------------------------------
         -- @3. Wait until Arbitration field in DUT, check that DUT is now
@@ -181,23 +181,23 @@ package body retr_limit_3_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Check Retransmitt counter not incremented when receiver only");
 
-        CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
         wait for 10 ns; -- Operational state updated in the same clock cycle!
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.receiver, "DUT turned receiver when in Error Passive!");
 
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
         
-        CAN_wait_not_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_ack, DUT_NODE, chn);
         release_bus_level(chn);
         
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame being transmitted!");
 
-        CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 1,
             "Retransmitt counter not incremented when unit was only receiver!");
         

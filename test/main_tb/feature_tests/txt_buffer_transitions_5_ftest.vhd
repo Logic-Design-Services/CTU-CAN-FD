@@ -148,15 +148,15 @@ package body txt_buffer_transitions_5_ftest is
         mode_1.tx_buf_bus_off_failed := true;
         mode_1.test := true; -- Test mode must be enabled toallow manipulation of Error counters!
 
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         --  @2. Loop for all TXT Buffers:
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
         for txt_buf_index in 1 to num_txt_bufs loop
 
             ---------------------------------------------------------------------------------------
@@ -167,16 +167,16 @@ package body txt_buffer_transitions_5_ftest is
 
             for i in 1 to num_txt_bufs loop
                 if (i = txt_buf_index) then
-                    CAN_configure_tx_priority(i, 2, DUT_NODE, chn);
+                    ctu_set_txt_buf_prio(i, 2, DUT_NODE, chn);
                 else
-                    CAN_configure_tx_priority(i, 1, DUT_NODE, chn);
+                    ctu_set_txt_buf_prio(i, 1, DUT_NODE, chn);
                 end if;
             end loop;
 
             -- Preset the Error counter to just before bus-off
             err_counters.tx_counter := 254;
             err_counters.rx_counter := 0;
-            set_error_counters(err_counters, DUT_NODE, chn);
+            ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
             wait for 20 ns;
 
             ---------------------------------------------------------------------------------------
@@ -189,16 +189,16 @@ package body txt_buffer_transitions_5_ftest is
             generate_can_frame(CAN_frame);
 
             for i in 1 to num_txt_bufs loop
-                CAN_insert_TX_frame(CAN_frame, i, DUT_NODE, chn);
+                ctu_put_tx_frame(CAN_frame, i, DUT_NODE, chn);
             end loop;
 
             -- Send Set Ready to all TXT Buffers simultaneously
-            send_TXT_buf_cmd(buf_set_ready, "11111111", DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, "11111111", DUT_NODE, chn);
 
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
             for i in 1 to num_txt_bufs loop
-                get_tx_buf_state(i, txt_buf_state, DUT_NODE, chn);
+                ctu_get_txt_buf_state(i, txt_buf_state, DUT_NODE, chn);
 
                 if (i = txt_buf_index) then
                     check_m(txt_buf_state = buf_tx_progress,
@@ -216,18 +216,18 @@ package body txt_buffer_transitions_5_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.3");
 
-            CAN_wait_pc_state(pc_deb_crc, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
 
             flip_bus_level(chn);
 
-            CAN_wait_error_frame(DUT_NODE, chn);
+            ctu_wait_err_frame(DUT_NODE, chn);
 
-            get_fault_state(fault_state, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state, DUT_NODE, chn);
 
             check_m(fault_state = fc_bus_off, "DUT is bus-off");
 
             for i in 1 to num_txt_bufs loop
-                get_tx_buf_state(i, txt_buf_state, DUT_NODE, chn);
+                ctu_get_txt_buf_state(i, txt_buf_state, DUT_NODE, chn);
                 check_m(txt_buf_state = buf_failed,
                         "TXT Buffer " & integer'image(i) & " in TX Failed");
             end loop;
@@ -241,9 +241,9 @@ package body txt_buffer_transitions_5_ftest is
             --       bus again.
             ---------------------------------------------------------------------------------------
 
-            CAN_turn_controller(false, DUT_NODE, chn);
-            CAN_turn_controller(true, DUT_NODE, chn);
-            CAN_wait_bus_on(DUT_NODE, chn);
+            ctu_turn(false, DUT_NODE, chn);
+            ctu_turn(true, DUT_NODE, chn);
+            ctu_wait_err_active(DUT_NODE, chn);
 
         end loop;
 

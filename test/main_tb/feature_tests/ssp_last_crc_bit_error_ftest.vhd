@@ -126,7 +126,7 @@ package body ssp_last_crc_bit_error_ftest is
         variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable frame_bits         :       integer;
         variable bit_index          :       integer;
-        variable pc_dbg             :       t_ctu_pc_dbg;
+        variable pc_dbg             :       t_ctu_frame_field;
         variable bit_timing         :       t_ctu_bit_time_cfg;
     begin
 
@@ -139,9 +139,9 @@ package body ssp_last_crc_bit_error_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 1: Configure DUT");
         mode.test := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
-        ftr_tb_set_tran_delay(1 ns, DUT_NODE, chn);
+        set_transceiver_delay(1 ns, DUT_NODE, chn);
 
         -- Reconfigure bit-rate and SSP so that we are sure that SSP position is configured on the
         -- sample place as regular sample point position!
@@ -159,23 +159,23 @@ package body ssp_last_crc_bit_error_ftest is
         bit_timing.ph2_dbt    := 3;
         bit_timing.sjw_dbt    := 1;
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
-        CAN_configure_timing(bit_timing, DUT_NODE, chn);
-        CAN_configure_timing(bit_timing, TEST_NODE, chn);
+        ctu_set_bit_time_cfg(bit_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bit_timing, TEST_NODE, chn);
 
         -- Configure SSP with measured and offset.
         -- The SSP delay of 10 corresponds to 7 regular SP delay + synchronization
         -- of CAN RX input
-        CAN_configure_ssp(ssp_meas_n_offset, x"0A", DUT_NODE, chn);
-        CAN_configure_ssp(ssp_meas_n_offset, x"0A", TEST_NODE, chn);
+        ctu_set_ssp(ssp_meas_n_offset, x"0A", DUT_NODE, chn);
+        ctu_set_ssp(ssp_meas_n_offset, x"0A", TEST_NODE, chn);
 
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_turn_controller(true, TEST_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
 
-        CAN_wait_bus_on(DUT_NODE, chn);
-        CAN_wait_bus_on(TEST_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
 
 
         -------------------------------------------------------------------------------------------
@@ -198,31 +198,31 @@ package body ssp_last_crc_bit_error_ftest is
             info_m("Step 2.1: Set DUT node to Error Active.");
 
             err_counters.rx_counter := 0;
-            set_error_counters(err_counters, DUT_NODE, chn);
+            ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @2.2 Send a Frame by DUT node. Wait for incrementing number of bits
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2: Send a Frame by DUT node. Wait for incrementing number of bits");
 
-            CAN_insert_TX_frame(CAN_TX_frame, 1, DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_TX_frame, 1, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
             info_m("Waiting for " & integer'image(bit_index) & " bits!");
             for j in 0 to bit_index loop
-                CAN_wait_sync_seg(DUT_NODE, chn);
+                ctu_wait_sync_seg(DUT_NODE, chn);
             end loop;
 
             wait for 20 ns;
 
             -- If we get up to CRC Delim, we finish, flipping CRC Delimt will not
             -- result in Error frame.
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
             if (pc_dbg = pc_deb_crc_delim) then
-                CAN_wait_bus_idle(DUT_NODE, chn);
-                CAN_wait_bus_idle(TEST_NODE, chn);
+                ctu_wait_bus_idle(DUT_NODE, chn);
+                ctu_wait_bus_idle(TEST_NODE, chn);
                 exit bit_iter_loop;
             end if;
 
@@ -232,10 +232,10 @@ package body ssp_last_crc_bit_error_ftest is
             info_m("Step 2.3 Flip a bit on DUT CAN RX.");
 
             flip_bus_level(chn);
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             release_bus_level(chn);
 
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
 
             -----------------------------------------------------------------------
             -- @2.4 Check that DUT is either transmitting an error frame, or it
@@ -243,7 +243,7 @@ package body ssp_last_crc_bit_error_ftest is
             -----------------------------------------------------------------------
             info_m("Step 2.4 Check error frame or arbitration lost");
 
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
 
             check_m(status.receiver or status.error_transmission,
                     "DUT either lost arbitration or is transmitting error frame");
@@ -253,7 +253,7 @@ package body ssp_last_crc_bit_error_ftest is
             -----------------------------------------------------------------------
             info_m("Step 2.5 Wait until bus is idle.");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
             bit_index := bit_index + 1;
 

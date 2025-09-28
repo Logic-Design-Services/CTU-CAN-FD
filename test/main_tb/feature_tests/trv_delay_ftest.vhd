@@ -140,8 +140,8 @@ package body trv_delay_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
         -- Should be 250 Kbit/s
         bus_timing.prop_nbt := 37;
@@ -157,38 +157,38 @@ package body trv_delay_ftest is
         bus_timing.tq_dbt := 1;
         bus_timing.sjw_dbt := 5;
 
-        CAN_configure_timing(bus_timing, DUT_NODE, chn);
-        CAN_configure_timing(bus_timing, TEST_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
 
-        CAN_configure_ssp(ssp_meas_n_offset, "00000111", DUT_NODE, chn);
-        CAN_configure_ssp(ssp_meas_n_offset, "00000111", TEST_NODE, chn);
+        ctu_set_ssp(ssp_meas_n_offset, "00000111", DUT_NODE, chn);
+        ctu_set_ssp(ssp_meas_n_offset, "00000111", TEST_NODE, chn);
 
         -- Turn the controllers on!
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_turn_controller(true, TEST_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
 
         -- Wait till integration is over!
-        CAN_wait_bus_on(DUT_NODE, chn);
-        CAN_wait_bus_on(TEST_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
         
         -----------------------------------------------------------------------
         -- @2. Configure delay to 1 ns in TB. Run CAN FD frame and verify that
         --     measured delay is correct! 
         -----------------------------------------------------------------------
         info_m("Step 2");
-        ftr_tb_set_tran_delay(1 ns, DUT_NODE, chn);
+        set_transceiver_delay(1 ns, DUT_NODE, chn);
         generate_can_frame(CAN_TX_frame);
         CAN_TX_frame.rtr := NO_RTR_FRAME;
         CAN_TX_frame.frame_format := FD_CAN;
         CAN_TX_frame.brs := BR_SHIFT;
 
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
-        read_trv_delay(measured_delay, DUT_NODE, chn);
+        ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
         
         -- Measured delay is always rounded up to nearest multiple of 10 ns
         -- (Delay of 1 ns -> 10 ns -> 1)!
@@ -196,8 +196,8 @@ package body trv_delay_ftest is
               " Expected: " & integer'image(2) &
               " Measured: " & integer'image(measured_delay));
 
-        CAN_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
+        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
         
         check_m(frames_equal, "TX RX frames match");
 
@@ -206,15 +206,15 @@ package body trv_delay_ftest is
         --     that measured delay is 127.
         -----------------------------------------------------------------------
         info_m("Step 3");
-        ftr_tb_set_tran_delay(1255 ns, DUT_NODE, chn);
+        set_transceiver_delay(1255 ns, DUT_NODE, chn);
 
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
-        read_trv_delay(measured_delay, DUT_NODE, chn);
+        ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
         
         -- Measured delay is always rounded up to nearest multiple of 10 ns
         -- (Delay of 1255 ns -> 1250 -> 125 + 2 synchronisation cycles = 127)!
@@ -222,8 +222,8 @@ package body trv_delay_ftest is
               " Expected: " & integer'image(127) &
               " Measured: " & integer'image(measured_delay));
 
-        CAN_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
+        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
 
         check_m(frames_equal, "TX RX frames match");
 
@@ -232,12 +232,12 @@ package body trv_delay_ftest is
         --     that measured value is 127 (value has not overflown!).
         -----------------------------------------------------------------------
         info_m("Step 4");
-        ftr_tb_set_tran_delay(1305 ns, DUT_NODE, chn);
+        set_transceiver_delay(1305 ns, DUT_NODE, chn);
 
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(TEST_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(TEST_NODE, chn);
 
-        read_trv_delay(measured_delay, DUT_NODE, chn);
+        ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
         
         -- Measured delay should have saturated at 127!
         check_m(measured_delay = 127, "Saturated transmitter delay!" &
@@ -247,8 +247,8 @@ package body trv_delay_ftest is
         -- Now CAN frame should pass because SSP Offset is high enough that
         -- it will compensate for missing delay caused by saturation!
 
-        CAN_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
+        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
 
         check_m(frames_equal, "TX RX frames match");
 
@@ -279,12 +279,12 @@ package body trv_delay_ftest is
         end if;
         
         info_m("Random time is: " & integer'image(rand_time) & " ns");
-        ftr_tb_set_tran_delay((rand_time * 1 ns), DUT_NODE, chn);
+        set_transceiver_delay((rand_time * 1 ns), DUT_NODE, chn);
 
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(TEST_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(TEST_NODE, chn);
 
-        read_trv_delay(measured_delay, DUT_NODE, chn);
+        ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
 
         -- Ceil will give us one more clock cycle. We need one more to
         -- compensate full input delay.
@@ -298,8 +298,8 @@ package body trv_delay_ftest is
         -- Now CAN frame should pass because SSP Offset is high enough that
         -- it will compensate for missing delay caused by saturation!
 
-        CAN_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
+        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
 
         check_m(frames_equal, "TX RX frames match");
 

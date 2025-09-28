@@ -123,7 +123,7 @@ package body status_txnf_ftest is
     begin
         
         -- Read number of TXT buffers to adapt based on number of TXT buffers.
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
         
         -----------------------------------------------------------------------
         -- @1. Set BMM mode in DUT. Check that STATUS[TXNF] is set (all TXT
@@ -132,9 +132,9 @@ package body status_txnf_ftest is
         info_m("Step 1");
         
         mode_1.bus_monitoring := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.tx_buffer_empty, "STATUS[TXNF] set!");
 
         -----------------------------------------------------------------------
@@ -145,12 +145,12 @@ package body status_txnf_ftest is
         info_m("Step 2");
         
         for i in 1 to num_txt_bufs loop
-            send_TXT_buf_cmd(buf_set_ready, i, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, i, DUT_NODE, chn);
             
             -- Waiting time for FSM to change state!
             wait for 20 ns;
             
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
 
             if (i = num_txt_bufs) then
                 check_false_m(stat_1.tx_buffer_empty,
@@ -170,29 +170,29 @@ package body status_txnf_ftest is
         info_m("Step 3");
         
         for i in 1 to num_txt_bufs loop
-            get_tx_buf_state(i, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(i, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_failed, "TXT Buffer: " &
                 integer'image(i) & " failed!");
         end loop;
 
         for i in 1 to num_txt_bufs loop
-            send_TXT_buf_cmd(buf_set_empty, i, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_empty, i, DUT_NODE, chn);
             
             -- Waiting time for FSM to change state!
             wait for 20 ns;
             
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_m(stat_1.tx_buffer_empty, "STATUS[TXNF] set!");
             
-            send_TXT_buf_cmd(buf_set_ready, i, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, i, DUT_NODE, chn);
             
             -- Waiting time for FSM to change state!
             wait for 20 ns;
             
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_false_m(stat_1.tx_buffer_empty, "STATUS[TXNF] not set!");
             
-            get_tx_buf_state(i, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(i, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_failed, "TXT Buffer: " &
                 integer'image(i) & " ready!");
         end loop;

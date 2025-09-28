@@ -130,7 +130,7 @@ package body mode_fdrf_ftest is
         
         mode_1.acceptance_filter := true;
         mode_1.fdrf := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         -- Filter A (set mask to 0 - accept all frames)
         filt_A_cfg.ID_value := 0;
@@ -138,7 +138,7 @@ package body mode_fdrf_ftest is
         filt_A_cfg.ident_type := BASE;
         filt_A_cfg.acc_CAN_2_0 := true;
         filt_A_cfg.acc_CAN_FD := true;
-        CAN_set_mask_filter(filter_A, filt_A_cfg, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_A, filt_A_cfg, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Send RTR frame by Test node. Wait until frame is sent and check 
@@ -152,10 +152,10 @@ package body mode_fdrf_ftest is
         CAN_TX_frame.identifier := CAN_TX_frame.identifier mod 2048;
         CAN_TX_frame.rtr := RTR_FRAME;
         
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
         
-        get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         check_m(rx_buf_state.rx_frame_count = 0, "Frame filtered out!");
 
         ------------------------------------------------------------------------
@@ -164,7 +164,7 @@ package body mode_fdrf_ftest is
         info_m("Step 3: Disable SETTINGS[FDRF]");
         
         mode_1.fdrf := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
         ------------------------------------------------------------------------
         -- @4. Send RTR frame by Test node. Wait until frame is sent and check 
@@ -177,10 +177,10 @@ package body mode_fdrf_ftest is
         CAN_TX_frame.identifier := CAN_TX_frame.identifier mod 2048;
         CAN_TX_frame.rtr := RTR_FRAME;
         
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
         
-        get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         check_m(rx_buf_state.rx_frame_count = 1, "Frame NOT filtered out!");
         
   end procedure;

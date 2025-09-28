@@ -150,9 +150,9 @@ package body frame_test_fstc_ftest is
         -- not getting ACK due to flipped bit. This-way we can check that test-node
         -- has detected CRC error!
         mode_1.self_test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
-        get_tx_buf_count(txt_buf_count, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
         
         -----------------------------------------------------------------------
         -- @2. Generate random CAN FD frame. Transmit it by DUT, record
@@ -163,21 +163,21 @@ package body frame_test_fstc_ftest is
         generate_can_frame(CAN_TX_frame);
         CAN_TX_frame.frame_format := FD_CAN;
 
-        pick_random_txt_buffer(txt_buf_index, DUT_NODE, chn);
-        CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+        ctu_get_rand_txt_buf(txt_buf_index, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
 
-        send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-        CAN_wait_pc_state(pc_deb_stuff_count, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_stuff_count, DUT_NODE, chn);
         
         for i in 0 to 3 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             get_can_tx(DUT_NODE, golden_stc(i), chn);
         end loop;
 
         info_m("Original stuff count value is: 0x" & to_string(golden_stc));
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Send again the same frame as in previous point, only flip 
@@ -186,18 +186,18 @@ package body frame_test_fstc_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
 
         rand_int_v(3, bit_to_flip);
-        CAN_set_frame_test(txt_buf_index, bit_to_flip, true, false, false,
+        ctu_set_tx_frame_test(txt_buf_index, bit_to_flip, true, false, false,
                            DUT_NODE, chn);
 
-        send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-        CAN_wait_pc_state(pc_deb_stuff_count, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_stuff_count, DUT_NODE, chn);
         
         for i in 0 to 3 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             get_can_tx(DUT_NODE, real_stc(i), chn);
         end loop;
 
@@ -217,16 +217,16 @@ package body frame_test_fstc_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4");
 
-        CAN_wait_error_frame(TEST_NODE, chn);
+        ctu_wait_err_frame(TEST_NODE, chn);
         wait for 20 ns;
 
-        CAN_read_error_code_capture(err_capt, TEST_NODE, chn);
+        ctu_get_err_capt(err_capt, TEST_NODE, chn);
 
         check_m(err_capt.err_pos = err_pos_ack, "Error in ACK field");
         check_m(err_capt.err_type = can_err_crc, "CRC error detected");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
   end procedure;
 

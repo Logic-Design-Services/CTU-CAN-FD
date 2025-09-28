@@ -136,10 +136,10 @@ package body rx_err_log_8_ftest is
 
         mode_1.error_logging := true;
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         --  @2. Iterate over scenarios: Error Active, Error Passive.
@@ -156,10 +156,10 @@ package body rx_err_log_8_ftest is
 
             if (fault_state = fc_error_passive) then
                 err_counters.rx_counter := 150;
-                set_error_counters(err_counters, DUT_NODE, chn);
+                ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
             else
                 err_counters.rx_counter := 10;
-                set_error_counters(err_counters, DUT_NODE, chn);
+                ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
             end if;
 
             ---------------------------------------------------------------------------------------
@@ -168,9 +168,9 @@ package body rx_err_log_8_ftest is
             info_m("Step 2.2");
 
             generate_can_frame(CAN_frame);
-            CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             --  @2.3 Check DUT node has a single frame in RX Buffer. Read this frame,
@@ -180,10 +180,10 @@ package body rx_err_log_8_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.3");
 
-            get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
             check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-            CAN_read_frame(err_frame, DUT_NODE, chn);
+            ctu_read_frame(err_frame, DUT_NODE, chn);
             check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
 
             if (fault_state = fc_error_passive) then

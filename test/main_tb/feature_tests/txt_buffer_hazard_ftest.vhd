@@ -126,13 +126,13 @@ package body txt_buffer_hazard_ftest is
         generate_can_frame(CAN_frame);
     
         -- Insert the frame for transmittion
-        CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
     
         -- Repeat test several times
         for i in 1 to 150 loop
     
             -- Give "Set ready" command to the buffer
-            send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
     
             -- Wait for some clock cycles before sending abort command.
             for j in 0 to i loop
@@ -140,7 +140,7 @@ package body txt_buffer_hazard_ftest is
             end loop;
     
             -- Give "Set abort" command to the buffer
-            send_TXT_buf_cmd(buf_set_abort, 1, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_abort, 1, DUT_NODE, chn);
     
             -- Wait for some clock cycles before reading buffer and controller state
             for j in 0 to 20 loop
@@ -148,10 +148,10 @@ package body txt_buffer_hazard_ftest is
             end loop;
     
             -- Read "TXT Buffer state"
-            get_tx_buf_state(1, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(1, txt_buf_state, DUT_NODE, chn);
     
             -- Read status of CTU CAN FD controller.
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
     
             -- Is controller transmitting?
             if (status.transmitter) then
@@ -165,10 +165,10 @@ package body txt_buffer_hazard_ftest is
                          "in consistence state." & " [" & to_string(i) & "]");
              
                     -- Wait until bus is idle 
-                    CAN_wait_bus_idle(DUT_NODE, chn);
+                    ctu_wait_bus_idle(DUT_NODE, chn);
     
                     -- Is the unit now in idle since it is after transmittion already?
-                    get_controller_status(status, DUT_NODE, chn);
+                    ctu_get_status(status, DUT_NODE, chn);
                     check_m(status.bus_status, "Unit is not Idle!");
                 else
                     -- Inconsistency happened

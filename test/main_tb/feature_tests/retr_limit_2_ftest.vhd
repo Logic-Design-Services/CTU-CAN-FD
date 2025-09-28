@@ -174,14 +174,14 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Configuring retransmitt limit to 1 (DUT), ACF (Test node)");
 
-        CAN_enable_retr_limit(true, retr_th, DUT_NODE, chn);
+        ctu_set_retr_limit(true, retr_th, DUT_NODE, chn);
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
-        CAN_configure_tx_priority(1, 1, DUT_NODE, chn);
-        CAN_configure_tx_priority(2, 2, DUT_NODE, chn);
+        ctu_set_txt_buf_prio(1, 1, DUT_NODE, chn);
+        ctu_set_txt_buf_prio(2, 2, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Send frame from TXT Buffer 2 by DUT. After 2 transmit attempts,
@@ -191,17 +191,17 @@ package body retr_limit_2_ftest is
         info_m("Step 2: Sending frame by DUT");
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         for i in 0 to 1 loop
-            CAN_wait_error_frame(DUT_NODE, chn);
-            CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
+            ctu_wait_err_frame(DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
         end loop;
         
-        CAN_send_frame(CAN_frame, 2, DUT_NODE, chn, frame_sent);
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_send_frame(CAN_frame, 2, DUT_NODE, chn, frame_sent);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 2, "Retransmitt counter equal to 2!");
-        CAN_wait_not_pc_state(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_intermission, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @3. Wait until transmission starts by DUT. Check that TXT Buffer 2
@@ -210,12 +210,12 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Checking TXT Buffer 2 selected!");
 
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-        get_tx_buf_state(2, buf_state, DUT_NODE, chn);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
+        ctu_get_txt_buf_state(2, buf_state, DUT_NODE, chn);
         check_m(buf_state = buf_tx_progress, "Buffer 2 selected!");
-        get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         check_m(buf_state = buf_ready, "Buffer 1 not selected!");
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 0, "Retransmitt counter equal to 0!");
 
         ------------------------------------------------------------------------
@@ -232,12 +232,12 @@ package body retr_limit_2_ftest is
         for i in 0 to retr_th loop
             
             -- Additionally, check intermediate value of retransmitt counter!
-            CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+            ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
             check_m(retr_ctr = i,
                 "Retransmitt counter equal to number of Errors!");
             
-            CAN_wait_frame_sent(DUT_NODE, chn);
-            get_tx_buf_state(2, buf_state, DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
+            ctu_get_txt_buf_state(2, buf_state, DUT_NODE, chn);
             if (i /= retr_th) then
                 check_m(buf_state = buf_ready, "TXT Buffer ready");
             else
@@ -245,7 +245,7 @@ package body retr_limit_2_ftest is
             end if;
 
             if (i = 1) then
-                send_TXT_buf_cmd(buf_set_abort, 1, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_abort, 1, DUT_NODE, chn);
             end if;
 
         end loop;
@@ -255,7 +255,7 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 5: Check retransmitt counter is 0 after TXT Buffer in TX Error!");
 
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 0, "Retransmitt counter equal to 0!");
 
         ------------------------------------------------------------------------
@@ -265,11 +265,11 @@ package body retr_limit_2_ftest is
         info_m("Step 6: Clear TX Error counter in DUT. Send frame from Test node.");
 
         err_counters.tx_counter := 0;
-        set_error_counters(err_counters, DUT_NODE, chn);
-        read_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
         check_m(err_counters.tx_counter = 0, "Error counter cleared!");
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         ------------------------------------------------------------------------
         -- @7. Wait until error frame (due to ACF in Test node), corrupt bus level
@@ -277,11 +277,11 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 7: Corrupting bus level for 6 bits during Error frame!");
 
-        CAN_wait_error_frame(DUT_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
         for i in 0 to 5 loop
             info_m("Bit number: " & integer'image(i));
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             wait for 15 ns; -- Wait till sample point is not active anymore!
         end loop;
         release_bus_level(chn);
@@ -296,30 +296,30 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 8: Checking Error counters!");
 
-        CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 1,
             "Retransmitt counter incremented only once during multiple error frames!");
-        get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         check_m(buf_state = buf_ready, "TXT Buffer ready");
-        read_error_counters(err_counters, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
         check_m(err_counters.tx_counter = 56, "Error counter cleared!");
 
         while (buf_state /= buf_failed) loop
-            get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
             wait for 1000 ns;
         end loop;
 
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 0,
             "Retransmitt counter cleared after TX Error!");
         
         -- Wait until bus is idle, clear Error counters to avoid going to error
         -- Passive.
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
         err_counters.tx_counter := 0;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         
         ------------------------------------------------------------------------
         -- @9. Insert frame with CAN ID = 10 to DUT, CAN ID = 9 to Test node.
@@ -332,29 +332,29 @@ package body retr_limit_2_ftest is
 
         generate_can_frame(CAN_frame);
         CAN_frame.identifier := 10;
-        CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
         CAN_frame.identifier := 9;
-        CAN_insert_TX_frame(CAN_frame, 1, TEST_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_put_tx_frame(CAN_frame, 1, TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
         
-        CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
-        CAN_wait_pc_state(pc_deb_arbitration, TEST_NODE, chn);
+        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_arbitration, TEST_NODE, chn);
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.transmitter, "DUT transmitter");
-        get_controller_status(status, TEST_NODE, chn);
+        ctu_get_status(status, TEST_NODE, chn);
         check_m(status.transmitter, "Test node transmitter");
 
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
-        CAN_wait_pc_state(pc_deb_control, TEST_NODE, chn);
+        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_control, TEST_NODE, chn);
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.receiver, "DUT receiver");
-        get_controller_status(status, TEST_NODE, chn);
+        ctu_get_status(status, TEST_NODE, chn);
         check_m(status.transmitter, "Test node transmitter");
 
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 1,
             "Retransmitt counter incremented after arbitration loss!");
 
@@ -369,30 +369,30 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 10: Wait until ACK field");
 
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
-        CAN_wait_not_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_ack, DUT_NODE, chn);
         release_bus_level(chn);
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame being transmitted!");
         
-        CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 1,
             "Retransmitt counter incremented only once during arbitration loss" &
             " and Error frame during single frame!");
         
-        get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         while (buf_state /= buf_failed) loop
-            get_tx_buf_state(1, buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
             wait for 1000 ns;
         end loop;
         
-        CAN_read_retr_ctr(retr_ctr, DUT_NODE, chn);
+        ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 0,
             "Retransmitt counter 0 when TXT Buffer goes to TX Error!");
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
         
   end procedure;
 

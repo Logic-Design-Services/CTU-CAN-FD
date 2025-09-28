@@ -124,7 +124,7 @@ package body int_rxne_ftest is
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
-        variable pc_dbg             :     t_ctu_pc_dbg;
+        variable pc_dbg             :     t_ctu_frame_field;
         variable rxb_state          :     t_ctu_rx_buff_info;
         type read_kind_t is (read_before, read_after);
     begin
@@ -148,8 +148,8 @@ package body int_rxne_ftest is
                     int_mask.rx_buffer_not_empty_int := mask;
                     int_ena.rx_buffer_not_empty_int := ena;
 
-                    write_int_mask(int_mask, DUT_NODE, chn);
-                    write_int_enable(int_ena, DUT_NODE, chn);
+                    ctu_set_int_mask(int_mask, DUT_NODE, chn);
+                    ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
                     ---------------------------------------------------------------
                     -- @2.2 Send a frame by a Test Node and Wait unitl frame is sent.
@@ -159,10 +159,10 @@ package body int_rxne_ftest is
                     generate_can_frame(CAN_frame);
                     CAN_frame.data_length := 1;
                     CAN_frame.frame_format := FD_CAN;
-                    decode_length(CAN_frame.data_length, CAN_frame.dlc);
+                    length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
 
-                    CAN_send_frame(CAN_Frame, 1, TEST_NODE, chn, frame_sent);
-                    CAN_wait_frame_sent(TEST_NODE, chn);
+                    ctu_send_frame(CAN_Frame, 1, TEST_NODE, chn, frame_sent);
+                    ctu_wait_frame_sent(TEST_NODE, chn);
 
                     ---------------------------------------------------------------
                     -- @2.3 Check that when Interrupt is masked it is not captured.
@@ -172,10 +172,10 @@ package body int_rxne_ftest is
                     info_m("Step 2.3");
 
                     if (read_kind = read_before) then
-                        CAN_read_frame(CAN_frame_rx, DUT_NODE, chn);
+                        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
                     end if;
 
-                    read_int_status(int_stat, DUT_NODE, chn);
+                    ctu_get_int_status(int_stat, DUT_NODE, chn);
                     wait for 20 ns;
 
                     check_m(int_stat.rx_buffer_not_empty_int = (not mask),
@@ -189,22 +189,22 @@ package body int_rxne_ftest is
 
                         -- Disable and check output is low
                         int_ena.rx_buffer_not_empty_int := false;
-                        write_int_enable(int_ena, DUT_NODE, chn);
+                        ctu_set_int_ena(int_ena, DUT_NODE, chn);
                         wait for 20 ns;
                         interrupt_agent_check_not_asserted(chn);
 
                         -- Enable and check output is high again
                         int_ena.rx_buffer_not_empty_int := true;
-                        write_int_enable(int_ena, DUT_NODE, chn);
+                        ctu_set_int_ena(int_ena, DUT_NODE, chn);
                         wait for 20 ns;
                         interrupt_agent_check_asserted(chn);
 
                         -- Mask, and clear and check it was cleared
                         int_mask.rx_buffer_not_empty_int := true;
-                        write_int_mask(int_mask, DUT_NODE, chn);
-                        clear_int_status(int_stat, DUT_NODE, chn);
+                        ctu_set_int_mask(int_mask, DUT_NODE, chn);
+                        ctu_clr_int_status(int_stat, DUT_NODE, chn);
                         wait for 20 ns;
-                        read_int_status(int_stat, DUT_NODE, chn);
+                        ctu_get_int_status(int_stat, DUT_NODE, chn);
 
                         check_false_m(int_stat.rx_buffer_not_empty_int,
                                     "RX Buffer Full Interrupt cleared!");
@@ -213,10 +213,10 @@ package body int_rxne_ftest is
                         -- Unmask again and check status based
                         -- on previously read frame.
                         int_mask.rx_buffer_not_empty_int := false;
-                        write_int_mask(int_mask, DUT_NODE, chn);
+                        ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
                         wait for 20 ns;
-                        read_int_status(int_stat, DUT_NODE, chn);
+                        ctu_get_int_status(int_stat, DUT_NODE, chn);
                         if (read_kind = read_before) then
                             check_false_m(int_stat.rx_buffer_not_empty_int,
                                           "RXNE not set after frame was already read");
@@ -227,10 +227,10 @@ package body int_rxne_ftest is
 
                         -- Mask and clear again
                         int_mask.rx_buffer_not_empty_int := true;
-                        write_int_mask(int_mask, DUT_NODE, chn);
-                        clear_int_status(int_stat, DUT_NODE, chn);
+                        ctu_set_int_mask(int_mask, DUT_NODE, chn);
+                        ctu_clr_int_status(int_stat, DUT_NODE, chn);
                         wait for 20 ns;
-                        read_int_status(int_stat, DUT_NODE, chn);
+                        ctu_get_int_status(int_stat, DUT_NODE, chn);
 
                         check_false_m(int_stat.rx_buffer_not_empty_int,
                                     "RX Buffer Full Interrupt cleared!");
@@ -240,7 +240,7 @@ package body int_rxne_ftest is
                     end if;
 
                     if (read_kind = read_after) then
-                        CAN_read_frame(CAN_frame_rx, DUT_NODE, chn);
+                        ctu_read_frame(CAN_frame_rx, DUT_NODE, chn);
                     end if;
 
                 end loop;

@@ -168,7 +168,7 @@ package body tx_arb_time_tran_ftest is
         info_m("Step 1");
 
         mode.time_triggered_transm := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         -------------------------------------------------------------------------
         -- @2. Configure random timestamp to testbench. Generate random frame and
@@ -201,7 +201,7 @@ package body tx_arb_time_tran_ftest is
                 integer'image(ts_offset));
 
         info_m("Random timestamp set: " & to_hstring(ts_rand));
-        ftr_tb_set_timestamp(ts_rand, chn);
+        set_timestamp(ts_rand, chn);
 
         ts_offset_padded := (OTHERS => '0');
         ts_offset_padded(31 downto 0) := std_logic_vector(to_unsigned(ts_offset, 32));
@@ -209,16 +209,16 @@ package body tx_arb_time_tran_ftest is
         CAN_frame.timestamp := ts_expected;
         info_m("Expected time of transmission: " & to_hstring(ts_expected));
 
-        CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
         -- Capture immediate timestamp after set ready and after TX start!
         timestamp_agent_get_timestamp(chn, ts_set_ready);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
         timestamp_agent_get_timestamp(chn, ts_tx_start);
 
         -- Read bit-time, calculate diff and check
-        CAN_read_timing_v(bus_timing, DUT_NODE, chn);
+        ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
         clk_per_bit := bus_timing.tq_nbt * (1 + bus_timing.prop_nbt +
                         bus_timing.ph1_nbt + bus_timing.ph2_nbt);
         if (unsigned(ts_tx_start) > unsigned(ts_expected)) then
@@ -234,7 +234,7 @@ package body tx_arb_time_tran_ftest is
             " Diff: " & integer'image(diff) &
             " Time per bit: " & integer'image(clk_per_bit));
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @3. Generate CAN frame for transmission with timestamp lower than
@@ -250,12 +250,12 @@ package body tx_arb_time_tran_ftest is
         generate_can_frame(CAN_frame);
         CAN_frame.timestamp := std_logic_vector(unsigned(ts_actual) - 1);
 
-        CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame, 1, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
         -- Capture immediate timestamp after set ready and after TX start!
         timestamp_agent_get_timestamp(chn, ts_set_ready);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
         timestamp_agent_get_timestamp(chn, ts_tx_start);
 
         if (unsigned(ts_tx_start) > unsigned(ts_set_ready)) then
@@ -266,14 +266,14 @@ package body tx_arb_time_tran_ftest is
 
         check_m(diff < clk_per_bit, "Time of transmission correct!");
 
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -- Read two dummy frames to empty RX Buffer for further reads!
-        CAN_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
-        CAN_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
+        ctu_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
+        ctu_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @4. Configure TXT Buffer 1 to higher priority than TXT Buffer 2. Insert
@@ -284,14 +284,14 @@ package body tx_arb_time_tran_ftest is
         info_m("Step 4");
 
         -- Generate buffers random!
-        pick_random_txt_buffer(buf_1_index, DUT_NODE, chn);
+        ctu_get_rand_txt_buf(buf_1_index, DUT_NODE, chn);
         buf_2_index := buf_1_index;
         while (buf_2_index = buf_1_index) loop
-            pick_random_txt_buffer(buf_2_index, DUT_NODE, chn);
+            ctu_get_rand_txt_buf(buf_2_index, DUT_NODE, chn);
         end loop;
 
-        CAN_configure_tx_priority(buf_2_index, 1, DUT_NODE, chn);
-        CAN_configure_tx_priority(buf_1_index, 2, DUT_NODE, chn);
+        ctu_set_txt_buf_prio(buf_2_index, 1, DUT_NODE, chn);
+        ctu_set_txt_buf_prio(buf_1_index, 2, DUT_NODE, chn);
         info_m("Higher priority buffer: " & integer'image(buf_1_index));
         info_m("Lower priority buffer: " & integer'image(buf_2_index));
 
@@ -301,23 +301,23 @@ package body tx_arb_time_tran_ftest is
         timestamp_agent_get_timestamp(chn, CAN_frame.timestamp);
         CAN_frame_2.timestamp := std_logic_vector(unsigned(CAN_frame.timestamp) + 3000);
 
-        CAN_insert_TX_frame(CAN_frame_2, buf_1_index, DUT_NODE, chn);
-        CAN_insert_TX_frame(CAN_frame, buf_2_index, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame_2, buf_1_index, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_frame, buf_2_index, DUT_NODE, chn);
 
-        send_TXT_buf_cmd(buf_set_ready, buf_1_index, DUT_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, buf_2_index, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, buf_1_index, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, buf_2_index, DUT_NODE, chn);
 
-        CAN_wait_frame_sent(TEST_NODE, chn);
-        CAN_wait_frame_sent(TEST_NODE, chn);
+        ctu_wait_frame_sent(TEST_NODE, chn);
+        ctu_wait_frame_sent(TEST_NODE, chn);
 
-        CAN_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
-        CAN_read_frame(CAN_frame_rx_2, TEST_NODE, chn);
+        ctu_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
+        ctu_read_frame(CAN_frame_rx_2, TEST_NODE, chn);
 
-        CAN_compare_frames(CAN_frame_rx_1, CAN_frame_2, false, frames_equal);
+        compare_can_frames(CAN_frame_rx_1, CAN_frame_2, false, frames_equal);
         check_m(frames_equal,
             "Higher priority buffer sent first although it has later timestamp!");
 
-        CAN_compare_frames(CAN_frame_rx_2, CAN_frame, false, frames_equal);
+        compare_can_frames(CAN_frame_rx_2, CAN_frame, false, frames_equal);
         check_m(frames_equal,
             "Lower priority buffer sent second although it has earlier timestamp!");
 

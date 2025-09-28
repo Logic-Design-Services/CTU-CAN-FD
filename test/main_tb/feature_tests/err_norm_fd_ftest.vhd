@@ -155,17 +155,17 @@ package body err_norm_fd_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
 
-        read_error_counters(err_counters_1_1, DUT_NODE, chn);
-        read_error_counters(err_counters_1_2, TEST_NODE, chn);
+        ctu_get_err_ctrs(err_counters_1_1, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_1_2, TEST_NODE, chn);
 
         generate_can_frame(frame_1);
         if (frame_1.frame_format = FD_CAN) then
             frame_1.brs := BR_NO_SHIFT;
         end if;
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- Should be enough to cover many parts of CAN frame but not go beyond
         -- frame!
@@ -175,7 +175,7 @@ package body err_norm_fd_ftest is
         info_m("Waiting for:" & integer'image(wait_time) & " bits!");
 
         for i in 1 to wait_time loop
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             info_m("Wait sync");
             wait for 20 ns;
         end loop;
@@ -188,14 +188,14 @@ package body err_norm_fd_ftest is
         end loop;
 
         force_bus_level(RECESSIVE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         wait for 20 ns; -- To be sure that opposite bit is sampled!
         release_bus_level(chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        read_error_counters(err_counters_2_1, DUT_NODE, chn);
-        read_error_counters(err_counters_2_2, TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2_1, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2_2, TEST_NODE, chn);
 
         check_m(err_counters_1_1.err_norm + 1 = err_counters_2_1.err_norm,
                 "ERR_NORM incremented by 1 in transmitter!");
@@ -216,18 +216,18 @@ package body err_norm_fd_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        read_error_counters(err_counters_1_1, DUT_NODE, chn);
-        read_error_counters(err_counters_1_2, TEST_NODE, chn);
+        ctu_get_err_ctrs(err_counters_1_1, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_1_2, TEST_NODE, chn);
 
         generate_can_frame(frame_1);
         frame_1.frame_format := FD_CAN;
         frame_1.brs := BR_SHIFT;
 
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
-        CAN_wait_not_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_not_frame_field(pc_deb_control, DUT_NODE, chn);
 
         -- Now we should be in Data bit rate! This is either CRC or data field!
         rand_int_v(15, wait_time);
@@ -236,7 +236,7 @@ package body err_norm_fd_ftest is
         info_m("Waiting for:" & integer'image(wait_time) & " bits!");
 
         for i in 1 to wait_time loop
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             info_m("Wait sync");
             wait for 20 ns;
         end loop;
@@ -249,15 +249,15 @@ package body err_norm_fd_ftest is
         end loop;
 
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
         release_bus_level(chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        read_error_counters(err_counters_2_1, DUT_NODE, chn);
-        read_error_counters(err_counters_2_2, TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2_1, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2_2, TEST_NODE, chn);
 
         check_m((err_counters_1_1.err_fd + 1 = err_counters_2_1.err_fd),
                 "ERR_FD incremented by 1 in transmitter!");

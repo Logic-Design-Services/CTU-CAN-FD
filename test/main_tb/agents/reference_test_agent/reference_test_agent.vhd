@@ -142,14 +142,14 @@ begin
         ctu_vip_test_result.set_result(true);
 
         -- Configure bit timing
-        CAN_configure_timing(bus_timing, DUT_NODE, default_channel);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, default_channel);
 
         -- Enable CAN controllers
-        CAN_turn_controller(true, DUT_NODE, default_channel);
+        ctu_turn(true, DUT_NODE, default_channel);
         info_m("DUT is ON");
 
         -- Wait till integration is over in both nodes
-        CAN_wait_bus_on(DUT_NODE, default_channel);
+        ctu_wait_err_active(DUT_NODE, default_channel);
         info_m("Bus integration finished");
 
         if (test_name = "data_set_1") then
@@ -201,12 +201,12 @@ begin
             can_agent_driver_wait_finish(default_channel);
 
             info_m("Reading out CAN frame...");
-            CAN_read_frame(rx_frame, DUT_NODE, default_channel);
+            ctu_read_frame(rx_frame, DUT_NODE, default_channel);
 
             info_m("Comparing received vs golden frame...");
             -- Pre-calculate RWCNT of TX frame
-            decode_dlc_rx_buff(data_set(frame_index).frame.dlc, data_set(frame_index).frame.rwcnt);
-            CAN_compare_frames(rx_frame, data_set(frame_index).frame, false, result);
+            dlc_to_rwcnt(data_set(frame_index).frame.dlc, data_set(frame_index).frame.rwcnt);
+            compare_can_frames(rx_frame, data_set(frame_index).frame, false, result);
 
             check_m(result, "Frames equal");
         end loop;

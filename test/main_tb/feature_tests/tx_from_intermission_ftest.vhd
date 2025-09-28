@@ -120,7 +120,7 @@ package body tx_from_intermission_ftest is
         -- Node status
         variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_pc_dbg;
+        variable pc_dbg             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
         variable frame_equal        :     boolean;
     begin
@@ -133,17 +133,17 @@ package body tx_from_intermission_ftest is
         info_m("Step 1");
 
         generate_can_frame(frame_1);
-        CAN_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
 
-        CAN_wait_tx_rx_start(true, false, TEST_NODE, chn);
+        ctu_wait_frame_start(true, false, TEST_NODE, chn);
         wait for 5000 ns; -- To be sure DUT started reception!
 
         generate_can_frame(frame_2);
-        CAN_send_frame(frame_2, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(frame_2, 1, DUT_NODE, chn, frame_sent);
 
         -- We must wait for Intermission of DUT! Only that way we are sure
         -- we properly measure two bits of its intermission!
-        CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_intermission, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Wait for two sample points and force the bus dominant during
@@ -155,8 +155,8 @@ package body tx_from_intermission_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_wait_sample_point(DUT_NODE, chn, false);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
 
         -- This is needed to be sure that Test node also reached second sample
         -- point of intermission. Otherwise, it would interpret this as
@@ -164,7 +164,7 @@ package body tx_from_intermission_ftest is
         wait for 100 ns;
 
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         wait for 15 ns; -- To be sure sample point was processed!
         release_bus_level(chn);
         
@@ -175,18 +175,18 @@ package body tx_from_intermission_ftest is
         -- catch this as second bit of Intermission and Interpret this as
         -- Overload frame ...
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);     
+        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);     
         check_m(pc_dbg = pc_deb_arbitration, "Test node in arbitration");
         check_false_m(pc_dbg = pc_deb_sof, "Test node NOT in SOF!");
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.transmitter, "DUT transmitter!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
-        CAN_read_frame(frame_rx, TEST_NODE, chn);
-        CAN_compare_frames(frame_rx, frame_2, false, frame_equal);
+        ctu_read_frame(frame_rx, TEST_NODE, chn);
+        compare_can_frames(frame_rx, frame_2, false, frame_equal);
 
         check_m(frame_equal, "TX/RX frame match");
 

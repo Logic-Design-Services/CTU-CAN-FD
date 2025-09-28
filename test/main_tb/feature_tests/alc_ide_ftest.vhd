@@ -126,7 +126,7 @@ package body alc_ide_ftest is
         variable stat_1             :     t_ctu_status;
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_pc_dbg;
+        variable pc_dbg             :     t_ctu_frame_field;
 
         variable txt_buf_state      :     t_ctu_txt_buff_state;
         variable rx_buf_info        :     t_ctu_rx_buff_info;
@@ -140,15 +140,15 @@ package body alc_ide_ftest is
         -- @1. Configure both Nodes to retransmit limit 1.
         -----------------------------------------------------------------------
         info_m("Step 1: Configure retransmit limit to 1");
-        CAN_enable_retr_limit(true, 1, DUT_NODE, chn);
-        CAN_enable_retr_limit(true, 1, TEST_NODE, chn);
+        ctu_set_retr_limit(true, 1, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 1, TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Iterate through all TXT Buffers:
         -----------------------------------------------------------------------
         info_m("Step 2: Iterate through all TXT Buffers");
 
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
 
         for txt_buf_index in 1 to num_txt_bufs loop
             info_m("TXT Buffer: " & integer'image(txt_buf_index));
@@ -178,12 +178,12 @@ package body alc_ide_ftest is
             --      Frame 2 by Test node.
             ------------------------------------------------------------------------
             info_m("Step 3: Send frames");
-            CAN_insert_TX_frame(frame_1, txt_buf_index, DUT_NODE, chn);
-            CAN_insert_TX_frame(frame_2, 1, TEST_NODE, chn);
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_put_tx_frame(frame_1, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(frame_2, 1, TEST_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
 
-            send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
             -----------------------------------------------------------------------
             -- @2.3 Wait till arbitration field in DUT. After first bit, send Set
@@ -194,32 +194,32 @@ package body alc_ide_ftest is
             --      Read ALC from DUT and check it.
             -----------------------------------------------------------------------
             info_m("Step 4: Check arbitration lost on SRR/RTR");
-            CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
 
             -- This is to get TXT Buffer into abort in progress to get full
             -- expression coverage on all sub-expressions in TXT Buffer FSM.
             -- Functionally, it does not matter if DUT loses arbitration when
             -- TXT Buffer is TX in Progress or Abort in Progress.
-            CAN_wait_sample_point(DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
 
             for i in 0 to 11 loop
-                CAN_wait_sample_point(DUT_NODE, chn);
+                ctu_wait_sample_point(DUT_NODE, chn);
             end loop;
             check_can_tx(RECESSIVE, DUT_NODE, "Recessive IDE transmitted!", chn);
             check_can_tx(DOMINANT, TEST_NODE, "Dominant IDE transmitted!", chn);
             wait for 20 ns; -- To account for trigger processing
 
-            get_controller_status(stat_2, TEST_NODE, chn);
+            ctu_get_status(stat_2, TEST_NODE, chn);
             check_m(stat_2.transmitter, "Test node transmitting!");
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_m(stat_1.receiver, "DUT lost arbitration!");
 
-            read_alc(alc, DUT_NODE, chn);
+            ctu_get_alc(alc, DUT_NODE, chn);
             check_m(alc = 13, "Arbitration lost at correct bit by DUT!");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
         end loop;
 

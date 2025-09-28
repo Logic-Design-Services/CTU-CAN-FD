@@ -158,9 +158,9 @@ package body mode_txbbm_5_ftest is
         mode_1.tx_buf_backup := true;
         mode_1.parity_check := true;
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        get_tx_buf_count(txt_buf_count, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Loop 10 times:
@@ -177,11 +177,11 @@ package body mode_txbbm_5_ftest is
 
             for i in 1 to txt_buf_count loop
                 rand_int_v(7, tmp_int);
-                CAN_configure_tx_priority(i, tmp_int, DUT_NODE, chn);
+                ctu_set_txt_buf_prio(i, tmp_int, DUT_NODE, chn);
             end loop;
 
             -- Pick random TXT Buffer which is "original" buffer.
-            pick_random_txt_buffer(txt_buf_index, DUT_NODE, chn);
+            ctu_get_rand_txt_buf(txt_buf_index, DUT_NODE, chn);
             if (txt_buf_index mod 2 = 0) then
                 txt_buf_index := txt_buf_index - 1;
             end if;
@@ -189,8 +189,8 @@ package body mode_txbbm_5_ftest is
             -- We need to generate frame which has some data bytes, to be able
             -- to corrupt such data bytes
             generate_can_frame(CAN_TX_frame);
-            CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
-            CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index + 1, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_TX_frame, txt_buf_index + 1, DUT_NODE, chn);
 
             -------------------------------------------------------------------
             -- @2.2 Enable test access to buffer RAMs. Generate random word
@@ -200,26 +200,26 @@ package body mode_txbbm_5_ftest is
             info_m("Step 2.2");
 
             -- Enable test access
-            set_test_mem_access(true, DUT_NODE, chn);
+            ctu_set_tst_mem_access(true, DUT_NODE, chn);
             
             -- Read, flip, and write back in "original" TXT Buffer
             rand_int_v(31, corrupt_bit_index);
             rand_int_v(3, corrupt_wrd_index);
             tst_mem := txt_buf_to_test_mem_tgt(txt_buf_index);
-            test_mem_read(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
+            ctu_read_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
             r_data(corrupt_bit_index) := not r_data(corrupt_bit_index);
-            test_mem_write(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
+            ctu_write_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
 
             -- Read, flip, and write back in "backup" TXT Buffer
             rand_int_v(31, corrupt_bit_index);
             rand_int_v(3, corrupt_wrd_index);
             tst_mem := txt_buf_to_test_mem_tgt(txt_buf_index + 1);
-            test_mem_read(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
+            ctu_read_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
             r_data(corrupt_bit_index) := not r_data(corrupt_bit_index);
-            test_mem_write(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
+            ctu_write_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
  
             -- Disable test mem access
-            set_test_mem_access(false, DUT_NODE, chn);
+            ctu_set_tst_mem_access(false, DUT_NODE, chn);
 
             -----------------------------------------------------------------------
             -- @2.3 Send Set ready command to selected original TXT Buffer. Wait
@@ -231,14 +231,14 @@ package body mode_txbbm_5_ftest is
             txt_buf_vector := x"00";
             txt_buf_vector(txt_buf_index - 1) := '1';
 
-            send_TXT_buf_cmd(buf_set_ready, txt_buf_vector, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, txt_buf_vector, DUT_NODE, chn);
 
             wait for 300 ns;
 
             -- Check transmission from "original" TXT Buffer
-            get_tx_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_parity_err, "'Original' TXT Buffer is in 'Parity Error'");
-            get_tx_buf_state(txt_buf_index + 1, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index + 1, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_parity_err, "'Backup' TXT Buffer is in 'Parity Error'");
 
             -----------------------------------------------------------------------
@@ -250,27 +250,27 @@ package body mode_txbbm_5_ftest is
             
             -- Check and clear STATUS[TXPE]
             info_m("    Check 1");
-            get_controller_status(status_1, DUT_NODE, chn);
+            ctu_get_status(status_1, DUT_NODE, chn);
             check_m(status_1.tx_parity_error, "Parity error set.");
             check_m(status_1.tx_double_parity_error, "Double parity error set.");
 
             command_1.clear_txpe := true;
             command_1.clear_txdpe := false;
-            give_controller_command(command_1, DUT_NODE, chn);
+            ctu_give_cmd(command_1, DUT_NODE, chn);
 
             -- Check and clear STATUS[TXDPE]
             info_m("    Check 2");
-            get_controller_status(status_1, DUT_NODE, chn);
+            ctu_get_status(status_1, DUT_NODE, chn);
             check_false_m(status_1.tx_parity_error, "Parity error not set.");
             check_m(status_1.tx_double_parity_error, "Double parity error set.");
 
             command_1.clear_txpe := false;
             command_1.clear_txdpe := true;
-            give_controller_command(command_1, DUT_NODE, chn);
+            ctu_give_cmd(command_1, DUT_NODE, chn);
 
             -- Check both cleared
             info_m("    Check 3");
-            get_controller_status(status_1, DUT_NODE, chn);
+            ctu_get_status(status_1, DUT_NODE, chn);
             check_false_m(status_1.tx_parity_error, "Parity error not set.");
             check_false_m(status_1.tx_double_parity_error, "Double parity error not set.");
 

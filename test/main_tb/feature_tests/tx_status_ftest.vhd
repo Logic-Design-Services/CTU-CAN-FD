@@ -127,7 +127,7 @@ package body tx_status_ftest is
         variable num_buffers        :       natural;
     begin
 
-        get_tx_buf_count(num_buffers, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_buffers, DUT_NODE, chn);
 
         for txt_buf_num in 1 to num_buffers loop
 
@@ -138,20 +138,20 @@ package body tx_status_ftest is
             -----------------------------------------------------------------------
             info_m("Step 1");
 
-            CAN_read_timing_v(bus_timing, DUT_NODE, chn);
-            exec_SW_reset(DUT_NODE, chn);
-            exec_SW_reset(TEST_NODE, chn);
-            CAN_configure_timing(bus_timing, DUT_NODE, chn);
-            CAN_configure_timing(bus_timing, TEST_NODE, chn);
+            ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
+            ctu_soft_reset(DUT_NODE, chn);
+            ctu_soft_reset(TEST_NODE, chn);
+            ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+            ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
 
-            CAN_turn_controller(true, DUT_NODE, chn);
-            CAN_turn_controller(true, TEST_NODE, chn);
+            ctu_turn(true, DUT_NODE, chn);
+            ctu_turn(true, TEST_NODE, chn);
 
             -- Wait till integration is over!
-            CAN_wait_bus_on(DUT_NODE, chn);
-            CAN_wait_bus_on(TEST_NODE, chn);
+            ctu_wait_err_active(DUT_NODE, chn);
+            ctu_wait_err_active(TEST_NODE, chn);
 
-            get_tx_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_empty, "TX Empty after reset!");
 
             -----------------------------------------------------------------------
@@ -161,11 +161,11 @@ package body tx_status_ftest is
             info_m("Step 2");
 
             generate_can_frame(CAN_frame_tx);
-            CAN_send_frame(CAN_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
+            ctu_send_frame(CAN_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
 
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
-            get_tx_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_done, "TX OK after frame sent!");
 
             -----------------------------------------------------------------------
@@ -176,16 +176,16 @@ package body tx_status_ftest is
             info_m("Step 3");
 
             mode_2.acknowledge_forbidden := true;
-            set_core_mode(mode_2, TEST_NODE, chn);
+            ctu_set_mode(mode_2, TEST_NODE, chn);
 
-            CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+            ctu_set_retr_limit(true, 0, DUT_NODE, chn);
 
             generate_can_frame(CAN_frame_tx);
-            CAN_send_frame(CAN_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_send_frame(CAN_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
-            get_tx_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_failed, "TX Failed after error!");
 
             -----------------------------------------------------------------------
@@ -197,16 +197,16 @@ package body tx_status_ftest is
             -- One shot must be disabled now, otherwise this would lead to
             -- TX Failed. We need transmission to be failed, but retransmitt limit
             -- not reached!
-            CAN_enable_retr_limit(false, 5, DUT_NODE, chn);
+            ctu_set_retr_limit(false, 5, DUT_NODE, chn);
 
             generate_can_frame(CAN_frame_tx);
-            CAN_send_frame(CAN_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
+            ctu_send_frame(CAN_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
 
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_abort, txt_buf_num, DUT_NODE, chn);
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_abort, txt_buf_num, DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
-            get_tx_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_aborted, "TX Aborted after Set Abort!");
 
         end loop;

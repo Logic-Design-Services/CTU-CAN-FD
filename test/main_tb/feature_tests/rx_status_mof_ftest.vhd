@@ -132,14 +132,14 @@ package body rx_status_mof_ftest is
             -------------------------------------------------------------------
             info_m("Step 1.1");
 
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
             check_m(buf_info.rx_mof = false, "RX_STATUS[MOF] not set");
             
             generate_can_frame(CAN_frame);
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
             
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
             check_m(buf_info.rx_mof = false, "RX_STATUS[MOF] not set");
             
             -------------------------------------------------------------------
@@ -150,21 +150,21 @@ package body rx_status_mof_ftest is
             -------------------------------------------------------------------
             info_m("Step 1.2");
             
-            CAN_read(read_data, RX_DATA_ADR, DUT_NODE, chn);
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_read(read_data, RX_DATA_ADR, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
             check_m(buf_info.rx_mof = true,
                   "RX_STATUS[MOF] is set after first word!");
             
             rwcnt := to_integer(unsigned(read_data(RWCNT_H downto RWCNT_L)));
             for j in 1 to rwcnt - 1 loop
-                CAN_read(read_data, RX_DATA_ADR, DUT_NODE, chn);
-                get_rx_buf_state(buf_info, DUT_NODE, chn);
+                ctu_read(read_data, RX_DATA_ADR, DUT_NODE, chn);
+                ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
                 check_m(buf_info.rx_mof = true, "RX_STATUS[MOF] is set after word " &
                       integer'image(j));
             end loop;
             
-            CAN_read(read_data, RX_DATA_ADR, DUT_NODE, chn);
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_read(read_data, RX_DATA_ADR, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
             check_m(buf_info.rx_mof = false,
                   "RX_STATUS[MOF] is not set after last word");
 

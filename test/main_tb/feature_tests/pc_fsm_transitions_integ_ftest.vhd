@@ -123,7 +123,7 @@ package body pc_fsm_transitions_integ_ftest is
         info_m("Step 1: Set DUT to Restricted operation mode");
 
         mode.restricted_operation := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Iterate over both CAN 2.0 frame and CAN FD frame:
@@ -140,13 +140,13 @@ package body pc_fsm_transitions_integ_ftest is
             generate_can_frame(CAN_TX_frame);
             CAN_TX_frame.frame_format := frame_format;
 
-            CAN_insert_TX_frame(CAN_TX_frame, 1, TEST_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
+            ctu_put_tx_frame(CAN_TX_frame, 1, TEST_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
-            CAN_wait_pc_state(pc_deb_crc_delim, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_crc_delim, DUT_NODE, chn);
             wait for 20 ns;
             force_bus_level(DOMINANT, chn);
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             release_bus_level(chn);
             wait for 100 ns;
 
@@ -157,7 +157,7 @@ package body pc_fsm_transitions_integ_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2");
 
-            CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+            ctu_get_err_capt(err_capt, DUT_NODE, chn);
             check_m(err_capt.err_type = can_err_form, "Form Error");
             check_m(err_capt.err_pos = err_pos_ack, "Error in CRC Delim, ACK or ACK delim");
 

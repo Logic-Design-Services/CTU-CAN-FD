@@ -117,7 +117,7 @@ package body mode_self_test_ftest is
         variable rx_buf_state       :       t_ctu_rx_buff_info;
         variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       t_ctu_pc_dbg;   
+        variable pc_dbg             :       t_ctu_frame_field;   
     begin
 
         ------------------------------------------------------------------------
@@ -127,10 +127,10 @@ package body mode_self_test_ftest is
         info_m("Step 1: Configuring STM in DUT, ACF in Test node!");
         
         mode_1.self_test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Send frame by DUT. Wait till ACK field.
@@ -138,20 +138,20 @@ package body mode_self_test_ftest is
         info_m("Step 2: Send frame by DUT, Wait till ACK");
         
         generate_can_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
         
         ------------------------------------------------------------------------
         -- @3. Monitor during whole ACK field that frame bus is RECESSIVE.
         ------------------------------------------------------------------------
         info_m("Step 3: Checking ACK field is recessive"); 
         
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
         while (pc_dbg = pc_deb_ack) loop
             check_bus_level(RECESSIVE, "Dominant ACK transmitted!", chn);
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
             
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_m(status.transmitter, "DUT receiver!");
             
             wait for 100 ns; -- To make checks more sparse
@@ -164,10 +164,10 @@ package body mode_self_test_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Check Error frame is not transmitted!"); 
         
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_false_m(status.error_transmission, "Error frame not transmitted!");
         
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
         
         -- For CAN FD frames secondary ACK is still marked as ACK to DEBUG
         -- register! From there if this is recessive (it is now, no ACK is sent),
@@ -176,17 +176,17 @@ package body mode_self_test_ftest is
         check_m(pc_dbg = pc_deb_ack_delim or
                 pc_dbg = pc_deb_eof, "ACK delimiter follows recessive ACK!");
         
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
         
-        get_tx_buf_state(1, txt_buf_state, DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, txt_buf_state, DUT_NODE, chn);
         check_m(txt_buf_state = buf_done, "Frame transmitted OK");
         
-        get_rx_buf_state(rx_buf_state, TEST_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_state, TEST_NODE, chn);
         check_m(rx_buf_state.rx_frame_count = 1, "Frame received in LOM");
         
-        CAN_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
+        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
         
   end procedure;
 

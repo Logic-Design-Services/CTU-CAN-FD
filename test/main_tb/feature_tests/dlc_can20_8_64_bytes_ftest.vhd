@@ -112,7 +112,7 @@ package body dlc_can20_8_64_bytes_ftest is
         variable CAN_frame          :        t_ctu_frame;
         variable CAN_frame_2        :        t_ctu_frame  := SW_CAN_Frame_type_rst_val;
         variable frame_sent         :        boolean;
-        variable pc_dbg             :        t_ctu_pc_dbg;
+        variable pc_dbg             :        t_ctu_frame_field;
     begin
 
         ------------------------------------------------------------------------
@@ -127,7 +127,7 @@ package body dlc_can20_8_64_bytes_ftest is
         CAN_frame.dlc(3) := '1';
         CAN_frame.rtr := NO_RTR_FRAME;
         CAN_frame.frame_format := NORMAL_CAN;
-        decode_dlc(CAN_frame.dlc, CAN_frame.data_length);
+        dlc_to_length(CAN_frame.dlc, CAN_frame.data_length);
         for i in 0 to CAN_frame.data_length - 1 loop
             rand_logic_vect_v(CAN_frame.data(i), 0.5);
         end loop;
@@ -138,14 +138,14 @@ package body dlc_can20_8_64_bytes_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Send frame");
 
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_data, DUT_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
 
         for i in 0 to 63 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             wait for 11 ns; -- for DFF to flip
 
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
 
             if (i = 63) then
                 check_false_m(pc_dbg = pc_deb_data,
@@ -155,8 +155,8 @@ package body dlc_can20_8_64_bytes_ftest is
                         "Before 64 bytes data field goes on!");
             end if;
         end loop;
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         wait for 500 ns;
 
@@ -165,7 +165,7 @@ package body dlc_can20_8_64_bytes_ftest is
         --     it has received only 8 bytes of Data!
         ------------------------------------------------------------------------
         info_m("Step 3: Check frame received!");
-        CAN_read_frame(CAN_frame_2, TEST_NODE, chn);
+        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
         check_m(CAN_frame_2.dlc = CAN_frame.dlc, "Invalid DLC received!");
         check_m(CAN_frame_2.rwcnt = 5, "Invalid DLC received!");
 

@@ -128,32 +128,32 @@ package body command_frcrst_ftest is
         info_m("Step 1");
 
         generate_can_frame(frame_1);
-        CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_put_tx_frame(frame_1, 1, TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
-        read_traffic_counters(traff_ctrs_2, TEST_NODE, chn);
+        ctu_get_traff_ctrs(traff_ctrs_2, TEST_NODE, chn);
         check_m(traff_ctrs_2.tx_frames /= 0, "TX frame counter not 0!");
 
         command.rx_frame_ctr_rst := true;
-        give_controller_command(command, TEST_NODE, chn);
+        ctu_give_cmd(command, TEST_NODE, chn);
 
-        read_traffic_counters(traff_ctrs_2, TEST_NODE, chn);
+        ctu_get_traff_ctrs(traff_ctrs_2, TEST_NODE, chn);
         check_m(traff_ctrs_2.tx_frames /= 0, "TX frame counter not 0 again!");
 
         command.tx_frame_ctr_rst := true;
         command.rx_frame_ctr_rst := false;
-        give_controller_command(command, TEST_NODE, chn);
+        ctu_give_cmd(command, TEST_NODE, chn);
         
-        read_traffic_counters(traff_ctrs_2, TEST_NODE, chn);
+        ctu_get_traff_ctrs(traff_ctrs_2, TEST_NODE, chn);
         check_m(traff_ctrs_2.tx_frames = 0, "TX frame counter erased!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Check that RX Frame counter of DUT is not zero. Issue
@@ -162,7 +162,7 @@ package body command_frcrst_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        read_traffic_counters(traff_ctrs_1, DUT_NODE, chn);
+        ctu_get_traff_ctrs(traff_ctrs_1, DUT_NODE, chn);
         info_m("DUT");
         info_m("RX frames: " & integer'image(traff_ctrs_1.rx_frames));
         info_m("TX frames: " & integer'image(traff_ctrs_1.tx_frames));
@@ -170,16 +170,16 @@ package body command_frcrst_ftest is
         
         command.tx_frame_ctr_rst := true;
         command.rx_frame_ctr_rst := false;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         
-        read_traffic_counters(traff_ctrs_1, DUT_NODE, chn);
+        ctu_get_traff_ctrs(traff_ctrs_1, DUT_NODE, chn);
         check_m(traff_ctrs_1.rx_frames /= 0, "RX frame counter not 0 again!");
         
         command.tx_frame_ctr_rst := false;
         command.rx_frame_ctr_rst := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         
-        read_traffic_counters(traff_ctrs_1, DUT_NODE, chn);
+        ctu_get_traff_ctrs(traff_ctrs_1, DUT_NODE, chn);
         check_m(traff_ctrs_1.rx_frames = 0, "RX frame counter erased!");
 
   end procedure;

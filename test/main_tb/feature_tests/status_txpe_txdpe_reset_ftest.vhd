@@ -132,7 +132,7 @@ package body status_txpe_txdpe_reset_ftest is
         mode_1.test := true;
         mode_1.tx_buf_backup := true;
         mode_1.parity_check := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         generate_can_frame(frame_1);
 
@@ -142,8 +142,8 @@ package body status_txpe_txdpe_reset_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_insert_TX_frame(frame_1, 1, DUT_NODE, chn);
-        CAN_insert_TX_frame(frame_1, 2, DUT_NODE, chn);
+        ctu_put_tx_frame(frame_1, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(frame_1, 2, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @3. Generate random bit-flip in FRAME_FORMAT_W word in the TXT Buffer 1
@@ -152,19 +152,19 @@ package body status_txpe_txdpe_reset_ftest is
         info_m("Step 3");
 
         -- Enable test access
-        set_test_mem_access(true, DUT_NODE, chn);
+        ctu_set_tst_mem_access(true, DUT_NODE, chn);
 
         -- Read, flip, and write back for TXT Buffer 1 and 2
         for i in 1 to 2 loop
             tst_mem := txt_buf_to_test_mem_tgt(i);
-            test_mem_read(r_data, 0, tst_mem, DUT_NODE, chn);
+            ctu_read_tst_mem(r_data, 0, tst_mem, DUT_NODE, chn);
             rand_int_v(31, corrupt_bit_index);
             r_data(corrupt_bit_index) := not r_data(corrupt_bit_index);
-            test_mem_write(r_data, 0, tst_mem, DUT_NODE, chn);
+            ctu_write_tst_mem(r_data, 0, tst_mem, DUT_NODE, chn);
         end loop;
 
         -- Disable test mem access
-        set_test_mem_access(false, DUT_NODE, chn);
+        ctu_set_tst_mem_access(false, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @4. Send Set Ready command to this TXT Buffers 1 and 2. Wait for some time,
@@ -173,7 +173,7 @@ package body status_txpe_txdpe_reset_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 4");
 
-        send_TXT_buf_cmd(buf_set_ready, "00000011", DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, "00000011", DUT_NODE, chn);
         wait for 10 us;
 
         -------------------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ package body status_txpe_txdpe_reset_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.tx_parity_error, "STATUS[TXPE] = 1");
         check_m(stat_1.tx_double_parity_error, "STATUS[TXDPE] = 1");
 
@@ -191,10 +191,10 @@ package body status_txpe_txdpe_reset_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 6");
 
-        exec_SW_reset(DUT_NODE, chn);
+        ctu_soft_reset(DUT_NODE, chn);
         wait for 20 ns;
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.tx_parity_error, "STATUS[TXPE] = 0");
         check_false_m(stat_1.tx_double_parity_error, "STATUS[TXDPE] = 0");
 

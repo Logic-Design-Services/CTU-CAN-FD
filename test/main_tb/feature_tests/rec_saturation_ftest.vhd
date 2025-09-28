@@ -121,13 +121,13 @@ package body rec_saturation_ftest is
         
         mode_1.test := true;
         mode_1.flexible_data_rate := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         err_counters.rx_counter := 510;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         
         err_counters.rx_counter := 0;
-        read_error_counters(err_counters, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
         
         check_m(err_counters.rx_counter = 510, "REC set properly!");
 
@@ -140,19 +140,19 @@ package body rec_saturation_ftest is
         info_m("Step 2");
         
         -- Set to one shot mode
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
 
         generate_can_frame(CAN_frame);
         CAN_frame.frame_format := FD_CAN;
 
         for i in 0 to 3 loop
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(TEST_NODE, chn);
+            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(TEST_NODE, chn);
             
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
-            read_error_counters(err_counters, DUT_NODE, chn);
+            ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
             
             if (i = 0) then
                 check_m(err_counters.rx_counter = 511, "REC incremented to 511!");

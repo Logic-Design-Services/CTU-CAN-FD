@@ -125,7 +125,7 @@ package body int_bs_ftest is
         variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
         variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
-        variable pc_dbg             :     t_ctu_pc_dbg;
+        variable pc_dbg             :     t_ctu_frame_field;
         variable rxb_state          :     t_ctu_rx_buff_info;
 
     begin
@@ -149,8 +149,8 @@ package body int_bs_ftest is
                         int_mask.bit_rate_shift_int := mask;
                         int_ena.bit_rate_shift_int := ena;
 
-                        write_int_mask(int_mask, DUT_NODE, chn);
-                        write_int_enable(int_ena, DUT_NODE, chn);
+                        ctu_set_int_mask(int_mask, DUT_NODE, chn);
+                        ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
                         ---------------------------------------------------------------
                         -- @2.2 Send frame with bit-rate shift by DUT Node. Wait until
@@ -166,14 +166,14 @@ package body int_bs_ftest is
                         else
                             CAN_frame.brs := BR_NO_SHIFT;
                         end if;
-                        decode_length(CAN_frame.data_length, CAN_frame.dlc);
+                        length_to_dlc(CAN_frame.data_length, CAN_frame.dlc);
 
                         if (shall_transmitt) then
-                            CAN_send_frame(CAN_Frame, 1, DUT_NODE, chn, frame_sent);
-                            CAN_wait_frame_sent(DUT_NODE, chn);
+                            ctu_send_frame(CAN_Frame, 1, DUT_NODE, chn, frame_sent);
+                            ctu_wait_frame_sent(DUT_NODE, chn);
                         else
-                            CAN_send_frame(CAN_Frame, 1, TEST_NODE, chn, frame_sent);
-                            CAN_wait_frame_sent(TEST_NODE, chn);
+                            ctu_send_frame(CAN_Frame, 1, TEST_NODE, chn, frame_sent);
+                            ctu_wait_frame_sent(TEST_NODE, chn);
                         end if;
 
                         ---------------------------------------------------------------
@@ -181,7 +181,7 @@ package body int_bs_ftest is
                         --      Check that when Interrupt is Enabled, it causes interrupt
                         --      to propagate to output.
                         ---------------------------------------------------------------
-                        read_int_status(int_stat, DUT_NODE, chn);
+                        ctu_get_int_status(int_stat, DUT_NODE, chn);
                         wait for 20 ns;
 
                         check_m(int_stat.bit_rate_shift_int = ((not mask) and do_shift),
@@ -195,22 +195,22 @@ package body int_bs_ftest is
 
                             -- Disable and check output is low
                             int_ena.bit_rate_shift_int := false;
-                            write_int_enable(int_ena, DUT_NODE, chn);
+                            ctu_set_int_ena(int_ena, DUT_NODE, chn);
                             wait for 20 ns;
                             interrupt_agent_check_not_asserted(chn);
 
                             -- Enable and check output is high again
                             int_ena.bit_rate_shift_int := true;
-                            write_int_enable(int_ena, DUT_NODE, chn);
+                            ctu_set_int_ena(int_ena, DUT_NODE, chn);
                             wait for 20 ns;
                             interrupt_agent_check_asserted(chn);
 
                             -- Mask, and clear and check it was cleared
                             int_mask.bit_rate_shift_int := true;
-                            write_int_mask(int_mask, DUT_NODE, chn);
-                            clear_int_status(int_stat, DUT_NODE, chn);
+                            ctu_set_int_mask(int_mask, DUT_NODE, chn);
+                            ctu_clr_int_status(int_stat, DUT_NODE, chn);
                             wait for 20 ns;
-                            read_int_status(int_stat, DUT_NODE, chn);
+                            ctu_get_int_status(int_stat, DUT_NODE, chn);
 
                             check_false_m(int_stat.bit_rate_shift_int,
                                         "RX Buffer Full Interrupt cleared!");

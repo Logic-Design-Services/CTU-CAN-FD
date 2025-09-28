@@ -199,8 +199,8 @@ package body mode_rst_ftest is
             rand_data(RST_IND) := '0';
             rand_data(TSTM_IND) := '1';
         end if;
-        CAN_write(rand_data, reg.address, DUT_NODE, channel);
-        CAN_read(read_data, reg.address, DUT_NODE, channel);
+        ctu_write(rand_data, reg.address, DUT_NODE, channel);
+        ctu_read(read_data, reg.address, DUT_NODE, channel);
         mask_reg_val(reg, read_data);
         check_m(read_data = rand_data, "Address: 0x" &
                 to_hstring(unsigned(reg.address)) &
@@ -279,7 +279,7 @@ package body mode_rst_ftest is
         -- @2. Execute SW reset via MODE[RST].
         -----------------------------------------------------------------------
         info_m("Step 2");
-        exec_SW_reset(DUT_NODE, chn);
+        ctu_soft_reset(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Read all Control registers and check they return their reset
@@ -289,7 +289,7 @@ package body mode_rst_ftest is
         for i in 0 to Control_registers_list'length - 1 loop
 
             if (Control_registers_list(i).size = 8) then
-                CAN_read(r_data_8, Control_registers_list(i).address,
+                ctu_read(r_data_8, Control_registers_list(i).address,
                          DUT_NODE, chn);
                 mask_reg_val(Control_registers_list(i), r_data_8);
 
@@ -303,7 +303,7 @@ package body mode_rst_ftest is
                     to_hstring(unsigned(r_data_8)));
 
             elsif (Control_registers_list(i).size = 16) then
-                CAN_read(r_data_16, Control_registers_list(i).address,
+                ctu_read(r_data_16, Control_registers_list(i).address,
                          DUT_NODE, chn);
                 mask_reg_val(Control_registers_list(i), r_data_16);
 
@@ -317,7 +317,7 @@ package body mode_rst_ftest is
                     to_hstring(unsigned(r_data_16)));
 
             elsif (Control_registers_list(i).size = 32) then
-                CAN_read(r_data_32, Control_registers_list(i).address,
+                ctu_read(r_data_32, Control_registers_list(i).address,
                          DUT_NODE, chn);
                 mask_reg_val(Control_registers_list(i), r_data_32);
 
@@ -331,7 +331,7 @@ package body mode_rst_ftest is
 
                 -- TXTB_INFO is generic dependant -> Get number of TXT Buffers
                 if (Control_registers_list(i).address = TX_STATUS_ADR) then
-                    get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+                    ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
                     reg_rst_val_32 := (OTHERS => '0');
 
                     -- Each buffer should be "EMPTY"
@@ -413,7 +413,7 @@ package body mode_rst_ftest is
         -- @5. Execute SW reset via MODE[RST].
         -----------------------------------------------------------------------
         info_m("Step 5");
-        exec_SW_reset(DUT_NODE, chn);
+        ctu_soft_reset(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @6. Read all Control registers and check they return their reset
@@ -423,7 +423,7 @@ package body mode_rst_ftest is
         for i in 0 to Control_registers_list'length - 1 loop
 
             if (Control_registers_list(i).size = 8) then
-                CAN_read(r_data_8, Control_registers_list(i).address,
+                ctu_read(r_data_8, Control_registers_list(i).address,
                          DUT_NODE, chn);
                 mask_reg_val(Control_registers_list(i), r_data_8);
 
@@ -437,7 +437,7 @@ package body mode_rst_ftest is
                     to_hstring(unsigned(r_data_8)));
 
             elsif (Control_registers_list(i).size = 16) then
-                CAN_read(r_data_16, Control_registers_list(i).address,
+                ctu_read(r_data_16, Control_registers_list(i).address,
                          DUT_NODE, chn);
                 mask_reg_val(Control_registers_list(i), r_data_16);
 
@@ -451,7 +451,7 @@ package body mode_rst_ftest is
                     to_hstring(unsigned(r_data_16)));
 
             elsif (Control_registers_list(i).size = 32) then
-                CAN_read(r_data_32, Control_registers_list(i).address,
+                ctu_read(r_data_32, Control_registers_list(i).address,
                          DUT_NODE, chn);
                 mask_reg_val(Control_registers_list(i), r_data_32);
 
@@ -465,7 +465,7 @@ package body mode_rst_ftest is
 
                 -- TXTB_INFO is generic dependant -> Get number of TXT Buffers
                 if (Control_registers_list(i).address = TX_STATUS_ADR) then
-                    get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+                    ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
                     reg_rst_val_32 := (OTHERS => '0');
 
                     -- Each buffer should be "EMPTY"
@@ -507,14 +507,14 @@ package body mode_rst_ftest is
         -----------------------------------------------------------------------
         info_m("Step 7 - Test Test registers");
 
-        CAN_check_test_registers(test_regs_present, DUT_NODE, chn);
+        ctu_check_tst_regs(test_regs_present, DUT_NODE, chn);
 
         if (test_regs_present) then
 
             -- Enable Test mode since test registers are accessible only in
             -- Test mode
             mode.test := true;
-            set_core_mode(mode, DUT_NODE, chn);
+            ctu_set_mode(mode, DUT_NODE, chn);
 
             for i in 0 to Test_registers_list'length - 1 loop
                 if (Test_registers_list(i).reg_type = reg_read_write) then

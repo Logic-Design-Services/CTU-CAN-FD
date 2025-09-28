@@ -131,8 +131,8 @@ package body alc_rtr_ext_id_ftest is
         -- @1. Configure both Nodes to one-shot mode.
         -----------------------------------------------------------------------
         info_m("Step 1: Configure one -shot mode");
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
-        CAN_enable_retr_limit(true, 0, TEST_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Generate two CAN frames with both Extended matching Identifiers.
@@ -155,12 +155,12 @@ package body alc_rtr_ext_id_ftest is
         --    Frame 2 by Test node.
         ------------------------------------------------------------------------
         info_m("Step 3: Send frames");
-        CAN_insert_TX_frame(frame_1, 1, DUT_NODE, chn);
-        CAN_insert_TX_frame(frame_2, 1, TEST_NODE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_put_tx_frame(frame_1, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(frame_2, 1, TEST_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
 
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @4. Wait till arbitration field in DUT. Wait till sample point 31
@@ -170,24 +170,24 @@ package body alc_rtr_ext_id_ftest is
         --     transmitter. Read ALC from DUT and check it.
         -----------------------------------------------------------------------
         info_m("Step 4: Check arbitration lost on RTR after Extended ID");
-        CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
         for i in 0 to 31 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
         check_can_tx(DOMINANT, TEST_NODE, "Dominant RTR transmitted by Test Node!", chn);
         check_can_tx(RECESSIVE, DUT_NODE, "Recessive RTR transmitted by DUT!", chn);
         wait for 20 ns; -- To account for trigger processing
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.receiver, "DUT lost arbitration!");
-        get_controller_status(stat_2, TEST_NODE, chn);
+        ctu_get_status(stat_2, TEST_NODE, chn);
         check_m(stat_2.transmitter, "Test node transmitter!");
         
-        read_alc(alc, DUT_NODE, chn);
+        ctu_get_alc(alc, DUT_NODE, chn);
         check_m(alc = 32, "Arbitration lost at correct bit by DUT!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
   end procedure;
 

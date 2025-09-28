@@ -155,7 +155,7 @@ package body tx_priority_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
 
         --  Generate random priorities and write it to TX_PRIORITY
         for j in 1 to num_txt_bufs loop
@@ -172,7 +172,7 @@ package body tx_priority_ftest is
             end if;
 
             -- Write generated priority TX_PRIORITY
-            CAN_configure_tx_priority(j, txt_buf_priorities(j).priority,
+            ctu_set_txt_buf_prio(j, txt_buf_priorities(j).priority,
                 DUT_NODE, chn);
         end loop;
 
@@ -231,7 +231,7 @@ package body tx_priority_ftest is
         -- Insert CAN frames to TXT Buffers. Put first to highest priority buffer
         -- Now TXT Buffers are sorted!
         for i in 1 to num_txt_bufs loop
-            CAN_insert_TX_frame(CAN_frame_array_tx(i), txt_buf_priorities(i).index,
+            ctu_put_tx_frame(CAN_frame_array_tx(i), txt_buf_priorities(i).index,
                                 DUT_NODE, chn);
         end loop;
 
@@ -256,10 +256,10 @@ package body tx_priority_ftest is
 
         info_m("TXT Buffer mask: " & to_hstring(txt_buf_mask));
 
-        send_TXT_buf_cmd(buf_set_ready, txt_buf_mask, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, txt_buf_mask, DUT_NODE, chn);
 
         for i in 1 to buffers_used loop
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
         end loop;
 
         -----------------------------------------------------------------------
@@ -276,15 +276,15 @@ package body tx_priority_ftest is
 
             info_m("Reading out frame number: " & integer'image(i));
 
-            CAN_read_frame(CAN_frame_rx, TEST_NODE, chn);
-            CAN_compare_frames(CAN_frame_rx, CAN_frame_array_tx(i), false, frame_equal);
+            ctu_read_frame(CAN_frame_rx, TEST_NODE, chn);
+            compare_can_frames(CAN_frame_rx, CAN_frame_array_tx(i), false, frame_equal);
 
             if (frame_equal = false) then
                 info_m("FRAMES NOT EQUAL:");
                 info_m("Received frame:");
-                CAN_print_frame_simple(CAN_frame_rx);
+                print_can_frame_simple(CAN_frame_rx);
                 info_m("Expected frame:");
-                CAN_print_frame_simple(CAN_frame_array_tx(i));
+                print_can_frame_simple(CAN_frame_array_tx(i));
                 error_m("Error!");
                 exit;
             end if;

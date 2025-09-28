@@ -134,14 +134,14 @@ package body err_capt_ctrl_bit_ftest is
 
         -- Other controller is not need in this test. Disable it not to have
         -- failing assertions due to force bit errors!
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @1. Check that ERR_CAPT contains no error (post reset).
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
         
         -----------------------------------------------------------------------
@@ -168,7 +168,7 @@ package body err_capt_ctrl_bit_ftest is
                 
                 -- It is enough to break first two equal bits!
                 frame_1.dlc(3) := not frame_1.dlc(2);
-                decode_dlc(frame_1.dlc, frame_1.data_length);
+                dlc_to_length(frame_1.dlc, frame_1.data_length);
             end if;
 
             -- ID is not important in this TC. Avoid overflows of high generated
@@ -231,36 +231,36 @@ package body err_capt_ctrl_bit_ftest is
                 end case;
             end case;
             
-            CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-            CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+            ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+            ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
             
             info_m("Waiting for: " & integer'image(wait_time) & " bits!");
             for j in 1 to wait_time loop
-                CAN_wait_sample_point(DUT_NODE, chn);
+                ctu_wait_sample_point(DUT_NODE, chn);
             end loop;
             
             -- Force bus for one bit time
             force_bus_level(force_value, chn);
-            CAN_wait_sample_point(DUT_NODE, chn, skip_stuff_bits => false);
+            ctu_wait_sample_point(DUT_NODE, chn, skip_stuff_bits => false);
             wait for 20 ns; -- To be sure that opposite bit is sampled!
             release_bus_level(chn);
             
             -- Check errors
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_m(stat_1.error_transmission,
                     "Error frame is being transmitted!");
         
-            CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+            ctu_get_err_capt(err_capt, DUT_NODE, chn);
             check_m(err_capt.err_type = can_err_bit, "Bit error detected!");
             check_m(err_capt.err_pos = err_pos_ctrl,
                     "Error detected in Control field!");
             wait for 100 ns; -- For debug only to see waves properly!
 
             -- Reset the node
-            exec_SW_reset(DUT_NODE, chn);
-            CAN_turn_controller(true, DUT_NODE, chn);
-            CAN_wait_bus_on(DUT_NODE, chn);
-            CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+            ctu_soft_reset(DUT_NODE, chn);
+            ctu_turn(true, DUT_NODE, chn);
+            ctu_wait_err_active(DUT_NODE, chn);
+            ctu_get_err_capt(err_capt, DUT_NODE, chn);
             check_m(err_capt.err_pos = err_pos_other, "Reset value other");
         end loop;
 

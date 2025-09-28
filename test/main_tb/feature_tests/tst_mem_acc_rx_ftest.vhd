@@ -137,13 +137,13 @@ package body tst_mem_acc_rx_ftest is
         --     when DUT is disabled).
         -----------------------------------------------------------------------
         info_m("Step 1");
-        get_rx_buf_state(rx_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_info, DUT_NODE, chn);
         mode.test := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         -- First we must disable DUT
-        CAN_turn_controller(false, DUT_NODE, chn);
-        set_test_mem_access(true, DUT_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_set_tst_mem_access(true, DUT_NODE, chn);
 
         info_m("Size of RX Buffer RAM: " & integer'image(rx_info.rx_mem_free));
 
@@ -173,7 +173,7 @@ package body tst_mem_acc_rx_ftest is
 
             -- Write the whole RAM
             for i in 0 to rx_info.rx_mem_free - 1 loop
-                test_mem_write(w_content(i), i, TST_TGT_RX_BUF, DUT_NODE, chn);
+                ctu_write_tst_mem(w_content(i), i, TST_TGT_RX_BUF, DUT_NODE, chn);
             end loop;
 
             -----------------------------------------------------------------------
@@ -183,7 +183,7 @@ package body tst_mem_acc_rx_ftest is
             info_m("Step 4");
 
             for i in 0 to rx_info.rx_mem_free - 1 loop
-                test_mem_read(r_data, i, TST_TGT_RX_BUF, DUT_NODE, chn);
+                ctu_read_tst_mem(r_data, i, TST_TGT_RX_BUF, DUT_NODE, chn);
                 check_m(r_data = w_content(i), "RX RAM data at address: " &
                     integer'image(i) & " Expected: 0x" & to_hstring(w_content(i)) &
                     " Read: 0x" & to_hstring(r_data));

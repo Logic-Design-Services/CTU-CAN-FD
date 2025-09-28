@@ -116,7 +116,7 @@ package body mode_self_acknowledge_ftest is
         variable rx_buf_state       :       t_ctu_rx_buff_info;
         variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       t_ctu_pc_dbg;
+        variable pc_dbg             :       t_ctu_frame_field;
 
         variable can_tx             :       std_logic;
     begin
@@ -127,7 +127,7 @@ package body mode_self_acknowledge_ftest is
         info_m("Step 1");
 
         mode_1.self_acknowledge := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Send frame by DUT. Wait till ACK field in DUT Node.
@@ -135,9 +135,9 @@ package body mode_self_acknowledge_ftest is
         info_m("Step 2");
 
         generate_can_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
-        CAN_wait_sync_seg(DUT_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
         wait for 20 ns;
 
         ------------------------------------------------------------------------
@@ -148,7 +148,7 @@ package body mode_self_acknowledge_ftest is
 
         get_can_tx(DUT_NODE, can_tx, chn);
         check_m(can_tx = DOMINANT, "DUT transmits dominant ACK when MODE[SAM]=1");
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
   end procedure;
 

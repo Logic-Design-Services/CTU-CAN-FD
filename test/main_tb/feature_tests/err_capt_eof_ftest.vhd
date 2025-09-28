@@ -115,7 +115,7 @@ package body err_capt_eof_ftest is
         variable stat_1             :     t_ctu_status;
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_pc_dbg;    
+        variable pc_dbg             :     t_ctu_frame_field;    
 
         variable frame_sent         :     boolean;
         
@@ -129,7 +129,7 @@ package body err_capt_eof_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
         
         -----------------------------------------------------------------------        
@@ -142,29 +142,29 @@ package body err_capt_eof_ftest is
         info_m("Step 2");
         
         generate_can_frame(frame_1);
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         
-        CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
         wait for 30 ns;
 
         rand_int_v(4, wait_time);
         info_m("waiting for:" & integer'image(wait_time) & " bits!");
         for i in 1 to wait_time loop
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
         end loop;
 
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
         release_bus_level(chn);
 
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_type = can_err_form, "Form error detected!");
         check_m(err_capt.err_pos = err_pos_eof,
             "Error detected in EOF field!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
   end procedure;
 

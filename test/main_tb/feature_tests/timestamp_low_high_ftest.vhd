@@ -135,7 +135,7 @@ package body timestamp_low_high_ftest is
         ts_rand(31) := '0';
 
         info_m("Forcing start timestamp in DUT to: " & to_hstring(ts_rand));
-        ftr_tb_set_timestamp(ts_rand, chn);
+        set_timestamp(ts_rand, chn);
 
         wait for 100 ns;
 
@@ -144,7 +144,7 @@ package body timestamp_low_high_ftest is
             timestamp_agent_get_timestamp(chn, ts_input);
 
             -- Get timestamp from DUT
-            CAN_read_timestamp(ts_read, DUT_NODE, chn);
+            ctu_read_timestamp(ts_read, DUT_NODE, chn);
 
             -------------------------------------------------------------------
             -- Compare both values

@@ -142,7 +142,7 @@ package body mode_bus_monitoring_ftest is
         variable rx_buf_state       :       t_ctu_rx_buff_info;
         variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       t_ctu_pc_dbg;
+        variable pc_dbg             :       t_ctu_frame_field;
     begin
 
         ------------------------------------------------------------------------
@@ -152,9 +152,9 @@ package body mode_bus_monitoring_ftest is
         info_m("Step 1: Configuring BMM in DUT, STM in Test node!");
 
         mode_1.bus_monitoring := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         mode_2.self_test := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Insert frame for transmission to DUT. Check for sufficiently
@@ -163,14 +163,14 @@ package body mode_bus_monitoring_ftest is
         info_m("Step 2: Checking frame is not transmitted in Bus monitoring mode!");
 
         generate_can_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
 
         wait for 20 ns;
 
         for i in 0 to 100 loop
-            get_tx_buf_state(1, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(1, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_failed, "TXT buffer went to failed");
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_false_m(status.transmitter, "Node does not transmitt in BMM!");
             check_false_m(status.receiver, "Node turned receiver in BMM -> WTF?");
             check_m(status.bus_status, "Node remains idle");
@@ -183,8 +183,8 @@ package body mode_bus_monitoring_ftest is
         info_m("Step 3: Send frame by Test node, Wait till ACK");
 
         generate_can_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_field(pc_deb_ack, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @4. Monitor bus during whole ACK field, check that it is recessive.
@@ -192,28 +192,28 @@ package body mode_bus_monitoring_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Checking ACK field is recessive");
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
         while (pc_dbg = pc_deb_ack) loop
             check_bus_level(RECESSIVE, "Dominant ACK transmitted!", chn);
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
 
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_m(status.receiver, "DUT receiver!");
 
         end loop;
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @5. Check that frame was received by DUT.
         ------------------------------------------------------------------------
         info_m("Step 5: Checking frame received OK");
 
-        get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         check_m(rx_buf_state.rx_frame_count = 1, "Frame received in BMM");
 
-        CAN_read_frame(CAN_RX_frame, DUT_NODE, chn);
-        CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
+        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
         check_m(frames_equal, "TX vs. RX frame matching!");
 
         ------------------------------------------------------------------------
@@ -222,13 +222,13 @@ package body mode_bus_monitoring_ftest is
         info_m("Step 6: Set NISOFD for DUT. Send frame by Test node");
 
         mode_1.iso_fd_support := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         generate_can_frame(CAN_TX_frame);
         CAN_TX_frame.frame_format := FD_CAN;
         CAN_TX_frame.rtr := NO_RTR_FRAME;
 
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
 
         ------------------------------------------------------------------------
         -- @7. Wait till error frame transmitted by DUT (should come as CRC is
@@ -236,7 +236,7 @@ package body mode_bus_monitoring_ftest is
         ------------------------------------------------------------------------
         info_m("Step 7: Waiting till error frame");
 
-        CAN_wait_error_frame(DUT_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @8. Monitor during whole Error frame transmitted by DUT, that
@@ -245,19 +245,19 @@ package body mode_bus_monitoring_ftest is
         ------------------------------------------------------------------------
         info_m("Step 8: Monitor that error flag sent by DUT is recessive");
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame transmitted!");
 
         mem_bus_agent_disable_transaction_reporting(chn);
         while (status.error_transmission) loop
             check_can_tx(RECESSIVE, DUT_NODE, "Dominant Error flag transmitted!", chn);
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
         end loop;
         mem_bus_agent_enable_transaction_reporting(chn);
 
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        get_tx_buf_state(1, txt_buf_state, TEST_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, txt_buf_state, TEST_NODE, chn);
         check_m(txt_buf_state = buf_done, "Frame transmitted OK");
 
         -- Need to turn back on the ISO-FD and reset the DUT Node. This is because
@@ -268,11 +268,11 @@ package body mode_bus_monitoring_ftest is
         -- In real operation this is OK, since NISOFD is set once during initial
         -- configuration!
         mode_1.iso_fd_support := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_wait_bus_on(DUT_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         --  @9. Read value of RX Frame counter by DUT. Set Test Node to
@@ -281,11 +281,11 @@ package body mode_bus_monitoring_ftest is
         -----------------------------------------------------------------------
         info_m("Step 9: Set Test Node to Self-acknowledge mode");
 
-        read_error_counters(err_counters_1, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_1, DUT_NODE, chn);
 
         mode_2.self_acknowledge := true;
         mode_2.self_test := false;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @10. Generate random frame, and send it by Test Node. Wait until the
@@ -294,8 +294,8 @@ package body mode_bus_monitoring_ftest is
         info_m("Step 10: Generate random frame and send by Test Node");
 
         generate_can_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(TEST_NODE, chn);
+        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @11. Read the frame from DUT Node, and check that the frame received
@@ -304,11 +304,11 @@ package body mode_bus_monitoring_ftest is
         -----------------------------------------------------------------------
         info_m("Step 11: Read the frame from DUT and compare");
 
-        CAN_read_frame(CAN_RX_frame, DUT_NODE, chn);
-        CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
+        compare_can_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
         check_m(frames_equal, "TX vs. RX frame matching!");
 
-        read_error_counters(err_counters_2, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2, DUT_NODE, chn);
         check_m(err_counters_1.rx_counter = err_counters_2.rx_counter,
                 "RX Error counter not incremented");
 

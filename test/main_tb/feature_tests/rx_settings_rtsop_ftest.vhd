@@ -154,29 +154,29 @@ package body rx_settings_rtsop_ftest is
         -- have 1 in MSB to avoid overflow.
         rand_ts(31) := '0';
 
-        ftr_tb_set_timestamp(rand_ts, chn);
+        set_timestamp(rand_ts, chn);
         info_m("Forcing start timestamp in DUT to: " & to_hstring(rand_ts));
 
         rx_options.rx_time_stamp_options := true;
-        set_rx_buf_options(rx_options, DUT_NODE, chn);
+        ctu_set_rx_buf_opts(rx_options, DUT_NODE, chn);
 
         mode_1.internal_loopback := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         generate_can_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- Now we are in SOF, so we must wait till sample point and capture
         -- the timestamp then. HW should do the same!
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         timestamp_agent_get_timestamp(chn, capt_ts);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
-        CAN_read_frame(CAN_RX_frame, DUT_NODE, chn);
+        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
 
         -- Calculate difference. Two separate cases are needed to avoid
         -- underflow
@@ -203,18 +203,18 @@ package body rx_settings_rtsop_ftest is
         info_m("Step 2");
 
         generate_can_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
 
-        CAN_wait_tx_rx_start(false, true, DUT_NODE, chn);
+        ctu_wait_frame_start(false, true, DUT_NODE, chn);
 
         -- Now we should go directly to Arbitration because we sample dominant
         -- bit in Idle, therefore this should be the moment of SOF sample point.
         timestamp_agent_get_timestamp(chn, capt_ts);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
-        CAN_read_frame(CAN_RX_frame, DUT_NODE, chn);
+        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
 
         -- Calculate difference. Two separate cases are needed to avoid
         -- underflow
@@ -240,26 +240,26 @@ package body rx_settings_rtsop_ftest is
         info_m("Step 3");
         
         rx_options.rx_time_stamp_options := false;
-        set_rx_buf_options(rx_options, DUT_NODE, chn);
+        ctu_set_rx_buf_opts(rx_options, DUT_NODE, chn);
 
         generate_can_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
         
-        CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_eof, DUT_NODE, chn);
 
         -- Wait until one bit before the end of EOF. This is when RX frame
         -- is validated according to CAN standard. 
         for i in 0 to 5 loop
-            CAN_wait_sample_point(DUT_NODE, chn, false);
+            ctu_wait_sample_point(DUT_NODE, chn, false);
         end loop;
         
         -- Now we should be right in sample point of EOF. Get timestamp
         timestamp_agent_get_timestamp(chn, capt_ts);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
-        CAN_read_frame(CAN_RX_frame, DUT_NODE, chn);
+        ctu_read_frame(CAN_RX_frame, DUT_NODE, chn);
         
         -- Calculate difference. Two separate cases are needed to avoid
         -- underflow

@@ -164,24 +164,24 @@ package body message_filter_ftest is
         -- not to pass any frame (to make sure that frame does not pass filter
         -- by chance).
         ------------------------------------------------------------------------
-        CAN_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
-        CAN_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
-        CAN_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
-        CAN_set_range_filter(range_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
+        ctu_set_ran_filter(range_filt_config, DUT_NODE, chn);
 
         mode.acceptance_filter := false;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- Send frame by Test node. Check that frame was received!
         ------------------------------------------------------------------------
         command.release_rec_buffer := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
         
-        get_rx_buf_state(rx_state, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
         check_false_m(rx_state.rx_empty,
             "Frame is not received when Message filters are disabled!");
 
@@ -192,15 +192,15 @@ package body message_filter_ftest is
         -- any filter and frame should be dropped!
         ------------------------------------------------------------------------
         command.release_rec_buffer := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         
         mode.acceptance_filter := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
         
-        get_rx_buf_state(rx_state, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
         check_m(rx_state.rx_empty,
             "Frame passed Message filters when all filters are disabled!");
 
@@ -225,9 +225,9 @@ package body message_filter_ftest is
             mask_filt_config.acc_CAN_FD := false;
             mask_filt_config.ID_mask := 0;
             mask_filt_config.ID_value := 0;
-            CAN_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
-            CAN_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
-            CAN_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
+            ctu_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
+            ctu_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
+            ctu_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
 
             --------------------------------------------------------------------
             -- Configure several settings for one mask filter. Bit Matching
@@ -315,17 +315,17 @@ package body message_filter_ftest is
                 end if;
 
                 -- Set filter settings
-                CAN_set_mask_filter(mask_filter, mask_filt_config, DUT_NODE, chn);
+                ctu_set_mask_filter(mask_filter, mask_filt_config, DUT_NODE, chn);
 
                 -- Send Frame by Test node and check if frame is received as
                 -- expected or not! Flush RX Buffer first!
                 command.release_rec_buffer := true;
-                give_controller_command(command, DUT_NODE, chn);
-                CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-                CAN_wait_frame_sent(DUT_NODE, chn);
+                ctu_give_cmd(command, DUT_NODE, chn);
+                ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+                ctu_wait_frame_sent(DUT_NODE, chn);
 
                 wait for 100 ns;
-                get_rx_buf_state(rx_state, DUT_NODE, chn);
+                ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
 
                 -- Check!
                check_false_m((rx_state.rx_empty = true) and (should_pass = true),
@@ -346,9 +346,9 @@ package body message_filter_ftest is
         mask_filt_config.acc_CAN_FD := false;
         mask_filt_config.ID_mask := 0;
         mask_filt_config.ID_value := 0;
-        CAN_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
-        CAN_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
-        CAN_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- Generate random thresholds for identifier!
@@ -376,7 +376,7 @@ package body message_filter_ftest is
         range_filt_config.acc_CAN_FD := true;
         range_filt_config.ID_th_high := h_th;
         range_filt_config.ID_th_low := l_th;
-        CAN_set_range_filter(range_filt_config, DUT_NODE, chn);
+        ctu_set_ran_filter(range_filt_config, DUT_NODE, chn);
         generate_can_frame(CAN_frame);
         CAN_frame.ident_type := BASE;
         CAN_frame.rtr := RTR_FRAME;
@@ -410,11 +410,11 @@ package body message_filter_ftest is
             end if;
 
             command.release_rec_buffer := true;
-            give_controller_command(command, DUT_NODE, chn);
+            ctu_give_cmd(command, DUT_NODE, chn);
 
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(DUT_NODE, chn);
-            get_rx_buf_state(rx_state, DUT_NODE, chn);
+            ctu_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
+            ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
 
             if ((rx_state.rx_empty and should_pass) or
                 ((not rx_state.rx_empty) and (not should_pass)))

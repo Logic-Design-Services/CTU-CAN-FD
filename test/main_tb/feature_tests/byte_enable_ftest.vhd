@@ -129,9 +129,9 @@ package body byte_enable_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: 32-bit read");
 
-        CAN_turn_controller(false, DUT_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
         address := YOLO_REG_ADR;
-        CAN_read(data_32, address, DUT_NODE, chn);
+        ctu_read(data_32, address, DUT_NODE, chn);
         check_m(data_32 = x"DEADBEEF", "32 bit read error");
 
         ------------------------------------------------------------------------
@@ -143,7 +143,7 @@ package body byte_enable_ftest is
             data_16 := (OTHERS => '0');
             address := std_logic_vector(to_unsigned(
 		            (to_integer(unsigned(YOLO_REG_ADR)) + i * 2), 12));
-            CAN_read(data_16, address, DUT_NODE, chn);
+            ctu_read(data_16, address, DUT_NODE, chn);
 
             exp_16 := YOLO_VAL_RSTVAL(16 * i + 15 downto 16 * i);
             if (i = 0) then
@@ -162,7 +162,7 @@ package body byte_enable_ftest is
             data_8 := (OTHERS => '0');
             address := std_logic_vector(to_unsigned(
 		            (to_integer(unsigned(YOLO_REG_ADR)) + i), 12));
-            CAN_read(data_8, address, DUT_NODE, chn);
+            ctu_read(data_8, address, DUT_NODE, chn);
 
             -- Checking if valid 1 byte matches register value
             exp_8 := YOLO_VAL_RSTVAL(8 * i + 7 downto 8 * i);
@@ -179,14 +179,14 @@ package body byte_enable_ftest is
         for i in 0 to 3 loop
             address := BTR_FD_ADR;
             data_32 := (OTHERS => '0');
-            CAN_write(data_32, address, DUT_NODE, chn);
+            ctu_write(data_32, address, DUT_NODE, chn);
 
             address := std_logic_vector(to_unsigned(
 		            (to_integer(unsigned(BTR_FD_ADR)) + i), 12));
             data_8 := x"AA";
-            CAN_write(data_8, address, DUT_NODE, chn);
+            ctu_write(data_8, address, DUT_NODE, chn);
             
-            CAN_read(data_32, BTR_FD_ADR, DUT_NODE, chn);
+            ctu_read(data_32, BTR_FD_ADR, DUT_NODE, chn);
 
             -- Checking if one written byte was written OK!
             check_m(data_32(8 * i + 7 downto 8 * i) = x"AA",
@@ -225,15 +225,15 @@ package body byte_enable_ftest is
         for i in 0 to 1 loop
             address := BTR_FD_ADR;
             data_32 := (OTHERS => '0');
-            CAN_write(data_32, address, DUT_NODE, chn);
+            ctu_write(data_32, address, DUT_NODE, chn);
 
             address := std_logic_vector(to_unsigned(
                         (to_integer(unsigned(BTR_FD_ADR)) + (i * 2)), 12));
             data_16 := x"AAAA";
-            CAN_write(data_16, address, DUT_NODE, chn);
+            ctu_write(data_16, address, DUT_NODE, chn);
             
             data_32 := (OTHERS => '0');
-            CAN_read(data_32, BTR_FD_ADR, DUT_NODE, chn);
+            ctu_read(data_32, BTR_FD_ADR, DUT_NODE, chn);
             
             -- Checking if one written byte was written OK!
             check_m(data_32(16 * i + 15 downto 16 * i) = x"AAAA",

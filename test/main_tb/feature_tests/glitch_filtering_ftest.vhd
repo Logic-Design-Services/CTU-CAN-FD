@@ -123,7 +123,7 @@ package body glitch_filtering_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_read_timing_v(bus_timing, DUT_NODE, chn);
+        ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
         tseg1 := bus_timing.tq_nbt *
                     (1 + bus_timing.prop_nbt + bus_timing.ph1_nbt);
         tseg1_minus_1_tq := bus_timing.tq_nbt *
@@ -136,7 +136,7 @@ package body glitch_filtering_ftest is
         release_can_rx(chn);
         wait for 50 ns;
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.receiver, "DUT not receiver!");
         check_m(stat_1.bus_status, "DUT Idle");
         
@@ -154,7 +154,7 @@ package body glitch_filtering_ftest is
         release_can_rx(chn);
         wait for 50 ns;
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.receiver, "DUT receiver!");
         check_false_m(stat_1.bus_status, "DUT not Idle");
 

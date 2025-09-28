@@ -126,7 +126,7 @@ package body no_sof_tx_ftest is
         variable rx_buf_info        :     t_ctu_rx_buff_info;
         variable frames_equal       :     boolean := false;
                  
-        variable pc_state           :     t_ctu_pc_dbg;
+        variable pc_state           :     t_ctu_frame_field;
     begin
 
         ------------------------------------------------------------------------
@@ -134,8 +134,8 @@ package body no_sof_tx_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Configure one -shot mode");
 
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
-        CAN_enable_retr_limit(true, 0, TEST_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, TEST_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Insert CAN frames which have first 5 bits of identifier equal to
@@ -153,9 +153,9 @@ package body no_sof_tx_ftest is
         -- Use FD can frames, they contain stuff count!!
         frame_1.frame_format := FD_CAN;
         frame_2.frame_format := FD_CAN;
-        CAN_insert_TX_frame(frame_1, 1, DUT_NODE, chn);
-        CAN_insert_TX_frame(frame_2, 1, TEST_NODE, chn);
-        CAN_wait_sample_point(TEST_NODE, chn);
+        ctu_put_tx_frame(frame_1, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(frame_2, 1, TEST_NODE, chn);
+        ctu_wait_sample_point(TEST_NODE, chn);
         
         ------------------------------------------------------------------------
         -- @3. Send Set ready command to both nodes. Wait until DUT is not in
@@ -163,17 +163,17 @@ package body no_sof_tx_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3");
 
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
-        CAN_wait_sample_point(TEST_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_wait_sample_point(TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
         
         -- Wait until bus is not idle by DUT!
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         while (stat_1.bus_status) loop
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
         end loop;
 
-        CAN_read_pc_debug_m(pc_state, DUT_NODE, chn);
+        ctu_get_curr_frame_field(pc_state, DUT_NODE, chn);
         check_m(pc_state = pc_deb_arbitration, "DUT did not transmitt SOF!");
         wait for 20 ns;
 
@@ -184,7 +184,7 @@ package body no_sof_tx_ftest is
         info_m("Step 4");
 
         for i in 0 to 4 loop
-            CAN_wait_sample_point(DUT_NODE, chn, skip_stuff_bits => false);
+            ctu_wait_sample_point(DUT_NODE, chn, skip_stuff_bits => false);
         end loop;
         check_can_tx(RECESSIVE, DUT_NODE, "Stuff bit inserted!", chn);
 
@@ -194,17 +194,17 @@ package body no_sof_tx_ftest is
         ------------------------------------------------------------------------
         info_m("Step 5");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
-        get_tx_buf_state(1, txt_buf_state, DUT_NODE, chn);
+        ctu_get_txt_buf_state(1, txt_buf_state, DUT_NODE, chn);
         check_m(txt_buf_state = buf_done, "Frame transmitted OK!");
         
-        get_rx_buf_state(rx_buf_info, TEST_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, TEST_NODE, chn);
         check_m(rx_buf_info.rx_frame_count = 1, "Frame received OK!");
 
-        CAN_read_frame(frame_rx, TEST_NODE, chn);
-        CAN_compare_frames(frame_rx, frame_1, false, frames_equal);
+        ctu_read_frame(frame_rx, TEST_NODE, chn);
+        compare_can_frames(frame_rx, frame_1, false, frames_equal);
         check_m(frames_equal, "TX vs. RX frames match!");
 
     end procedure;

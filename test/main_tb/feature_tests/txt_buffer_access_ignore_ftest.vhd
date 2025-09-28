@@ -135,7 +135,7 @@ package body txt_buffer_access_ignore_ftest is
         --  @1. Iterate over all TXT Buffers:
         -------------------------------------------------------------------------------------------
         info_m("Step 1");
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
 
         for txt_buf_index in 1 to num_txt_bufs loop
             info_m("Testing TXT Buffer: " & integer'image(txt_buf_index));
@@ -172,11 +172,11 @@ package body txt_buffer_access_ignore_ftest is
                 CAN_frame_b.data(i) := x"55";
             end loop;
 
-            decode_length(CAN_frame_a.data_length, CAN_frame_a.dlc);
-            decode_dlc_rx_buff(CAN_frame_a.dlc, CAN_frame_a.rwcnt);
+            length_to_dlc(CAN_frame_a.data_length, CAN_frame_a.dlc);
+            dlc_to_rwcnt(CAN_frame_a.dlc, CAN_frame_a.rwcnt);
 
-            decode_length(CAN_frame_b.data_length, CAN_frame_b.dlc);
-            decode_dlc_rx_buff(CAN_frame_b.dlc, CAN_frame_b.rwcnt);
+            length_to_dlc(CAN_frame_b.data_length, CAN_frame_b.dlc);
+            dlc_to_rwcnt(CAN_frame_b.dlc, CAN_frame_b.rwcnt);
 
             ---------------------------------------------------------------------------------------
             -- @1.2 Insert Frame A to TXT Buffer. Wait until sample point of DUT
@@ -185,16 +185,16 @@ package body txt_buffer_access_ignore_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 1.2");
 
-            CAN_insert_TX_frame(CAN_frame_a, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_frame_a, txt_buf_index, DUT_NODE, chn);
 
-            CAN_wait_sample_point(DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
             -- TXT Buffer command is pipelined. Without wait, we manage to squeeze in first
             -- write when the buffer is still in "Empty"
             wait for 20 ns;
 
-            CAN_insert_TX_frame(CAN_frame_b, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_frame_b, txt_buf_index, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @1.3 Wait until frame transmission starts and attempt to insert then
@@ -202,13 +202,13 @@ package body txt_buffer_access_ignore_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 1.3");
 
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
 
-            get_tx_buf_state(txt_buf_index, txtb_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txtb_state, DUT_NODE, chn);
             check_m(txtb_state = buf_tx_progress, "TXT Buffer in TX in Progress");
 
-            CAN_insert_TX_frame(CAN_frame_b, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_frame_b, txt_buf_index, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @1.4 Wait until data field starts and issue "Set Abort" Command to TXT Buffer.
@@ -217,14 +217,14 @@ package body txt_buffer_access_ignore_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 1.4");
 
-            CAN_wait_pc_state(pc_deb_data, DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_data, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
             wait for 20 ns;
 
-            get_tx_buf_state(txt_buf_index, txtb_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txtb_state, DUT_NODE, chn);
             check_m(txtb_state = buf_ab_progress, "TXT Buffer in Abort in Progress");
 
-            CAN_insert_TX_frame(CAN_frame_b, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(CAN_frame_b, txt_buf_index, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @1.5 Wait until bus is idle. Read the frame from RX Buffer of
@@ -232,15 +232,15 @@ package body txt_buffer_access_ignore_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 1.5");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
-            CAN_read_frame(CAN_RX_frame, TEST_NODE, chn);
+            ctu_read_frame(CAN_RX_frame, TEST_NODE, chn);
 
-            CAN_compare_frames(CAN_RX_frame, CAN_frame_a, false, frames_match);
+            compare_can_frames(CAN_RX_frame, CAN_frame_a, false, frames_match);
             check_m(frames_match, "Frame A not corrupted");
 
-            get_tx_buf_state(txt_buf_index, txtb_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txtb_state, DUT_NODE, chn);
             check_m(txtb_state = buf_done, "TXT Buffer in TX Done");
 
         end loop;

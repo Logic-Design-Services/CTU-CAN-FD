@@ -130,7 +130,7 @@ package body status_rxne_ftest is
         --      are received. Check that after each one, STATUS[RXNE] is set.
         -----------------------------------------------------------------------
         info_m("Step 1");
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.receive_buffer, "RX Buffer empty");
         
         rand_int_v(6, num_frames);
@@ -139,16 +139,16 @@ package body status_rxne_ftest is
         generate_can_frame(frame_1);
         frame_1.rtr := RTR_FRAME;
         frame_1.frame_format := NORMAL_CAN;
-        CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);
+        ctu_put_tx_frame(frame_1, 1, TEST_NODE, chn);
         
         for i in 0 to num_frames - 1 loop
-            send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
-            CAN_wait_frame_sent(TEST_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
+            ctu_wait_frame_sent(TEST_NODE, chn);
             
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
             
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_m(stat_1.receive_buffer, "RX Buffer not empty");
         end loop;
 
@@ -158,8 +158,8 @@ package body status_rxne_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         for i in 0 to num_frames - 2 loop
-            CAN_read_frame(frame_rx, DUT_NODE, chn);
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_read_frame(frame_rx, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_m(stat_1.receive_buffer, "RX Buffer not empty");
         end loop;
         
@@ -169,8 +169,8 @@ package body status_rxne_ftest is
         --     word.
         -----------------------------------------------------------------------
         for i in 0 to 3 loop -- RTR frame has 4 words in RX Buffer
-            CAN_read(r_data, RX_DATA_ADR, DUT_NODE, chn);
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_read(r_data, RX_DATA_ADR, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
             
             if (i = 3) then
                 check_false_m(stat_1.receive_buffer,

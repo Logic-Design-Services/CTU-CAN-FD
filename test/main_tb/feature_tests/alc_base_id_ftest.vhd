@@ -137,7 +137,7 @@ package body alc_base_id_ftest is
         -- Node status
         variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     t_ctu_pc_dbg;
+        variable pc_dbg             :     t_ctu_frame_field;
         
         variable txt_buf_state      :     t_ctu_txt_buff_state;
         variable rx_buf_info        :     t_ctu_rx_buff_info;
@@ -153,8 +153,8 @@ package body alc_base_id_ftest is
         -- @1. Configure both Nodes to one-shot mode.
         ------------------------------------------------------------------------
         info_m("Step 1: Configure one -shot mode");
-        CAN_enable_retr_limit(true, 0, TEST_NODE, chn);
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, TEST_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         --  @2. Loop by N between 1 and 11: 
@@ -186,17 +186,17 @@ package body alc_base_id_ftest is
             id_var(11 - N) := RECESSIVE;
             frame_2.identifier := to_integer(unsigned(id_var));
             
-            CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);
-            CAN_insert_TX_frame(frame_2, 1, DUT_NODE, chn);
+            ctu_put_tx_frame(frame_1, 1, TEST_NODE, chn);
+            ctu_put_tx_frame(frame_2, 1, DUT_NODE, chn);
 
             --------------------------------------------------------------------
             -- @2.2 Wait till sample point on DUT. Send frame 1 by Test Node and
             --     frame 2 by DUT right one after another.
             --------------------------------------------------------------------
             info_m("Step 2.2: Send frames!");
-            CAN_wait_sample_point(TEST_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+            ctu_wait_sample_point(TEST_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
             
             --------------------------------------------------------------------
             -- @2.3 Wait till Arbitration field in DUT. This is right after
@@ -204,8 +204,8 @@ package body alc_base_id_ftest is
             --     SOF). Check that DUT is Transmitter.
             --------------------------------------------------------------------
             info_m("Step 2.2: Wait till arbitration!");
-            CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
-            get_controller_status(stat_2, DUT_NODE, chn);
+            ctu_wait_frame_field(pc_deb_arbitration, DUT_NODE, chn);
+            ctu_get_status(stat_2, DUT_NODE, chn);
             check_m(stat_2.transmitter, "Test node transmitting!");
     
             -------------------------------------------------------------------
@@ -219,26 +219,26 @@ package body alc_base_id_ftest is
             info_m("Step 2.4: Wait till N-th bit!");
             for K in 1 to N loop
                 info_m ("Loop: " & integer'image(K));
-                CAN_wait_sample_point(DUT_NODE, chn);
+                ctu_wait_sample_point(DUT_NODE, chn);
                 wait for 20 ns; -- Wait until RX trigger is processed!
                 
                 -- Arbitration should have been lost!
                 if (K = N) then
-                    get_controller_status(stat_2, DUT_NODE, chn);
+                    ctu_get_status(stat_2, DUT_NODE, chn);
                     check_m(stat_2.receiver, "DUT receiver!");
                     check_false_m(stat_2.transmitter, "DUT not transmitter!");
 
-                    read_alc(alc, DUT_NODE, chn);
+                    ctu_get_alc(alc, DUT_NODE, chn);
                     check_m(alc = N, "Arbitration lost at correct bit by DUT!");
                     
-                    read_alc(alc, TEST_NODE, chn);
+                    ctu_get_alc(alc, TEST_NODE, chn);
                     check_m(alc = 0, "Arbitration not lost by Test node!");
         
                     check_can_tx(RECESSIVE, DUT_NODE, "Recessive transmitted!", chn);
         
                 -- Arbitration should not have been lost yet!
                 else
-                    get_controller_status(stat_2, DUT_NODE, chn);
+                    ctu_get_status(stat_2, DUT_NODE, chn);
                     check_m(stat_2.transmitter, "DUT transmitter!");
                     check_false_m(stat_2.receiver, "DUT not receiver!");
                     
@@ -256,10 +256,10 @@ package body alc_base_id_ftest is
         --     is transmitting recessive value.
         -----------------------------------------------------------------------
         info_m("Step 2.5: Wait till end of frame!");
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
         while (pc_dbg /= pc_deb_crc_delim) loop
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_frame_field(pc_dbg, DUT_NODE, chn);
             check_can_tx(RECESSIVE, DUT_NODE, "Recessive transmitted!", chn);
             -- To make checks more sparse not to consume simulation time!
             wait for 100 ns;
@@ -271,17 +271,17 @@ package body alc_base_id_ftest is
         --     in Test Node. Check it was succesfully received in DUT!
         -----------------------------------------------------------------------
         info_m("Step 2.7: Wait till bus is idle!");
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
-        get_tx_buf_state(1, txt_buf_state, TEST_NODE, chn);
+        ctu_get_txt_buf_state(1, txt_buf_state, TEST_NODE, chn);
         check_m(txt_buf_state = buf_done, "Frame transmitted OK!");
         
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
         check_m(rx_buf_info.rx_frame_count = 1, "Frame received OK!");
         
-        CAN_read_frame(frame_rx, DUT_NODE, chn);
-        CAN_compare_frames(frame_rx, frame_1, false, frames_equal);
+        ctu_read_frame(frame_rx, DUT_NODE, chn);
+        compare_can_frames(frame_rx, frame_1, false, frames_equal);
         check_m(frames_equal, "TX vs. RX frames match!");
 
     end loop;

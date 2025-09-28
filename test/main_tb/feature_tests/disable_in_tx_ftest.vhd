@@ -122,15 +122,15 @@ package body disable_in_tx_ftest is
         info_m("Step 1");
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         
         -----------------------------------------------------------------------
         -- @2. Wait until frame starts in DUT, and disable DUT.
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
-        CAN_turn_controller(false, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Wait until bus is idle in Test Node (Test Node will transmitt
@@ -138,7 +138,7 @@ package body disable_in_tx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
         
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
         wait for 1000 ns;
 
         -----------------------------------------------------------------------
@@ -147,18 +147,18 @@ package body disable_in_tx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4");
         
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_wait_bus_on(DUT_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
 
         generate_can_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
-        CAN_read_frame(CAN_frame_2, TEST_NODE, chn);
-        CAN_compare_frames(CAN_frame, CAN_frame_2, false, outcome);
+        ctu_read_frame(CAN_frame_2, TEST_NODE, chn);
+        compare_can_frames(CAN_frame, CAN_frame_2, false, outcome);
 
         check_m(outcome, "TX/RX frames equal");
 

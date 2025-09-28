@@ -119,34 +119,34 @@ package body frame_test_ignore_ftest is
     begin
         -- Record DLC
         output_dlc := (others => '0');
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_control, DUT_NODE, chn);
         
         -- Fixed frame format assumed since Frame is with Base identifier and CAN FD.
         -- IDE, EDL, r0, BRS, ESI
         for i in 0 to 4 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
         for i in 0 to 3 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             get_can_tx(DUT_NODE, output_dlc(3 - i), chn);
         end loop;
 
         -- Record stuff count
         output_stc := (others => '0');
-        CAN_wait_pc_state(pc_deb_stuff_count, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_stuff_count, DUT_NODE, chn);
         
         for i in 0 to 3 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             get_can_tx(DUT_NODE, output_stc(i), chn);
         end loop;
 
         -- Record CRC
         output_crc := (others => '0');
-        CAN_wait_pc_state(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_frame_field(pc_deb_crc, DUT_NODE, chn);
         
         for i in 0 to crc_length - 1 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             get_can_tx(DUT_NODE, output_crc(i), chn);
         end loop;
     end procedure;
@@ -194,9 +194,9 @@ package body frame_test_ignore_ftest is
         info_m("Step 1");
 
         mode_1.test := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
-        get_tx_buf_count(txt_buf_count, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Generate random CAN FD frame. Set FRAME_TEST_W so that no CRC,
@@ -211,7 +211,7 @@ package body frame_test_ignore_ftest is
         CAN_TX_frame.ident_type := BASE;
         CAN_TX_frame.identifier := CAN_TX_frame.identifier mod 2**11;
         info_m("Transmitted frame:");
-        CAN_print_frame(CAN_TX_frame);
+        print_can_frame(CAN_TX_frame);
 
         if (CAN_TX_frame.data_length > 16) then
             crc_length := 21;
@@ -219,17 +219,17 @@ package body frame_test_ignore_ftest is
             crc_length := 17;
         end if;
 
-        pick_random_txt_buffer(txt_buf_index, DUT_NODE, chn);
-        CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+        ctu_get_rand_txt_buf(txt_buf_index, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
 
-        CAN_set_frame_test(txt_buf_index, 0, false, false, false,
+        ctu_set_tx_frame_test(txt_buf_index, 0, false, false, false,
                            DUT_NODE, chn);
 
-        send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
         record_dlc_stc_crc(crc_length, golden_dlc, golden_stc, golden_crc, chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Set FRAME_TEST_W so that Stuff count, CRC shall be flipped, and
@@ -240,14 +240,14 @@ package body frame_test_ignore_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+        ctu_put_tx_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
 
         -- Attempt to swap DLC, bit-flip CRC and Stuff count fields.
         rand_int_v(15, tprm);
-        CAN_set_frame_test(txt_buf_index, tprm, true, true, true,
+        ctu_set_tx_frame_test(txt_buf_index, tprm, true, true, true,
                            DUT_NODE, chn);
 
-        send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
         record_dlc_stc_crc(crc_length, real_dlc, real_stc, real_crc, chn);
 
@@ -267,8 +267,8 @@ package body frame_test_ignore_ftest is
         check_m(golden_stc = real_stc, "Stuff count match");
         check_m(golden_crc = real_crc, "CRC match");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
   end procedure;
 
