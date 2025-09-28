@@ -1882,6 +1882,18 @@ package feature_test_agent_pkg is
         signal   channel        : inout t_com_channel
     );
 
+    ----------------------------------------------------------------------------
+    -- Measure duration of one bit.
+    --
+    -- Arguments:
+    --  node            Node which shall be accessed (Test node or DUT).
+    --  channel         Channel to use for access
+    ----------------------------------------------------------------------------
+    procedure ctu_measure_bit_duration(
+        constant node           : in    t_feature_node;
+        signal   channel        : inout t_com_channel;
+        variable rv             : out   time
+    );
 
     ----------------------------------------------------------------------------
     ----------------------------------------------------------------------------
@@ -4922,5 +4934,19 @@ package body feature_test_agent_pkg is
         clk_agent_wait_cycle(channel);
     end procedure;
 
+    procedure ctu_measure_bit_duration(
+        constant node           : in    t_feature_node;
+        signal   channel        : inout t_com_channel;
+        variable rv             : out   time
+    ) is
+        variable first          : time;
+        variable second         : time;
+    begin
+        ctu_wait_sample_point(node, channel);
+        first := now;
+        ctu_wait_sample_point(node, channel);
+        second := now;
+        rv := second - first;
+    end procedure;
 
 end package body;

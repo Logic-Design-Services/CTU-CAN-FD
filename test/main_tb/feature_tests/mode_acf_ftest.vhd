@@ -119,6 +119,7 @@ package body mode_acf_ftest is
         variable frame_sent         :       boolean := false;
 
         variable dut_can_tx         :       std_logic;
+        variable bit_duration       :       time;
     begin
 
         -------------------------------------------------------------------------------------------
@@ -128,6 +129,8 @@ package body mode_acf_ftest is
 
         mode_2.self_test := true;
         ctu_set_mode(mode_1, TEST_NODE, chn);
+
+        ctu_measure_bit_duration(DUT_NODE, chn, bit_duration);
 
         -------------------------------------------------------------------------------------------
         -- @2. Loop through following frame types: CAN 2.0 and CAN FD
@@ -160,8 +163,9 @@ package body mode_acf_ftest is
             info_m("Step 2.3");
 
             ctu_wait_ff(ff_ack, DUT_NODE, chn);
-            ctu_wait_sync_seg(DUT_NODE, chn);
-            wait for 30 ns;
+
+            -- Reliable way how to wait until the middle of bit
+            wait for bit_duration / 2;
 
             get_can_tx(DUT_NODE, dut_can_tx, chn);
             check_m(dut_can_tx = RECESSIVE, "DUT sends recessive ACK when MODE[ACF]=1");
@@ -190,8 +194,9 @@ package body mode_acf_ftest is
             info_m("Step 2.6");
 
             ctu_wait_ff(ff_ack, DUT_NODE, chn);
-            ctu_wait_sync_seg(DUT_NODE, chn);
-            wait for 30 ns;
+
+            -- Reliable way how to wait until the middle of bit
+            wait for bit_duration / 2;
 
             get_can_tx(DUT_NODE, dut_can_tx, chn);
             check_m(dut_can_tx = DOMINANT, "DUT sends Dominant ACK when MODE[ACF]=0");
