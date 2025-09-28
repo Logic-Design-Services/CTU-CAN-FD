@@ -119,15 +119,15 @@ package body mode_fd_enable_ftest is
     procedure mode_fd_enable_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable err_capt           :       SW_error_capture;
+        variable err_capt           :       t_ctu_err_capt;
     begin
 
         ------------------------------------------------------------------------
@@ -136,7 +136,7 @@ package body mode_fd_enable_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Sending CAN FD frame when FD mode enabled!");
         
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_TX_frame.frame_format := FD_CAN;
         CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_frame_sent(DUT_NODE, chn);
@@ -176,9 +176,9 @@ package body mode_fd_enable_ftest is
         
         CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_type = can_err_form,
-            "Error type: " & SW_error_type'image(err_capt.err_type));
+            "Error type: " & t_ctu_err_kind'image(err_capt.err_type));
         check_m(err_capt.err_pos = err_pos_ctrl,
-            "Error in :" & SW_error_position'image(err_capt.err_pos));
+            "Error in :" & t_ctu_err_pos'image(err_capt.err_pos));
         
         CAN_wait_bus_idle(DUT_NODE, chn);
 

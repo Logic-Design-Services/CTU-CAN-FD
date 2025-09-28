@@ -127,12 +127,12 @@ begin
     ---------------------------------------------------------------------------
     test_process : process
         -- 2 Mbit / 500 Kbit, 80 % sample point
-        variable bus_timing     : bit_time_config_type :=
+        variable bus_timing     : t_ctu_bit_time_cfg :=
             (2, 1, 40, 39, 20, 10, 20, 14, 15, 10);
         variable data_set : t_reference_data_set;
         variable driver_item : t_can_driver_entry :=
             ('0', 0 ns, false, (OTHERS => '0'));
-        variable rx_frame : SW_CAN_frame_type;
+        variable rx_frame : t_ctu_frame;
         variable result : boolean;
         variable reference_offset : natural;
     begin

@@ -117,12 +117,12 @@ package body overload_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable pc_dbg             :     t_ctu_pc_dbg;
         variable frame_sent         :     boolean;
-        variable command            :     SW_command := SW_command_rst_val;
-        variable status             :     SW_status;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
+        variable status             :     t_ctu_status;
     begin
         
         -----------------------------------------------------------------------
@@ -132,7 +132,7 @@ package body overload_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         
         CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
@@ -195,7 +195,7 @@ package body overload_ftest is
         --     frame. Check that Test node reacts with Overload frame.
         -----------------------------------------------------------------------
         info_m("Step 3");
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
 
         CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);

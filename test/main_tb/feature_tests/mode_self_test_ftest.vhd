@@ -107,17 +107,17 @@ package body mode_self_test_ftest is
     procedure mode_self_test_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
         
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
-        variable status             :       SW_status;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       SW_PC_Debug;   
+        variable pc_dbg             :       t_ctu_pc_dbg;   
     begin
 
         ------------------------------------------------------------------------
@@ -137,7 +137,7 @@ package body mode_self_test_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Send frame by DUT, Wait till ACK");
         
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
         

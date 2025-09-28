@@ -124,18 +124,18 @@ package body int_of_ftest is
     procedure int_of_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     SW_CAN_frame_type;
+        variable CAN_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
-        variable int_mask           :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_ena            :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_stat           :     SW_interrupts := SW_interrupts_rst_val;
-        variable command            :     SW_command := SW_command_rst_val;
-        variable buf_info           :     SW_RX_Buffer_info;
-        variable status             :     SW_status;
+        variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
+        variable buf_info           :     t_ctu_rx_buff_info;
+        variable status             :     t_ctu_status;
 
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
-        variable mode_2             :     SW_mode := SW_mode_rst_val;
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :     t_ctu_mode := t_ctu_mode_rst_val;
     begin
 
         -----------------------------------------------------------------------
@@ -157,7 +157,7 @@ package body int_of_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);

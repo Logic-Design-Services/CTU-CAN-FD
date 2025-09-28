@@ -117,16 +117,16 @@ package body err_capt_ctrl_bit_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
   
         variable wait_time          :     natural;
 
         variable frame_sent         :     boolean;
         
-        variable err_capt           :     SW_error_capture;
+        variable err_capt           :     t_ctu_err_capt;
         variable tmp                :     natural;
         
         variable force_value        :     std_logic := '0';
@@ -158,7 +158,7 @@ package body err_capt_ctrl_bit_ftest is
         -----------------------------------------------------------------------
         for i in 1 to 4 loop
             info_m("Inner Loop: " & integer'image(i));
-            CAN_generate_frame(frame_1);
+            generate_can_frame(frame_1);
 
             -- Detect patterns in which stuff bit might be placed. In such 
             -- case, avoid it. Because if we stuff the same value of bit as

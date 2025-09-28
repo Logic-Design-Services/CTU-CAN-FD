@@ -122,13 +122,13 @@ package body err_norm_fd_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
-        variable err_counters_1_1   :     SW_error_counters;
-        variable err_counters_1_2   :     SW_error_counters;
+        variable err_counters_1_1   :     t_ctu_err_ctrs;
+        variable err_counters_1_2   :     t_ctu_err_ctrs;
 
-        variable err_counters_2_1   :     SW_error_counters;
-        variable err_counters_2_2   :     SW_error_counters;
+        variable err_counters_2_1   :     t_ctu_err_ctrs;
+        variable err_counters_2_2   :     t_ctu_err_ctrs;
 
         variable frame_sent         :     boolean;
         variable rand_val           :     integer;
@@ -160,7 +160,7 @@ package body err_norm_fd_ftest is
         read_error_counters(err_counters_1_1, DUT_NODE, chn);
         read_error_counters(err_counters_1_2, TEST_NODE, chn);
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         if (frame_1.frame_format = FD_CAN) then
             frame_1.brs := BR_NO_SHIFT;
         end if;
@@ -219,7 +219,7 @@ package body err_norm_fd_ftest is
         read_error_counters(err_counters_1_1, DUT_NODE, chn);
         read_error_counters(err_counters_1_2, TEST_NODE, chn);
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.frame_format := FD_CAN;
         frame_1.brs := BR_SHIFT;
 

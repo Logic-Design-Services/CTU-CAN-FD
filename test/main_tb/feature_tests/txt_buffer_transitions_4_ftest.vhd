@@ -110,17 +110,17 @@ package body txt_buffer_transitions_4_ftest is
     procedure txt_buffer_transitions_4_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable command            :       SW_command := SW_command_rst_val;
-        variable status             :       SW_status;
-	    variable txt_buf_state	    :	    SW_TXT_Buffer_state_type;
-        variable mode               :       SW_mode := SW_mode_rst_val;
+        variable CAN_frame          :       t_ctu_frame;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable status             :       t_ctu_status;
+	    variable txt_buf_state	    :	    t_ctu_txt_buff_state;
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable num_txt_bufs       :       natural;
         variable frame_sent         :       boolean;
-        variable err_counters       :       SW_error_counters;
-        variable fault_state        :       SW_fault_state;
+        variable err_counters       :       t_ctu_err_ctrs;
+        variable fault_state        :       t_ctu_fault_state;
         variable can_tx_val         :       std_logic;
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
         variable tseg1              :       natural;
 
         variable tst_mem            :       t_tgt_test_mem;
@@ -141,7 +141,7 @@ package body txt_buffer_transitions_4_ftest is
         set_core_mode(mode, DUT_NODE, chn);
 
         -- Generate single common frame
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.frame_format := FD_CAN;
         CAN_frame.data_length := 16;
         CAN_frame.rtr := NO_RTR_FRAME;

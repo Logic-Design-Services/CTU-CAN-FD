@@ -132,14 +132,14 @@ package body mode_loopback_ftest is
     procedure mode_loopback_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable rx_buf_state       :       t_ctu_rx_buff_info;
         variable frames_equal       :       boolean := false;
         variable num_txt_bufs       :       natural;
     begin
@@ -166,7 +166,7 @@ package body mode_loopback_ftest is
             ------------------------------------------------------------------------
             info_m("Step 2.1: Sending frame by DUT");
 
-            CAN_generate_frame(CAN_TX_frame);
+            generate_can_frame(CAN_TX_frame);
             CAN_send_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn, frame_sent);
 
             ------------------------------------------------------------------------
@@ -212,7 +212,7 @@ package body mode_loopback_ftest is
         ------------------------------------------------------------------------
         info_m("Step 5: Transmit frame by Test Node when DUT has Loopback enabled");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
 
         CAN_wait_frame_sent(TEST_NODE, chn);
@@ -239,7 +239,7 @@ package body mode_loopback_ftest is
         ------------------------------------------------------------------------
         info_m("Step 7: Send frame by DUT!");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
 
         ------------------------------------------------------------------------
@@ -276,7 +276,7 @@ package body mode_loopback_ftest is
         ------------------------------------------------------------------------
         info_m("Step 10: Send CAN frame by DUT.");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
 
         CAN_wait_frame_sent(DUT_NODE, chn);
@@ -308,7 +308,7 @@ package body mode_loopback_ftest is
         ------------------------------------------------------------------------
         info_m("Step 12: Transmit frame by Test Node when DUT has Loopback disabled");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
 
         CAN_wait_frame_sent(TEST_NODE, chn);

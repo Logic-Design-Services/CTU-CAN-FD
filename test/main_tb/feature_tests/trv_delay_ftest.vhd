@@ -121,15 +121,15 @@ package body trv_delay_ftest is
     procedure trv_delay_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable measured_delay     :       natural;
         variable frames_equal       :       boolean;
         variable rand_time          :       natural;
         variable rand_time_ceiled   :       natural;
 
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
     begin
 
         -----------------------------------------------------------------------
@@ -177,7 +177,7 @@ package body trv_delay_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         ftr_tb_set_tran_delay(1 ns, DUT_NODE, chn);
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_TX_frame.rtr := NO_RTR_FRAME;
         CAN_TX_frame.frame_format := FD_CAN;
         CAN_TX_frame.brs := BR_SHIFT;

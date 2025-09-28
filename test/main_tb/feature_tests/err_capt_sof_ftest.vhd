@@ -106,13 +106,13 @@ package body err_capt_sof_ftest is
         signal      chn             : inout  t_com_channel
     ) is        
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
         
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
         
         variable frame_sent         :     boolean;
-        variable err_capt           :     SW_error_capture;
+        variable err_capt           :     t_ctu_err_capt;
     begin
 
         -----------------------------------------------------------------------
@@ -123,7 +123,7 @@ package body err_capt_sof_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
 

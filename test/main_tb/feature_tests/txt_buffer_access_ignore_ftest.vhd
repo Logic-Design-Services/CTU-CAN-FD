@@ -122,11 +122,11 @@ package body txt_buffer_access_ignore_ftest is
     ) is
         variable num_txt_bufs       :       natural;
 
-        variable CAN_frame_a        :       SW_CAN_frame_type;
-        variable CAN_frame_b        :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_frame_a        :       t_ctu_frame;
+        variable CAN_frame_b        :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
 
-        variable txtb_state         :       SW_TXT_Buffer_state_type;
+        variable txtb_state         :       t_ctu_txt_buff_state;
 
         variable frames_match       :       boolean;
     begin
@@ -149,8 +149,8 @@ package body txt_buffer_access_ignore_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 1.1");
 
-            CAN_generate_frame(CAN_frame_a);
-            CAN_generate_frame(CAN_frame_b);
+            generate_can_frame(CAN_frame_a);
+            generate_can_frame(CAN_frame_b);
 
             CAN_frame_a.frame_format := FD_CAN;
             CAN_frame_b.frame_format := FD_CAN;

@@ -119,16 +119,16 @@ package body rx_settings_rtsop_ftest is
     procedure rx_settings_rtsop_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :        SW_CAN_frame_type;
-        variable CAN_RX_frame       :        SW_CAN_frame_type;
+        variable CAN_TX_frame       :        t_ctu_frame;
+        variable CAN_RX_frame       :        t_ctu_frame;
         variable frame_sent         :        boolean := false;
-        variable options            :        SW_RX_Buffer_options;
+        variable options            :        t_ctu_rx_buff_opts;
         variable ts_beg             :        std_logic_vector(31 downto 0);
         variable ts_end             :        std_logic_vector(31 downto 0);
         variable diff               :        unsigned(63 downto 0);
 
-        variable rx_options         :        SW_RX_Buffer_options; 
-        variable mode_1             :        SW_mode := SW_mode_rst_val;
+        variable rx_options         :        t_ctu_rx_buff_opts; 
+        variable mode_1             :        t_ctu_mode := t_ctu_mode_rst_val;
 
         variable rand_ts            :        std_logic_vector(63 downto 0);        
         variable capt_ts            :        std_logic_vector(63 downto 0);
@@ -163,7 +163,7 @@ package body rx_settings_rtsop_ftest is
         mode_1.internal_loopback := true;
         set_core_mode(mode_1, DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
 
         CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
@@ -202,7 +202,7 @@ package body rx_settings_rtsop_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
 
         CAN_wait_tx_rx_start(false, true, DUT_NODE, chn);
@@ -242,7 +242,7 @@ package body rx_settings_rtsop_ftest is
         rx_options.rx_time_stamp_options := false;
         set_rx_buf_options(rx_options, DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
         
         CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);

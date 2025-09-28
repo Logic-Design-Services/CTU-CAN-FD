@@ -115,17 +115,17 @@ package body mode_frame_filters_ftest is
     procedure mode_frame_filters_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         
-        variable rx_buf_state       :       SW_RX_Buffer_info;
+        variable rx_buf_state       :       t_ctu_rx_buff_info;
         variable frames_equal       :       boolean := false;
-        variable filt_A_cfg         :       SW_CAN_mask_filter_config;
-        variable filt_B_C_cfg       :       SW_CAN_mask_filter_config;
-        variable filter_range_cfg   :       SW_CAN_range_filter_config;
+        variable filt_A_cfg         :       t_ctu_mask_filt_cfg;
+        variable filt_B_C_cfg       :       t_ctu_mask_filt_cfg;
+        variable filter_range_cfg   :       t_ctu_ran_filt_cfg;
     begin
 
         ------------------------------------------------------------------------
@@ -171,7 +171,7 @@ package body mode_frame_filters_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Check frame filters mode operation");
         
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_TX_frame.ident_type := BASE;
         CAN_TX_frame.identifier := CAN_TX_frame.identifier mod 2048;
         

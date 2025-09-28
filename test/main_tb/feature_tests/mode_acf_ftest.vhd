@@ -112,10 +112,10 @@ package body mode_acf_ftest is
     procedure mode_acf_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
         variable dut_can_tx         :       std_logic;
@@ -149,7 +149,7 @@ package body mode_acf_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2");
 
-            CAN_generate_frame(CAN_frame);
+            generate_can_frame(CAN_frame);
             CAN_frame.frame_format := frame_format;
             CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
 

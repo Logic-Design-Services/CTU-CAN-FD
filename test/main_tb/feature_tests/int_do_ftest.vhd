@@ -131,15 +131,15 @@ package body int_do_ftest is
     procedure int_do_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     SW_CAN_frame_type;
+        variable CAN_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
-        variable int_mask           :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_ena            :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_stat           :     SW_interrupts := SW_interrupts_rst_val;
-        variable command            :     SW_command := SW_command_rst_val;
-        variable buf_info           :     SW_RX_Buffer_info;
-        variable status             :     SW_status;
+        variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
+        variable buf_info           :     t_ctu_rx_buff_info;
+        variable status             :     t_ctu_status;
     begin
 
         -----------------------------------------------------------------------
@@ -163,7 +163,7 @@ package body int_do_ftest is
         info_m("Buffer size: " & Integer'image(buf_info.rx_buff_size));
         
         -- Send RTR frames till we fill the buffer
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.rtr := RTR_FRAME;
         CAN_frame.frame_format := NORMAL_CAN;
         for i in 0 to (buf_info.rx_buff_size / 4) - 1 loop

@@ -119,16 +119,16 @@ package body tx_arb_consistency_ftest is
     procedure tx_arb_consistency_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_rx_1     :       SW_CAN_frame_type;
-        variable CAN_frame_rx_2     :       SW_CAN_frame_type;
-        variable CAN_frame_tx_1     :       SW_CAN_frame_type;
-        variable CAN_frame_tx_2     :       SW_CAN_frame_type;
+        variable CAN_frame_rx_1     :       t_ctu_frame;
+        variable CAN_frame_rx_2     :       t_ctu_frame;
+        variable CAN_frame_tx_1     :       t_ctu_frame;
+        variable CAN_frame_tx_2     :       t_ctu_frame;
         
         variable frame_equal        :       boolean := false;
         variable tmp_int            :       natural := 0;
         
         variable wait_cycles        :       natural := 0;
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
         
         variable frames_equal_1     :       boolean;
         variable frames_equal_2     :       boolean;
@@ -140,8 +140,8 @@ package body tx_arb_consistency_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_generate_frame(CAN_frame_tx_1);
-        CAN_generate_frame(CAN_frame_tx_2);
+        generate_can_frame(CAN_frame_tx_1);
+        generate_can_frame(CAN_frame_tx_2);
         
         CAN_insert_TX_frame(CAN_frame_tx_1, 1, DUT_NODE, chn);
         CAN_insert_TX_frame(CAN_frame_tx_2, 2, DUT_NODE, chn);

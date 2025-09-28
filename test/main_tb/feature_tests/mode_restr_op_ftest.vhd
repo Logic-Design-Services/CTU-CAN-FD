@@ -123,19 +123,19 @@ package body mode_restr_op_ftest is
     procedure mode_restr_op_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
-        variable err_counters_2     :       SW_error_counters := (0, 0, 0, 0);
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
+        variable err_counters_2     :       t_ctu_err_ctrs := (0, 0, 0, 0);
 
-        variable fault_th           :       SW_fault_thresholds;
-        variable fault_th_2         :       SW_fault_thresholds;
+        variable fault_th           :       t_ctu_fault_thresholds;
+        variable fault_th_2         :       t_ctu_fault_thresholds;
         
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable status             :       SW_status;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable status             :       t_ctu_status;
         variable bit_waits          :       natural;
     begin
 
@@ -150,7 +150,7 @@ package body mode_restr_op_ftest is
         mode_1.restricted_operation := true;
         set_core_mode(mode_1, DUT_NODE, chn);
         
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         -- To make sure we have only one ACK bit
         CAN_TX_frame.frame_format := NORMAL_CAN;
         CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);

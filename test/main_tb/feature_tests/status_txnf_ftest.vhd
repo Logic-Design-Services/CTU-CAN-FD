@@ -111,13 +111,13 @@ package body status_txnf_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
         
-        variable txt_buf_state      :     SW_TXT_Buffer_state_type;
-        variable mode_1             :     SW_mode;
+        variable txt_buf_state      :     t_ctu_txt_buff_state;
+        variable mode_1             :     t_ctu_mode;
         
         variable num_txt_bufs       :     natural;
     begin

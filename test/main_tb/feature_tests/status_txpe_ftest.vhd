@@ -141,15 +141,15 @@ package body status_txpe_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
-        variable frame_2            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
+        variable frame_2            :     t_ctu_frame;
 
-        variable stat_1             :     SW_status;
-        variable command_1          :     SW_command := SW_command_rst_val;
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
-        variable rx_buf_status      :     SW_RX_Buffer_info;
+        variable stat_1             :     t_ctu_status;
+        variable command_1          :     t_ctu_command := t_ctu_command_rst_val;
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable rx_buf_status      :     t_ctu_rx_buff_info;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable pc_dbg             :     t_ctu_pc_dbg;
         variable frame_sent         :     boolean;
         variable frames_equal       :     boolean;
 
@@ -164,7 +164,7 @@ package body status_txpe_ftest is
         variable corrupt_insert     :     std_logic;
 
         variable tst_mem            :     t_tgt_test_mem;
-        variable txt_buf_state      :     SW_TXT_Buffer_state_type;
+        variable txt_buf_state      :     t_ctu_txt_buff_state;
         variable prt_en             :     std_logic;
         variable num_txt_bufs       :     natural;
     begin
@@ -193,7 +193,7 @@ package body status_txpe_ftest is
                 --      SETTINGS[PCHKE] = 1.
                 -------------------------------------------------------------------
                 info_m("Step 2.1");
-                CAN_generate_frame(frame_1);
+                generate_can_frame(frame_1);
                 rand_logic_v(prt_en, 0.5);
                 if (prt_en = '1') then
                     mode_1.parity_check := true;
@@ -342,7 +342,7 @@ package body status_txpe_ftest is
                 end if;
                 set_core_mode(mode_1, DUT_NODE, chn);
 
-                CAN_generate_frame(frame_1);
+                generate_can_frame(frame_1);
                 frame_1.rtr := NO_RTR_FRAME;
                 if frame_1.data_length = 0 then
                     frame_1.data_length := 1;

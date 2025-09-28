@@ -126,22 +126,22 @@ package body rx_counter_ftest is
     procedure rx_counter_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable RX_CAN_frame       :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
+        variable RX_CAN_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable rand_value         :       natural;
 
-        variable ctrs_1             :       SW_traffic_counters;
-        variable ctrs_2             :       SW_traffic_counters;
-        variable ctrs_3             :       SW_traffic_counters;
-        variable ctrs_4             :       SW_traffic_counters;
-        variable ctrs_5             :       SW_traffic_counters;
+        variable ctrs_1             :       t_ctu_traff_ctrs;
+        variable ctrs_2             :       t_ctu_traff_ctrs;
+        variable ctrs_3             :       t_ctu_traff_ctrs;
+        variable ctrs_4             :       t_ctu_traff_ctrs;
+        variable ctrs_5             :       t_ctu_traff_ctrs;
 
-        variable status             :       SW_status;
-        variable command            :       SW_command := SW_command_rst_val;
+        variable status             :       t_ctu_status;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
 
-        variable rx_buf_info        :       SW_RX_Buffer_info;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
+        variable rx_buf_info        :       t_ctu_rx_buff_info;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable deposit_vect       :       std_logic_vector(31 downto 0);
     begin
 
@@ -160,7 +160,7 @@ package body rx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Send frame by Test node!");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 2, TEST_NODE, chn, frame_sent);
 
         CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
@@ -194,7 +194,7 @@ package body rx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Send frame and force ACK recessive!");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.frame_format := NORMAL_CAN;
         CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
 
@@ -231,7 +231,7 @@ package body rx_counter_ftest is
 
         rand_int_v(6, rand_value);
         for i in 0 to rand_value - 1 loop
-            CAN_generate_frame(CAN_frame);
+            generate_can_frame(CAN_frame);
             CAN_send_frame(CAN_frame, 3, TEST_NODE, chn, frame_sent);
             CAN_wait_frame_sent(TEST_NODE, chn);
         end loop;
@@ -292,7 +292,7 @@ package body rx_counter_ftest is
         mode_1.internal_loopback := true;
         set_core_mode(mode_1, DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 4, DUT_NODE, chn, frame_sent);
         CAN_wait_frame_sent(DUT_NODE, chn);
 

@@ -119,14 +119,14 @@ package body rx_buf_consistency_ftest is
     procedure rx_buf_consistency_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable bus_timing         : bit_time_config_type;
+        variable bus_timing         : t_ctu_bit_time_cfg;
 
-        variable CAN_TX_frame_1     :       SW_CAN_frame_type;
-        variable CAN_TX_frame_2     :       SW_CAN_frame_type;
-        variable CAN_RX_frame_1     :       SW_CAN_frame_type;
-        variable CAN_RX_frame_2     :       SW_CAN_frame_type;
+        variable CAN_TX_frame_1     :       t_ctu_frame;
+        variable CAN_TX_frame_2     :       t_ctu_frame;
+        variable CAN_RX_frame_1     :       t_ctu_frame;
+        variable CAN_RX_frame_2     :       t_ctu_frame;
 
-        variable rx_buf_info        :       SW_RX_Buffer_info;
+        variable rx_buf_info        :       t_ctu_rx_buff_info;
 
         variable frames_match       :       boolean;
         variable frame_sent         :       boolean;
@@ -168,7 +168,7 @@ package body rx_buf_consistency_ftest is
         -- always the same, and thus delaying the frame readout cycle by cycle
         -- will guarantee to hit the moment when frame is simultaneously
         -- commited and last word is read!
-        CAN_generate_frame(CAN_TX_frame_1);
+        generate_can_frame(CAN_TX_frame_1);
 
         -- Restrict to non-CAN FD frames from two reasons:
         --  - Shorter data fields -> Reduces test length
@@ -193,7 +193,7 @@ package body rx_buf_consistency_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.1");
 
-            CAN_generate_frame(CAN_TX_frame_2);
+            generate_can_frame(CAN_TX_frame_2);
 
             CAN_send_frame(CAN_TX_frame_1, 1, TEST_NODE, chn, frame_sent);
             wait for 200 ns;

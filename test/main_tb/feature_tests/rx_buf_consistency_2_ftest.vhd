@@ -121,21 +121,21 @@ package body rx_buf_consistency_2_ftest is
     procedure rx_buf_consistency_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
 
-        variable CAN_TX_frame_1     :       SW_CAN_frame_type;
-        variable CAN_TX_frame_2     :       SW_CAN_frame_type;
-        variable CAN_RX_frame_1     :       SW_CAN_frame_type;
-        variable CAN_RX_frame_2     :       SW_CAN_frame_type;
+        variable CAN_TX_frame_1     :       t_ctu_frame;
+        variable CAN_TX_frame_2     :       t_ctu_frame;
+        variable CAN_RX_frame_1     :       t_ctu_frame;
+        variable CAN_RX_frame_2     :       t_ctu_frame;
 
-        variable rx_buf_info        :       SW_RX_Buffer_info;
+        variable rx_buf_info        :       t_ctu_rx_buff_info;
 
         variable frames_match       :       boolean;
         variable frame_sent         :       boolean;
 
-        variable err_counters       :       SW_error_counters;
+        variable err_counters       :       t_ctu_err_ctrs;
 
-        variable mode               :       SW_mode := SW_mode_rst_val;
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
     begin
 
         ------------------------------------------------------------------------
@@ -178,7 +178,7 @@ package body rx_buf_consistency_2_ftest is
         CAN_wait_bus_on(TEST_NODE, chn);
 
         -- First frame - Will always take 4 words in RX Buffer
-        CAN_generate_frame(CAN_TX_frame_1);
+        generate_can_frame(CAN_TX_frame_1);
         CAN_TX_frame_1.data_length := 0;
         decode_length(CAN_TX_frame_1.data_length, CAN_TX_frame_1.dlc);
         decode_dlc_rx_buff(CAN_TX_frame_1.dlc, CAN_TX_frame_1.rwcnt);
@@ -186,7 +186,7 @@ package body rx_buf_consistency_2_ftest is
         -- Second frame
         -- Make it fixed so that we don't see spurious fails due to immediate
         -- frame on flipped stuff-bit!
-        CAN_generate_frame(CAN_TX_frame_2);
+        generate_can_frame(CAN_TX_frame_2);
         CAN_TX_frame_2.identifier := 0;
         CAN_TX_frame_2.ident_type := BASE;
         CAN_TX_frame_2.frame_format := NORMAL_CAN;

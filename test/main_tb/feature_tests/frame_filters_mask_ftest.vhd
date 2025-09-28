@@ -110,36 +110,36 @@ package body frame_filters_mask_ftest is
     procedure frame_filters_mask_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
-        variable err_counters_2     :       SW_error_counters := (0, 0, 0, 0);
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
+        variable err_counters_2     :       t_ctu_err_ctrs := (0, 0, 0, 0);
 
-        variable fault_th           :       SW_fault_thresholds;
-        variable fault_th_2         :       SW_fault_thresholds;
+        variable fault_th           :       t_ctu_fault_thresholds;
+        variable fault_th_2         :       t_ctu_fault_thresholds;
 
         variable txt_buf_count      :       natural;
         variable tmp_int            :       natural;
         variable txt_buf_index      :       natural;
 
-        variable status_1           :       SW_status;
+        variable status_1           :       t_ctu_status;
 
         variable txt_buf_vector     :       std_logic_vector(7 downto 0) := x"00";
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
 
         variable swap_dlc           :       natural;
         variable expected_dlc       :       std_logic_vector(3 downto 0) := "0000";
         variable real_dlc           :       std_logic_vector(3 downto 0) := "0000";
 
-        variable err_capt           :       SW_error_capture;
-        variable range_cfg          :       SW_CAN_range_filter_config;
+        variable err_capt           :       t_ctu_err_capt;
+        variable range_cfg          :       t_ctu_ran_filt_cfg;
         variable should_pass        :       boolean;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
-        variable filt_cfg           :       SW_CAN_mask_filter_config;
+        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable filt_cfg           :       t_ctu_mask_filt_cfg;
 
         variable exp_base_mask      :       std_logic_vector(10 downto 0);
         variable exp_base_val       :       std_logic_vector(10 downto 0);
@@ -168,7 +168,7 @@ package body frame_filters_mask_ftest is
         range_cfg.ident_type := BASE;
         CAN_set_range_filter(range_cfg, DUT_NODE, chn);
 
-        for filter in SW_CAN_mask_filter_type'left to SW_CAN_mask_filter_type'right loop
+        for filter in t_ctu_mask_filt_kind'left to t_ctu_mask_filt_kind'right loop
             for ident_type in BASE to EXTENDED loop
                 for can_2_0_en in boolean'left to boolean'right loop
                     for can_fd_en in boolean'left to boolean'right loop
@@ -208,7 +208,7 @@ package body frame_filters_mask_ftest is
                             -------------------------------------------------------------------------------
                             info_m("Step 1.1");
 
-                            CAN_generate_frame(CAN_TX_frame);
+                            generate_can_frame(CAN_TX_frame);
                             CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
                             CAN_wait_frame_sent(DUT_NODE, chn);
                             CAN_wait_bus_idle(DUT_NODE, chn);

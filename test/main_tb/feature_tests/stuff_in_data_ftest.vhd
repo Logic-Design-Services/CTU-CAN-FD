@@ -108,8 +108,8 @@ package body stuff_in_data_ftest is
     procedure stuff_in_data_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :        SW_CAN_frame_type;
-        variable CAN_frame_2        :        SW_CAN_frame_type  := SW_CAN_Frame_type_rst_val;
+        variable CAN_frame          :        t_ctu_frame;
+        variable CAN_frame_2        :        t_ctu_frame  := SW_CAN_Frame_type_rst_val;
         variable frame_sent         :        boolean;
         variable frames_equal       :        boolean;
     begin
@@ -122,7 +122,7 @@ package body stuff_in_data_ftest is
         ----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
 
         -- Use only DLC of 1, as data byte 1 is set so that stuff bit is
         -- inserted at last bit of data field!

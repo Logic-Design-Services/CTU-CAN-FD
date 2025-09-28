@@ -108,14 +108,14 @@ package body err_capt_data_bit_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
         
         variable frame_sent         :     boolean;
         
-        variable err_capt           :     SW_error_capture;
+        variable err_capt           :     t_ctu_err_capt;
         variable tmp                :     natural;
         
         variable tx_bus_level       :     std_logic;
@@ -138,7 +138,7 @@ package body err_capt_data_bit_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.rtr := NO_RTR_FRAME;
         
         -- Don't sample by SSP!

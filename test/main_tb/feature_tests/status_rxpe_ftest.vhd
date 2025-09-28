@@ -118,15 +118,15 @@ package body status_rxpe_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
-        variable frame_2            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
+        variable frame_2            :     t_ctu_frame;
 
-        variable stat_1             :     SW_status;
-        variable command_1          :     SW_command := SW_command_rst_val;
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
-        variable rx_buf_status      :     SW_RX_Buffer_info;
+        variable stat_1             :     t_ctu_status;
+        variable command_1          :     t_ctu_command := t_ctu_command_rst_val;
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable rx_buf_status      :     t_ctu_rx_buff_info;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable pc_dbg             :     t_ctu_pc_dbg;
         variable frame_sent         :     boolean;
 
         variable rptr_pos           :     integer := 0;
@@ -170,7 +170,7 @@ package body status_rxpe_ftest is
             -------------------------------------------------------------------
             info_m("Step 2.2");
 
-            CAN_generate_frame(frame_1);
+            generate_can_frame(frame_1);
             CAN_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
             CAN_wait_frame_sent(DUT_NODE, chn);
 

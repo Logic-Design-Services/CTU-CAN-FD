@@ -116,13 +116,13 @@ package body mode_erfm_ftest is
     procedure mode_erfm_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             : SW_mode := SW_mode_rst_val;
-        variable mode_2             : SW_mode := SW_mode_rst_val;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             : t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
+        variable CAN_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
 
-        variable rx_buf_info        : SW_RX_Buffer_info;
+        variable rx_buf_info        : t_ctu_rx_buff_info;
 
         variable frame_sent         : boolean;
     begin
@@ -144,7 +144,7 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_error_frame(DUT_NODE, chn);
         CAN_wait_bus_idle(DUT_NODE, chn);
@@ -176,7 +176,7 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_error_frame(DUT_NODE, chn);
         CAN_wait_bus_idle(DUT_NODE, chn);

@@ -90,7 +90,7 @@
 --    09.02.2018  Added support fow RWCNT field in the SW_CAN_Frame.
 --    15.02.2018  Added support for TXT Buffer commands in CAN Send frame
 --                procedure.
---    23.02.2018  Corrected "CAN_generate_frame" function for proper placement
+--    23.02.2018  Corrected "generate_can_frame" function for proper placement
 --                of BASE identifier to unsigned value.
 --     28.4.2018  Converted TXT Buffer access functions to use generated macros.
 --      1.5.2018  1. Added HAL layer types and functions.
@@ -158,7 +158,7 @@ package feature_test_agent_pkg is
     ----------------------------------------------------------------------------
 
     -- Controller modes
-    type SW_mode is record
+    type t_ctu_mode is record
         reset                   :   boolean;
         bus_monitoring          :   boolean;
         test                    :   boolean;
@@ -181,12 +181,12 @@ package feature_test_agent_pkg is
         self_acknowledge        :   boolean;
     end record;
 
-    constant SW_mode_rst_val : SW_mode := (false, false, false, false, false,
-        true, false, false, false, true, false, false, false, true, true,
-        false, false, false, false, false);
+    constant t_ctu_mode_rst_val : t_ctu_mode := (
+        false, false, false, false, false, true, false, false, false, true,
+        false, false, false, true, true, false, false, false, false, false);
 
     -- Controller commands
-    type SW_command is record
+    type t_ctu_command is record
         release_rec_buffer      :   boolean;
         clear_data_overrun      :   boolean;
         err_ctrs_rst            :   boolean;
@@ -199,11 +199,11 @@ package feature_test_agent_pkg is
         clear_txdpe             :   boolean;
     end record;
 
-    constant SW_command_rst_val : SW_command :=
+    constant t_ctu_command_rst_val : t_ctu_command :=
         (false, false, false, false, false, false, false, false, false, false);
 
     -- Controller status
-    type SW_status is record
+    type t_ctu_status is record
         receive_buffer          :   boolean;
         data_overrun            :   boolean;
         tx_buffer_empty         :   boolean;
@@ -220,7 +220,7 @@ package feature_test_agent_pkg is
 
 
     -- Interrupt sources
-    type SW_interrupts is record
+    type t_ctu_interrupts is record
         receive_int             :   boolean;
         transmitt_int           :   boolean;
         error_warning_int       :   boolean;
@@ -236,25 +236,25 @@ package feature_test_agent_pkg is
         overload_frame          :   boolean;
     end record;
 
-    constant SW_interrupts_rst_val : SW_interrupts := (
+    constant t_ctu_interrupts_rst_val : t_ctu_interrupts := (
         false, false, false, false, false, false, false, false,
         false, false, false, false, false);
 
     -- Fault confinement states
-    type SW_fault_state is (
+    type t_ctu_fault_state is (
         fc_error_active,
         fc_error_passive,
         fc_bus_off
     );
 
     -- Fault confinement state thresholds
-    type SW_fault_thresholds is record
+    type t_ctu_fault_thresholds is record
         ewl                     :   natural range 0 to 255;
         erp                     :   natural range 0 to 255;
     end record;
 
     -- Error counters (Normal and Special)
-    type SW_error_counters is record
+    type t_ctu_err_ctrs is record
         rx_counter              :   natural range 0 to 2 ** 9 - 1;
         tx_counter              :   natural range 0 to 2 ** 9 - 1;
         err_norm                :   natural range 0 to 2 ** 16 - 1;
@@ -262,13 +262,13 @@ package feature_test_agent_pkg is
     end record;
 
     -- Traffic counters
-    type SW_traffic_counters is record
+    type t_ctu_traff_ctrs is record
         rx_frames               :   natural;
         tx_frames               :   natural;
     end record;
 
     -- RX Buffer info and status
-    type SW_RX_Buffer_info is record
+    type t_ctu_rx_buff_info is record
         rx_buff_size            :   natural range 0 to 2 ** 13 - 1;
         rx_mem_free             :   natural range 0 to 2 ** 13 - 1;
         rx_write_pointer        :   natural range 0 to 2 ** 13 - 1;
@@ -280,12 +280,12 @@ package feature_test_agent_pkg is
     end record;
 
     -- RX Buffer options
-    type SW_RX_Buffer_options is record
+    type t_ctu_rx_buff_opts is record
         rx_time_stamp_options   :   boolean;
     end record;
 
     -- Error code capture
-    type SW_error_type is (
+    type t_ctu_err_kind is (
         can_err_bit,
         can_err_form,
         can_err_ack,
@@ -293,7 +293,7 @@ package feature_test_agent_pkg is
         can_err_stuff
     );
 
-    type SW_error_position is (
+    type t_ctu_err_pos is (
         err_pos_sof,
         err_pos_arbitration,
         err_pos_ctrl,
@@ -307,20 +307,20 @@ package feature_test_agent_pkg is
     );
 
     -- Error code capture data
-    type SW_error_capture is record
-        err_pos         : SW_error_position;
-        err_type        : SW_error_type;
+    type t_ctu_err_capt is record
+        err_pos         : t_ctu_err_pos;
+        err_type        : t_ctu_err_kind;
     end record;
 
     -- SSP (Secondary Sampling Point) configuration options
-    type SSP_set_command_type is (
+    type t_ctu_ssp_kind is (
         ssp_meas_n_offset,
         ssp_no_ssp,
         ssp_offset
     );
 
     -- Protocol control Debug values
-    type SW_PC_Debug is (
+    type t_ctu_pc_dbg is (
         pc_deb_none,
         pc_deb_sof,
         pc_deb_arbitration,
@@ -338,7 +338,7 @@ package feature_test_agent_pkg is
     );
 
     -- TXT Buffer state (used in test access, not in synthesizable code)
-    type SW_TXT_Buffer_state_type is (
+    type t_ctu_txt_buff_state is (
         buf_not_exist,
         buf_empty,
         buf_ready,
@@ -351,20 +351,20 @@ package feature_test_agent_pkg is
     );
 
     -- TXT Buffer commands (used in test access, not synthesizable code)
-    type SW_TXT_Buffer_command_type is (
+    type t_ctu_txt_buff_cmd is (
         buf_set_empty,
         buf_set_ready,
         buf_set_abort
     );
 
     -- TXT Buffer index type (assume highest available number of TXT buffers)
-    subtype SW_TXT_index_type is natural range 1 to 8;
+    subtype t_ctu_txt_buff_index is natural range 1 to 8;
 
     ----------------------------------------------------------------------------
     -- Main Bus timing configuration type used in feature and sanity tests
     -- (using "naturals" instead of std_logic_vector)
     ----------------------------------------------------------------------------
-    type bit_time_config_type is record
+    type t_ctu_bit_time_cfg is record
          tq_nbt                 :   natural;
          tq_dbt                 :   natural;
          prop_nbt               :   natural;
@@ -378,20 +378,20 @@ package feature_test_agent_pkg is
     end record;
 
 
-    type SW_CAN_data_type is array (0 to 63) of std_logic_vector(7 downto 0);
+    type t_ctu_data is array (0 to 63) of std_logic_vector(7 downto 0);
 
     ----------------------------------------------------------------------------
     -- Software CAN Frame type. Used for generation, transmission, reception,
     -- comparison of CAN Frames.
     ----------------------------------------------------------------------------
-    type SW_CAN_frame_type is record
+    type t_ctu_frame is record
 
         -- CAN Identifier. Decimal value. Note that the value differs for
         -- BASE and EXTENDED Identifiers!
         identifier              :   natural;
 
         -- Data payload
-        data                    :   SW_CAN_data_type;
+        data                    :   t_ctu_data;
 
         -- Data length code as defined in CAN Standard
         dlc                     :   std_logic_vector(3 downto 0);
@@ -442,7 +442,7 @@ package feature_test_agent_pkg is
         erf_type                :   std_logic_vector(2 downto 0);
     end record;
 
-    constant SW_CAN_Frame_type_rst_val : SW_CAN_frame_type :=
+    constant SW_CAN_Frame_type_rst_val : t_ctu_frame :=
             (0,                                 -- Identifier
              (OTHERS => (OTHERS => '0')),       -- Data
              "0000",                            -- DLC
@@ -463,14 +463,14 @@ package feature_test_agent_pkg is
              "000"                              -- ERF_TYPE
             );
 
-    type SW_CAN_mask_filter_type is (
+    type t_ctu_mask_filt_kind is (
         filter_A,
         filter_B,
         filter_C
     );
 
 
-    type SW_CAN_mask_filter_config is record
+    type t_ctu_mask_filt_cfg is record
         ID_value                :   natural;
         ID_mask                 :   natural;
         ident_type              :   std_logic;
@@ -479,7 +479,7 @@ package feature_test_agent_pkg is
     end record;
 
 
-    type SW_CAN_range_filter_config is record
+    type t_ctu_ran_filt_cfg is record
         ID_th_low               :   natural;
         ID_th_high              :   natural;
         ident_type              :   std_logic;
@@ -875,7 +875,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_configure_timing(
-        constant bus_timing     : in    bit_time_config_type;
+        constant bus_timing     : in    t_ctu_bit_time_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -891,7 +891,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_read_timing(
-        signal   bus_timing     : out   bit_time_config_type;
+        signal   bus_timing     : out   t_ctu_bit_time_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -906,7 +906,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_read_timing_v(
-        variable bus_timing     : out   bit_time_config_type;
+        variable bus_timing     : out   t_ctu_bit_time_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -921,7 +921,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_print_timing(
-        constant   bus_timing     : in   bit_time_config_type
+        constant   bus_timing     : in   t_ctu_bit_time_cfg
     );
 
 
@@ -965,8 +965,8 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_set_mask_filter(
-        constant filter         : in    SW_CAN_mask_filter_type;
-        constant config         : in    SW_CAN_mask_filter_config;
+        constant filter         : in    t_ctu_mask_filt_kind;
+        constant config         : in    t_ctu_mask_filt_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -980,7 +980,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_set_range_filter(
-        constant config         : in    SW_CAN_range_filter_config;
+        constant config         : in    t_ctu_ran_filt_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -992,8 +992,8 @@ package feature_test_agent_pkg is
     -- Arguments:
     --  frame           Output variable in which CAN FD Frame sill be generated.
     ----------------------------------------------------------------------------
-    procedure CAN_generate_frame(
-        variable frame          : inout SW_CAN_frame_type
+    procedure generate_can_frame(
+        variable frame          : inout t_ctu_frame
     );
 
 
@@ -1005,10 +1005,10 @@ package feature_test_agent_pkg is
     --  severity        Severity level that should be used to print the frame.
     ----------------------------------------------------------------------------
     procedure CAN_print_frame(
-        constant frame          : in    SW_CAN_frame_type
+        constant frame          : in    t_ctu_frame
     );
     procedure CAN_print_frame_simple(
-        constant frame          : in    SW_CAN_frame_type
+        constant frame          : in    t_ctu_frame
     );
 
 
@@ -1025,8 +1025,8 @@ package feature_test_agent_pkg is
     --                  are equal "true" is stored, "false" otherwise.
     ----------------------------------------------------------------------------
     procedure CAN_compare_frames(
-        constant frame_A        : in    SW_CAN_frame_type;
-        constant frame_B        : in    SW_CAN_frame_type;
+        constant frame_A        : in    t_ctu_frame;
+        constant frame_B        : in    t_ctu_frame;
         constant comp_ts        : in    boolean;
         variable outcome        : inout boolean
     );
@@ -1045,8 +1045,8 @@ package feature_test_agent_pkg is
     --
     ----------------------------------------------------------------------------
     procedure CAN_insert_TX_frame(
-        constant frame          : in    SW_CAN_frame_type;
-        constant buf_nr         : in    SW_TXT_index_type;
+        constant frame          : in    t_ctu_frame;
+        constant buf_nr         : in    t_ctu_txt_buff_index;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel;
         constant byte_access    : in    boolean := false
@@ -1067,7 +1067,7 @@ package feature_test_agent_pkg is
     --  channel         Communication channel
     ----------------------------------------------------------------------------
     procedure CAN_set_frame_test(
-        constant buf_nr         : in    SW_TXT_index_type;
+        constant buf_nr         : in    t_ctu_txt_buff_index;
         constant tprm           : in    natural range 0 to 31;
         constant fstc           : in    boolean;
         constant fcrc           : in    boolean;
@@ -1092,8 +1092,8 @@ package feature_test_agent_pkg is
     --                  TX in progress, Abort in progress
     ----------------------------------------------------------------------------
     procedure CAN_send_frame(
-        constant frame          : in    SW_CAN_frame_type;
-        constant buf_nr         : in    SW_TXT_index_type;
+        constant frame          : in    t_ctu_frame;
+        constant buf_nr         : in    t_ctu_txt_buff_index;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel;
         variable outcome        : out   boolean
@@ -1111,7 +1111,7 @@ package feature_test_agent_pkg is
     --                  read pointer is incremented automatically upon red!
     ----------------------------------------------------------------------------
     procedure CAN_read_frame(
-        variable frame          : inout SW_CAN_frame_type;
+        variable frame          : inout t_ctu_frame;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel;
         constant automatic_mode : in    boolean := true
@@ -1219,7 +1219,7 @@ package feature_test_agent_pkg is
     --                  stored.
     ----------------------------------------------------------------------------
     procedure CAN_calc_frame_length(
-        constant frame          : in    SW_CAN_frame_type;
+        constant frame          : in    t_ctu_frame;
         variable bit_length     : inout natural
     );
 
@@ -1239,8 +1239,8 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure send_TXT_buf_cmd(
-        constant cmd            : in    SW_TXT_Buffer_command_type;
-        constant buf_n          : in    SW_TXT_index_type;
+        constant cmd            : in    t_ctu_txt_buff_cmd;
+        constant buf_n          : in    t_ctu_txt_buff_index;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1256,7 +1256,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure send_TXT_buf_cmd(
-        constant cmd            : in    SW_TXT_Buffer_command_type;
+        constant cmd            : in    t_ctu_txt_buff_cmd;
         constant buf_vector     : in    std_logic_vector(7 downto 0);
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -1272,8 +1272,8 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure get_tx_buf_state(
-        constant buf_n          : in    SW_TXT_index_type;
-        variable retVal         : out   SW_TXT_Buffer_state_type;
+        constant buf_n          : in    t_ctu_txt_buff_index;
+        variable retVal         : out   t_ctu_txt_buff_state;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1299,7 +1299,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure pick_random_txt_buffer(
-        variable txt_buf        : out   SW_TXT_index_type;
+        variable txt_buf        : out   t_ctu_txt_buff_index;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1314,7 +1314,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure get_rx_buf_state(
-        variable retVal         : out   SW_RX_Buffer_info;
+        variable retVal         : out   t_ctu_rx_buff_info;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1328,7 +1328,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure set_rx_buf_options(
-        constant options        : in    SW_RX_Buffer_options;
+        constant options        : in    t_ctu_rx_buff_opts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1357,7 +1357,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure set_core_mode(
-        constant mode           : in    SW_mode;
+        constant mode           : in    t_ctu_mode;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1371,7 +1371,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure get_core_mode(
-        variable mode           : out   SW_mode;
+        variable mode           : out   t_ctu_mode;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1397,7 +1397,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure give_controller_command(
-        constant command        : in    SW_command;
+        constant command        : in    t_ctu_command;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1411,7 +1411,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure get_controller_status(
-        variable status         : out   SW_status;
+        variable status         : out   t_ctu_status;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1426,7 +1426,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure read_int_status(
-        variable interrupts     : out   SW_interrupts;
+        variable interrupts     : out   t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1441,7 +1441,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure clear_int_status(
-        constant interrupts     : in    SW_interrupts;
+        constant interrupts     : in    t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1457,7 +1457,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure read_int_enable(
-        variable interrupts     : out   SW_interrupts;
+        variable interrupts     : out   t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1473,7 +1473,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure write_int_enable(
-        constant interrupts     : in    SW_interrupts;
+        constant interrupts     : in    t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1488,7 +1488,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure read_int_mask(
-        variable interrupts     : out   SW_interrupts;
+        variable interrupts     : out   t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1503,7 +1503,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure write_int_mask(
-        constant interrupts     : in    SW_interrupts;
+        constant interrupts     : in    t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1518,7 +1518,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure get_fault_state(
-        variable fault_state    : out   SW_fault_state;
+        variable fault_state    : out   t_ctu_fault_state;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1533,7 +1533,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure set_fault_thresholds(
-        constant fault_th       : in    SW_fault_thresholds;
+        constant fault_th       : in    t_ctu_fault_thresholds;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1548,7 +1548,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure get_fault_thresholds(
-        variable fault_th       : out   SW_fault_thresholds;
+        variable fault_th       : out   t_ctu_fault_thresholds;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1562,7 +1562,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure read_error_counters(
-        variable err_counters   : out   SW_error_counters;
+        variable err_counters   : out   t_ctu_err_ctrs;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1593,7 +1593,7 @@ package feature_test_agent_pkg is
     --  Test memory location
     ----------------------------------------------------------------------------
     function txt_buf_to_test_mem_tgt(
-        constant txt_buf        : in  SW_TXT_index_type
+        constant txt_buf        : in  t_ctu_txt_buff_index
     ) return t_tgt_test_mem;
 
     ----------------------------------------------------------------------------
@@ -1667,7 +1667,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure set_error_counters(
-        constant err_counters   : in    SW_error_counters;
+        constant err_counters   : in    t_ctu_err_ctrs;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1695,7 +1695,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure read_traffic_counters(
-        variable ctr            : out   SW_traffic_counters;
+        variable ctr            : out   t_ctu_traff_ctrs;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1739,7 +1739,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_configure_ssp(
-        constant ssp_source     : in    SSP_set_command_type;
+        constant ssp_source     : in    t_ctu_ssp_kind;
         constant ssp_offset_val : in    std_logic_vector(7 downto 0);
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -1756,7 +1756,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_configure_tx_priority(
-        constant buff_number    : in    SW_TXT_index_type;
+        constant buff_number    : in    t_ctu_txt_buff_index;
         constant priority       : in    natural range 0 to 7;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -1771,7 +1771,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_read_error_code_capture(
-        variable err_capt       : inout SW_error_capture;
+        variable err_capt       : inout t_ctu_err_capt;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1785,7 +1785,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_read_pc_debug_m(
-        variable pc_dbg         : out   SW_PC_Debug;
+        variable pc_dbg         : out   t_ctu_pc_dbg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1799,7 +1799,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_wait_pc_state(
-        constant pc_state       : in    SW_PC_Debug;
+        constant pc_state       : in    t_ctu_pc_dbg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1813,7 +1813,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_wait_not_pc_state(
-        constant pc_state       : in    SW_PC_Debug;
+        constant pc_state       : in    t_ctu_pc_dbg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -1878,7 +1878,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure CAN_generate_random_bit_timing(
-        variable bt             : inout   bit_time_config_type;
+        variable bt             : inout   t_ctu_bit_time_cfg;
         signal   channel        : inout t_com_channel
     );
 
@@ -2401,7 +2401,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_configure_timing(
-        constant bus_timing     : in    bit_time_config_type;
+        constant bus_timing     : in    t_ctu_bit_time_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -2438,7 +2438,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_read_timing(
-        signal   bus_timing     : out   bit_time_config_type;
+        signal   bus_timing     : out   t_ctu_bit_time_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -2469,7 +2469,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_read_timing_v(
-        variable bus_timing     : out   bit_time_config_type;
+        variable bus_timing     : out   t_ctu_bit_time_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -2495,7 +2495,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_print_timing(
-        constant   bus_timing       : in    bit_time_config_type
+        constant   bus_timing       : in    t_ctu_bit_time_cfg
     )is
         variable msg                :       line;
     begin
@@ -2594,8 +2594,8 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_set_mask_filter(
-        constant filter         : in    SW_CAN_mask_filter_type;
-        constant config         : in    SW_CAN_mask_filter_config;
+        constant filter         : in    t_ctu_mask_filt_kind;
+        constant config         : in    t_ctu_mask_filt_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -2647,7 +2647,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_set_range_filter(
-        constant config         : in    SW_CAN_range_filter_config;
+        constant config         : in    t_ctu_ran_filt_cfg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -2687,8 +2687,8 @@ package body feature_test_agent_pkg is
     end procedure;
 
 
-    procedure CAN_generate_frame(
-        variable frame          : inout SW_CAN_frame_type
+    procedure generate_can_frame(
+        variable frame          : inout t_ctu_frame
     )is
         variable rand_value     : real := 0.0;
         variable aux            : std_logic_vector(28 downto 0);
@@ -2772,7 +2772,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_print_frame(
-        constant frame          : in    SW_CAN_frame_type
+        constant frame          : in    t_ctu_frame
     )is
         variable data_byte      :       std_logic_vector(7 downto 0);
         variable str_msg        :       string(1 to 400) := (OTHERS => ' ');
@@ -2831,7 +2831,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_print_frame_simple(
-        constant frame          : in    SW_CAN_frame_type
+        constant frame          : in    t_ctu_frame
     )is
         variable data_byte      :       std_logic_vector(7 downto 0);
         variable str_msg        :       string(1 to 512) := (OTHERS => ' ');
@@ -2850,8 +2850,8 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_compare_frames(
-        constant frame_A        : in    SW_CAN_frame_type;
-        constant frame_B        : in    SW_CAN_frame_type;
+        constant frame_A        : in    t_ctu_frame;
+        constant frame_B        : in    t_ctu_frame;
         constant comp_ts        : in    boolean;
         variable outcome        : inout boolean
     )is
@@ -2936,8 +2936,8 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_insert_TX_frame(
-        constant frame          : in    SW_CAN_frame_type;
-        constant buf_nr         : in    SW_TXT_index_type;
+        constant frame          : in    t_ctu_frame;
+        constant buf_nr         : in    t_ctu_txt_buff_index;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel;
         constant byte_access    : in    boolean := false
@@ -3023,7 +3023,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_set_frame_test(
-        constant buf_nr         : in    SW_TXT_index_type;
+        constant buf_nr         : in    t_ctu_txt_buff_index;
         constant tprm           : in    natural range 0 to 31;
         constant fstc           : in    boolean;
         constant fcrc           : in    boolean;
@@ -3072,13 +3072,13 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_send_frame(
-        constant frame          : in    SW_CAN_frame_type;
-        constant buf_nr         : in    SW_TXT_index_type;
+        constant frame          : in    t_ctu_frame;
+        constant buf_nr         : in    t_ctu_txt_buff_index;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel;
         variable outcome        : out   boolean
     )is
-        variable buf_state      :       SW_TXT_Buffer_state_type;
+        variable buf_state      :       t_ctu_txt_buff_state;
     begin
         outcome     := true;
 
@@ -3105,7 +3105,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_read_frame(
-        variable frame          : inout SW_CAN_frame_type;
+        variable frame          : inout t_ctu_frame;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel;
         constant automatic_mode : in    boolean := true
@@ -3125,7 +3125,7 @@ package body feature_test_agent_pkg is
         variable ts_high_word   :       std_logic_vector(31 downto 0) :=
                                             (OTHERS => '0');
         constant burst_access   :       boolean := true;
-        variable command        :       SW_command := SW_command_rst_val;
+        variable command        :       t_ctu_command := t_ctu_command_rst_val;
 
     begin
 
@@ -3308,7 +3308,7 @@ package body feature_test_agent_pkg is
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
-        variable bus_timing     :       bit_time_config_type;
+        variable bus_timing     :       t_ctu_bit_time_cfg;
         variable wait_time      :       integer := 0;
     begin
         -- Read config of the node
@@ -3372,7 +3372,7 @@ package body feature_test_agent_pkg is
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
-        variable fault_state    :       SW_fault_state;
+        variable fault_state    :       t_ctu_fault_state;
     begin
         info_m("Waiting till bus is on in node: " & t_feature_node'image(node));
         mem_bus_agent_disable_transaction_reporting(channel);
@@ -3389,7 +3389,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_calc_frame_length(
-        constant frame          : in    SW_CAN_frame_type;
+        constant frame          : in    t_ctu_frame;
         variable bit_length     : inout natural
     )is
         variable aux            :       std_logic_vector(1 downto 0);
@@ -3434,8 +3434,8 @@ package body feature_test_agent_pkg is
 
 
     procedure send_TXT_buf_cmd(
-        constant cmd            : in    SW_TXT_Buffer_command_type;
-        constant buf_n          : in    SW_TXT_index_type;
+        constant cmd            : in    t_ctu_txt_buff_cmd;
+        constant buf_n          : in    t_ctu_txt_buff_index;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3463,7 +3463,7 @@ package body feature_test_agent_pkg is
 
 
     procedure send_TXT_buf_cmd(
-        constant cmd            : in    SW_TXT_Buffer_command_type;
+        constant cmd            : in    t_ctu_txt_buff_cmd;
         constant buf_vector     : in    std_logic_vector(7 downto 0);
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -3496,8 +3496,8 @@ package body feature_test_agent_pkg is
 
 
     procedure get_tx_buf_state(
-        constant buf_n          : in    SW_TXT_index_type;
-        variable retVal         : out   SW_TXT_Buffer_state_type;
+        constant buf_n          : in    t_ctu_txt_buff_index;
+        variable retVal         : out   t_ctu_txt_buff_state;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3546,7 +3546,7 @@ package body feature_test_agent_pkg is
 
 
     procedure pick_random_txt_buffer(
-        variable txt_buf        : out   SW_TXT_index_type;
+        variable txt_buf        : out   t_ctu_txt_buff_index;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3564,7 +3564,7 @@ package body feature_test_agent_pkg is
 
 
     procedure get_rx_buf_state(
-        variable retVal         : out   SW_RX_Buffer_info;
+        variable retVal         : out   t_ctu_rx_buff_info;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3608,7 +3608,7 @@ package body feature_test_agent_pkg is
 
 
     procedure set_rx_buf_options(
-        constant options        : in    SW_RX_Buffer_options;
+        constant options        : in    t_ctu_rx_buff_opts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3647,7 +3647,7 @@ package body feature_test_agent_pkg is
 
 
     procedure set_core_mode(
-        constant mode           : in    SW_mode;
+        constant mode           : in    t_ctu_mode;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3754,7 +3754,7 @@ package body feature_test_agent_pkg is
 
 
     procedure get_core_mode(
-        variable mode           : out   SW_mode;
+        variable mode           : out   t_ctu_mode;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3876,7 +3876,7 @@ package body feature_test_agent_pkg is
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
-        variable mode           :       SW_mode;
+        variable mode           :       t_ctu_mode;
     begin
         get_core_mode(mode, node, channel);
 
@@ -3888,7 +3888,7 @@ package body feature_test_agent_pkg is
 
 
     procedure give_controller_command(
-        constant command        : in    SW_command;
+        constant command        : in    t_ctu_command;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -3941,7 +3941,7 @@ package body feature_test_agent_pkg is
 
 
     procedure get_controller_status(
-        variable status         : out   SW_status;
+        variable status         : out   t_ctu_status;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4056,7 +4056,7 @@ package body feature_test_agent_pkg is
 
 
     function sw_int_to_int_reg(
-        constant interrupts     :       SW_interrupts
+        constant interrupts     :       t_ctu_interrupts
     )return std_logic_vector is
         variable tmp            :       std_logic_vector(31 downto 0);
     begin
@@ -4116,8 +4116,8 @@ package body feature_test_agent_pkg is
 
     function int_reg_to_sw_int(
         constant int_reg        :       std_logic_vector(31 downto 0)
-    )return SW_interrupts is
-        variable tmp            :       SW_interrupts;
+    )return t_ctu_interrupts is
+        variable tmp            :       t_ctu_interrupts;
     begin
         tmp := (false, false, false, false, false, false,
                 false, false, false, false, false, false, false);
@@ -4175,7 +4175,7 @@ package body feature_test_agent_pkg is
 
 
     procedure read_int_status(
-        variable interrupts     : out   SW_interrupts;
+        variable interrupts     : out   t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4187,7 +4187,7 @@ package body feature_test_agent_pkg is
 
 
     procedure clear_int_status(
-        constant interrupts     : in    SW_interrupts;
+        constant interrupts     : in    t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4199,7 +4199,7 @@ package body feature_test_agent_pkg is
 
 
     procedure read_int_enable(
-        variable interrupts     : out   SW_interrupts;
+        variable interrupts     : out   t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4211,7 +4211,7 @@ package body feature_test_agent_pkg is
 
 
     procedure write_int_enable(
-        constant interrupts     : in    SW_interrupts;
+        constant interrupts     : in    t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4228,7 +4228,7 @@ package body feature_test_agent_pkg is
 
 
     procedure read_int_mask(
-        variable interrupts     : out   SW_interrupts;
+        variable interrupts     : out   t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4240,7 +4240,7 @@ package body feature_test_agent_pkg is
 
 
     procedure write_int_mask(
-        constant interrupts     : in    SW_interrupts;
+        constant interrupts     : in    t_ctu_interrupts;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4258,7 +4258,7 @@ package body feature_test_agent_pkg is
 
 
     procedure get_fault_state(
-        variable fault_state    : out   SW_fault_state;
+        variable fault_state    : out   t_ctu_fault_state;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4277,7 +4277,7 @@ package body feature_test_agent_pkg is
 
 
     procedure set_fault_thresholds(
-        constant fault_th       : in    SW_fault_thresholds;
+        constant fault_th       : in    t_ctu_fault_thresholds;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4294,7 +4294,7 @@ package body feature_test_agent_pkg is
 
 
     procedure get_fault_thresholds(
-        variable fault_th       : out   SW_fault_thresholds;
+        variable fault_th       : out   t_ctu_fault_thresholds;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4315,7 +4315,7 @@ package body feature_test_agent_pkg is
 
 
     procedure read_error_counters(
-        variable err_counters   : out   SW_error_counters;
+        variable err_counters   : out   t_ctu_err_ctrs;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4351,7 +4351,7 @@ package body feature_test_agent_pkg is
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
-        variable mode : SW_mode;
+        variable mode : t_ctu_mode;
         variable data : std_logic_vector(31 downto 0) := (OTHERS => '0');
     begin
         -- Check test mode is set, throw error otherwise
@@ -4395,7 +4395,7 @@ package body feature_test_agent_pkg is
 
 
     function txt_buf_to_test_mem_tgt(
-        constant txt_buf        : in  SW_TXT_index_type
+        constant txt_buf        : in  t_ctu_txt_buff_index
     ) return t_tgt_test_mem is
     begin
         case txt_buf is
@@ -4494,7 +4494,7 @@ package body feature_test_agent_pkg is
 
 
     procedure set_error_counters(
-        constant err_counters   : in    SW_error_counters;
+        constant err_counters   : in    t_ctu_err_ctrs;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4572,7 +4572,7 @@ package body feature_test_agent_pkg is
 
 
     procedure read_traffic_counters(
-        variable ctr            : out   SW_traffic_counters;
+        variable ctr            : out   t_ctu_traff_ctrs;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
@@ -4618,7 +4618,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_configure_ssp(
-        constant ssp_source     : in    SSP_set_command_type;
+        constant ssp_source     : in    t_ctu_ssp_kind;
         constant ssp_offset_val : in    std_logic_vector(7 downto 0);
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -4651,7 +4651,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_read_pc_debug_m(
-        variable pc_dbg         : out   SW_PC_Debug;
+        variable pc_dbg         : out   t_ctu_pc_dbg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4692,14 +4692,14 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_wait_pc_state(
-        constant pc_state       : in    SW_PC_Debug;
+        constant pc_state       : in    t_ctu_pc_dbg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
-        variable read_state     :       SW_PC_Debug;
+        variable read_state     :       t_ctu_pc_dbg;
     begin
         info_m("Waiting till node: " & t_feature_node'image(node) &
-               " is in state: " & SW_PC_Debug'image(pc_state));
+               " is in state: " & t_ctu_pc_dbg'image(pc_state));
         mem_bus_agent_disable_transaction_reporting(channel);
 
         CAN_read_pc_debug_m(read_state, node, channel);
@@ -4714,14 +4714,14 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_wait_not_pc_state(
-        constant pc_state       : in    SW_PC_Debug;
+        constant pc_state       : in    t_ctu_pc_dbg;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
-        variable read_state     :       SW_PC_Debug;
+        variable read_state     :       t_ctu_pc_dbg;
     begin
         info_m("Waiting till node: " & t_feature_node'image(node) &
-               " is NOT in state: " & SW_PC_Debug'image(pc_state));
+               " is NOT in state: " & t_ctu_pc_dbg'image(pc_state));
         mem_bus_agent_disable_transaction_reporting(channel);
 
         CAN_read_pc_debug_m(read_state, node, channel);
@@ -4735,7 +4735,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_configure_tx_priority(
-        constant buff_number    : in    SW_TXT_index_type;
+        constant buff_number    : in    t_ctu_txt_buff_index;
         constant priority       : in    natural range 0 to 7;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
@@ -4780,7 +4780,7 @@ package body feature_test_agent_pkg is
 
 
     procedure CAN_read_error_code_capture(
-        variable err_capt       : inout SW_error_capture;
+        variable err_capt       : inout t_ctu_err_capt;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
@@ -4889,7 +4889,7 @@ package body feature_test_agent_pkg is
     end procedure;
 
     procedure CAN_generate_random_bit_timing(
-        variable bt         : inout   bit_time_config_type;
+        variable bt         : inout   t_ctu_bit_time_cfg;
         signal   channel    : inout t_com_channel
     ) is
     begin

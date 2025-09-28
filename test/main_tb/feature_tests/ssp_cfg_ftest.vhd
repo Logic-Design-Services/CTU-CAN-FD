@@ -125,7 +125,7 @@ package ssp_cfg_ftest is
     );
 
     procedure generate_ssp_offset(
-       bus_timing                   : in    bit_time_config_type;
+       bus_timing                   : in    t_ctu_bit_time_cfg;
        ssp_offset                   : inout std_logic_vector(7 downto 0)
     );
 
@@ -159,7 +159,7 @@ package body ssp_cfg_ftest is
     -----------------------------------------------------------------------
     procedure generate_trv_delay(
         variable trv_delay              : inout    natural;
-        variable bit_timing             : inout    bit_time_config_type
+        variable bit_timing             : inout    t_ctu_bit_time_cfg
     ) is
         -- Length of TSEG1 in ns, assumes 10 ns clock period!
         variable tseg_1_nbt             : natural :=
@@ -204,7 +204,7 @@ package body ssp_cfg_ftest is
     --     we always can adjust it to fit within DUT specification.
     ---------------------------------------------------------------------------
     procedure generate_ssp_offset(
-       bus_timing                   : in    bit_time_config_type;
+       bus_timing                   : in    t_ctu_bit_time_cfg;
        ssp_offset                   : inout std_logic_vector(7 downto 0)
     ) is
         variable bit_time_length    :       natural :=
@@ -227,22 +227,22 @@ package body ssp_cfg_ftest is
     ) is
 
         -- Generated frames
-        variable frame_1                    :     SW_CAN_frame_type;
+        variable frame_1                    :     t_ctu_frame;
 
         -- Node status
-        variable stat_1                     :     SW_status;
+        variable stat_1                     :     t_ctu_status;
 
         variable frame_sent                 :     boolean;
 
         variable rand_trv_delay             :     natural;
         variable tmp                        :     natural;
 
-        variable ssp_source                 :     SSP_set_command_type;
+        variable ssp_source                 :     t_ctu_ssp_kind;
         variable ssp_offset_var             :     std_logic_vector(7 downto 0);
         variable ssp_pos                    :     natural;
 
-        variable nominal_bus_timing         :     bit_time_config_type;
-        variable bus_timing                 :     bit_time_config_type;
+        variable nominal_bus_timing         :     t_ctu_bit_time_cfg;
+        variable bus_timing                 :     t_ctu_bit_time_cfg;
         variable num_bit_waits              :     natural;
         variable num_bit_waits_max          :     natural;
         variable bit_rate                   :     real;
@@ -431,7 +431,7 @@ package body ssp_cfg_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.frame_format := FD_CAN;
         frame_1.brs := BR_SHIFT;
         if (frame_1.data_length = 0) then

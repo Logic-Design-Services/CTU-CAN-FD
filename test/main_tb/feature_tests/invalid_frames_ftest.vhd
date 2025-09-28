@@ -110,8 +110,8 @@ package body invalid_frames_ftest is
     procedure invalid_frames_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable tx_frame           :       SW_CAN_frame_type;
-        variable rx_frame           :       SW_CAN_frame_type;
+        variable tx_frame           :       t_ctu_frame;
+        variable rx_frame           :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
     begin
 
@@ -121,7 +121,7 @@ package body invalid_frames_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_generate_frame(tx_frame);
+        generate_can_frame(tx_frame);
         tx_frame.frame_format := FD_CAN;
         tx_frame.rtr := RTR_FRAME;
         CAN_send_frame(tx_frame, 1, DUT_NODE, chn, frame_sent);
@@ -139,7 +139,7 @@ package body invalid_frames_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2");
         
-        CAN_generate_frame(tx_frame);
+        generate_can_frame(tx_frame);
         tx_frame.frame_format := NORMAL_CAN;
         tx_frame.brs := BR_SHIFT;
         CAN_send_frame(tx_frame, 1, DUT_NODE, chn, frame_sent);

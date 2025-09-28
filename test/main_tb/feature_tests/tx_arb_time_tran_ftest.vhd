@@ -134,14 +134,14 @@ package body tx_arb_time_tran_ftest is
     procedure tx_arb_time_tran_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable CAN_frame_2        :       SW_CAN_frame_type;
-        variable CAN_frame_rx_1     :       SW_CAN_frame_type;
-        variable CAN_frame_rx_2     :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
+        variable CAN_frame_2        :       t_ctu_frame;
+        variable CAN_frame_rx_1     :       t_ctu_frame;
+        variable CAN_frame_rx_2     :       t_ctu_frame;
 
         variable frame_sent         :       boolean := false;
         variable act_ts             :       std_logic_vector(63 downto 0);
-        variable status             :       SW_Status;
+        variable status             :       t_ctu_status;
         variable ts_offset          :       natural;
         variable ts_offset_padded   :       std_logic_vector(63 downto 0);
         variable ts_expected        :       std_logic_vector(63 downto 0);
@@ -154,12 +154,12 @@ package body tx_arb_time_tran_ftest is
         variable diff               :       natural;
         variable clk_per_bit        :       natural;
 
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
 
         variable buf_1_index        :       natural;
         variable buf_2_index        :       natural;
 
-        variable mode               :       SW_mode := SW_mode_rst_val;
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
     begin
 
         -------------------------------------------------------------------------
@@ -195,7 +195,7 @@ package body tx_arb_time_tran_ftest is
         -- value is out of scope of natural!
         ts_rand(31) := '0';
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         rand_int_v(10000, ts_offset);
         info_m("Offset from current time of transmission: " &
                 integer'image(ts_offset));
@@ -247,7 +247,7 @@ package body tx_arb_time_tran_ftest is
         info_m("Step 3");
 
         timestamp_agent_get_timestamp(chn, ts_actual);
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.timestamp := std_logic_vector(unsigned(ts_actual) - 1);
 
         CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
@@ -295,8 +295,8 @@ package body tx_arb_time_tran_ftest is
         info_m("Higher priority buffer: " & integer'image(buf_1_index));
         info_m("Lower priority buffer: " & integer'image(buf_2_index));
 
-        CAN_generate_frame(CAN_frame);
-        CAN_generate_frame(CAN_frame_2);
+        generate_can_frame(CAN_frame);
+        generate_can_frame(CAN_frame_2);
 
         timestamp_agent_get_timestamp(chn, CAN_frame.timestamp);
         CAN_frame_2.timestamp := std_logic_vector(unsigned(CAN_frame.timestamp) + 3000);

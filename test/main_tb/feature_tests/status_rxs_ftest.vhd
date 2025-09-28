@@ -110,12 +110,12 @@ package body status_rxs_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable pc_dbg             :     t_ctu_pc_dbg;
         variable frame_sent         :     boolean;
     begin
 
@@ -128,7 +128,7 @@ package body status_rxs_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
 
         CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
@@ -162,7 +162,7 @@ package body status_rxs_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_send_frame(frame_1, 4, DUT_NODE, chn, frame_sent);
 
         while (pc_dbg /= pc_deb_intermission) loop

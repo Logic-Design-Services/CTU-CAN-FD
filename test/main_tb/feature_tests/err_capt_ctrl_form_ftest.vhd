@@ -119,19 +119,19 @@ package body err_capt_ctrl_form_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;    
-        variable stat_2             :     SW_status;
+        variable stat_1             :     t_ctu_status;    
+        variable stat_2             :     t_ctu_status;
 
         -- Node mode
-        variable mode_2             :     SW_mode;
-        variable mode_1             :     SW_mode;
+        variable mode_2             :     t_ctu_mode;
+        variable mode_1             :     t_ctu_mode;
 
         variable wait_time          :     natural;
         variable frame_sent         :     boolean;
-        variable err_capt           :     SW_error_capture;
+        variable err_capt           :     t_ctu_err_capt;
     begin
 
         -----------------------------------------------------------------------
@@ -164,7 +164,7 @@ package body err_capt_ctrl_form_ftest is
         -----------------------------------------------------------------------
         for i in 1 to 4 loop
             info_m("Inner Loop: " & integer'image(i));
-            CAN_generate_frame(frame_1);
+            generate_can_frame(frame_1);
 
             -- ID is not important in this TC. Avoid overflows of high generated
             -- IDs on Base IDs!

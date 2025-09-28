@@ -149,15 +149,15 @@ package body retr_limit_2_ftest is
     procedure retr_limit_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable retr_th            :       natural;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
-        variable buf_state          :       SW_TXT_Buffer_state_type;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
+        variable buf_state          :       t_ctu_txt_buff_state;
+        variable status             :       t_ctu_status;
         variable retr_ctr           :       natural;
     begin
         
@@ -190,7 +190,7 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Sending frame by DUT");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         for i in 0 to 1 loop
@@ -268,7 +268,7 @@ package body retr_limit_2_ftest is
         set_error_counters(err_counters, DUT_NODE, chn);
         read_error_counters(err_counters, DUT_NODE, chn);
         check_m(err_counters.tx_counter = 0, "Error counter cleared!");
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         ------------------------------------------------------------------------
@@ -330,7 +330,7 @@ package body retr_limit_2_ftest is
         ------------------------------------------------------------------------
         info_m("Step 9: Invoking Arbitration!");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.identifier := 10;
         CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
         CAN_frame.identifier := 9;

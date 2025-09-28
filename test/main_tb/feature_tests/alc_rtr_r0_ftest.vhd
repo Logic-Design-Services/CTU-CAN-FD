@@ -118,15 +118,15 @@ package body alc_rtr_r0_ftest is
         variable alc                :       natural;
 
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
-        variable frame_2            :     SW_CAN_frame_type;
-        variable frame_rx           :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
+        variable frame_2            :     t_ctu_frame;
+        variable frame_rx           :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
-        variable stat_2             :     SW_status;
+        variable stat_1             :     t_ctu_status;
+        variable stat_2             :     t_ctu_status;
         
-        variable rx_buf_info        :     SW_RX_Buffer_info;
+        variable rx_buf_info        :     t_ctu_rx_buff_info;
         variable frames_equal       :     boolean := false;        
 
     begin
@@ -146,8 +146,8 @@ package body alc_rtr_r0_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2: Generate CAN frames with matching IDs!");
         
-        CAN_generate_frame(frame_1);
-        CAN_generate_frame(frame_2);
+        generate_can_frame(frame_1);
+        generate_can_frame(frame_2);
         
         frame_1.ident_type := EXTENDED;
         frame_2.ident_type := EXTENDED;

@@ -125,12 +125,12 @@ package body one_shot_ftest is
     procedure one_shot_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable buf_state          :       SW_TXT_Buffer_state_type;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable buf_state          :       t_ctu_txt_buff_state;
+        variable status             :       t_ctu_status;
     begin
 
         ------------------------------------------------------------------------
@@ -155,7 +155,7 @@ package body one_shot_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Sending frame by DUT");
         
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.rtr := RTR_FRAME; -- Use RTR frame to save simulation time
         CAN_frame.frame_format := NORMAL_CAN;
         

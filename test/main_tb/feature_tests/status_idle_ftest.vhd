@@ -113,19 +113,19 @@ package body status_idle_ftest is
         signal      chn             : inout  t_com_channel
     ) is        
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
-        variable stat_2             :     SW_status;
+        variable stat_1             :     t_ctu_status;
+        variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable pc_dbg             :     t_ctu_pc_dbg;
         variable frame_sent         :     boolean;
 
-        variable mode_1             :     SW_mode;
+        variable mode_1             :     t_ctu_mode;
         
-        variable err_counters       :     SW_error_counters := (0,0,0,0);
-        variable fault_state        :     SW_fault_state;
+        variable err_counters       :     t_ctu_err_ctrs := (0,0,0,0);
+        variable fault_state        :     t_ctu_fault_state;
 
     begin
 
@@ -140,7 +140,7 @@ package body status_idle_ftest is
         get_controller_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.bus_status, "DUT idle after reset!");
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
         
@@ -182,7 +182,7 @@ package body status_idle_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
 

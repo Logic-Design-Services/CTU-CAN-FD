@@ -108,11 +108,11 @@ package body pc_fsm_transitions_err_pas_2_ftest is
     procedure pc_fsm_transitions_err_pas_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode               :       SW_mode := SW_mode_rst_val;
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable status             :       SW_status;
-        variable err_capt           :       SW_error_capture;
-        variable err_counters       :       SW_error_counters;
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable status             :       t_ctu_status;
+        variable err_capt           :       t_ctu_err_capt;
+        variable err_counters       :       t_ctu_err_ctrs;
 
     begin
 
@@ -133,7 +133,7 @@ package body pc_fsm_transitions_err_pas_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2: Invoke overload condition");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
 
         CAN_insert_TX_frame(CAN_TX_frame, 1, TEST_NODE, chn);
         send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);

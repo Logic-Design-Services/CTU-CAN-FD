@@ -111,11 +111,11 @@ package body btr_ftest is
     procedure btr_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       SW_CAN_frame_type;
-        variable CAN_frame_2        :       SW_CAN_frame_type;
+        variable CAN_frame_1        :       t_ctu_frame;
+        variable CAN_frame_2        :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
 
         variable clock_per_bit      :       natural := 0;
 
@@ -204,7 +204,7 @@ package body btr_ftest is
         -- that if generated bit rate is too low, and data field length too
         -- high, test run time explodes! It has no sense to test long data fields
         -- on any bit-rate since its functionality should not depend on it!
-        CAN_generate_frame(CAN_frame_1);
+        generate_can_frame(CAN_frame_1);
         info_m("Generated frame");
         CAN_frame_1.frame_format := NORMAL_CAN;
 

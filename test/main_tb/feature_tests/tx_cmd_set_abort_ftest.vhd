@@ -112,8 +112,8 @@ package body tx_cmd_set_abort_ftest is
     procedure tx_cmd_set_abort_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable txt_state          :       SW_TXT_Buffer_state_type;
+        variable CAN_frame          :       t_ctu_frame;
+        variable txt_state          :       t_ctu_txt_buff_state;
         variable num_buffers        :       natural;
     begin
 
@@ -133,7 +133,7 @@ package body tx_cmd_set_abort_ftest is
             -----------------------------------------------------------------------
             info_m("Step 1");
 
-            CAN_generate_frame(CAN_frame);
+            generate_can_frame(CAN_frame);
             CAN_insert_TX_frame(CAN_frame, buf_nr, DUT_NODE, chn);
 
             CAN_wait_sample_point(DUT_NODE, chn);

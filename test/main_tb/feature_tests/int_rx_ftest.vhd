@@ -133,15 +133,15 @@ package body int_rx_ftest is
     procedure int_rx_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     SW_CAN_frame_type;
-        variable CAN_frame_rx       :     SW_CAN_frame_type;
+        variable CAN_frame          :     t_ctu_frame;
+        variable CAN_frame_rx       :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
         variable frames_equal       :     boolean := false;
 
-        variable int_mask           :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_ena            :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_stat           :     SW_interrupts := SW_interrupts_rst_val;
-        variable pc_dbg             :     SW_PC_Debug;  
+        variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable pc_dbg             :     t_ctu_pc_dbg;  
     begin
 
         -----------------------------------------------------------------------
@@ -163,7 +163,7 @@ package body int_rx_ftest is
         info_m("Step 2: Sending frame");
 
         CAN_enable_retr_limit(true, 0, TEST_NODE, chn);
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
         
         -----------------------------------------------------------------------
@@ -228,7 +228,7 @@ package body int_rx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 6: Check RX Interrupt is not set upon Error Frame!");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
 
         CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
@@ -255,7 +255,7 @@ package body int_rx_ftest is
         int_ena.receive_int := true;
         write_int_mask(int_mask, DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_frame_sent(TEST_NODE, chn);
 
@@ -277,7 +277,7 @@ package body int_rx_ftest is
         int_ena.receive_int := true;
         write_int_mask(int_mask, DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_frame_sent(TEST_NODE, chn);
 
@@ -352,7 +352,7 @@ package body int_rx_ftest is
         int_ena.receive_int := true;
         write_int_enable(int_ena, DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_frame_sent(DUT_NODE, chn);
         

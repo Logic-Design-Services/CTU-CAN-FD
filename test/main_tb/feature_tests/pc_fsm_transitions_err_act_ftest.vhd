@@ -113,14 +113,14 @@ package body pc_fsm_transitions_err_act_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable r_data             :       std_logic_vector(31 downto 0) := (OTHERS => '0');
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
         variable tx_val             :       std_logic;
-        variable err_counters       :       SW_error_counters;
-        variable status             :       SW_status;
-        variable mode               :       SW_mode := SW_mode_rst_val;
+        variable err_counters       :       t_ctu_err_ctrs;
+        variable status             :       t_ctu_status;
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable frame_bits         :       integer;
         variable bit_index          :       integer;
-        variable pc_dbg             :       SW_PC_Debug;
+        variable pc_dbg             :       t_ctu_pc_dbg;
     begin
 
         -------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ package body pc_fsm_transitions_err_act_ftest is
         for frame_format in NORMAL_CAN to FD_CAN loop
         for ident_type in BASE to EXTENDED loop
 
-            CAN_generate_frame(CAN_TX_frame);
+            generate_can_frame(CAN_TX_frame);
             CAN_TX_frame.identifier := 0;
             CAN_TX_frame.frame_format := frame_format;
             CAN_TX_frame.ident_type := ident_type;

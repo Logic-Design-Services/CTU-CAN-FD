@@ -106,11 +106,11 @@ package body btr_maximal_ftest is
     procedure btr_maximal_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       SW_CAN_frame_type;
-        variable CAN_frame_2        :       SW_CAN_frame_type;
+        variable CAN_frame_1        :       t_ctu_frame;
+        variable CAN_frame_2        :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
 
         variable clock_per_bit      :       natural := 0;
 
@@ -168,7 +168,7 @@ package body btr_maximal_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        CAN_generate_frame(CAN_frame_1);
+        generate_can_frame(CAN_frame_1);
         info_m("Generated frame");
         -- Make frame as short as possible not to have too long test time.
         CAN_frame_1.frame_format := FD_CAN;

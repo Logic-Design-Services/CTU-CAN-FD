@@ -114,20 +114,20 @@ package body status_eft_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
         variable frame_sent         :     boolean;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;        
+        variable pc_dbg             :     t_ctu_pc_dbg;        
 
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
-        variable mode_2             :     SW_mode := SW_mode_rst_val;
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :     t_ctu_mode := t_ctu_mode_rst_val;
 
         variable go_err_passive     :     std_logic;
-        variable err_counters       :     SW_error_counters := (0,0,0,0);
-        variable fault_state        :     SW_fault_state;
+        variable err_counters       :     t_ctu_err_ctrs := (0,0,0,0);
+        variable fault_state        :     t_ctu_fault_state;
     begin
 
         -----------------------------------------------------------------------
@@ -159,7 +159,7 @@ package body status_eft_ftest is
             check_m(fault_state = fc_error_active, "DUT Error Active!");
         end if;
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         -- Needed so that there is no prolonged ACK slot!
         frame_1.frame_format := NORMAL_CAN;
         CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);

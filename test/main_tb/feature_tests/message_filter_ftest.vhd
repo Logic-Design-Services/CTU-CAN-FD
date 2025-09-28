@@ -136,24 +136,24 @@ package body message_filter_ftest is
     procedure message_filter_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
-        variable mode               :       SW_mode := SW_mode_rst_val;
-        variable rx_state           :       SW_RX_Buffer_info;
-        variable mask_filt_config   :       SW_CAN_mask_filter_config :=
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable rx_state           :       t_ctu_rx_buff_info;
+        variable mask_filt_config   :       t_ctu_mask_filt_cfg :=
                                                 (0, 0, '0', false, false);
-        variable range_filt_config  :       SW_CAN_range_filter_config := 
+        variable range_filt_config  :       t_ctu_ran_filt_cfg := 
                                                 (0, 0, '0', false, false);
-        variable command            :       SW_command := SW_command_rst_val;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
         variable tmp_int            :       natural := 0;
         variable tmp_log_vect       :       std_logic_vector(28 downto 0);
         variable tmp_log            :       std_logic := '0';
         variable should_pass        :       boolean := false;
-        variable mask_filter        :       SW_CAN_mask_filter_type;
+        variable mask_filter        :       t_ctu_mask_filt_kind;
         variable l_th               :       natural := 0;
         variable h_th               :       natural := 0;
     begin
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.brs := '0';
 
         ------------------------------------------------------------------------
@@ -377,7 +377,7 @@ package body message_filter_ftest is
         range_filt_config.ID_th_high := h_th;
         range_filt_config.ID_th_low := l_th;
         CAN_set_range_filter(range_filt_config, DUT_NODE, chn);
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.ident_type := BASE;
         CAN_frame.rtr := RTR_FRAME;
  

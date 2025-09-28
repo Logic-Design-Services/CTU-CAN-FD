@@ -113,9 +113,9 @@ package body status_txpe_txdpe_reset_ftest is
     procedure status_txpe_txdpe_reset_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable frame_1            :     SW_CAN_frame_type;
-        variable stat_1             :     SW_status;
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
+        variable frame_1            :     t_ctu_frame;
+        variable stat_1             :     t_ctu_status;
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
 
         variable r_data             :     std_logic_vector(31 downto 0);
         variable corrupt_bit_index  :     integer;
@@ -134,7 +134,7 @@ package body status_txpe_txdpe_reset_ftest is
         mode_1.parity_check := true;
         set_core_mode(mode_1, DUT_NODE, chn);
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
 
         -------------------------------------------------------------------------------------------
         -- @2. Insert the CAN frame for transmission into a TXT Buffer 1.

@@ -251,7 +251,7 @@ architecture test of rx_buffer_tb is
     -- Insert frame to test memory
     ----------------------------------------------------------------------------
     procedure insert_frame_test_mem(
-        constant frame              :in     SW_CAN_frame_type;
+        constant frame              :in     t_ctu_frame;
         signal   memory             :inout  eval_mem_test;
         signal   in_pointer         :inout  natural
     )is
@@ -380,14 +380,14 @@ architecture test of rx_buffer_tb is
         signal   in_pointer             :inout  natural;
         signal   timestamp              :in     std_logic_vector(63 downto 0)
    )is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable stored_ts          :       std_logic_vector(63 downto 0);
         variable rand_val           :       natural;
         variable abort_present      :       boolean := false;
         variable id_out             :       std_logic_vector(28 downto 0);
     begin
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         stored_ts := (OTHERS => '0');
 
         ------------------------------------------------------------------------

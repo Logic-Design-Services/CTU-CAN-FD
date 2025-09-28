@@ -123,8 +123,8 @@ package body fault_state_ftest is
     ) is
         variable frame_sent         :       boolean := false;
 
-        variable err_counters       :       SW_error_counters;
-        variable fault_state        :       SW_fault_state;
+        variable err_counters       :       t_ctu_err_ctrs;
+        variable fault_state        :       t_ctu_fault_state;
 
         variable tx_lt_erp          :       natural;
         variable rx_lt_erp          :       natural;
@@ -133,8 +133,8 @@ package body fault_state_ftest is
         variable tx_mt_bof          :       natural;
         variable rx_mt_bof          :       natural;
         
-        variable command            :       SW_command := SW_command_rst_val;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
     begin
 
         -----------------------------------------------------------------------

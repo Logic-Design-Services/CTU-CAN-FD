@@ -115,24 +115,24 @@ package body rx_err_log_timestamp_ftest is
     procedure rx_err_log_timestamp_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
+        variable CAN_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
 
-        variable mode_1             : SW_mode := SW_mode_rst_val;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
 
         variable rand_vect          : std_logic_vector(31 downto 0);
         variable ts_start           : std_logic_vector(63 downto 0);
         variable n_bits             : natural;
         variable can_tx             : std_logic;
-        variable pc_dbg             : SW_PC_Debug;
+        variable pc_dbg             : t_ctu_pc_dbg;
         variable exit_flag          : std_logic;
         variable exp_ts             : unsigned(63 downto 0);
-        variable bust               : bit_time_config_type;
+        variable bust               : t_ctu_bit_time_cfg;
         variable diff               : unsigned(63 downto 0);
         variable cycles_per_bit     : integer;
 
-        variable rx_buf_info        : SW_RX_Buffer_info;
-        variable err_counters       : SW_error_counters;
+        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable err_counters       : t_ctu_err_ctrs;
     begin
 
         -------------------------------------------------------------------------------------------
@@ -161,7 +161,7 @@ package body rx_err_log_timestamp_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         -- This is to easy compute the expected timestamp in Error frame!
         CAN_frame.brs := BR_NO_SHIFT;
 

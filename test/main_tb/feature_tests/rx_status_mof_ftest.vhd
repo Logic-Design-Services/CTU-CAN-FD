@@ -108,15 +108,15 @@ package body rx_status_mof_ftest is
     procedure rx_status_mof_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable send_more          :       boolean := true;
         variable in_RX_buf          :       natural range 0 to 1023;
         variable frame_sent         :       boolean := false;
         variable number_frms_sent   :       natural range 0 to 1023;
 
-        variable buf_info           :       SW_RX_Buffer_info;
-        variable command            :       SW_command := SW_command_rst_val;
-        variable status             :       SW_status;
+        variable buf_info           :       t_ctu_rx_buff_info;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable status             :       t_ctu_status;
         
         variable read_data          :       std_logic_vector(31 downto 0);
         variable rwcnt              :       natural;   
@@ -135,7 +135,7 @@ package body rx_status_mof_ftest is
             get_rx_buf_state(buf_info, DUT_NODE, chn);
             check_m(buf_info.rx_mof = false, "RX_STATUS[MOF] not set");
             
-            CAN_generate_frame(CAN_frame);
+            generate_can_frame(CAN_frame);
             CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
             CAN_wait_frame_sent(DUT_NODE, chn);
             

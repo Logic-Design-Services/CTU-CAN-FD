@@ -110,10 +110,10 @@ package body glitch_filtering_ftest is
     ) is
         variable r_data             :     std_logic_vector(31 downto 0) :=
                                                (OTHERS => '0');
-        variable bus_timing         :     bit_time_config_type;
+        variable bus_timing         :     t_ctu_bit_time_cfg;
         variable tseg1              :     natural;
         variable tseg1_minus_1_tq   :     natural;
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
     begin
 
         -----------------------------------------------------------------------

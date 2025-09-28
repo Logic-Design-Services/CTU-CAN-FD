@@ -111,11 +111,11 @@ package body btr_fd_ftest is
     procedure btr_fd_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       SW_CAN_frame_type;
-        variable CAN_frame_2        :       SW_CAN_frame_type;
+        variable CAN_frame_1        :       t_ctu_frame;
+        variable CAN_frame_2        :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
 
         variable clock_per_bit      :       natural := 0;
         
@@ -217,7 +217,7 @@ package body btr_fd_ftest is
         info_m("PH2: " & integer'image(bus_timing.ph2_dbt));
         info_m("SJW: " & integer'image(bus_timing.sjw_dbt));
 
-        CAN_generate_frame(CAN_frame_1);
+        generate_can_frame(CAN_frame_1);
         CAN_frame_1.brs := BR_SHIFT;
         CAN_frame_1.frame_format := FD_CAN;
 

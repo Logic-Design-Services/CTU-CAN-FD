@@ -141,16 +141,16 @@ package body int_fcs_ftest is
     procedure int_fcs_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     SW_CAN_frame_type;
+        variable CAN_frame          :     t_ctu_frame;
 
-        variable int_mask           :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_ena            :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_stat           :     SW_interrupts := SW_interrupts_rst_val;
-        variable command            :     SW_command := SW_command_rst_val;
-        variable mode               :     SW_mode := SW_mode_rst_val;
-        variable err_ctrs           :     SW_error_counters;
-        variable status             :     SW_status;
-        variable fault_state        :     SW_fault_state;
+        variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
+        variable mode               :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable err_ctrs           :     t_ctu_err_ctrs;
+        variable status             :     t_ctu_status;
+        variable fault_state        :     t_ctu_fault_state;
     begin
 
         -----------------------------------------------------------------------

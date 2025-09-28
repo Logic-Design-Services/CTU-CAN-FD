@@ -111,12 +111,12 @@ package body command_frcrst_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
-        variable command            :     SW_command := SW_command_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
         
-        variable traff_ctrs_1       :     SW_traffic_counters;
-        variable traff_ctrs_2       :     SW_traffic_counters;
+        variable traff_ctrs_1       :     t_ctu_traff_ctrs;
+        variable traff_ctrs_2       :     t_ctu_traff_ctrs;
 
     begin
 
@@ -127,7 +127,7 @@ package body command_frcrst_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);
         send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
 

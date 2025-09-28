@@ -107,7 +107,7 @@ package reference_test_agent_pkg is
         array (1 to C_MAX_REF_SEQ_LENGHT) of t_can_driver_entry_simple;
 
     type t_reference_item is record
-        frame : SW_CAN_frame_type;
+        frame : t_ctu_frame;
         seq : t_reference_driven_sequence;
         seq_len : natural;
     end record;

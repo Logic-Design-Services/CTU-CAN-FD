@@ -119,11 +119,11 @@ package body tx_status_ftest is
     procedure tx_status_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_tx       :       SW_CAN_frame_type;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
+        variable CAN_frame_tx       :       t_ctu_frame;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable frame_sent         :       boolean := false;
-        variable bus_timing         :       bit_time_config_type;
-        variable txt_state          :       SW_TXT_Buffer_state_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
+        variable txt_state          :       t_ctu_txt_buff_state;
         variable num_buffers        :       natural;
     begin
 
@@ -160,7 +160,7 @@ package body tx_status_ftest is
             -----------------------------------------------------------------------
             info_m("Step 2");
 
-            CAN_generate_frame(CAN_frame_tx);
+            generate_can_frame(CAN_frame_tx);
             CAN_send_frame(CAN_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
 
             CAN_wait_frame_sent(DUT_NODE, chn);
@@ -180,7 +180,7 @@ package body tx_status_ftest is
 
             CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
 
-            CAN_generate_frame(CAN_frame_tx);
+            generate_can_frame(CAN_frame_tx);
             CAN_send_frame(CAN_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
             CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
             CAN_wait_bus_idle(DUT_NODE, chn);
@@ -199,7 +199,7 @@ package body tx_status_ftest is
             -- not reached!
             CAN_enable_retr_limit(false, 5, DUT_NODE, chn);
 
-            CAN_generate_frame(CAN_frame_tx);
+            generate_can_frame(CAN_frame_tx);
             CAN_send_frame(CAN_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
 
             CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);

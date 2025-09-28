@@ -109,23 +109,23 @@ package body settings_nisofd_ftest is
     procedure settings_nisofd_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       SW_PC_Debug;
-        variable fault_state        :       SW_fault_state;
+        variable pc_dbg             :       t_ctu_pc_dbg;
+        variable fault_state        :       t_ctu_fault_state;
 
-        variable err_counters       :       SW_error_counters;
+        variable err_counters       :       t_ctu_err_ctrs;
         variable buf_index          :       natural;
 
-        variable command            :       SW_command := SW_command_rst_val;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
     begin
 
         -----------------------------------------------------------------------
@@ -139,7 +139,7 @@ package body settings_nisofd_ftest is
         mode_2.iso_fd_support := false;
         set_core_mode(mode_2, TEST_NODE, chn);
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_TX_Frame.frame_format := FD_CAN;
         CAN_TX_Frame.data_length := 4;
         decode_length(CAN_TX_Frame.data_length, CAN_TX_Frame.dlc);

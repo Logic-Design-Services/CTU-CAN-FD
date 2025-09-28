@@ -129,20 +129,20 @@ package body mode_bus_monitoring_ftest is
     procedure mode_bus_monitoring_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
-        variable err_counters_1     :       SW_error_counters;
-        variable err_counters_2     :       SW_error_counters;
+        variable err_counters_1     :       t_ctu_err_ctrs;
+        variable err_counters_2     :       t_ctu_err_ctrs;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       SW_PC_Debug;
+        variable pc_dbg             :       t_ctu_pc_dbg;
     begin
 
         ------------------------------------------------------------------------
@@ -162,7 +162,7 @@ package body mode_bus_monitoring_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Checking frame is not transmitted in Bus monitoring mode!");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
 
         wait for 20 ns;
@@ -182,7 +182,7 @@ package body mode_bus_monitoring_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Send frame by Test node, Wait till ACK");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
 
@@ -224,7 +224,7 @@ package body mode_bus_monitoring_ftest is
         mode_1.iso_fd_support := false;
         set_core_mode(mode_1, DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_TX_frame.frame_format := FD_CAN;
         CAN_TX_frame.rtr := NO_RTR_FRAME;
 
@@ -293,7 +293,7 @@ package body mode_bus_monitoring_ftest is
         -----------------------------------------------------------------------
         info_m("Step 10: Generate random frame and send by Test Node");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_frame_sent(TEST_NODE, chn);
 

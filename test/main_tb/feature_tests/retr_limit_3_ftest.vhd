@@ -116,16 +116,16 @@ package body retr_limit_3_ftest is
     procedure retr_limit_3_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable retr_th            :       natural;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
+        variable status             :       t_ctu_status;
         variable retr_ctr           :       natural;
-        variable fault_state        :       SW_fault_state;
+        variable fault_state        :       t_ctu_fault_state;
     begin
         
         -- Hard coded threshold is enough for this test!
@@ -161,7 +161,7 @@ package body retr_limit_3_ftest is
         get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_passive, "Unit Error Passive!");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_error_frame(DUT_NODE, chn);
 

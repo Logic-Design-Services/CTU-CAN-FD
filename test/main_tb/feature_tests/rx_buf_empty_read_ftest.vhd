@@ -107,8 +107,8 @@ package body rx_buf_empty_read_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_rx           :     SW_CAN_frame_type;
-        variable rx_buf_info        :     SW_RX_Buffer_info;
+        variable frame_rx           :     t_ctu_frame;
+        variable rx_buf_info        :     t_ctu_rx_buff_info;
         variable rx_data            :     std_logic_vector(31 downto 0);
     begin
 

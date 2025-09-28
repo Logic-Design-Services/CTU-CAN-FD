@@ -115,11 +115,11 @@ package body status_rxne_ftest is
                                                 (OTHERS => '0');
 
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
-        variable frame_rx           :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
+        variable frame_rx           :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
         variable num_frames         :     integer;
     begin
@@ -136,7 +136,7 @@ package body status_rxne_ftest is
         rand_int_v(6, num_frames);
         num_frames := num_frames + 1;
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.rtr := RTR_FRAME;
         frame_1.frame_format := NORMAL_CAN;
         CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);

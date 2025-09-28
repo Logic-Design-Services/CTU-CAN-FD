@@ -109,16 +109,16 @@ package body err_capt_arb_stuff_ftest is
         signal      chn             : inout  t_com_channel
     ) is        
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;    
+        variable pc_dbg             :     t_ctu_pc_dbg;    
 
         variable frame_sent         :     boolean;
         
-        variable err_capt           :     SW_error_capture;
+        variable err_capt           :     t_ctu_err_capt;
 
     begin
 
@@ -140,7 +140,7 @@ package body err_capt_arb_stuff_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.ident_type := BASE;
         frame_1.identifier := 1; -- First 4 bits should be dominant!
         CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);

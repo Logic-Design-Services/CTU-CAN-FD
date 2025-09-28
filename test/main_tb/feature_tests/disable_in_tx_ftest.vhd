@@ -110,8 +110,8 @@ package body disable_in_tx_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable r_data     : std_logic_vector(31 downto 0) := (OTHERS => '0');
-        variable CAN_frame  : SW_CAN_frame_type;
-        variable CAN_frame_2: SW_CAN_frame_type;
+        variable CAN_frame  : t_ctu_frame;
+        variable CAN_frame_2: t_ctu_frame;
         variable outcome    : boolean;
         variable frame_sent : boolean;
     begin
@@ -121,7 +121,7 @@ package body disable_in_tx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         
         -----------------------------------------------------------------------
@@ -150,7 +150,7 @@ package body disable_in_tx_ftest is
         CAN_turn_controller(true, DUT_NODE, chn);
         CAN_wait_bus_on(DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_frame_sent(DUT_NODE, chn);
 

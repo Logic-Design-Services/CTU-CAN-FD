@@ -115,20 +115,20 @@ package body rx_err_log_7_ftest is
     procedure rx_err_log_7_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             : SW_mode := SW_mode_rst_val;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable tx_frame_1         : SW_CAN_frame_type;
-        variable tx_frame_2         : SW_CAN_frame_type;
-        variable tx_frame_3         : SW_CAN_frame_type;
+        variable tx_frame_1         : t_ctu_frame;
+        variable tx_frame_2         : t_ctu_frame;
+        variable tx_frame_3         : t_ctu_frame;
 
-        variable rx_frame_1         : SW_CAN_frame_type;
-        variable rx_frame_2         : SW_CAN_frame_type;
-        variable rx_frame_3         : SW_CAN_frame_type;
+        variable rx_frame_1         : t_ctu_frame;
+        variable rx_frame_2         : t_ctu_frame;
+        variable rx_frame_3         : t_ctu_frame;
 
         variable frames_match       : boolean;
         variable frame_sent         : boolean;
 
-        variable rx_buf_info        : SW_RX_Buffer_info;
+        variable rx_buf_info        : t_ctu_rx_buff_info;
 
     begin
 
@@ -149,7 +149,7 @@ package body rx_err_log_7_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(tx_frame_1);
+        generate_can_frame(tx_frame_1);
         CAN_send_frame(tx_frame_1, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_frame_sent(DUT_NODE, chn);
 
@@ -159,7 +159,7 @@ package body rx_err_log_7_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_generate_frame(tx_frame_2);
+        generate_can_frame(tx_frame_2);
         tx_frame_2.rtr := NO_RTR_FRAME;
         tx_frame_2.data_length := 8;
         -- To avoid SSP. If error is detected in SSP, DUT Node does not react immediately, but
@@ -202,7 +202,7 @@ package body rx_err_log_7_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        CAN_generate_frame(tx_frame_3);
+        generate_can_frame(tx_frame_3);
         CAN_send_frame(tx_frame_3, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_frame_sent(DUT_NODE, chn);
 

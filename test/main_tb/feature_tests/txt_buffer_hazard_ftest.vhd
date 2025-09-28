@@ -117,13 +117,13 @@ package body txt_buffer_hazard_ftest is
     procedure txt_buffer_hazard_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable command            :       SW_command := SW_command_rst_val;
-        variable status             :       SW_status;
-	    variable txt_buf_state	    :	    SW_TXT_Buffer_state_type;	
+        variable CAN_frame          :       t_ctu_frame;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable status             :       t_ctu_status;
+	    variable txt_buf_state	    :	    t_ctu_txt_buff_state;	
     begin
         -- Generate CAN frame
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
     
         -- Insert the frame for transmittion
         CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);

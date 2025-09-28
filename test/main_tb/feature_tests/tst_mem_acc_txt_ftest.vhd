@@ -132,7 +132,7 @@ package body tst_mem_acc_txt_ftest is
             x"00000000"          -- Random
         );
 
-        variable mode           : SW_mode    := SW_mode_rst_val;
+        variable mode           : t_ctu_mode    := t_ctu_mode_rst_val;
         variable num_txt_bufs   : natural;
         variable tgt_mtm        : t_tgt_test_mem;
         variable rnd            : integer;

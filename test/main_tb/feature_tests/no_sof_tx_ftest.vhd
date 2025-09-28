@@ -115,18 +115,18 @@ package body no_sof_tx_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
-        variable frame_2            :     SW_CAN_frame_type;
-        variable frame_rx           :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
+        variable frame_2            :     t_ctu_frame;
+        variable frame_rx           :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
         
-        variable txt_buf_state      :     SW_TXT_Buffer_state_type;
-        variable rx_buf_info        :     SW_RX_Buffer_info;
+        variable txt_buf_state      :     t_ctu_txt_buff_state;
+        variable rx_buf_info        :     t_ctu_rx_buff_info;
         variable frames_equal       :     boolean := false;
                  
-        variable pc_state           :     SW_PC_Debug;
+        variable pc_state           :     t_ctu_pc_dbg;
     begin
 
         ------------------------------------------------------------------------
@@ -144,8 +144,8 @@ package body no_sof_tx_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Insert CAN frames!");
 
-        CAN_generate_frame(frame_1);
-        CAN_generate_frame(frame_2);
+        generate_can_frame(frame_1);
+        generate_can_frame(frame_2);
         frame_1.ident_type := BASE;
         frame_2.ident_type := BASE;
         frame_1.identifier := 1;

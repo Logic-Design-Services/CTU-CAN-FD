@@ -119,15 +119,15 @@ package body ssp_last_crc_bit_error_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable r_data             :       std_logic_vector(31 downto 0) := (OTHERS => '0');
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
         variable tx_val             :       std_logic;
-        variable err_counters       :       SW_error_counters;
-        variable status             :       SW_status;
-        variable mode               :       SW_mode := SW_mode_rst_val;
+        variable err_counters       :       t_ctu_err_ctrs;
+        variable status             :       t_ctu_status;
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable frame_bits         :       integer;
         variable bit_index          :       integer;
-        variable pc_dbg             :       SW_PC_Debug;
-        variable bit_timing         :       bit_time_config_type;
+        variable pc_dbg             :       t_ctu_pc_dbg;
+        variable bit_timing         :       t_ctu_bit_time_cfg;
     begin
 
         -------------------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ package body ssp_last_crc_bit_error_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_TX_frame.identifier := 0;
         CAN_TX_frame.frame_format := FD_CAN;
         CAN_TX_frame.data_length := 1;

@@ -109,10 +109,10 @@ package body rx_buf_transitions_ftest is
     procedure rx_buf_transitions_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode               :       SW_mode := SW_mode_rst_val;
-        variable can_frame          :       SW_CAN_frame_type;
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean;
-        variable rx_buf_info        :       SW_RX_Buffer_info;
+        variable rx_buf_info        :       t_ctu_rx_buff_info;
     begin
 
         -----------------------------------------------------------------------
@@ -131,7 +131,7 @@ package body rx_buf_transitions_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1: Send CAN frame");
 
-        CAN_generate_frame(can_frame);
+        generate_can_frame(can_frame);
         CAN_frame.frame_format := NORMAL_CAN;
 
         CAN_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);

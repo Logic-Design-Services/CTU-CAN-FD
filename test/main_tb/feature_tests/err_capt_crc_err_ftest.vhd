@@ -112,22 +112,22 @@ package body err_capt_crc_err_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
-        variable stat_2             :     SW_status;
+        variable stat_1             :     t_ctu_status;
+        variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable pc_dbg             :     t_ctu_pc_dbg;
 
         variable frame_sent         :     boolean;
 
-        variable err_capt           :     SW_error_capture;
-        variable mode_2             :     SW_mode := SW_mode_rst_val;
+        variable err_capt           :     t_ctu_err_capt;
+        variable mode_2             :     t_ctu_mode := t_ctu_mode_rst_val;
         variable wait_time          :     natural;
         variable can_rx_val         :     std_logic;
 
-        variable pc_fsm_state       :     SW_PC_Debug;
+        variable pc_fsm_state       :     t_ctu_pc_dbg;
     begin
 
         -----------------------------------------------------------------------
@@ -152,7 +152,7 @@ package body err_capt_crc_err_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.frame_format := NORMAL_CAN; --Use CAN 2.0 to have single bit ACK
         frame_1.identifier := 67;
         frame_1.dlc := "0001";

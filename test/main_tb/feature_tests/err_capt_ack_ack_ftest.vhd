@@ -110,17 +110,17 @@ package body err_capt_ack_ack_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;    
+        variable pc_dbg             :     t_ctu_pc_dbg;    
 
         variable frame_sent         :     boolean;
         
-        variable err_capt           :     SW_error_capture;
-        variable mode_2             :     SW_mode := SW_mode_rst_val;
+        variable err_capt           :     t_ctu_err_capt;
+        variable mode_2             :     t_ctu_mode := t_ctu_mode_rst_val;
 
     begin
 
@@ -145,7 +145,7 @@ package body err_capt_ack_ack_ftest is
         mode_2.acknowledge_forbidden := true;
         set_core_mode(mode_2, TEST_NODE, chn);
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.frame_format := NORMAL_CAN;
         CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);

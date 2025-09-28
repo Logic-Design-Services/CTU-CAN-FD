@@ -111,15 +111,15 @@ package body ssp_saturation_ftest is
     procedure ssp_saturation_ftest_exec(
         signal      chn                     : inout  t_com_channel
     ) is
-        variable TX_frame                   :     SW_CAN_frame_type;
-        variable RX_frame                   :     SW_CAN_frame_type;
+        variable TX_frame                   :     t_ctu_frame;
+        variable RX_frame                   :     t_ctu_frame;
 
         variable frame_sent                 :     boolean;
         variable frames_match               :     boolean;
 
         variable trv_delay                  :     natural;
 
-        variable bus_timing                 :     bit_time_config_type;
+        variable bus_timing                 :     t_ctu_bit_time_cfg;
     begin
 
         -----------------------------------------------------------------------
@@ -186,7 +186,7 @@ package body ssp_saturation_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(TX_frame);
+        generate_can_frame(TX_frame);
         TX_frame.frame_format := FD_CAN;
         TX_frame.brs := BR_SHIFT;
 

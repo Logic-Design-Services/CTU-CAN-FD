@@ -118,14 +118,14 @@ package body rx_err_log_ftest is
     procedure rx_err_log_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             : SW_mode := SW_mode_rst_val;
-        variable pc_dbg             : SW_PC_Debug;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
+        variable pc_dbg             : t_ctu_pc_dbg;
         variable frame_sent         : boolean;
         variable tx_val             : std_logic;
-        variable status             : SW_status;
-        variable rx_buf_info        : SW_RX_Buffer_info;
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
+        variable status             : t_ctu_status;
+        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable CAN_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
     begin
 
         -------------------------------------------------------------------------------------------
@@ -150,14 +150,14 @@ package body rx_err_log_ftest is
             when others => pc_dbg := pc_deb_crc;
             end case;
 
-            info_m("Testing ERF_POS in: " & SW_PC_Debug'image(pc_dbg));
+            info_m("Testing ERF_POS in: " & t_ctu_pc_dbg'image(pc_dbg));
 
             ---------------------------------------------------------------------------------------
             -- @2.1 Generate CAN frame and send it by DUT.
             ---------------------------------------------------------------------------------------
             info_m("Step 2.1");
 
-            CAN_generate_frame(CAN_frame);
+            generate_can_frame(CAN_frame);
             CAN_frame.rtr := NO_RTR_FRAME;
             CAN_frame.frame_format := NORMAL_CAN;
             CAN_frame.data_length := 8;     -- To make sure data field is there!

@@ -116,16 +116,16 @@ package body int_txbhci_ftest is
     procedure int_txbhci_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     SW_CAN_frame_type;
-        variable CAN_frame_rx       :     SW_CAN_frame_type;
+        variable CAN_frame          :     t_ctu_frame;
+        variable CAN_frame_rx       :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
         variable frames_equal       :     boolean := false;
 
-        variable int_mask           :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_ena            :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_stat           :     SW_interrupts := SW_interrupts_rst_val;
-        variable pc_dbg             :     SW_PC_Debug;
-        variable rxb_state          :     SW_RX_Buffer_info;
+        variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable pc_dbg             :     t_ctu_pc_dbg;
+        variable rxb_state          :     t_ctu_rx_buff_info;
         variable num_txt_bufs       :     natural;
     begin
 
@@ -158,7 +158,7 @@ package body int_txbhci_ftest is
                     ---------------------------------------------------------------
                     info_m("Step 1.2");
 
-                    CAN_generate_frame(CAN_frame);
+                    generate_can_frame(CAN_frame);
                     CAN_frame.data_length := 1;
                     CAN_frame.frame_format := FD_CAN;
                     decode_length(CAN_frame.data_length, CAN_frame.dlc);

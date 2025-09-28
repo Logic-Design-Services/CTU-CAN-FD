@@ -117,14 +117,14 @@ package body command_cdo_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
         
-        variable rx_buf_info        :     SW_RX_Buffer_info;    
+        variable rx_buf_info        :     t_ctu_rx_buff_info;    
 
-        variable command            :     SW_command := SW_command_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
     begin
 
         -----------------------------------------------------------------------
@@ -141,7 +141,7 @@ package body command_cdo_ftest is
         get_controller_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.data_overrun, "DOR flag not set!");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.rtr := RTR_FRAME;
         frame_1.frame_format := NORMAL_CAN;
         CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);

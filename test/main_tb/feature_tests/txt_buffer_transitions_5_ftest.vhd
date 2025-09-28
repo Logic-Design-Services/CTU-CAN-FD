@@ -118,24 +118,24 @@ package body txt_buffer_transitions_5_ftest is
     procedure txt_buffer_transitions_5_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1               :       SW_mode := SW_mode_rst_val;
+        variable mode_1               :       t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable CAN_frame            :       SW_CAN_frame_type;
+        variable CAN_frame            :       t_ctu_frame;
 
-        variable txt_buf_state        :       SW_TXT_Buffer_state_type;
-        variable fault_state          :       SW_fault_state;
+        variable txt_buf_state        :       t_ctu_txt_buff_state;
+        variable fault_state          :       t_ctu_fault_state;
 
         variable num_txt_bufs         :       natural;
-        variable err_counters         :       SW_error_counters;
+        variable err_counters         :       t_ctu_err_ctrs;
 
-        --variable command            :       SW_command := SW_command_rst_val;
-        --variable status             :       SW_status;
-	    --variable txt_buf_state	    :	    SW_TXT_Buffer_state_type;
+        --variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        --variable status             :       t_ctu_status;
+	    --variable txt_buf_state	    :	    t_ctu_txt_buff_state;
 
 
         --variable frame_sent         :       boolean;
 
-        --variable fault_state        :       SW_fault_state;
+        --variable fault_state        :       t_ctu_fault_state;
         --variable bus_val            :       std_logic;
     begin
 
@@ -186,7 +186,7 @@ package body txt_buffer_transitions_5_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2");
 
-            CAN_generate_frame(CAN_frame);
+            generate_can_frame(CAN_frame);
 
             for i in 1 to num_txt_bufs loop
                 CAN_insert_TX_frame(CAN_frame, i, DUT_NODE, chn);

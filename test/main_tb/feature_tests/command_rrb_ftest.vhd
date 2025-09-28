@@ -117,13 +117,13 @@ package body command_rrb_ftest is
         signal      chn             : inout  t_com_channel
     ) is        
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
-        variable frame_rx           :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
+        variable frame_rx           :     t_ctu_frame;
         
-        variable rx_buf_info        :     SW_RX_Buffer_info;
+        variable rx_buf_info        :     t_ctu_rx_buff_info;
         variable frames_equal       :     boolean := false;        
 
-        variable command            :     SW_command := SW_command_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
         variable rand_val           :     integer;
     begin
 
@@ -142,7 +142,7 @@ package body command_rrb_ftest is
         check_m(rx_buf_info.rx_empty, "Empty flag set");
         check_m(rx_buf_info.rx_frame_count = 0, "Frame count 0");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);
         send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
         
@@ -179,7 +179,7 @@ package body command_rrb_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);
         send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
@@ -204,7 +204,7 @@ package body command_rrb_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);
         send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
 
@@ -243,7 +243,7 @@ package body command_rrb_ftest is
         -----------------------------------------------------------------------
         info_m("Step 5");
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_insert_TX_frame(frame_1, 1, TEST_NODE, chn);
         send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
 

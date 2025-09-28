@@ -140,8 +140,8 @@ package body mode_pex_ftest is
         constant node               :       t_feature_node;
         signal   chn                : inout t_com_channel
     ) is
-        variable status             :       SW_status;
-        variable command            :       SW_command := SW_command_rst_val;
+        variable status             :       t_ctu_status;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
     begin
         get_controller_status(status, node, chn);
         
@@ -156,7 +156,7 @@ package body mode_pex_ftest is
     end procedure;
 
     procedure wait_till_fdf(
-        variable can_frame          :       SW_CAN_frame_type;
+        variable can_frame          :       t_ctu_frame;
         constant node               :       t_feature_node;
         signal   chn                : inout t_com_channel
     ) is
@@ -184,7 +184,7 @@ package body mode_pex_ftest is
         constant node               :       t_feature_node;
         signal   chn                : inout t_com_channel
     ) is
-        variable mode               : SW_mode := SW_mode_rst_val;
+        variable mode               : t_ctu_mode := t_ctu_mode_rst_val;
     begin
         get_core_mode(mode, DUT_NODE, chn);
         mode.pex_support := pex_ena;
@@ -196,21 +196,21 @@ package body mode_pex_ftest is
     procedure mode_pex_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable rx_buf_state       :       t_ctu_rx_buff_info;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       SW_PC_Debug;   
+        variable pc_dbg             :       t_ctu_pc_dbg;   
     begin
 
         info_m("Generating random CAN FD frame");
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(CAN_TX_frame);
         CAN_TX_frame.frame_format := FD_CAN;
 
         ------------------------------------------------------------------------

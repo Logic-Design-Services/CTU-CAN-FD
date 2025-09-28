@@ -149,14 +149,14 @@ package body retr_limit_ftest is
     procedure retr_limit_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable retr_th            :       natural;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
-        variable buf_state          :       SW_TXT_Buffer_state_type;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
+        variable buf_state          :       t_ctu_txt_buff_state;
+        variable status             :       t_ctu_status;
         variable num_txt_bufs       :       natural;
     begin
 
@@ -190,7 +190,7 @@ package body retr_limit_ftest is
             ------------------------------------------------------------------------
             info_m("Step 2: Sending frame by DUT");
 
-            CAN_generate_frame(CAN_frame);
+            generate_can_frame(CAN_frame);
             CAN_send_frame(CAN_frame, txt_buf_nr, DUT_NODE, chn, frame_sent);
             for i in 0 to 1 loop
                 CAN_wait_error_frame(DUT_NODE, chn);

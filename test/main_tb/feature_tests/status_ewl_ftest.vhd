@@ -107,14 +107,14 @@ package body status_ewl_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
         
-        variable mode_1             :     SW_mode;
-        variable err_counters       :     SW_error_counters;
-        variable fault_th           :     SW_fault_thresholds := (0,0);
+        variable mode_1             :     t_ctu_mode;
+        variable err_counters       :     t_ctu_err_ctrs;
+        variable fault_th           :     t_ctu_fault_thresholds := (0,0);
         variable exp_stat_ewl       :     boolean;
     begin
 

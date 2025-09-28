@@ -115,13 +115,13 @@ package body tx_priority_change_ftest is
         
         -- Assume maximal amount of TXT buffers
         type txt_buffer_priorities is array (1 to 8) of integer range 0 to 7;
-        type CAN_frame_array_type is array (1 to 8) of SW_CAN_frame_type; 
+        type CAN_frame_array_type is array (1 to 8) of t_ctu_frame; 
         
         variable priorities : txt_buffer_priorities;
-        variable txtb_state : SW_TXT_Buffer_state_type;
+        variable txtb_state : t_ctu_txt_buff_state;
 
         variable CAN_frame_array_tx :       CAN_frame_array_type;        
-        variable CAN_frame_rx       :       SW_CAN_frame_type;
+        variable CAN_frame_rx       :       t_ctu_frame;
 
         variable highest_prio_buf   :       integer := 4;
         variable highest_prio       :       integer := 0;
@@ -149,7 +149,7 @@ package body tx_priority_change_ftest is
         end loop;
 
         for i in 1 to num_txt_bufs loop
-            CAN_generate_frame(CAN_frame_array_tx(i));
+            generate_can_frame(CAN_frame_array_tx(i));
             CAN_insert_TX_frame(CAN_frame_array_tx(i), i, DUT_NODE, chn);
         end loop;
 

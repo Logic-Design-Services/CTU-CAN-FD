@@ -108,14 +108,14 @@ package body command_ercrst_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
-        variable command            :     SW_command := SW_command_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
         
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
-        variable err_ctrs           :     SW_error_counters := (0,0,0,0);
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable err_ctrs           :     t_ctu_err_ctrs := (0,0,0,0);
         
-        variable fault_state        :     SW_fault_state;
+        variable fault_state        :     t_ctu_fault_state;
     begin
 
         -----------------------------------------------------------------------

@@ -231,7 +231,7 @@ package body mode_rst_ftest is
 
         variable test_regs_present : boolean;
 
-        variable mode           : SW_mode := SW_mode_rst_val;
+        variable mode           : t_ctu_mode := t_ctu_mode_rst_val;
     begin
 
         -----------------------------------------------------------------------

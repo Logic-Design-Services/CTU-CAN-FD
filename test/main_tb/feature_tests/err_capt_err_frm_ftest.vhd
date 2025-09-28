@@ -108,15 +108,15 @@ package body err_capt_err_frm_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;    
+        variable stat_1             :     t_ctu_status;    
 
         variable wait_time          :     natural;
         variable frame_sent         :     boolean;
-        variable err_capt           :     SW_error_capture;
-        variable mode_2             :     SW_mode;
+        variable err_capt           :     t_ctu_err_capt;
+        variable mode_2             :     t_ctu_mode;
     begin
 
         -----------------------------------------------------------------------
@@ -137,7 +137,7 @@ package body err_capt_err_frm_ftest is
         mode_2.acknowledge_forbidden := true;
         set_core_mode(mode_2, TEST_NODE, chn);
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_error_frame(DUT_NODE, chn);
         

@@ -109,10 +109,10 @@ package body dlc_can20_8_64_bytes_ftest is
     procedure dlc_can20_8_64_bytes_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :        SW_CAN_frame_type;
-        variable CAN_frame_2        :        SW_CAN_frame_type  := SW_CAN_Frame_type_rst_val;
+        variable CAN_frame          :        t_ctu_frame;
+        variable CAN_frame_2        :        t_ctu_frame  := SW_CAN_Frame_type_rst_val;
         variable frame_sent         :        boolean;
-        variable pc_dbg             :        SW_PC_Debug;
+        variable pc_dbg             :        t_ctu_pc_dbg;
     begin
 
         ------------------------------------------------------------------------
@@ -121,7 +121,7 @@ package body dlc_can20_8_64_bytes_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Generate frame");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         rand_logic_vect_v(CAN_frame.dlc, 0.5);
         -- Set highest bit to 1 -> DLC will be always more than 8!
         CAN_frame.dlc(3) := '1';

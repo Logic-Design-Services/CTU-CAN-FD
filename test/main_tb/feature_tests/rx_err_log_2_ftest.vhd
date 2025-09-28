@@ -130,15 +130,15 @@ package body rx_err_log_2_ftest is
     procedure rx_err_log_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             : SW_mode := SW_mode_rst_val;
-        variable pc_dbg             : SW_PC_Debug;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
+        variable pc_dbg             : t_ctu_pc_dbg;
         variable frame_sent         : boolean;
         variable tx_val             : std_logic;
-        variable status             : SW_status;
-        variable rx_buf_info        : SW_RX_Buffer_info;
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
-        variable err_frame_2        : SW_CAN_frame_type;
+        variable status             : t_ctu_status;
+        variable rx_buf_info        : t_ctu_rx_buff_info;
+        variable CAN_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
+        variable err_frame_2        : t_ctu_frame;
         variable rand_bits          : natural;
     begin
 
@@ -156,7 +156,7 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         -- NORMAL_CAN to work-around the issue with SSP at the last bit of CRC
         CAN_frame.frame_format := NORMAL_CAN;
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
@@ -203,7 +203,7 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 4");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
@@ -250,7 +250,7 @@ package body rx_err_log_2_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 6");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);

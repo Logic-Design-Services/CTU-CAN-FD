@@ -114,14 +114,14 @@ package body bus_start_ftest is
     procedure bus_start_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       SW_CAN_frame_type;
-        variable CAN_frame_2        :       SW_CAN_frame_type;
+        variable CAN_frame_1        :       t_ctu_frame;
+        variable CAN_frame_2        :       t_ctu_frame;
         
-        variable fault_state_1      :       SW_fault_state;
-        variable fault_state_2      :       SW_fault_state;
+        variable fault_state_1      :       t_ctu_fault_state;
+        variable fault_state_2      :       t_ctu_fault_state;
         
-        variable read_state         :       SW_PC_Debug;
-        variable status             :       SW_status;
+        variable read_state         :       t_ctu_pc_dbg;
+        variable status             :       t_ctu_status;
     begin
 
         ------------------------------------------------------------------------
@@ -137,8 +137,8 @@ package body bus_start_ftest is
         
         CAN_turn_controller(false, DUT_NODE, chn);
         CAN_turn_controller(false, TEST_NODE, chn);
-        CAN_generate_frame(CAN_frame_1);
-        CAN_generate_frame(CAN_frame_2);
+        generate_can_frame(CAN_frame_1);
+        generate_can_frame(CAN_frame_2);
         CAN_insert_TX_frame(CAN_frame_1, 1, DUT_NODE, chn);
         CAN_insert_TX_frame(CAN_frame_2, 2, DUT_NODE, chn);
 

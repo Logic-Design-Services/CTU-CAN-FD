@@ -112,11 +112,11 @@ package body rx_err_log_5_ftest is
     procedure rx_err_log_5_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             : SW_mode := SW_mode_rst_val;
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
+        variable CAN_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
         variable corrupt_bit_index  : integer;
-        variable rx_buf_info        : SW_RX_Buffer_info;
+        variable rx_buf_info        : t_ctu_rx_buff_info;
         variable r_data             : std_logic_vector(31 downto 0);
     begin
 
@@ -136,7 +136,7 @@ package body rx_err_log_5_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.data_length := 8;
         CAN_frame.rtr := NO_RTR_FRAME;
         decode_length(CAN_frame.data_length, CAN_frame.dlc);

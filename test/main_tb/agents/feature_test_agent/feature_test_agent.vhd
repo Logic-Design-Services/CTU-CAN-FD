@@ -365,7 +365,7 @@ begin
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     test_process : process
-        variable bus_timing     :    bit_time_config_type :=(
+        variable bus_timing     :    t_ctu_bit_time_cfg :=(
             tq_nbt      => cfg_brp,
             tq_dbt      => cfg_brp_fd,
             prop_nbt    => cfg_prop,
@@ -397,11 +397,11 @@ begin
         CAN_configure_timing(bus_timing, TEST_NODE, default_channel);
 
         -- Configure secondary sample point
-        CAN_configure_ssp(SSP_set_command_type'val(cfg_ssp_src),
+        CAN_configure_ssp(t_ctu_ssp_kind'val(cfg_ssp_src),
                           std_logic_vector(to_unsigned(cfg_ssp_offset, 8)),
                           DUT_NODE, default_channel);
 
-        CAN_configure_ssp(SSP_set_command_type'val(cfg_ssp_src),
+        CAN_configure_ssp(t_ctu_ssp_kind'val(cfg_ssp_src),
                           std_logic_vector(to_unsigned(cfg_ssp_offset, 8)),
                           TEST_NODE, default_channel);
 

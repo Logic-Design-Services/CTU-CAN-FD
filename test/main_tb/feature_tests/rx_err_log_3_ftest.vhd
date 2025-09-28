@@ -131,13 +131,13 @@ package body rx_err_log_3_ftest is
     procedure rx_err_log_3_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             : SW_mode := SW_mode_rst_val;
-        variable mode_2             : SW_mode := SW_mode_rst_val;
-        variable status             : SW_status;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             : t_ctu_mode := t_ctu_mode_rst_val;
+        variable status             : t_ctu_status;
         variable frame_sent         : boolean;
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
-        variable rx_buf_info        : SW_RX_Buffer_info;
+        variable CAN_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
+        variable rx_buf_info        : t_ctu_rx_buff_info;
         variable can_rx             : std_logic;
     begin
 
@@ -160,7 +160,7 @@ package body rx_err_log_3_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.rtr := NO_RTR_FRAME;
         CAN_frame.data_length := 2;
         CAN_frame.data(0) := x"AA";
@@ -208,7 +208,7 @@ package body rx_err_log_3_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.rtr := NO_RTR_FRAME;
         CAN_frame.data_length := 2;
         CAN_frame.data(0) := x"5F";
@@ -269,7 +269,7 @@ package body rx_err_log_3_ftest is
         mode_2.self_test := true;
         set_core_mode(mode_2, TEST_NODE, chn);
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_pc_state(pc_deb_crc, DUT_NODE, chn);
 
@@ -311,7 +311,7 @@ package body rx_err_log_3_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.frame_format := NORMAL_CAN;
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
         CAN_wait_pc_state(pc_deb_ack_delim, DUT_NODE, chn);
@@ -351,7 +351,7 @@ package body rx_err_log_3_ftest is
         mode_2.acknowledge_forbidden := true;
         set_core_mode(mode_2, TEST_NODE, chn);
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         CAN_wait_error_frame(DUT_NODE, chn);

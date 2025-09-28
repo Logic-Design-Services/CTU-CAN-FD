@@ -106,13 +106,13 @@ package body txt_buffer_byte_access_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_tx           :     SW_CAN_frame_type;
-        variable frame_rx           :     SW_CAN_frame_type;
+        variable frame_tx           :     t_ctu_frame;
+        variable frame_rx           :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable pc_dbg             :     t_ctu_pc_dbg;
         variable frame_sent         :     boolean;
         variable frame_equal        :     boolean;
     begin
@@ -123,7 +123,7 @@ package body txt_buffer_byte_access_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_generate_frame(frame_tx);
+        generate_can_frame(frame_tx);
         frame_tx.data_length := 64;
         frame_tx.frame_format := FD_CAN;
         decode_length(frame_tx.data_length, frame_tx.dlc);

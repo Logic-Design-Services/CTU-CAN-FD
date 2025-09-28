@@ -113,17 +113,17 @@ package body txt_buffer_transitions_3_ftest is
     procedure txt_buffer_transitions_3_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable command            :       SW_command := SW_command_rst_val;
-        variable status             :       SW_status;
-	    variable txt_buf_state	    :	    SW_TXT_Buffer_state_type;
-        variable mode               :       SW_mode;
+        variable CAN_frame          :       t_ctu_frame;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable status             :       t_ctu_status;
+	    variable txt_buf_state	    :	    t_ctu_txt_buff_state;
+        variable mode               :       t_ctu_mode;
         variable num_txt_bufs       :       natural;
         variable frame_sent         :       boolean;
-        variable err_counters       :       SW_error_counters;
-        variable fault_state        :       SW_fault_state;
+        variable err_counters       :       t_ctu_err_ctrs;
+        variable fault_state        :       t_ctu_fault_state;
         variable can_tx_val         :       std_logic;
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
         variable tseg1              :       natural;
     begin
 
@@ -143,7 +143,7 @@ package body txt_buffer_transitions_3_ftest is
         tseg1 := bus_timing.tq_nbt * (1 + bus_timing.prop_nbt + bus_timing.ph1_nbt);
 
         -- Generate single common frame
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.frame_format := NORMAL_CAN;
 
         for txt_buf_index in 1 to num_txt_bufs loop

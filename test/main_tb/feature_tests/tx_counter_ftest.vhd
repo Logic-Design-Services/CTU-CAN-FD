@@ -121,18 +121,18 @@ package body tx_counter_ftest is
     procedure tx_counter_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable rand_value         :       natural;
 
-        variable ctrs_1             :       SW_traffic_counters;
-        variable ctrs_2             :       SW_traffic_counters;
-        variable ctrs_3             :       SW_traffic_counters;
-        variable ctrs_4             :       SW_traffic_counters;
-        variable ctrs_5             :       SW_traffic_counters;
+        variable ctrs_1             :       t_ctu_traff_ctrs;
+        variable ctrs_2             :       t_ctu_traff_ctrs;
+        variable ctrs_3             :       t_ctu_traff_ctrs;
+        variable ctrs_4             :       t_ctu_traff_ctrs;
+        variable ctrs_5             :       t_ctu_traff_ctrs;
 
-        variable status             :       SW_status;
-        variable command            :       SW_command := SW_command_rst_val;
+        variable status             :       t_ctu_status;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
         variable deposit_vect       :       std_logic_vector(31 downto 0);
     begin
 
@@ -151,7 +151,7 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Send frame by DUT!");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
         CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
@@ -185,7 +185,7 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Send frame and force ACK recessive!");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.frame_format := NORMAL_CAN;
         CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
 
@@ -222,7 +222,7 @@ package body tx_counter_ftest is
 
         rand_int_v(6, rand_value);
         for i in 0 to rand_value - 1 loop
-            CAN_generate_frame(CAN_frame);
+            generate_can_frame(CAN_frame);
             CAN_send_frame(CAN_frame, 2, DUT_NODE, chn, frame_sent);
             CAN_wait_frame_sent(DUT_NODE, chn);
         end loop;

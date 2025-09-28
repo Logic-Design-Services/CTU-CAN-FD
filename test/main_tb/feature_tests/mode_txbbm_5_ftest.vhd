@@ -117,34 +117,34 @@ package body mode_txbbm_5_ftest is
     procedure mode_txbbm_5_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable CAN_TX_frame       :       t_ctu_frame;
+        variable CAN_RX_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
         
-        variable command_1          :       SW_command := SW_command_rst_val;
+        variable command_1          :       t_ctu_command := t_ctu_command_rst_val;
 
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
-        variable err_counters_2     :       SW_error_counters := (0, 0, 0, 0);
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
+        variable err_counters_2     :       t_ctu_err_ctrs := (0, 0, 0, 0);
 
-        variable fault_th           :       SW_fault_thresholds;
-        variable fault_th_2         :       SW_fault_thresholds;
+        variable fault_th           :       t_ctu_fault_thresholds;
+        variable fault_th_2         :       t_ctu_fault_thresholds;
 
         variable txt_buf_count      :       natural;
         variable tmp_int            :       natural;
         variable txt_buf_index      :       natural;
 
         variable txt_buf_vector     :       std_logic_vector(7 downto 0) := x"00";
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
         variable tst_mem            :       t_tgt_test_mem;
 
         variable corrupt_wrd_index  :       natural;
         variable corrupt_bit_index  :       natural;
 
         variable r_data             :       std_logic_vector(31 downto 0);
-        variable status_1           :       SW_status;
+        variable status_1           :       t_ctu_status;
 
         variable rwcnt              :       natural;
 
@@ -188,7 +188,7 @@ package body mode_txbbm_5_ftest is
 
             -- We need to generate frame which has some data bytes, to be able
             -- to corrupt such data bytes
-            CAN_generate_frame(CAN_TX_frame);
+            generate_can_frame(CAN_TX_frame);
             CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
             CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index + 1, DUT_NODE, chn);
 

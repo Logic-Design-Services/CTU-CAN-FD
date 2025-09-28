@@ -107,10 +107,10 @@ package body rec_saturation_ftest is
     procedure rec_saturation_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable CAN_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
     begin
 
         ------------------------------------------------------------------------
@@ -142,7 +142,7 @@ package body rec_saturation_ftest is
         -- Set to one shot mode
         CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(CAN_frame);
         CAN_frame.frame_format := FD_CAN;
 
         for i in 0 to 3 loop

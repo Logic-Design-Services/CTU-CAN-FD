@@ -108,8 +108,8 @@ package body rx_buf_timestamp_toggle_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable ts_val             :        std_logic_vector(63 downto 0);
-        variable tx_can_frame       :        SW_CAN_frame_type;
-        variable rx_can_frame       :        SW_CAN_frame_type;
+        variable tx_can_frame       :        t_ctu_frame;
+        variable rx_can_frame       :        t_ctu_frame;
         variable frame_sent         :        boolean;
     begin
 
@@ -131,7 +131,7 @@ package body rx_buf_timestamp_toggle_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(tx_can_frame);
+        generate_can_frame(tx_can_frame);
 
         CAN_send_frame(tx_can_frame, 1, TEST_NODE, chn, frame_sent);
         CAN_wait_frame_sent(DUT_NODE, chn);
