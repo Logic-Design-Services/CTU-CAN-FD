@@ -1921,7 +1921,11 @@ package feature_test_agent_pkg is
         cfg_prop_fd             : natural;
         cfg_ph_1_fd             : natural;
         cfg_ph_2_fd             : natural;
-        cfg_sjw_fd              : natural
+        cfg_sjw_fd              : natural;
+
+        -- Secondary sample point
+        cfg_ssp_src             : natural;
+        cfg_ssp_offset          : natural
     );
     port(
         -----------------------------------------------------------------------

@@ -122,6 +122,10 @@ entity tb_top_ctu_can_fd is
         cfg_ph_2_fd             : natural := 2;
         cfg_sjw_fd              : natural := 2;
 
+        -- Secondary sample point config
+        cfg_ssp_src             : natural := 0;
+        cfg_ssp_offset          : natural := 10;
+
         -- DUT configuration
         rx_buffer_size          : natural := 64;
         txt_buffer_count        : natural range 2 to 8 := 4;
@@ -194,6 +198,10 @@ architecture tb of tb_top_ctu_can_fd is
        cfg_ph_1_fd             : natural;
        cfg_ph_2_fd             : natural;
        cfg_sjw_fd              : natural;
+
+       -- Secondary sample point config
+       cfg_ssp_src             : natural;
+       cfg_ssp_offset          : natural;
 
        -- Seed
        seed                    : natural := 0;
@@ -297,6 +305,9 @@ begin
         cfg_ph_2_fd             => cfg_ph_2_fd,
         cfg_sjw_fd              => cfg_sjw_fd,
 
+        cfg_ssp_src             => cfg_ssp_src,
+        cfg_ssp_offset          => cfg_ssp_offset,
+
         seed                    => seed,
         reference_iterations    => reference_iterations
     )
@@ -387,6 +398,9 @@ begin
         info("  PROP: " & integer'image(cfg_prop_fd));
         info("  PH2: " & integer'image(cfg_ph_2_fd));
         info("  SJW: " & integer'image(cfg_sjw_fd));
+        info("Secondary sample point:");
+        info("  Source: " & integer'image(cfg_ssp_src));
+        info("  Offset: " & integer'image(cfg_ssp_offset));
         info("");
         info("***************************************************************");
 

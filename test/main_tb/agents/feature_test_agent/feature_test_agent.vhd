@@ -106,7 +106,11 @@ entity feature_test_agent is
         cfg_prop_fd             : natural;
         cfg_ph_1_fd             : natural;
         cfg_ph_2_fd             : natural;
-        cfg_sjw_fd              : natural
+        cfg_sjw_fd              : natural;
+
+        -- Secondary sample point config
+        cfg_ssp_src             : natural;
+        cfg_ssp_offset          : natural
     );
     port(
         -----------------------------------------------------------------------
@@ -391,6 +395,15 @@ begin
         -- Configure bit timing
         CAN_configure_timing(bus_timing, DUT_NODE, default_channel);
         CAN_configure_timing(bus_timing, TEST_NODE, default_channel);
+
+        -- Configure secondary sample point
+        CAN_configure_ssp(SSP_set_command_type'val(cfg_ssp_src),
+                          std_logic_vector(to_unsigned(cfg_ssp_offset, 8)),
+                          DUT_NODE, default_channel);
+
+        CAN_configure_ssp(SSP_set_command_type'val(cfg_ssp_src),
+                          std_logic_vector(to_unsigned(cfg_ssp_offset, 8)),
+                          TEST_NODE, default_channel);
 
         -- Set default retransmitt limit to 0 (Failed frames are not retransmited)
         CAN_enable_retr_limit(true, 0, DUT_NODE, default_channel);
