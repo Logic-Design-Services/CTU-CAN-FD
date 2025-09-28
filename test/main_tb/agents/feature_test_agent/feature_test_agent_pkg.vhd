@@ -1898,6 +1898,16 @@ package feature_test_agent_pkg is
         signal   channel        : inout t_com_channel
     );
 
+    ----------------------------------------------------------------------------
+    -- Wait for input delay of CTU CAN FD (2 cycles)
+    --
+    -- Arguments:
+    --  channel         Channel to use for access
+    ----------------------------------------------------------------------------
+    procedure ctu_wait_input_delay(
+        signal   channel        : inout t_com_channel
+    );
+
 
     ----------------------------------------------------------------------------
     ----------------------------------------------------------------------------
@@ -4954,6 +4964,15 @@ package body feature_test_agent_pkg is
         else
             regs_present := false;
         end if;
+    end procedure;
+
+    procedure ctu_wait_input_delay(
+        signal   channel        : inout t_com_channel
+    ) is
+    begin
+        -- Input delay is 2 clk_sys cycles
+        clk_agent_wait_cycle(channel);
+        clk_agent_wait_cycle(channel);
     end procedure;
 
 
