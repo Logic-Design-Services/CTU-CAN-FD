@@ -260,9 +260,8 @@ package body settings_tbfbo_ftest is
             info_m("Step 5");
 
             ctu_wait_err_active(DUT_NODE, chn);
+            ctu_wait_frame_start(true, true, DUT_NODE, chn);
 
-            -- Could be one bit before it starts to transmitt
-            wait for 5000 ns;
             ctu_get_status(status, DUT_NODE, chn);
             check_m(status.transmitter, "Node is transmitting!");
 
