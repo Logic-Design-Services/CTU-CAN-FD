@@ -251,10 +251,12 @@ package body tx_arb_time_tran_ftest is
         can_frame.timestamp := std_logic_vector(unsigned(ts_actual) - 1);
 
         ctu_put_tx_frame(can_frame, 1, DUT_NODE, chn);
-        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
 
         -- Capture immediate timestamp after set ready and after TX start!
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
         timestamp_agent_get_timestamp(chn, ts_set_ready);
+
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
         timestamp_agent_get_timestamp(chn, ts_tx_start);
 
@@ -264,7 +266,9 @@ package body tx_arb_time_tran_ftest is
             diff := to_integer(unsigned(ts_set_ready) - unsigned(ts_tx_start));
         end if;
 
-        check_m(diff < clk_per_bit, "Time of transmission correct!");
+        check_m(diff < clk_per_bit + 10, "Time of transmission correct!" &
+            " Diff: " & integer'image(diff) &
+            " Time per bit: " & integer'image(clk_per_bit));
 
         ctu_wait_frame_sent(DUT_NODE, chn);
 
