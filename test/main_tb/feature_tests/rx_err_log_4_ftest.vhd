@@ -199,6 +199,7 @@ package body rx_err_log_4_ftest is
         check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @3. Generate CAN FD frame with Base ID only. Send the frame by DUT Node,
@@ -245,6 +246,7 @@ package body rx_err_log_4_ftest is
         check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @4. Generate CAN frame with Base Identifier only. Send it by DUT Node
@@ -294,6 +296,7 @@ package body rx_err_log_4_ftest is
         check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @5. Generate CAN frame with Extended Identifier and send it by DUT Node.
@@ -316,21 +319,21 @@ package body rx_err_log_4_ftest is
 
         while (true) loop
             ctu_wait_sync_seg(DUT_NODE, chn);
-            wait for 20 ns;
-            get_can_tx(DUT_NODe, can_tx, chn);
+            wait for 11 ns;
+            get_can_tx(DUT_NODE, can_tx, chn);
             if (can_tx = DOMINANT) then
                 exit;
             end if;
         end loop;
 
-        wait for 20 ns;
+        --wait for 20 ns;
 
         flip_bus_level(chn);
         ctu_wait_sample_point(DUT_NODE, chn, false);
-        wait for 20 ns;
+        ctu_wait_input_delay(chn);
         release_bus_level(chn);
 
-        wait for 100 ns;
+        ctu_wait_sample_point(DUT_NODE, chn, false);
 
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
@@ -346,6 +349,7 @@ package body rx_err_log_4_ftest is
         check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @6. Generate CAN frame with Extended identifier and send it by DUT Node.
