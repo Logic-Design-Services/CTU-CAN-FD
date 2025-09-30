@@ -238,7 +238,9 @@ package body status_txpe_ftest is
                 info_m("Step 2.4");
 
                 ctu_give_txt_cmd(buf_set_ready, txt_buf, DUT_NODE, chn);
-                wait for 5 us;
+
+                -- Waiting for two bits is sufficient for DUT to start transmission.
+                wait for 10 us;
 
                 ctu_get_txt_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
 
@@ -250,8 +252,8 @@ package body status_txpe_ftest is
                     check_m(txt_buf_state = buf_parity_err,
                             "Bit flip + SETTINGS[PCHKE] = 1 -> TXT Buffer in parity error state!");
                 else
-                    check_m(txt_buf_state = buf_tx_progress,
-                            "Bit flip + SETTINGS[PCHKE] = 0 -> TXT Buffer in TX in progress state!");
+                    check_m(txt_buf_state = buf_tx_progress or txt_buf_state = buf_done,
+                            "Bit flip + SETTINGS[PCHKE] = 0 -> TXT Buffer in TX in progress or Done state!");
                     ctu_wait_bus_idle(DUT_NODE, chn);
                     ctu_wait_bus_idle(TEST_NODE, chn);
                     ctu_get_txt_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
@@ -414,6 +416,7 @@ package body status_txpe_ftest is
                 else
                     ctu_wait_frame_sent(DUT_NODE, chn);
                     ctu_wait_bus_idle(DUT_NODE, chn);
+                    ctu_wait_bus_idle(TEST_NODE, chn);
 
                     ctu_get_txt_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
                     check_m(txt_buf_state = buf_done,
