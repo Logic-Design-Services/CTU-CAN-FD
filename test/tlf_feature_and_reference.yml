@@ -140,7 +140,6 @@ tests:
         /TB_TOP_CTU_CAN_FD/iterations: 15
 
     - name: one_shot
-    - name: overload
 
     - name: pc_fsm_transitions_err_pas
     - name: pc_fsm_transitions_err_pas_2

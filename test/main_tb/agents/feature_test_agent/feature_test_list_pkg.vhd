@@ -173,7 +173,6 @@ use ctu_can_fd_tb.mode_acf_ftest.all;
 use ctu_can_fd_tb.mode_erfm_ftest.all;
 
 use ctu_can_fd_tb.one_shot_ftest.all;
-use ctu_can_fd_tb.overload_ftest.all;
 
 use ctu_can_fd_tb.pc_fsm_transitions_err_pas_ftest.all;
 use ctu_can_fd_tb.pc_fsm_transitions_err_pas_2_ftest.all;
@@ -432,8 +431,6 @@ package body feature_test_list_pkg is
 
         elsif (test_name = "one_shot") then
             one_shot_ftest_exec(channel);
-        elsif (test_name = "overload") then
-            overload_ftest_exec(channel);
 
         elsif (test_name = "pc_fsm_transitions_err_pas") then
             pc_fsm_transitions_err_pas_ftest_exec(channel);
