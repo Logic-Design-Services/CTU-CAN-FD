@@ -216,6 +216,9 @@ package body pc_fsm_transitions_err_act_ftest is
                 info_m("Step 2.1.5 Wait until bus is idle.");
 
                 ctu_wait_bus_idle(DUT_NODE, chn);
+                ctu_wait_bus_idle(TEST_NODE, chn);
+
+                wait for 200 ns;
 
                 bit_index := bit_index + 1;
 
