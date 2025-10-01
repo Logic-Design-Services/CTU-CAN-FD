@@ -3,7 +3,7 @@ Maintainer: Pavel Pisa <pisa@cmp.felk.cvut.cz>
 Section: admin
 Priority: optional
 Build-Depends: debhelper (>=9),
-               dkms
+               dh-dkms | dkms
 Standards-Version: 1.0.0
 Vcs-Browser: https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core
 Vcs-Git: https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core.git
