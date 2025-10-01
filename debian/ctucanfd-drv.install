@@ -1,7 +1,7 @@
 #!/bin/sh
 
 for fname in ctucanfd_base.c ctucanfd_pci.c ctucanfd_platform.c ctucanfd.h \
-             ctucanfd_frame.h ctucanfd_hw.c ctucanfd_hw.h ctucanfd_regs.h
+             ctucanfd_kframe.h ctucanfd_hw.c ctucanfd_hw.h ctucanfd_kregs.h
 do
     echo driver/${fname} /usr/src/${PACKAGE_NAME}-${PACKAGE_VERSION}
 done
