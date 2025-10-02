@@ -252,6 +252,7 @@ package body rx_err_log_3_ftest is
         check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @4. Generate CAN frame and send it by Test Node. Wait until CRC field
@@ -275,13 +276,13 @@ package body rx_err_log_3_ftest is
 
         ctu_wait_sample_point(DUT_NODE, chn);
         ctu_wait_sync_seg(DUT_NODE, chn);
-        wait for 20 ns;
+        wait for 2 ns;
 
         get_can_rx(DUT_NODE, can_rx, chn);
         force_can_rx(not can_rx, DUT_NODE, chn);
 
         ctu_wait_sample_point(DUT_NODE, chn, false);
-        wait for 20 ns;
+        ctu_wait_input_delay(chn);
         release_can_rx(chn);
 
         ctu_wait_err_frame(DUT_NODE, chn);
