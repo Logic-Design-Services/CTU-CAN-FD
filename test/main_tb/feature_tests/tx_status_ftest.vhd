@@ -155,15 +155,17 @@ package body tx_status_ftest is
             check_m(txt_state = buf_empty, "TX Empty after reset!");
 
             -----------------------------------------------------------------------
-            -- @2. Transmitt CAN Frame by DUT and wait until it is received in
+            -- @2. Transmit CAN Frame by DUT and wait until it is received in
             --     Test node. Check that TXT Buffer is OK.
             -----------------------------------------------------------------------
             info_m("Step 2");
 
             generate_can_frame(can_frame_tx);
+            can_frame_tx.brs := BR_NO_SHIFT;
             ctu_send_frame(can_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
 
             ctu_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
             ctu_get_txt_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_done, "TX OK after frame sent!");
@@ -181,9 +183,12 @@ package body tx_status_ftest is
             ctu_set_retr_limit(true, 0, DUT_NODE, chn);
 
             generate_can_frame(can_frame_tx);
+            can_frame_tx.brs := BR_NO_SHIFT;
+
             ctu_send_frame(can_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
             ctu_wait_frame_start(true, false, DUT_NODE, chn);
             ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
             ctu_get_txt_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_failed, "TX Failed after error!");
@@ -200,11 +205,13 @@ package body tx_status_ftest is
             ctu_set_retr_limit(false, 5, DUT_NODE, chn);
 
             generate_can_frame(can_frame_tx);
+            can_frame_tx.brs := BR_NO_SHIFT;
             ctu_send_frame(can_frame_tx, txt_buf_num, DUT_NODE, chn, frame_sent);
 
             ctu_wait_frame_start(true, false, DUT_NODE, chn);
             ctu_give_txt_cmd(buf_set_abort, txt_buf_num, DUT_NODE, chn);
             ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
             ctu_get_txt_buf_state(txt_buf_num, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_aborted, "TX Aborted after Set Abort!");
