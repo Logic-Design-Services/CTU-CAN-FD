@@ -220,10 +220,12 @@ package body alc_base_id_ftest is
             for K in 1 to N loop
                 info_m ("Loop: " & integer'image(K));
                 ctu_wait_sample_point(DUT_NODE, chn);
-                wait for 20 ns; -- Wait until RX trigger is processed!
+                ctu_wait_input_delay(chn);
 
                 -- Arbitration should have been lost!
                 if (K = N) then
+                    check_can_tx(RECESSIVE, DUT_NODE, "Recessive transmitted!", chn);
+
                     ctu_get_status(stat_2, DUT_NODE, chn);
                     check_m(stat_2.receiver, "DUT receiver!");
                     check_false_m(stat_2.transmitter, "DUT not transmitter!");
@@ -234,19 +236,17 @@ package body alc_base_id_ftest is
                     ctu_get_alc(alc, TEST_NODE, chn);
                     check_m(alc = 0, "Arbitration not lost by Test node!");
 
-                    check_can_tx(RECESSIVE, DUT_NODE, "Recessive transmitted!", chn);
-
                 -- Arbitration should not have been lost yet!
                 else
-                    ctu_get_status(stat_2, DUT_NODE, chn);
-                    check_m(stat_2.transmitter, "DUT transmitter!");
-                    check_false_m(stat_2.receiver, "DUT not receiver!");
-
                     if (K mod 2 = 0) then
                         check_can_tx(RECESSIVE, DUT_NODE, "Recessive transmitted!", chn);
                     else
                         check_can_tx(DOMINANT, DUT_NODE, "Dominant transmitted!", chn);
                     end if;
+
+                    ctu_get_status(stat_2, DUT_NODE, chn);
+                    check_m(stat_2.transmitter, "DUT transmitter!");
+                    check_false_m(stat_2.receiver, "DUT not receiver!");
                 end if;
 
             end loop;
