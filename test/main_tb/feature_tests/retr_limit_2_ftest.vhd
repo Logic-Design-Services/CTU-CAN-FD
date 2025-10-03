@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2021-present Ondrej Ille
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to use, copy, modify, merge, publish, distribute the Component for
 -- educational, research, evaluation, self-interest purposes. Using the
 -- Component for commercial purposes is forbidden unless previously agreed with
 -- Copyright holder.
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,38 +20,38 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 -- -------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2015-2020 MIT License
--- 
+--
 -- Authors:
 --     Ondrej Ille <ondrej.ille@gmail.com>
 --     Martin Jerabek <martin.jerabek01@gmail.com>
--- 
--- Project advisors: 
+--
+-- Project advisors:
 -- 	Jiri Novak <jnovak@fel.cvut.cz>
 -- 	Pavel Pisa <pisa@cmp.felk.cvut.cz>
--- 
+--
 -- Department of Measurement         (http://meas.fel.cvut.cz/)
 -- Faculty of Electrical Engineering (http://www.fel.cvut.cz)
 -- Czech Technical University        (http://www.cvut.cz/)
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to deal in the Component without restriction, including without limitation
 -- the rights to use, copy, modify, merge, publish, distribute, sublicense,
 -- and/or sell copies of the Component, and to permit persons to whom the
 -- Component is furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,11 +59,11 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -74,7 +74,7 @@
 --
 -- @Verifies:
 --  @1. When TXT Buffer from which core transmits is changed between two
---      consecutive transmissions, retransmitt counter is cleared! 
+--      consecutive transmissions, retransmitt counter is cleared!
 --  @2. When there are multiple errors during single frame, retransmitt counter
 --      is incremented only by 1!
 --  @3. When there is Arbitration lost and Error frame during single frame,
@@ -86,12 +86,12 @@
 --
 -- @Test sequence:
 --  @1. Configure retransmitt limit in DUT, enable retransmitt limitation.
---      Enable Test Mode in DUT to be able manipulate with Error counters. 
+--      Enable Test Mode in DUT to be able manipulate with Error counters.
 --      Configure Test node to Acknowledge Forbidden Mode to invoke transmission of
 --      Error frames during test. Configure TXT Buffer 1 in DUT with priority
 --      1, TXT Buffer 2 in DUT with priority 2.
---  @2. Send frame from TXT Buffer 1 by DUT. After 2 transmit attempts, insert
---      frame to TXT Buffer 2 and mark TXT Buffer 2 as ready! Check that
+--  @2. Send frame from TXT Buffer 2 by DUT. After 2 transmit attempts, insert
+--      frame to TXT Buffer 1 and mark TXT Buffer 1 as ready! Check that
 --      retransmitt counter is equal to 2!
 --  @3. Wait until transmission starts by DUT. Check that TXT Buffer 2 was
 --      selected for transmission. Check that retransmitt limit is 0 now
@@ -117,7 +117,7 @@
 --      by both Nodes! Wait until Arbitration field. Check that both Nodes are
 --      transmitters. Wait until Control field. Check that DUT is receiver now
 --      and Test node is still transmitter. Check that Retransmitt counter in Node
---      1 is now 1. 
+--      1 is now 1.
 -- @10. Wait until ACK field. Force ACK field to be low during whole duration
 --      of ACK field. Wait until change in Protocol control, check that
 --      Error frame is being transmitted. Wait until Intermission field, check
@@ -160,7 +160,7 @@ package body retr_limit_2_ftest is
         variable status             :       t_ctu_status;
         variable retr_ctr           :       natural;
     begin
-        
+
         -- Hard coded threshold is enough for this test!
         retr_th := 5;
 
@@ -179,13 +179,13 @@ package body retr_limit_2_ftest is
         ctu_set_mode(mode_2, TEST_NODE, chn);
         mode_1.test := true;
         ctu_set_mode(mode_1, DUT_NODE, chn);
-        
+
         ctu_set_txt_buf_prio(1, 1, DUT_NODE, chn);
         ctu_set_txt_buf_prio(2, 2, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
-        -- @2. Send frame from TXT Buffer 2 by DUT. After 2 transmit attempts,
-        --    insert frame to TXT Buffer 1 and mark TXT Buffer 1 as ready! Check
+        -- @2. Send frame from TXT Buffer 1 by DUT. After 2 transmit attempts,
+        --    insert frame to TXT Buffer 2 and mark TXT Buffer 2 as ready! Check
         --    that retransmitt counter is equal to 2!
         ------------------------------------------------------------------------
         info_m("Step 2: Sending frame by DUT");
@@ -193,12 +193,13 @@ package body retr_limit_2_ftest is
         generate_can_frame(can_frame);
         ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
-        for i in 0 to 1 loop
-            ctu_wait_err_frame(DUT_NODE, chn);
-            ctu_wait_ff(ff_intermission, DUT_NODE, chn);
-        end loop;
-        
+        ctu_wait_err_frame(DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
+
+        ctu_wait_err_frame(DUT_NODE, chn);
         ctu_send_frame(can_frame, 2, DUT_NODE, chn, frame_sent);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
+
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 2, "Retransmitt counter equal to 2!");
         ctu_wait_not_ff(ff_intermission, DUT_NODE, chn);
@@ -213,8 +214,10 @@ package body retr_limit_2_ftest is
         ctu_wait_frame_start(true, false, DUT_NODE, chn);
         ctu_get_txt_buf_state(2, buf_state, DUT_NODE, chn);
         check_m(buf_state = buf_tx_progress, "Buffer 2 selected!");
+
         ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         check_m(buf_state = buf_ready, "Buffer 1 not selected!");
+
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 0, "Retransmitt counter equal to 0!");
 
@@ -230,12 +233,12 @@ package body retr_limit_2_ftest is
         info_m("Step 4: Checking N reatransmissions!");
 
         for i in 0 to retr_th loop
-            
+
             -- Additionally, check intermediate value of retransmitt counter!
             ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
             check_m(retr_ctr = i,
                 "Retransmitt counter equal to number of Errors!");
-            
+
             ctu_wait_frame_sent(DUT_NODE, chn);
             ctu_get_txt_buf_state(2, buf_state, DUT_NODE, chn);
             if (i /= retr_th) then
@@ -313,20 +316,20 @@ package body retr_limit_2_ftest is
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 0,
             "Retransmitt counter cleared after TX Error!");
-        
+
         -- Wait until bus is idle, clear Error counters to avoid going to error
         -- Passive.
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
         err_counters.tx_counter := 0;
         ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
-        
+
         ------------------------------------------------------------------------
         -- @9. Insert frame with CAN ID = 10 to DUT, CAN ID = 9 to Test node.
         --    Send frame by both Nodes! Wait until Arbitration field. Check that
         --    both Nodes are transmitters. Wait until Control field. Check that
         --    DUT is receiver now and Test node is still transmitter. Check that
-        --    Retransmitt counter in DUT is now 1. 
+        --    Retransmitt counter in DUT is now 1.
         ------------------------------------------------------------------------
         info_m("Step 9: Invoking Arbitration!");
 
@@ -337,7 +340,7 @@ package body retr_limit_2_ftest is
         ctu_put_tx_frame(can_frame, 1, TEST_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
         ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
-        
+
         ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
         ctu_wait_ff(ff_arbitration, TEST_NODE, chn);
 
@@ -375,25 +378,25 @@ package body retr_limit_2_ftest is
         release_bus_level(chn);
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame being transmitted!");
-        
+
         ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 1,
             "Retransmitt counter incremented only once during arbitration loss" &
             " and Error frame during single frame!");
-        
+
         ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
         while (buf_state /= buf_failed) loop
             ctu_get_txt_buf_state(1, buf_state, DUT_NODE, chn);
             wait for 1000 ns;
         end loop;
-        
+
         ctu_get_retr_ctr(retr_ctr, DUT_NODE, chn);
         check_m(retr_ctr = 0,
             "Retransmitt counter 0 when TXT Buffer goes to TX Error!");
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
-        
+
   end procedure;
 
 end package body;
