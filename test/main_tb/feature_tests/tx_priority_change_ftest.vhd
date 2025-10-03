@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2021-present Ondrej Ille
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to use, copy, modify, merge, publish, distribute the Component for
 -- educational, research, evaluation, self-interest purposes. Using the
 -- Component for commercial purposes is forbidden unless previously agreed with
 -- Copyright holder.
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,38 +20,38 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 -- -------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2015-2020 MIT License
--- 
+--
 -- Authors:
 --     Ondrej Ille <ondrej.ille@gmail.com>
 --     Martin Jerabek <martin.jerabek01@gmail.com>
--- 
--- Project advisors: 
+--
+-- Project advisors:
 -- 	Jiri Novak <jnovak@fel.cvut.cz>
 -- 	Pavel Pisa <pisa@cmp.felk.cvut.cz>
--- 
+--
 -- Department of Measurement         (http://meas.fel.cvut.cz/)
 -- Faculty of Electrical Engineering (http://www.fel.cvut.cz)
 -- Czech Technical University        (http://www.cvut.cz/)
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to deal in the Component without restriction, including without limitation
 -- the rights to use, copy, modify, merge, publish, distribute, sublicense,
 -- and/or sell copies of the Component, and to permit persons to whom the
 -- Component is furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,11 +59,11 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -85,7 +85,7 @@
 --      are all in ready state.
 --  @3. Select new random priorities and write them to TXT Buffers.
 --  @4. Wait until frame is sent, and check that received frame was sent from
---      new highest priority TXT buffer. 
+--      new highest priority TXT buffer.
 --
 -- @TestInfoEnd
 --------------------------------------------------------------------------------
@@ -112,15 +112,15 @@ package body tx_priority_change_ftest is
     procedure tx_priority_change_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        
+
         -- Assume maximal amount of TXT buffers
         type txt_buffer_priorities is array (1 to 8) of integer range 0 to 7;
-        type can_frame_array_type is array (1 to 8) of t_ctu_frame; 
-        
+        type can_frame_array_type is array (1 to 8) of t_ctu_frame;
+
         variable priorities : txt_buffer_priorities;
         variable txtb_state : t_ctu_txt_buff_state;
 
-        variable can_frame_array_tx :       can_frame_array_type;        
+        variable can_frame_array_tx :       can_frame_array_type;
         variable can_frame_rx       :       t_ctu_frame;
 
         variable highest_prio_buf   :       integer := 4;
@@ -129,8 +129,10 @@ package body tx_priority_change_ftest is
 
         variable ID_1               :       natural := 1;   -- Transmiter
         variable ID_2               :       natural := 2;   -- Receiver
-        
-        variable num_txt_bufs       :       natural;       
+
+        variable num_txt_bufs       :       natural;
+
+        variable bus_timing         :       t_ctu_bit_time_cfg;
     begin
 
         -----------------------------------------------------------------------
@@ -139,7 +141,33 @@ package body tx_priority_change_ftest is
         --     TXT Buffers.
         -----------------------------------------------------------------------
         info_m("Step 1");
-        
+
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
+
+        -- For this test, relaxed timing is needed since the test relies on the
+        -- fact that TXT Buffer validation will finish within one bit!
+        bus_timing.prop_nbt := 10;
+        bus_timing.ph1_nbt := 5;
+        bus_timing.ph2_nbt := 5;
+        bus_timing.sjw_nbt := 5;
+        bus_timing.tq_nbt := 2;
+
+        bus_timing.prop_dbt := 10;
+        bus_timing.ph1_dbt := 5;
+        bus_timing.ph2_dbt := 5;
+        bus_timing.sjw_nbt := 5;
+        bus_timing.tq_dbt := 1;
+
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
+
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
+
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
+
         ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
 
         for i in 1 to num_txt_bufs loop
@@ -165,12 +193,12 @@ package body tx_priority_change_ftest is
         -- have no effect!
         ctu_give_txt_cmd(buf_set_ready, "11111111", DUT_NODE, chn);
         wait for 15 ns;
-        
+
         for i in 1 to num_txt_bufs loop
             ctu_get_txt_buf_state(i, txtb_state, DUT_NODE, chn);
             check_m(txtb_state = buf_ready, "TXT Buffer ready!");
         end loop;
-        
+
         -----------------------------------------------------------------------
         -- @3. Select new random priorities and write them to TXT Buffers.
         -----------------------------------------------------------------------
@@ -181,7 +209,7 @@ package body tx_priority_change_ftest is
             -- Write generated priority TX_PRIORITY
             ctu_set_txt_buf_prio(i, priorities(i), DUT_NODE, chn);
         end loop;
-        
+
         -- Note: From CAN_Wait_sample_point in Step 2, till here, all this
         --       should fit before next sample point (at that point core locks
         --       buffer for transmission). If there are 8 buffers, reading
@@ -193,7 +221,7 @@ package body tx_priority_change_ftest is
 
         -----------------------------------------------------------------------
         -- @4. Wait until frame is sent, and check that received frame was sent
-        --     from new highest priority TXT buffer. 
+        --     from new highest priority TXT buffer.
         -----------------------------------------------------------------------
         info_m("Step 4");
 
