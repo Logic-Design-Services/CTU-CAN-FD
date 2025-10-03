@@ -214,8 +214,7 @@ package body ssp_last_crc_bit_error_ftest is
             for j in 0 to bit_index loop
                 ctu_wait_sync_seg(DUT_NODE, chn);
             end loop;
-
-            wait for 20 ns;
+            wait for 1 ns;
 
             -- If we get up to CRC Delim, we finish, flipping CRC Delimt will not
             -- result in Error frame.
