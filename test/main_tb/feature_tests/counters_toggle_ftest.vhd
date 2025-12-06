@@ -78,7 +78,9 @@
 --      from register map.
 --
 -- @Test sequence:
---  @1. Force ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR to a random value.
+--  @1. Check DUT supports frame counters. If not, the test will skip forcing
+--      of RX_FR_CTR and TX_FR_CTR.
+--      Force ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR to a random value.
 --  @2. Read expected value of ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR
 --      from DUT and check it matches value forced to DUT. Value forced to
 --      DUT obtained from TB scratchpad (placed there by TB).
@@ -116,21 +118,27 @@ package body counters_toggle_ftest is
         variable exp_norm_err_ctr : std_logic_vector(15 downto 0);
         variable exp_data_err_ctr : std_logic_vector(15 downto 0);
 
+        variable hw_cfg           : t_ctu_hw_cfg;
     begin
 
         -----------------------------------------------------------------------
-        -- @1. Force ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR to a random
-        --     value.
+        -- @1. Check DUT supports frame counters. If not, the test will skip
+        --     forcing of RX_FR_CTR and TX_FR_CTR.
+        --     Force ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR to a random value.
         -----------------------------------------------------------------------
         info_m("Step 1: Force ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR");
+
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
 
         rand_logic_vect_v(exp_tx_err_ctr, 0.5);
         rand_logic_vect_v(exp_rx_err_ctr, 0.5);
         rand_logic_vect_v(exp_norm_err_ctr, 0.5);
         rand_logic_vect_v(exp_data_err_ctr, 0.5);
 
-        tb_force.force_tx_counter(exp_tx_err_ctr);
-        tb_force.force_rx_counter(exp_rx_err_ctr);
+        if (hw_cfg.sup_traffic_ctrs) then
+            tb_force.force_tx_counter(exp_tx_err_ctr);
+            tb_force.force_rx_counter(exp_rx_err_ctr);
+        end if;
         tb_force.force_err_norm(exp_norm_err_ctr);
         tb_force.force_err_fd(exp_data_err_ctr);
 
@@ -148,19 +156,23 @@ package body counters_toggle_ftest is
         check_m(r_data(ERR_FD_VAL_H downto ERR_FD_VAL_L) = exp_data_err_ctr,
                 "ERR_FD is OK");
 
-        ctu_read(r_data, TX_FR_CTR_ADR, DUT_NODE, chn);
-        check_m(r_data = exp_tx_err_ctr, "TX_FR_CTR is OK");
+        if (hw_cfg.sup_traffic_ctrs) then
+            ctu_read(r_data, TX_FR_CTR_ADR, DUT_NODE, chn);
+            check_m(r_data = exp_tx_err_ctr, "TX_FR_CTR is OK");
 
-        ctu_read(r_data, RX_FR_CTR_ADR, DUT_NODE, chn);
-        check_m(r_data = exp_rx_err_ctr, "RX_FR_CTR is OK");
+            ctu_read(r_data, RX_FR_CTR_ADR, DUT_NODE, chn);
+            check_m(r_data = exp_rx_err_ctr, "RX_FR_CTR is OK");
+        end if;
 
         -----------------------------------------------------------------------
         -- @3. Release ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR to a random value.
         -----------------------------------------------------------------------
         info_m("Step 3: Release ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR");
 
-        tb_force.release_tx_counter;
-        tb_force.release_rx_counter;
+        if (hw_cfg.sup_traffic_ctrs) then
+            tb_force.release_tx_counter;
+            tb_force.release_rx_counter;
+        end if;
         tb_force.release_err_norm;
         tb_force.release_err_fd;
 
