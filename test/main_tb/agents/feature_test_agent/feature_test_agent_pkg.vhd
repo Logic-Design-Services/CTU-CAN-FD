@@ -505,6 +505,17 @@ package feature_test_agent_pkg is
         TST_TGT_TXT_BUF_8
     );
 
+    type t_ctu_hw_cfg is record
+        rx_buffer_size          : natural range 32 to 4096;
+        txt_buffer_count        : natural range 2 to 8    ;
+        sup_filtA               : boolean                 ;
+        sup_filtB               : boolean                 ;
+        sup_filtC               : boolean                 ;
+        sup_range               : boolean                 ;
+        sup_test_registers      : boolean                 ;
+        sup_traffic_ctrs        : boolean                 ;
+        sup_parity              : boolean                 ;
+    end record;
 
     ----------------------------------------------------------------------------
     ----------------------------------------------------------------------------
@@ -1829,8 +1840,7 @@ package feature_test_agent_pkg is
     --  ff           State to poll on.
     ----------------------------------------------------------------------------
     procedure ctu_wait_sync_seg(
-        constant node               : in    t_feature_node;
-        signal   channel            : inout t_com_channel
+        constant node               : in    t_feature_node;        signal   channel            : inout t_com_channel
     );
 
     ----------------------------------------------------------------------------
@@ -1888,11 +1898,26 @@ package feature_test_agent_pkg is
     -- Arguments:
     --  node            Node which shall be accessed (Test node or DUT).
     --  channel         Channel to use for access
+    --  rv              Return value
     ----------------------------------------------------------------------------
     procedure ctu_measure_bit_duration(
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel;
         variable rv             : out   time
+    );
+
+    ----------------------------------------------------------------------------
+    -- Get HW configuration of CTU CAN FD (generics settings).
+    --
+    -- Arguments:
+    --  node            Node which shall be accessed (Test node or DUT).
+    --  channel         Channel to use for access
+    --  rv              Return value
+    ----------------------------------------------------------------------------
+    procedure ctu_get_hw_config(
+        variable rv             : out   t_ctu_hw_cfg;
+        constant node           : in    t_feature_node;
+        signal   channel        : inout t_com_channel
     );
 
     ----------------------------------------------------------------------------
@@ -4947,6 +4972,79 @@ package body feature_test_agent_pkg is
         ctu_wait_sample_point(node, channel);
         second := now;
         rv := second - first;
+    end procedure;
+
+    ----------------------------------------------------------------------------
+    -- Get HW configuration of CTU CAN FD (generics settings).
+    --
+    -- Arguments:
+    --  rv              Return value
+    --  node            Node which shall be accessed (Test node or DUT).
+    --  channel         Channel to use for access
+    ----------------------------------------------------------------------------
+    procedure ctu_get_hw_config(
+        variable rv             : out   t_ctu_hw_cfg;
+        constant node           : in    t_feature_node;
+        signal   channel        : inout t_com_channel
+    ) is
+        variable rx_buf_state   : t_ctu_rx_buf_state;
+        variable data           : std_logic_vector(31 downto 0);
+    begin
+
+        ctu_get_rx_buf_state(rx_buf_state, node, channel);
+        rv.rx_buffer_size := rx_buf_state.rx_buff_size;
+
+        ctu_get_txt_buf_cnt(rv.txt_buffer_count, node, channel);
+
+        ctu_read(data, FILTER_STATUS_ADR, node, channel);
+
+        if (data(SFA_IND) = '1') then
+            rv.sup_filtA := true;
+        else
+            rv.sup_filtA := false;
+        end if;
+
+        if (data(SFB_IND) = '1') then
+            rv.sup_filtB := true;
+        else
+            rv.sup_filtB := false;
+        end if;
+
+        if (data(SFC_IND) = '1') then
+            rv.sup_filtC := true;
+        else
+            rv.sup_filtC := false;
+        end if;
+
+        if (data(SFR_IND) = '1') then
+            rv.sup_range := true;
+        else
+            rv.sup_range := false;
+        end if;
+
+        ctu_read(data, STATUS_ADR, node, channel);
+
+        report "DATA are: " & to_hstring(data);
+        if (data(STCNT_IND) = '1') then
+            rv.sup_traffic_ctrs := true;
+        else
+            rv.sup_traffic_ctrs := false;
+        end if;
+
+        if (data(STRGS_IND) = '1') then
+            rv.sup_test_registers := true;
+        else
+            rv.sup_test_registers := false;
+        end if;
+
+        if (data(SPRT_IND) = '1') then
+            rv.sup_parity := true;
+        else
+            rv.sup_parity := false;
+        end if;
+
+        report "FFUUUCK " & boolean'image(rv.sup_traffic_ctrs);
+
     end procedure;
 
 end package body;
