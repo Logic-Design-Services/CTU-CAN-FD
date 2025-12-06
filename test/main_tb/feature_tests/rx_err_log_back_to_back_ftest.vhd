@@ -128,7 +128,15 @@ package body rx_err_log_back_to_back_ftest is
         variable rand_bits          : natural;
         variable bit_timing         : t_ctu_bit_time_cfg;
         variable ts_scratchpad      : std_logic_vector(63 downto 0);
+        variable hw_cfg             : t_ctu_hw_cfg;
     begin
+
+        -- Read HW config
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.rx_buffer_size < 64) then
+            info_m("Skipping the test since rx_buffer_size<64");
+            return;
+        end if;
 
         -------------------------------------------------------------------------------------------
         -- @1. Configure DUT to MODE[ERFM] = 1. Disable SSP in DUT. Configure
