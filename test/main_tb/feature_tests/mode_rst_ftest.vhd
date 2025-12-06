@@ -186,12 +186,56 @@ package body mode_rst_ftest is
                  reg       : in    t_memory_reg;
         variable rand_data : inout std_logic_vector;
         variable read_data : inout std_logic_vector;
+        variable hw_cfg    : in    t_ctu_hw_cfg;
         signal channel     : inout t_com_channel
     ) is
     begin
         mask_reg_val(reg, rand_data);
+
+        -- Skip Filter registers if not present
+        if (hw_cfg.sup_filtA = false and reg.address = FILTER_A_MASK_ADR) then
+            info_m("Skipping FILTER_A_MASK_ADR since sup_filtA = false");
+            return;
+        end if;
+
+        if (hw_cfg.sup_filtA = false and reg.address = FILTER_A_VAL_ADR) then
+            info_m("Skipping FILTER_A_VAL_ADR since sup_filtA = false");
+            return;
+        end if;
+
+        if (hw_cfg.sup_filtB = false and reg.address = FILTER_B_MASK_ADR) then
+            info_m("Skipping FILTER_B_MASK_ADR since sup_filtB = false");
+            return;
+        end if;
+
+        if (hw_cfg.sup_filtB = false and reg.address = FILTER_B_VAL_ADR) then
+            info_m("Skipping FILTER_B_VAL_ADR since sup_filtB = false");
+            return;
+        end if;
+
+        if (hw_cfg.sup_filtC = false and reg.address = FILTER_C_MASK_ADR) then
+            info_m("Skipping FILTER_C_MASK_ADR since sup_filtC = false");
+            return;
+        end if;
+
+        if (hw_cfg.sup_filtC = false and reg.address = FILTER_C_VAL_ADR) then
+            info_m("Skipping FILTER_C_VAL_ADR since sup_filtC = false");
+            return;
+        end if;
+
+        if (hw_cfg.sup_range = false and reg.address = FILTER_RAN_LOW_ADR) then
+            info_m("Skipping FILTER_RAN_LOW_ADR since sup_filtB = false");
+            return;
+        end if;
+
+        if (hw_cfg.sup_range = false and reg.address = FILTER_RAN_HIGH_ADR) then
+            info_m("Skipping FILTER_RAN_HIGH_ADR since sup_range = false");
+            return;
+        end if;
+
         info_m ("Testing RW register at address: " & to_hstring(reg.address) &
                 " size: " & integer'image(reg.size));
+
         -- When testing MODE register, exceptions:
         --  1. Do not issue soft reset
         --  2. Keep Test mode always on!
@@ -199,6 +243,7 @@ package body mode_rst_ftest is
             rand_data(RST_IND) := '0';
             rand_data(TSTM_IND) := '1';
         end if;
+
         ctu_write(rand_data, reg.address, DUT_NODE, channel);
         ctu_read(read_data, reg.address, DUT_NODE, channel);
         mask_reg_val(reg, read_data);
@@ -232,6 +277,7 @@ package body mode_rst_ftest is
         variable test_regs_present : boolean;
 
         variable mode           : t_ctu_mode := t_ctu_mode_rst_val;
+        variable hw_cfg         : t_ctu_hw_cfg;
     begin
 
         -----------------------------------------------------------------------
@@ -239,6 +285,8 @@ package body mode_rst_ftest is
         --     Check they were written.
         -----------------------------------------------------------------------
         info_m("Step 1");
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+
         for i in 0 to Control_registers_list'length - 1 loop
             if (Control_registers_list(i).reg_type = reg_read_write) then
 
@@ -251,21 +299,21 @@ package body mode_rst_ftest is
                 ---------------------------------------------------------------
                 if (Control_registers_list(i).size = 8) then
                     test_rw_reg(Control_registers_list(i),
-                                march_data_8, r_data_8, chn);
+                                march_data_8, r_data_8, hw_cfg, chn);
 
                 ---------------------------------------------------------------
                 -- 16 bit register size
                 ---------------------------------------------------------------
                 elsif (Control_registers_list(i).size = 16) then
                     test_rw_reg(Control_registers_list(i),
-                                march_data_16, r_data_16, chn);
+                                march_data_16, r_data_16, hw_cfg, chn);
 
                 ---------------------------------------------------------------
                 -- 32 bit register size
                 ---------------------------------------------------------------
                 elsif (Control_registers_list(i).size = 32) then
                     test_rw_reg(Control_registers_list(i),
-                                march_data_32, r_data_32, chn);
+                                march_data_32, r_data_32, hw_cfg, chn);
 
                 else
                     error_m("Unsupported register size: " &
@@ -385,21 +433,21 @@ package body mode_rst_ftest is
                 ---------------------------------------------------------------
                 if (Control_registers_list(i).size = 8) then
                     test_rw_reg(Control_registers_list(i),
-                                march_data_8, r_data_8, chn);
+                                march_data_8, r_data_8, hw_cfg, chn);
 
                 ---------------------------------------------------------------
                 -- 16 bit register size
                 ---------------------------------------------------------------
                 elsif (Control_registers_list(i).size = 16) then
                     test_rw_reg(Control_registers_list(i),
-                                march_data_16, r_data_16, chn);
+                                march_data_16, r_data_16, hw_cfg, chn);
 
                 ---------------------------------------------------------------
                 -- 32 bit register size
                 ---------------------------------------------------------------
                 elsif (Control_registers_list(i).size = 32) then
                     test_rw_reg(Control_registers_list(i),
-                                march_data_32, r_data_32, chn);
+                                march_data_32, r_data_32, hw_cfg, chn);
 
                 else
                     error_m("Unsupported register size: " &
@@ -540,21 +588,21 @@ package body mode_rst_ftest is
                     -----------------------------------------------------------
                     if (Test_registers_list(i).size = 8) then
                         test_rw_reg(Test_registers_list(i),
-                                    march_data_8, r_data_8, chn);
+                                    march_data_8, r_data_8, hw_cfg, chn);
 
                     -----------------------------------------------------------
                     -- 16 bit register size
                     -----------------------------------------------------------
                     elsif (Test_registers_list(i).size = 16) then
                         test_rw_reg(Test_registers_list(i),
-                                    march_data_16, r_data_16, chn);
+                                    march_data_16, r_data_16, hw_cfg, chn);
 
                     -----------------------------------------------------------
                     -- 32 bit register size
                     -----------------------------------------------------------
                     elsif (Test_registers_list(i).size = 32) then
                         test_rw_reg(Test_registers_list(i),
-                                    march_data_32, r_data_32, chn);
+                                    march_data_32, r_data_32, hw_cfg, chn);
 
                     else
                         error_m("Unsupported register size: " &
@@ -583,21 +631,21 @@ package body mode_rst_ftest is
                     -----------------------------------------------------------
                     if (Test_registers_list(i).size = 8) then
                         test_rw_reg(Test_registers_list(i),
-                                    march_data_8, r_data_8, chn);
+                                    march_data_8, r_data_8, hw_cfg, chn);
 
                     -----------------------------------------------------------
                     -- 16 bit register size
                     -----------------------------------------------------------
                     elsif (Test_registers_list(i).size = 16) then
                         test_rw_reg(Test_registers_list(i),
-                                    march_data_16, r_data_16, chn);
+                                    march_data_16, r_data_16, hw_cfg, chn);
 
                     -----------------------------------------------------------
                     -- 32 bit register size
                     -----------------------------------------------------------
                     elsif (Test_registers_list(i).size = 32) then
                         test_rw_reg(Test_registers_list(i),
-                                    march_data_32, r_data_32, chn);
+                                    march_data_32, r_data_32, hw_cfg, chn);
 
                     else
                         error_m("Unsupported register size: " &
