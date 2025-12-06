@@ -143,7 +143,15 @@ package body rx_counter_ftest is
         variable rx_buf_state        :       t_ctu_rx_buf_state;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable deposit_vect       :       std_logic_vector(31 downto 0);
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
+
+        -- Read HW config
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_traffic_ctrs = false) then
+            info_m("Skipping the test since sup_traffic_ctrs=false");
+            return;
+        end if;
 
         ------------------------------------------------------------------------
         -- @1. Read TX Counter from DUT. Set One-shot mode (no retransmission)
