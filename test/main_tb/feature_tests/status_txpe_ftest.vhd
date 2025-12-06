@@ -167,7 +167,15 @@ package body status_txpe_ftest is
         variable txt_buf_state      :     t_ctu_txt_buff_state;
         variable prt_en             :     std_logic;
         variable num_txt_bufs       :     natural;
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
+
+        -- Read HW config
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_parity = false) then
+            info_m("Skipping the test since sup_parity=false");
+            return;
+        end if;
 
         -----------------------------------------------------------------------
         -- @1. Set DUT to test mode.

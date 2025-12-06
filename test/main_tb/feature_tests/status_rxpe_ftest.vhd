@@ -139,7 +139,15 @@ package body status_rxpe_ftest is
         variable corrupt_bit_index  :     integer;
         variable corrupt_insert     :     std_logic;
         variable prt_en             :     std_logic;
+        variable hw_cfg             :     t_ctu_hw_cfg;
     begin
+
+        -- Read HW config
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_parity = false) then
+            info_m("Skipping the test since sup_parity=false");
+            return;
+        end if;
 
         -----------------------------------------------------------------------
         -- @1. Set DUT to test mode.
