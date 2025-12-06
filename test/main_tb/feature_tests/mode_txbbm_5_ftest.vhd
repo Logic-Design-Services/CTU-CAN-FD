@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2021-present Ondrej Ille
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to use, copy, modify, merge, publish, distribute the Component for
 -- educational, research, evaluation, self-interest purposes. Using the
 -- Component for commercial purposes is forbidden unless previously agreed with
 -- Copyright holder.
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,38 +20,38 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 -- -------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2015-2020 MIT License
--- 
+--
 -- Authors:
 --     Ondrej Ille <ondrej.ille@gmail.com>
 --     Martin Jerabek <martin.jerabek01@gmail.com>
--- 
--- Project advisors: 
+--
+-- Project advisors:
 -- 	Jiri Novak <jnovak@fel.cvut.cz>
 -- 	Pavel Pisa <pisa@cmp.felk.cvut.cz>
--- 
+--
 -- Department of Measurement         (http://meas.fel.cvut.cz/)
 -- Faculty of Electrical Engineering (http://www.fel.cvut.cz)
 -- Czech Technical University        (http://www.cvut.cz/)
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to deal in the Component without restriction, including without limitation
 -- the rights to use, copy, modify, merge, publish, distribute, sublicense,
 -- and/or sell copies of the Component, and to permit persons to whom the
 -- Component is furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,11 +59,11 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ package body mode_txbbm_5_ftest is
         variable frames_equal       :       boolean := false;
         variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
-        
+
         variable command_1          :       t_ctu_command := t_ctu_command_rst_val;
 
         variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
@@ -147,7 +147,7 @@ package body mode_txbbm_5_ftest is
         variable status_1           :       t_ctu_status;
 
         variable rwcnt              :       natural;
-
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
 
         -----------------------------------------------------------------------
@@ -161,6 +161,12 @@ package body mode_txbbm_5_ftest is
         ctu_set_mode(mode_1, DUT_NODE, chn);
 
         ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
+
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_parity = false) then
+            info_m("Skipping the test since sup_parity = false -> Can't invoke Parity Error");
+            return;
+        end if;
 
         -----------------------------------------------------------------------
         -- @2. Loop 10 times:
@@ -201,7 +207,7 @@ package body mode_txbbm_5_ftest is
 
             -- Enable test access
             ctu_set_tst_mem_access(true, DUT_NODE, chn);
-            
+
             -- Read, flip, and write back in "original" TXT Buffer
             rand_int_v(31, corrupt_bit_index);
             rand_int_v(3, corrupt_wrd_index);
@@ -217,7 +223,7 @@ package body mode_txbbm_5_ftest is
             ctu_read_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
             r_data(corrupt_bit_index) := not r_data(corrupt_bit_index);
             ctu_write_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
- 
+
             -- Disable test mem access
             ctu_set_tst_mem_access(false, DUT_NODE, chn);
 
@@ -244,10 +250,10 @@ package body mode_txbbm_5_ftest is
             -----------------------------------------------------------------------
             -- @2.4 Check that STATUS[TXPE] and STATUS[TXDPE] are set. Issue
             --      COMMAND[CTXPE] and COMAMND[TXDPE] and check that STATUS[TXPE]
-            --      and STATUS[TXDPE] has been cleared. 
+            --      and STATUS[TXDPE] has been cleared.
             -----------------------------------------------------------------------
             info_m("Step 2.4");
-            
+
             -- Check and clear STATUS[TXPE]
             info_m("    Check 1");
             ctu_get_status(status_1, DUT_NODE, chn);

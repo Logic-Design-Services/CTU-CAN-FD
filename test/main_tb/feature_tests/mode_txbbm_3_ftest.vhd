@@ -147,6 +147,7 @@ package body mode_txbbm_3_ftest is
         variable r_data             :       std_logic_vector(31 downto 0);
         variable status_1           :       t_ctu_status;
 
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
 
         -----------------------------------------------------------------------
@@ -160,6 +161,12 @@ package body mode_txbbm_3_ftest is
         ctu_set_mode(mode_1, DUT_NODE, chn);
 
         ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
+
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_parity = false) then
+            info_m("Skipping the test since sup_parity = false -> Can't invoke Parity Error");
+            return;
+        end if;
 
         -----------------------------------------------------------------------
         -- @2. Loop 5 times:
