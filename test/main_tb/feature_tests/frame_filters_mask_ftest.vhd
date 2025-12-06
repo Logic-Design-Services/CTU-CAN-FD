@@ -153,7 +153,7 @@ package body frame_filters_mask_ftest is
         variable tmp_base           :       std_logic_vector(10 downto 0);
         variable tmp_ext            :       std_logic_vector(28 downto 0);
 
-        variable hw_cfg           : t_ctu_hw_cfg;
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
 
         -------------------------------------------------------------------------------------------
