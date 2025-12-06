@@ -78,12 +78,13 @@
 --      format / Identifier type.
 --
 -- @Test sequence:
---  @1. Loop through all combinations of FILTER_CONTROL on each of the filters.
+--  @1. Read HW configuration to check if HW filters are present.
+--  @2. Loop through all combinations of FILTER_CONTROL on each of the filters.
 --      For bit filters loop through different masks (random, checkerboard, etc...)
---      @1.1 Generate Random frame and send it by Test node. Wait until the
+--      @2.1 Generate Random frame and send it by Test node. Wait until the
 --           frame is received by DUT Node.
---      @1.2 Pre-compute the expected result of filtering.
---      @1.3 Check that if filter should match the frame, the frame is stored
+--      @2.2 Pre-compute the expected result of filtering.
+--      @2.3 Check that if filter should match the frame, the frame is stored
 --           in RX Buffer of DUT Node. Read the frame from RX Buffer.
 --
 -- @TestInfoEnd
@@ -151,16 +152,21 @@ package body frame_filters_mask_ftest is
 
         variable tmp_base           :       std_logic_vector(10 downto 0);
         variable tmp_ext            :       std_logic_vector(28 downto 0);
+
+        variable hw_cfg           : t_ctu_hw_cfg;
     begin
 
         -------------------------------------------------------------------------------------------
-        -- @1. Loop through all combinations of FILTER_CONTROL on each of the filters.
+        -- @2. Loop through all combinations of FILTER_CONTROL on each of the filters.
         -------------------------------------------------------------------------------------------
-        info_m("Step 1");
+        info_m("Step 2");
 
         -- Filters Need to be globally enabled, otherwise they are ignored.
         mode_1.acceptance_filter := true;
         ctu_set_mode(mode_1, DUT_NODE, chn);
+
+        -- Read HW configuration
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
 
         -- Disable Range filter here
         range_cfg.acc_CAN_2_0 := false;
@@ -169,6 +175,23 @@ package body frame_filters_mask_ftest is
         ctu_set_ran_filter(range_cfg, DUT_NODE, chn);
 
         for filter in t_ctu_mask_filt_kind'left to t_ctu_mask_filt_kind'right loop
+
+            -- Skip the filter if not present
+            if (filter = filter_A and hw_cfg.sup_filtA = false) then
+                info_m("Skipping filter A since it is not present in HW");
+                next;
+            end if;
+
+            if (filter = filter_B and hw_cfg.sup_filtB = false) then
+                info_m("Skipping filter B since it is not present in HW");
+                next;
+            end if;
+
+            if (filter = filter_C and hw_cfg.sup_filtC = false) then
+                info_m("Skipping filter C since it is not present in HW");
+                next;
+            end if;
+
             for ident_type in BASE to EXTENDED loop
                 for can_2_0_en in boolean'left to boolean'right loop
                     for can_fd_en in boolean'left to boolean'right loop
@@ -203,10 +226,10 @@ package body frame_filters_mask_ftest is
                             ctu_set_mask_filter(filter, filt_cfg, DUT_NODE, chn);
 
                             -------------------------------------------------------------------------------
-                            -- @1.1 Generate Random frame and send it by Test node. Wait until the
+                            -- @2.1 Generate Random frame and send it by Test node. Wait until the
                             --      frame is received by DUT Node.
                             -------------------------------------------------------------------------------
-                            info_m("Step 1.1");
+                            info_m("Step 2.1");
 
                             generate_can_frame(can_tx_frame);
                             ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
@@ -214,9 +237,9 @@ package body frame_filters_mask_ftest is
                             ctu_wait_bus_idle(DUT_NODE, chn);
 
                             -------------------------------------------------------------------------------
-                            -- @1.2 Pre-compute the expected result of filtering.
+                            -- @2.2 Pre-compute the expected result of filtering.
                             -------------------------------------------------------------------------------
-                            info_m("Step 1.2");
+                            info_m("Step 2.2");
 
                             should_pass := true;
 
@@ -249,10 +272,10 @@ package body frame_filters_mask_ftest is
                             end if;
 
                             -------------------------------------------------------------------------------
-                            -- @1.3 Check that if filter should match the frame, the frame is stored
+                            -- @2.3 Check that if filter should match the frame, the frame is stored
                             --      in RX Buffer of DUT Node. Read the frame from RX Buffer.
                             -------------------------------------------------------------------------------
-                            info_m("Step 1.3");
+                            info_m("Step 2.3");
 
                             ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
                             if (should_pass) then
