@@ -83,8 +83,8 @@ def set_elab_options(vu, tgt, tgt_name):
     nvc_glob_flags.append('--load=main_tb/iso-16845-compliance-tests/build/Debug/src/cosimulation/libNVC_VHPI_COSIM_LIB.so')
 
     # Disable IEEE warnings for GLS sims
-    if ("gate" in tgt_name):
-        nvc_glob_flags.append("--ieee-warnings=off")
+    #if ("gate" in tgt_name):
+    nvc_glob_flags.append("--ieee-warnings=off")
 
     nvc_glob_flags.append("--messages=compact")
 
