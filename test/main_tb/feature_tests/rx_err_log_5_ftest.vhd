@@ -116,9 +116,17 @@ package body rx_err_log_5_ftest is
         variable can_frame          : t_ctu_frame;
         variable err_frame          : t_ctu_frame;
         variable corrupt_bit_index  : integer;
-        variable rx_buf_state        : t_ctu_rx_buf_state;
+        variable rx_buf_state       : t_ctu_rx_buf_state;
         variable r_data             : std_logic_vector(31 downto 0);
+        variable hw_cfg             : t_ctu_hw_cfg;
     begin
+
+        -- Read HW config
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_parity = false or hw_cfg.sup_test_registers = false) then
+            info_m("Skipping the test since sup_parity=false or sup_test_registers=false");
+            return;
+        end if;
 
         -------------------------------------------------------------------------------------------
         --  @1. Configure DUT to MODE[ERFM] = 1, enable Test mode and Parity in DUT Node.
