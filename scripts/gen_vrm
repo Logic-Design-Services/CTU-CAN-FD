@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 gen_vrm.py --configPath=../test/tlf_fast_asic.yml
+python3 gen_vrm.py --configPath=../test/tlf_feature_and_reference.yml
