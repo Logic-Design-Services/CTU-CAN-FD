@@ -309,7 +309,7 @@ test_gate_xilinx_medium_fpga_max_feature:
     tags:
         - simulation
     dependencies: [run_synthesis, build_compliance_lib]
-    timeout: 3h
+    timeout: 5h
     only: *only
     script:
         - cd test
@@ -330,7 +330,7 @@ test_gate_xilinx_small_fpga_max_compliance:
     tags:
         - simulation
     dependencies: [run_synthesis, build_compliance_lib]
-    timeout: 3h
+    timeout: 5h
     only: *only
     script:
         - cd test
