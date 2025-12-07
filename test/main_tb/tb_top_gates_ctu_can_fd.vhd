@@ -163,7 +163,7 @@ architecture tb of tb_top_ctu_can_fd is
    signal can_rx        : std_logic;
 
    signal timestamp     : std_logic_vector(63 DOWNTO 0);
-   signal test_probe    : t_ctu_fd_test_probe;
+   signal test_probe    : t_ctu_can_fd_test_probe;
 
    signal scan_enable   : std_logic;
 
@@ -234,7 +234,7 @@ architecture tb of tb_top_ctu_can_fd is
        can_tx              : in    std_logic;
        can_rx              : out   std_logic;
 
-       test_probe          : in    t_ctu_fd_test_probe;
+       test_probe          : in    t_ctu_can_fd_test_probe;
        timestamp           : out   std_logic_vector(63 DOWNTO 0)
     );
     end component;
