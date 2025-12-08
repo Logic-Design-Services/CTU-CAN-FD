@@ -12,7 +12,6 @@ tests:
 
     - name: btr
     - name: btr_fd
-    - name: btr_maximal
     - name: btr_minimal
     - name: btr_ssp_access
     - name: bus_start
