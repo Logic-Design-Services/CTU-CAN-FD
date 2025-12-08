@@ -151,6 +151,12 @@ package body mode_txbbm_4_ftest is
         variable hw_cfg             :       t_ctu_hw_cfg;
     begin
 
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_parity = false) then
+            info_m("Skipping the test since sup_parity = false -> Can't invoke Parity Error");
+            return;
+        end if;
+
         -----------------------------------------------------------------------
         -- @1. Set TXT Buffer backup mode and Test mode in DUT.
         -----------------------------------------------------------------------
@@ -162,12 +168,6 @@ package body mode_txbbm_4_ftest is
         ctu_set_mode(mode_1, DUT_NODE, chn);
 
         ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
-
-        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
-        if (hw_cfg.sup_parity = false) then
-            info_m("Skipping the test since sup_parity = false -> Can't invoke Parity Error");
-            return;
-        end if;
 
         -----------------------------------------------------------------------
         -- @2. Loop 2 times for each TXT Buffer:

@@ -127,7 +127,14 @@ package body txt_buffer_transitions_4_ftest is
         variable corrupt_wrd_index  :       natural;
         variable corrupt_bit_index  :       natural;
         variable r_data             :       std_logic_vector(31 downto 0);
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
+
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_parity = false) then
+            info_m("Skipping the test since sup_parity = false -> Can't invoke Parity Error");
+            return;
+        end if;
 
         -------------------------------------------------------------------------------------------
         -- @1. Loop for all TXT Buffers and incrementing wait times within a bit:
