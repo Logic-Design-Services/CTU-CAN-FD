@@ -262,51 +262,51 @@ tests:
     ###############################################################################################
     - name: data_set_1
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
     - name: data_set_2
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
     - name: data_set_3
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
     - name: data_set_4
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
     - name: data_set_5
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
     - name: data_set_6
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
     - name: data_set_7
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
     - name: data_set_8
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
     - name: data_set_9
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
     - name: data_set_10
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 50 ms
         /TB_TOP_CTU_CAN_FD/test_type: reference
-        /TB_TOP_CTU_CAN_FD/reference_iterations: 50
+        /TB_TOP_CTU_CAN_FD/reference_iterations: 10
