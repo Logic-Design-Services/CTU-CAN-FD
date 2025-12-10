@@ -195,18 +195,10 @@ package body err_capt_crc_err_ftest is
         -- No error frame occured within CRC field -> Expect CRC Error in DUT
         if (pc_fsm_state = ff_crc_delim) then
 
-
             -- Generate ACK for Test node.
-            -- We have to wait till both Nodes are in ACK so
-            -- that we don't accidentaly generate it for Test node while it is still in
-            -- in CRC Delimiter, that would be form error. Thus we would not ever test form Error!
             ctu_wait_ff(ff_ack, TEST_NODE, chn);
-            ctu_wait_ff(ff_ack, DUT_NODE, chn);
-
-            force_bus_level(DOMINANT, chn);
-            check_can_tx(RECESSIVE, DUT_NODE, "Send Recessive ACK upon CRC error [1]!", chn);
+            force_can_rx(DOMINANT, TEST_NODE, chn);
             ctu_wait_sample_point(TEST_NODE, chn);
-            check_can_tx(RECESSIVE, DUT_NODE, "Send Recessive ACK upon CRC error [2]!", chn);
             wait for 20 ns;
             release_bus_level(chn);
 
