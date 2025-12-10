@@ -270,7 +270,21 @@ package body rx_err_log_3_ftest is
         mode_2.self_test := true;
         ctu_set_mode(mode_2, TEST_NODE, chn);
 
+        -- Hard-code the frame to avoid randomization
+        -- This is because we want to invoke CRC_ERROR. We achieve that by flipping a bit
+        -- in the CRC. However, if the frame was random, this could cause that stuff bit
+        -- is dropped (if a sequence of equal bits is interrupte)!
+        -- This would lead to different length of CRC field in the Test Node (transmitter).
+        -- If the last bit of Test Nodes CRC field was dominant, then this would span
+        -- to CRC Delimiter in DUT due to DUTs CRC being one bit shorter.
+        -- Thus DUT would detect form error in CRC delimiter instead of CRC error!
         generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
+        can_frame.ident_type := BASE;
+        can_frame.identifier := 0;
+        can_frame.data_length := 1;
+        can_frame.data(0) := x"AA";
+
         ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
         ctu_wait_ff(ff_crc, DUT_NODE, chn);
 
@@ -295,9 +309,7 @@ package body rx_err_log_3_ftest is
         ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '1', "FRAME_FORMAT_W[IVLD] = 1");
-        check_m(err_frame.erf_type = ERC_STUF_ERR or err_frame.erf_type = ERC_CRC_ERR,
-                    "FRAME_FORMAT_W[ERF_TYPE] = ERC_STUF_ERR or " &
-                    "FRAME_FORMAT_W[ERF_TYPE] = ERC_CRC_ERR");
+        check_m(err_frame.erf_type = ERC_CRC_ERR, "FRAME_FORMAT_W[ERF_TYPE] = ERC_CRC_ERR");
 
         ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
         check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
