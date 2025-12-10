@@ -233,6 +233,27 @@ test_rtl_medium_fpga_max_feature:
             junit: test/tb_rtl_medium_fpga_max_feature.xml
     allow_failure: true
 
+test_rtl_medium_asic_typ_feature:
+    stage: test_rtl_feature
+    tags:
+        - simulation
+    only: *only
+    timeout: 3h
+    script:
+        - cd test
+        - make tb_rtl_medium_asic_typ_feature
+        - make tb_rtl_medium_asic_typ_feature_logs
+    artifacts:
+        when: always
+        paths:
+            - test/tb_rtl_medium_asic_typ_feature.xml
+            - test/tb_rtl_medium_asic_typ_feature_summary
+            - test/tb_rtl_medium_asic_typ_feature.sim_time
+            - test/vunit_out/code_coverage
+        reports:
+            junit: test/tb_rtl_medium_asic_typ_feature.xml
+    allow_failure: true
+
 
 ###############################################################################
 # Test RTL compliance stage
