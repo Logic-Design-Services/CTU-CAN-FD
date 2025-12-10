@@ -2,6 +2,7 @@ image: registry.gitlab.com/canfd/server-tools/ghdl:latest
 
 variables:
     GIT_SUBMODULE_STRATEGY: recursive
+    GIT_STRATEGY: clone
 
 before_script:
     - "export PATH=/opt/ghdl/bin:/opt/nvc/bin:$PATH"
