@@ -190,6 +190,7 @@ package body rx_err_log_back_to_back_ftest is
         ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
         ctu_wait_ff(ff_crc, DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
 
         flip_bus_level(chn);
 
