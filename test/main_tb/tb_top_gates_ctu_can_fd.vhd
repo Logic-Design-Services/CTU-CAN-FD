@@ -101,6 +101,8 @@ entity tb_top_ctu_can_fd is
         iterations              : natural := 1;
         timeout                 : string := "10 ms";
 
+        is_force_supported      : boolean := false;
+
         -- Reference test iterations
         reference_iterations    : natural range 1 to 1000 := 10;
 
@@ -373,6 +375,7 @@ begin
         info("  Reference test iterations: " & integer'image(reference_iterations));
         info("  Timeout: " & timeout);
         info("  Finish on error: " & integer'image(finish_on_error));
+        info("  Force support: " & boolean'image(is_force_supported));
         info("");
         info("DUT configuration:");
         info("  RX buffer size: " & integer'image(rx_buffer_size));
@@ -406,6 +409,8 @@ begin
 
         show(get_logger(default_checker), display_handler, pass);
         set_log_verbosity(log_level, global_verbosity);
+
+        tb_force.set_force_supported(is_force_supported);
 
         for i in 1 to iterations loop
             info("***************************************************************");

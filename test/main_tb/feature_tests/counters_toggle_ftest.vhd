@@ -128,6 +128,11 @@ package body counters_toggle_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1: Force ERR_NORM, ERR_FD, RX_FR_CTR and TX_FR_CTR");
 
+        if (not tb_force.is_force_supported) then
+            info_m("Force is not supported in this TB/DUT configuraiton -> skipping the test");
+            return;
+        end if;
+
         ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
 
         rand_logic_vect_v(exp_tx_err_ctr, 0.5);
