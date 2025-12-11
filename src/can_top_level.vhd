@@ -297,7 +297,7 @@ architecture rtl of can_top_level is
     signal txtb_state                   :    t_txt_bufs_state(txt_buffer_count - 1 downto 0);
 
     -- TXT Buffer is operating in Backup buffer
-    signal txtb_is_bb                   :    std_logic_vector(txt_buffer_count - 1 downto 0);
+    signal txtb_is_bb                   :    std_logic_vector(txt_buffer_count / 2 - 1 downto 0);
 
     -----------------------------------------------------------------------------------------------
     -- RX Buffer <-> CAN Core Interface
@@ -828,67 +828,134 @@ begin
 
     txt_buf_comp_gen : for i in 0 to txt_buffer_count - 1 generate
     begin
-        txt_buffer_inst : entity ctu_can_fd_rtl.txt_buffer
-        generic map (
-            G_TXT_BUFFER_COUNT          => txt_buffer_count,
-            G_ID                        => i,
-            G_TECHNOLOGY                => target_technology,
-            G_SUP_PARITY                => sup_parity,
-            G_RESET_TXT_BUF_RAM         => reset_buffer_rams
-        )
-        port map (
-            -- Clock and Asynchronous reset
-            clk_sys                     => clk_sys,                                     -- IN
-            res_n                       => res_core_n,                                  -- IN
 
-            -- DFT support
-            scan_enable                 => scan_enable,                                 -- IN
+        txt_buf_even_gen : if ((i mod 2) = 0) generate
+            txt_buffer_even_inst : entity ctu_can_fd_rtl.txt_buffer_even
+            generic map (
+                G_TXT_BUFFER_COUNT          => txt_buffer_count,
+                G_ID                        => i,
+                G_TECHNOLOGY                => target_technology,
+                G_SUP_PARITY                => sup_parity,
+                G_RESET_TXT_BUF_RAM         => reset_buffer_rams
+            )
+            port map (
+                -- Clock and Asynchronous reset
+                clk_sys                     => clk_sys,                                     -- IN
+                res_n                       => res_core_n,                                  -- IN
 
-            -- Memory Registers Interface
-            mr_mode_bmm                 => mr_ctrl_out.mode_bmm,                        -- IN
-            mr_mode_rom                 => mr_ctrl_out.mode_rom,                        -- IN
-            mr_mode_txbbm               => mr_ctrl_out.mode_txbbm,                      -- IN
-            mr_settings_tbfbo           => mr_ctrl_out.settings_tbfbo,                  -- IN
-            mr_settings_pchke           => mr_ctrl_out.settings_pchke,                  -- IN
-            mr_tx_command_txce          => mr_ctrl_out.tx_command_txce,                 -- IN
-            mr_tx_command_txcr          => mr_ctrl_out.tx_command_txcr,                 -- IN
-            mr_tx_command_txca          => mr_ctrl_out.tx_command_txca,                 -- IN
-            mr_tx_command_txbi          => mr_tx_command_txbi(i),                       -- IN
+                -- DFT support
+                scan_enable                 => scan_enable,                                 -- IN
 
-            mr_tst_control_tmaena       => mr_tst_out.tst_control_tmaena,               -- IN
-            mr_tst_control_twrstb       => mr_tst_out.tst_control_twrstb,               -- IN
-            mr_tst_dest_tst_addr        => mr_tst_out.tst_dest_tst_addr(4 downto 0),    -- IN
-            mr_tst_dest_tst_mtgt        => mr_tst_out.tst_dest_tst_mtgt,                -- IN
-            mr_tst_wdata_tst_wdata      => mr_tst_out.tst_wdata_tst_wdata,              -- IN
-            mr_tst_rdata_tst_rdata      => mr_tst_rdata_tst_rdata_txb(i),               -- OUT
+                -- Memory Registers Interface
+                mr_mode_bmm                 => mr_ctrl_out.mode_bmm,                        -- IN
+                mr_mode_rom                 => mr_ctrl_out.mode_rom,                        -- IN
+                mr_mode_txbbm               => mr_ctrl_out.mode_txbbm,                      -- IN
+                mr_settings_tbfbo           => mr_ctrl_out.settings_tbfbo,                  -- IN
+                mr_settings_pchke           => mr_ctrl_out.settings_pchke,                  -- IN
+                mr_tx_command_txce          => mr_ctrl_out.tx_command_txce,                 -- IN
+                mr_tx_command_txcr          => mr_ctrl_out.tx_command_txcr,                 -- IN
+                mr_tx_command_txca          => mr_ctrl_out.tx_command_txca,                 -- IN
+                mr_tx_command_txbi          => mr_tx_command_txbi(i),                       -- IN
 
-            txtb_port_a_data_in         => txtb_port_a_data_in,                         -- IN
-            txtb_port_a_parity          => txtb_port_a_parity,                          -- IN
-            txtb_port_a_address         => txtb_port_a_address,                         -- IN
-            txtb_port_a_cs              => txtb_port_a_cs(i),                           -- IN
-            txtb_port_a_be              => txtb_port_a_be,                              -- IN
+                mr_tst_control_tmaena       => mr_tst_out.tst_control_tmaena,               -- IN
+                mr_tst_control_twrstb       => mr_tst_out.tst_control_twrstb,               -- IN
+                mr_tst_dest_tst_addr        => mr_tst_out.tst_dest_tst_addr(4 downto 0),    -- IN
+                mr_tst_dest_tst_mtgt        => mr_tst_out.tst_dest_tst_mtgt,                -- IN
+                mr_tst_wdata_tst_wdata      => mr_tst_out.tst_wdata_tst_wdata,              -- IN
+                mr_tst_rdata_tst_rdata      => mr_tst_rdata_tst_rdata_txb(i),               -- OUT
 
-            txtb_state                  => txtb_state(i),                               -- OUT
-            txtb_is_bb                  => txtb_is_bb(i),                               -- IN
+                txtb_port_a_data_in         => txtb_port_a_data_in,                         -- IN
+                txtb_port_a_parity          => txtb_port_a_parity,                          -- IN
+                txtb_port_a_address         => txtb_port_a_address,                         -- IN
+                txtb_port_a_cs              => txtb_port_a_cs(i),                           -- IN
+                txtb_port_a_be              => txtb_port_a_be,                              -- IN
 
-            -- Interrupt Manager Interface
-            txtb_hw_cmd_int             => txtb_hw_cmd_int(i),                          -- OUT
+                txtb_state                  => txtb_state(i),                               -- OUT
 
-            -- CAN Core and TX Arbitrator Interface
-            txtb_hw_cmd                 => txtb_hw_cmd,                                 -- IN
-            txtb_hw_cmd_cs              => txtb_hw_cmd_cs(i),                           -- IN
-            txtb_port_b_data_out        => txtb_port_b_data_out(i),                     -- OUT
-            txtb_port_b_address         => txtb_port_b_address,                         -- IN
-            txtb_port_b_clk_en          => txtb_port_b_clk_en,                          -- IN
-            is_bus_off                  => cc_stat.is_bus_off,                          -- IN
-            txtb_available              => txtb_available(i),                           -- OUT
-            txtb_allow_bb               => txtb_allow_bb(i),                            -- OUT
-            txtb_parity_check_valid     => txtb_parity_check_valid,                     -- IN
-            txtb_parity_mismatch        => txtb_parity_mismatch(i),                     -- OUT
-            txtb_parity_error_valid     => txtb_parity_error_valid(i),                  -- OUT
-            txtb_bb_parity_error        => txtb_bb_parity_error(i),                     -- OUT
-            txtb_index_muxed            => txtb_index_muxed                             -- IN
-        );
+                -- Interrupt Manager Interface
+                txtb_hw_cmd_int             => txtb_hw_cmd_int(i),                          -- OUT
+
+                -- CAN Core and TX Arbitrator Interface
+                txtb_hw_cmd                 => txtb_hw_cmd,                                 -- IN
+                txtb_hw_cmd_cs              => txtb_hw_cmd_cs(i),                           -- IN
+                txtb_port_b_data_out        => txtb_port_b_data_out(i),                     -- OUT
+                txtb_port_b_address         => txtb_port_b_address,                         -- IN
+                txtb_port_b_clk_en          => txtb_port_b_clk_en,                          -- IN
+                is_bus_off                  => cc_stat.is_bus_off,                          -- IN
+                txtb_available              => txtb_available(i),                           -- OUT
+                txtb_allow_bb               => txtb_allow_bb(i),                            -- OUT
+                txtb_parity_check_valid     => txtb_parity_check_valid,                     -- IN
+                txtb_parity_mismatch        => txtb_parity_mismatch(i),                     -- OUT
+                txtb_parity_error_valid     => txtb_parity_error_valid(i),                  -- OUT
+                txtb_bb_parity_error        => txtb_bb_parity_error(i),                     -- OUT
+                txtb_index_muxed            => txtb_index_muxed                             -- IN
+            );
+        end generate;
+
+        txt_buf_odd_gen : if ((i mod 2) = 1) generate
+            txt_buffer_odd_inst : entity ctu_can_fd_rtl.txt_buffer_odd
+            generic map (
+                G_TXT_BUFFER_COUNT          => txt_buffer_count,
+                G_ID                        => i,
+                G_TECHNOLOGY                => target_technology,
+                G_SUP_PARITY                => sup_parity,
+                G_RESET_TXT_BUF_RAM         => reset_buffer_rams
+            )
+            port map (
+                -- Clock and Asynchronous reset
+                clk_sys                     => clk_sys,                                     -- IN
+                res_n                       => res_core_n,                                  -- IN
+
+                -- DFT support
+                scan_enable                 => scan_enable,                                 -- IN
+
+                -- Memory Registers Interface
+                mr_mode_bmm                 => mr_ctrl_out.mode_bmm,                        -- IN
+                mr_mode_rom                 => mr_ctrl_out.mode_rom,                        -- IN
+                mr_mode_txbbm               => mr_ctrl_out.mode_txbbm,                      -- IN
+                mr_settings_tbfbo           => mr_ctrl_out.settings_tbfbo,                  -- IN
+                mr_settings_pchke           => mr_ctrl_out.settings_pchke,                  -- IN
+                mr_tx_command_txce          => mr_ctrl_out.tx_command_txce,                 -- IN
+                mr_tx_command_txcr          => mr_ctrl_out.tx_command_txcr,                 -- IN
+                mr_tx_command_txca          => mr_ctrl_out.tx_command_txca,                 -- IN
+                mr_tx_command_txbi          => mr_tx_command_txbi(i),                       -- IN
+
+                mr_tst_control_tmaena       => mr_tst_out.tst_control_tmaena,               -- IN
+                mr_tst_control_twrstb       => mr_tst_out.tst_control_twrstb,               -- IN
+                mr_tst_dest_tst_addr        => mr_tst_out.tst_dest_tst_addr(4 downto 0),    -- IN
+                mr_tst_dest_tst_mtgt        => mr_tst_out.tst_dest_tst_mtgt,                -- IN
+                mr_tst_wdata_tst_wdata      => mr_tst_out.tst_wdata_tst_wdata,              -- IN
+                mr_tst_rdata_tst_rdata      => mr_tst_rdata_tst_rdata_txb(i),               -- OUT
+
+                txtb_port_a_data_in         => txtb_port_a_data_in,                         -- IN
+                txtb_port_a_parity          => txtb_port_a_parity,                          -- IN
+                txtb_port_a_address         => txtb_port_a_address,                         -- IN
+                txtb_port_a_cs              => txtb_port_a_cs(i),                           -- IN
+                txtb_port_a_be              => txtb_port_a_be,                              -- IN
+
+                txtb_state                  => txtb_state(i),                               -- OUT
+                txtb_is_bb                  => txtb_is_bb(i / 2),                           -- IN
+
+                -- Interrupt Manager Interface
+                txtb_hw_cmd_int             => txtb_hw_cmd_int(i),                          -- OUT
+
+                -- CAN Core and TX Arbitrator Interface
+                txtb_hw_cmd                 => txtb_hw_cmd,                                 -- IN
+                txtb_hw_cmd_cs              => txtb_hw_cmd_cs(i),                           -- IN
+                txtb_port_b_data_out        => txtb_port_b_data_out(i),                     -- OUT
+                txtb_port_b_address         => txtb_port_b_address,                         -- IN
+                txtb_port_b_clk_en          => txtb_port_b_clk_en,                          -- IN
+                is_bus_off                  => cc_stat.is_bus_off,                          -- IN
+                txtb_available              => txtb_available(i),                           -- OUT
+                txtb_allow_bb               => txtb_allow_bb(i),                            -- OUT
+                txtb_parity_check_valid     => txtb_parity_check_valid,                     -- IN
+                txtb_parity_mismatch        => txtb_parity_mismatch(i),                     -- OUT
+                txtb_parity_error_valid     => txtb_parity_error_valid(i),                  -- OUT
+                txtb_bb_parity_error        => txtb_bb_parity_error(i),                     -- OUT
+                txtb_index_muxed            => txtb_index_muxed                             -- IN
+            );
+        end generate;
+
     end generate;
 
     -----------------------------------------------------------------------------------------------

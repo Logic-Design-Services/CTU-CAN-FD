@@ -211,7 +211,8 @@ source_list:
     - file: main_tb/agents/functional_coverage_agent/func_cov_rx_buffer.vhd
     - file: main_tb/agents/functional_coverage_agent/func_cov_tx_arbitrator_per_buf.vhd
     - file: main_tb/agents/functional_coverage_agent/func_cov_tx_arbitrator.vhd
-    - file: main_tb/agents/functional_coverage_agent/func_cov_txt_buffer.vhd
+    - file: main_tb/agents/functional_coverage_agent/func_cov_txt_buffer_even.vhd
+    - file: main_tb/agents/functional_coverage_agent/func_cov_txt_buffer_odd.vhd
     - file: main_tb/agents/functional_coverage_agent/func_cov_agent.vhd
 
     - file: main_tb/ctu_can_fd_vip.vhd

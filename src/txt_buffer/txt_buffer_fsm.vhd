@@ -102,16 +102,13 @@ entity txt_buffer_fsm is
         mr_mode_rom             : in  std_logic;
         mr_settings_tbfbo       : in  std_logic;
 
-        mr_tx_command_txce      : in  std_logic;
-        mr_tx_command_txcr      : in  std_logic;
-        mr_tx_command_txca      : in  std_logic;
-        mr_tx_command_txbi      : in  std_logic;
-
         -------------------------------------------------------------------------------------------
         -- Control signals
         -------------------------------------------------------------------------------------------
-        -- TXT Buffer is now Backup buffer
-        txtb_is_bb              : in  std_logic;
+        tx_command_txce_valid   : in  std_logic;
+        tx_command_txcr_valid   : in  std_logic;
+        abort_applied           : in  std_logic;
+        abort_or_skipped        : in  std_logic;
 
         -------------------------------------------------------------------------------------------
         -- CAN Core interface
@@ -160,27 +157,12 @@ architecture rtl of txt_buffer_fsm is
     signal next_state           : t_txt_buf_state;
     signal curr_state           : t_txt_buf_state;
 
-    -- Abort command applied
-    signal abort_applied        : std_logic;
-
-    -- TXT Buffer is skipped due to
-    signal buffer_skipped       : std_logic;
-
     -- TXT Buffer clock enable
     signal txt_fsm_ce           : std_logic;
 
     -- Forced transition to failed state
     signal go_to_failed         : std_logic;
     signal transient_state      : std_logic;
-
-    -- TXT Buffer SW commands - registered
-    signal mr_tx_command_txce_q : std_logic;
-    signal mr_tx_command_txcr_q : std_logic;
-    signal mr_tx_command_txca_q : std_logic;
-
-    -- Auxiliarly signals
-    signal tx_command_txce_valid : std_logic;
-    signal tx_command_txcr_valid : std_logic;
 
     -- Internal HW Command, filtered by HW chip select for this Buffer
     signal txtb_hw_cmd_i         : t_txtb_hw_cmd;
@@ -189,35 +171,6 @@ architecture rtl of txt_buffer_fsm is
     signal arbl_or_err           : std_logic;
 
 begin
-
-    sw_command_reg_proc : process(res_n, clk_sys)
-    begin
-        if (res_n = '0') then
-            mr_tx_command_txce_q <= '0';
-            mr_tx_command_txcr_q <= '0';
-            mr_tx_command_txca_q <= '0';
-        elsif (rising_edge(clk_sys)) then
-            mr_tx_command_txce_q <= mr_tx_command_txce;
-            mr_tx_command_txcr_q <= mr_tx_command_txcr;
-            mr_tx_command_txca_q <= mr_tx_command_txca;
-        end if;
-    end process;
-
-    tx_command_txce_valid <= '1' when (mr_tx_command_txce_q = '1' and mr_tx_command_txbi = '1')
-                                 else
-                             '0';
-    tx_command_txcr_valid <= '1' when (mr_tx_command_txcr_q = '1' and mr_tx_command_txbi = '1')
-                                 else
-                             '0';
-
-    abort_applied <= '1' when (mr_tx_command_txca_q = '1' and mr_tx_command_txbi = '1')
-                         else
-                     '0';
-
-    buffer_skipped <= '1' when ((txtb_hw_cmd.failed = '1' or txtb_hw_cmd.valid = '1') and
-                                (txtb_is_bb = '1'))
-                          else
-                      '0';
 
     transient_state <= '1' when ((curr_state = s_txt_ab_prog) or
                                  (curr_state = s_txt_tx_prog) or
@@ -244,7 +197,7 @@ begin
     -- Next state process
     -----------------------------------------------------------------------------------------------
     tx_buf_fsm_next_state_proc : process(curr_state, tx_command_txce_valid, tx_command_txcr_valid,
-        txtb_hw_cmd_i, abort_applied, go_to_failed, txtb_parity_error_valid, buffer_skipped,
+        txtb_hw_cmd_i, abort_applied, go_to_failed, txtb_parity_error_valid, abort_or_skipped,
         arbl_or_err)
     begin
         next_state <= curr_state;
@@ -285,7 +238,7 @@ begin
                 end if;
 
             -- Abort the ready buffer or Skip the original TXT Buffer getting "failed" or "OK".
-            elsif (abort_applied = '1' or buffer_skipped = '1') then
+            elsif (abort_or_skipped = '1') then
                 next_state <= s_txt_aborted;
             end if;
 
@@ -506,14 +459,6 @@ begin
     -- psl txtb_no_lock_after_abort : assert never
     --  {abort_applied = '1';txtb_hw_cmd.lock = '1' and txtb_hw_cmd_cs = '1'}
     --  report "LOCK command after ABORT was applied!";
-    -----------------------------------------------------------------------------------------------
-    -- Skipped shall never occur when TXT Buffer backup is not ready. It should
-    -- be satisfied by equal priority of "original" and "backup" buffer, and the
-    -- fact that SW commands are mirrored for Backup buffers.
-    --
-    -- psl txtb_no_skip_when_not_ready : assert always
-    --  (buffer_skipped = '1') -> (curr_state = s_txt_ready)
-    --  report "Backup TXT Buffer skipped when not in 'Ready' state.";
     -----------------------------------------------------------------------------------------------
 
 end architecture;

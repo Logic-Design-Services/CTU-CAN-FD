@@ -154,13 +154,26 @@ begin
 
     g_each_buf : for i in 0 to G_TXT_BUFFER_COUNT - 1 generate
     begin
-        func_cov_txt_buffer_inst : entity ctu_can_fd_tb.func_cov_txt_buffer
-        generic map (
-            G_TXT_BUFFER_INDEX => i
-        )
-        port map (
-            clk => clk_delayed
-        );
+        txt_buf_even_gen : if ((i mod 2) = 0) generate
+            func_cov_txt_buffer_even_inst : entity ctu_can_fd_tb.func_cov_txt_buffer_even
+            generic map (
+                G_TXT_BUFFER_INDEX => i
+            )
+            port map (
+                clk => clk_delayed
+            );
+        end generate;
+
+        txt_buf_odd_gen : if ((i mod 2) = 1) generate
+            func_cov_txt_buffer_odd_inst : entity ctu_can_fd_tb.func_cov_txt_buffer_odd
+            generic map (
+                G_TXT_BUFFER_INDEX => i
+            )
+            port map (
+                clk => clk_delayed
+            );
+        end generate;
+
     end generate;
 
 end architecture;
