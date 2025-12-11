@@ -283,6 +283,10 @@ package body rx_err_log_3_ftest is
         can_frame.ident_type := BASE;
         can_frame.identifier := 0;
         can_frame.data_length := 1;
+        length_to_dlc(can_frame.data_length, can_frame.dlc);
+
+        -- This data pattern should satisfy that when we flip first or second crc bit,
+        -- it is not a stuff bit
         can_frame.data(0) := x"AA";
 
         ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
