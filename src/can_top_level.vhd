@@ -407,7 +407,7 @@ architecture rtl of can_top_level is
     signal txtb_parity_error_valid      :   std_logic_vector(txt_buffer_count - 1 downto 0);
 
     -- TXT Buffer
-    signal txtb_bb_parity_error         :   std_logic_vector(txt_buffer_count - 1 downto 0);
+    signal txtb_bb_parity_error         :   std_logic_vector(txt_buffer_count / 2 - 1 downto 0);
 
     -- TXT Buffer index selected by TX Arbitrator of CAN Core
     signal txtb_index_muxed             :   natural range 0 to txt_buffer_count - 1;
@@ -887,7 +887,6 @@ begin
                 txtb_parity_check_valid     => txtb_parity_check_valid,                     -- IN
                 txtb_parity_mismatch        => txtb_parity_mismatch(i),                     -- OUT
                 txtb_parity_error_valid     => txtb_parity_error_valid(i),                  -- OUT
-                txtb_bb_parity_error        => txtb_bb_parity_error(i),                     -- OUT
                 txtb_index_muxed            => txtb_index_muxed                             -- IN
             );
         end generate;
@@ -951,7 +950,7 @@ begin
                 txtb_parity_check_valid     => txtb_parity_check_valid,                     -- IN
                 txtb_parity_mismatch        => txtb_parity_mismatch(i),                     -- OUT
                 txtb_parity_error_valid     => txtb_parity_error_valid(i),                  -- OUT
-                txtb_bb_parity_error        => txtb_bb_parity_error(i),                     -- OUT
+                txtb_bb_parity_error        => txtb_bb_parity_error(i / 2),                 -- OUT
                 txtb_index_muxed            => txtb_index_muxed                             -- IN
             );
         end generate;

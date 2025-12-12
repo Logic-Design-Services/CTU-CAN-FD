@@ -190,9 +190,6 @@ entity txt_buffer_even is
         -- Parity error really occured
         txtb_parity_error_valid : out std_logic;
 
-        -- Parity error in Backup buffer
-        txtb_bb_parity_error    : out std_logic;
-
         -- Index of TXT Buffer which is being read
         txtb_index_muxed        : in  natural range 0 to G_TXT_BUFFER_COUNT - 1
     );
@@ -318,15 +315,6 @@ begin
 
     -- Even TXT Buffer can't be skipped, only abort applies here
     abort_or_skipped <= abort_applied;
-
-    -----------------------------------------------------------------------------------------------
-    -- If parity error occurs in Backup Buffer during TXTB modes, then set STATUS[TXDPE] = 1.
-    -----------------------------------------------------------------------------------------------
-    txtb_bb_parity_error <= '1' when (txtb_parity_error_valid_i = '1' and
-                                      (G_ID mod 2) = 1 and
-                                      mr_mode_txbbm = '1')
-                                else
-                            '0';
 
     -----------------------------------------------------------------------------------------------
     -- Clock gater for TXT Buffer RAM

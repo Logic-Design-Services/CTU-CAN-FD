@@ -267,7 +267,7 @@ entity memory_registers is
         txtb_parity_error_valid         : in std_logic_vector(G_TXT_BUFFER_COUNT - 1 downto 0);
 
         -- Parity Error in Backup buffer during TXT Buffer backup mode
-        txtb_bb_parity_error            : in std_logic_vector(G_TXT_BUFFER_COUNT - 1 downto 0);
+        txtb_bb_parity_error            : in std_logic_vector(G_TXT_BUFFER_COUNT / 2 - 1 downto 0);
 
         -------------------------------------------------------------------------------------------
         -- Bus synchroniser interface
@@ -714,7 +714,7 @@ begin
                     mr_ctrl_in.status_txpe <= '1';
                 end if;
 
-                if (txtb_bb_parity_error(i) = '1') then
+                if (txtb_bb_parity_error(i / 2) = '1') then
                     mr_ctrl_in.status_txdpe <= '1';
                 end if;
             end loop;
