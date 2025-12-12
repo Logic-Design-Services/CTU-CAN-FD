@@ -91,7 +91,20 @@ targets:
 
     ###############################################################################################
     ###############################################################################################
-    # RTL feature tests targets
+    ###############################################################################################
+    ##    ____ _____ _               _____ _____    _  _____ _   _ ____  _____
+    ##   |  _ \_   _| |             |  ___| ____|  / \|_   _| | | |  _ \| ____|
+    ##   | |_) || | | |      _____  | |_  |  _|   / _ \ | | | | | | |_) |  _|
+    ##   |  _ < | | | |___  |_____| |  _| | |___ / ___ \| | | |_| |  _ <| |___
+    ##   |_| \_\|_| |_____|         |_|   |_____/_/   \_\_|  \___/|_| \_\_____|
+    ##
+    ###############################################################################################
+    ###############################################################################################
+    ###############################################################################################
+
+    ###############################################################################################
+    ###############################################################################################
+    # MAXIMAL BITRATE
     ###############################################################################################
     ###############################################################################################
 
@@ -213,7 +226,6 @@ targets:
             /TB_TOP_CTU_CAN_FD/test_type: feature
             /TB_TOP_CTU_CAN_FD/iterations: 1
             /TB_TOP_CTU_CAN_FD/timeout: 200 ms
-            #/TB_TOP_CTU_CAN_FD/seed: 1632633915
 
             # DUT generics
             /TB_TOP_CTU_CAN_FD/rx_buffer_size: 4096
@@ -254,6 +266,117 @@ targets:
 
     ###############################################################################################
     # Medium Config
+    # FPGA
+    # Maximal bit rate
+    # Feature and Reference Tests
+    ###############################################################################################
+    tb_rtl_medium_fpga_max_feature:
+        top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
+        test_list_file: test/tlf_feature_and_reference.yml
+        generics:
+            # Test-bench configuration
+            /TB_TOP_CTU_CAN_FD/test_type: feature
+            /TB_TOP_CTU_CAN_FD/iterations: 1
+            /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+
+            # DUT generics
+            /TB_TOP_CTU_CAN_FD/rx_buffer_size: 128
+            /TB_TOP_CTU_CAN_FD/txt_buffer_count: 4
+            /TB_TOP_CTU_CAN_FD/sup_filtA: true
+            /TB_TOP_CTU_CAN_FD/sup_filtB: false
+            /TB_TOP_CTU_CAN_FD/sup_filtC: false
+            /TB_TOP_CTU_CAN_FD/sup_range: false
+            /TB_TOP_CTU_CAN_FD/sup_traffic_ctrs: true
+            /TB_TOP_CTU_CAN_FD/sup_parity: true
+            /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
+
+            # C_TECH_ASIC
+            /TB_TOP_CTU_CAN_FD/target_technology: 1
+
+            # DUT Bit timing settings - MAX bit-rate
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 1
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 3
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 3
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 3
+
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 2
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 2
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 2
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 3
+
+            # Clock configuration
+            /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
+
+        source_list_files:
+            - $CTU_TB_TOP_TARGET
+
+
+    ###############################################################################################
+    ###############################################################################################
+    # TYPICAL BITRATE
+    ###############################################################################################
+    ###############################################################################################
+
+    ###############################################################################################
+    # Small Config
+    # ASIC
+    # Feature and Reference Tests
+    # Typical bit rate
+    ###############################################################################################
+    tb_rtl_small_asic_typ_feature:
+        top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
+        test_list_file: test/tlf_feature_and_reference.yml
+        generics:
+            # Test-bench configuration
+            /TB_TOP_CTU_CAN_FD/test_type: feature
+            /TB_TOP_CTU_CAN_FD/iterations: 1
+            /TB_TOP_CTU_CAN_FD/timeout: 400 ms
+
+            # DUT generics
+            /TB_TOP_CTU_CAN_FD/rx_buffer_size: 32
+            /TB_TOP_CTU_CAN_FD/txt_buffer_count: 2
+            /TB_TOP_CTU_CAN_FD/sup_filtA: false
+            /TB_TOP_CTU_CAN_FD/sup_filtB: false
+            /TB_TOP_CTU_CAN_FD/sup_filtC: false
+            /TB_TOP_CTU_CAN_FD/sup_range: false
+            /TB_TOP_CTU_CAN_FD/sup_traffic_ctrs: false
+            /TB_TOP_CTU_CAN_FD/sup_parity: false
+            /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
+
+            # C_TECH_ASIC
+            /TB_TOP_CTU_CAN_FD/target_technology: 0
+
+            # DUT Bit timing settings
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 5
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 7
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
+
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 5
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 13
+
+            # Clock configuration
+            /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
+
+        source_list_files:
+            - $CTU_TB_TOP_TARGET
+
+    ###############################################################################################
+    # Medium Config
     # ASIC
     # Feature and Reference Tests
     # Typical bit rate
@@ -265,8 +388,7 @@ targets:
             # Test-bench configuration
             /TB_TOP_CTU_CAN_FD/test_type: feature
             /TB_TOP_CTU_CAN_FD/iterations: 1
-            /TB_TOP_CTU_CAN_FD/timeout: 200 ms
-            #/TB_TOP_CTU_CAN_FD/seed: 379897265
+            /TB_TOP_CTU_CAN_FD/timeout: 400 ms
 
             # DUT generics
             /TB_TOP_CTU_CAN_FD/rx_buffer_size: 128
@@ -306,12 +428,175 @@ targets:
             - $CTU_TB_TOP_TARGET
 
     ###############################################################################################
+    # Big Config
+    # ASIC
+    # Feature and Reference Tests
+    # Typical bit rate
+    ###############################################################################################
+    tb_rtl_big_asic_typ_feature:
+        top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
+        test_list_file: test/tlf_feature_and_reference.yml
+        generics:
+            # Test-bench configuration
+            /TB_TOP_CTU_CAN_FD/test_type: feature
+            /TB_TOP_CTU_CAN_FD/iterations: 1
+            /TB_TOP_CTU_CAN_FD/timeout: 400 ms
+
+            # DUT generics
+            /TB_TOP_CTU_CAN_FD/rx_buffer_size: 4096
+            /TB_TOP_CTU_CAN_FD/txt_buffer_count: 8
+            /TB_TOP_CTU_CAN_FD/sup_filtA: true
+            /TB_TOP_CTU_CAN_FD/sup_filtB: true
+            /TB_TOP_CTU_CAN_FD/sup_filtC: true
+            /TB_TOP_CTU_CAN_FD/sup_range: true
+            /TB_TOP_CTU_CAN_FD/sup_traffic_ctrs: true
+            /TB_TOP_CTU_CAN_FD/sup_parity: true
+            /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
+
+            # C_TECH_ASIC
+            /TB_TOP_CTU_CAN_FD/target_technology: 0
+
+            # DUT Bit timing settings
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 5
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 7
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
+
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 5
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 13
+
+            # Clock configuration
+            /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
+
+        source_list_files:
+            - $CTU_TB_TOP_TARGET
+
+    ###############################################################################################
     # Medium Config
     # FPGA
     # Feature and Reference Tests
-    # Maximal bit rate
+    # Typical bit rate
     ###############################################################################################
-    tb_rtl_medium_fpga_max_feature:
+    tb_rtl_medium_fpga_typ_feature:
+        top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
+        test_list_file: test/tlf_feature_and_reference.yml
+        generics:
+            # Test-bench configuration
+            /TB_TOP_CTU_CAN_FD/test_type: feature
+            /TB_TOP_CTU_CAN_FD/iterations: 1
+            /TB_TOP_CTU_CAN_FD/timeout: 400 ms
+
+            # DUT generics
+            /TB_TOP_CTU_CAN_FD/rx_buffer_size: 128
+            /TB_TOP_CTU_CAN_FD/txt_buffer_count: 4
+            /TB_TOP_CTU_CAN_FD/sup_filtA: true
+            /TB_TOP_CTU_CAN_FD/sup_filtB: false
+            /TB_TOP_CTU_CAN_FD/sup_filtC: false
+            /TB_TOP_CTU_CAN_FD/sup_range: false
+            /TB_TOP_CTU_CAN_FD/sup_traffic_ctrs: true
+            /TB_TOP_CTU_CAN_FD/sup_parity: true
+            /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
+
+            # C_TECH_FPGA
+            /TB_TOP_CTU_CAN_FD/target_technology: 1
+
+            # DUT Bit timing settings
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 5
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 7
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
+
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 5
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 13
+
+            # Clock configuration
+            /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
+
+        source_list_files:
+            - $CTU_TB_TOP_TARGET
+
+
+    ###############################################################################################
+    ###############################################################################################
+    # MINIMAL BITRATE
+    ###############################################################################################
+    ###############################################################################################
+
+    ###############################################################################################
+    # Small Config
+    # ASIC
+    # Feature and Reference Tests
+    # Minimal bit rate
+    ###############################################################################################
+    tb_rtl_small_asic_min_feature:
+        top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
+        test_list_file: test/tlf_feature_and_reference.yml
+        generics:
+            # Test-bench configuration
+            /TB_TOP_CTU_CAN_FD/test_type: feature
+            /TB_TOP_CTU_CAN_FD/iterations: 1
+            /TB_TOP_CTU_CAN_FD/timeout: 1000 ms
+
+            # DUT generics
+            /TB_TOP_CTU_CAN_FD/rx_buffer_size: 32
+            /TB_TOP_CTU_CAN_FD/txt_buffer_count: 2
+            /TB_TOP_CTU_CAN_FD/sup_filtA: false
+            /TB_TOP_CTU_CAN_FD/sup_filtB: false
+            /TB_TOP_CTU_CAN_FD/sup_filtC: false
+            /TB_TOP_CTU_CAN_FD/sup_range: false
+            /TB_TOP_CTU_CAN_FD/sup_traffic_ctrs: false
+            /TB_TOP_CTU_CAN_FD/sup_parity: false
+            /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
+
+            # C_TECH_ASIC
+            /TB_TOP_CTU_CAN_FD/target_technology: 0
+
+            # DUT Bit timing settings
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
+
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 255
+
+            # Clock configuration
+            /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
+
+        source_list_files:
+            - $CTU_TB_TOP_TARGET
+
+    ###############################################################################################
+    # Medium Config
+    # ASIC
+    # Feature and Reference Tests
+    # Minimal bit rate
+    ###############################################################################################
+    tb_rtl_medium_asic_min_feature:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
         test_list_file: test/tlf_feature_and_reference.yml
         generics:
@@ -331,25 +616,129 @@ targets:
             /TB_TOP_CTU_CAN_FD/sup_parity: true
             /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
 
+            # C_TECH_ASIC
+            /TB_TOP_CTU_CAN_FD/target_technology: 0
+
+            # DUT Bit timing settings
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
+
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 255
+
+            # Clock configuration
+            /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
+
+        source_list_files:
+            - $CTU_TB_TOP_TARGET
+
+    ###############################################################################################
+    # Big Config
+    # ASIC
+    # Feature and Reference Tests
+    # Minimal bit rate
+    ###############################################################################################
+    tb_rtl_big_asic_min_feature:
+        top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
+        test_list_file: test/tlf_feature_and_reference.yml
+        generics:
+            # Test-bench configuration
+            /TB_TOP_CTU_CAN_FD/test_type: feature
+            /TB_TOP_CTU_CAN_FD/iterations: 1
+            /TB_TOP_CTU_CAN_FD/timeout: 1000 ms
+
+            # DUT generics
+            /TB_TOP_CTU_CAN_FD/rx_buffer_size: 4096
+            /TB_TOP_CTU_CAN_FD/txt_buffer_count: 8
+            /TB_TOP_CTU_CAN_FD/sup_filtA: true
+            /TB_TOP_CTU_CAN_FD/sup_filtB: true
+            /TB_TOP_CTU_CAN_FD/sup_filtC: true
+            /TB_TOP_CTU_CAN_FD/sup_range: true
+            /TB_TOP_CTU_CAN_FD/sup_traffic_ctrs: true
+            /TB_TOP_CTU_CAN_FD/sup_parity: true
+            /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
+
+            # C_TECH_ASIC
+            /TB_TOP_CTU_CAN_FD/target_technology: 0
+
+            # DUT Bit timing settings
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
+
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 255
+
+            # Clock configuration
+            /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
+
+        source_list_files:
+            - $CTU_TB_TOP_TARGET
+
+    ###############################################################################################
+    # Medium Config
+    # FPGA
+    # Feature and Reference Tests
+    # Minimal bit rate
+    ###############################################################################################
+    tb_rtl_medium_fpga_min_feature:
+        top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
+        test_list_file: test/tlf_feature_and_reference.yml
+        generics:
+            # Test-bench configuration
+            /TB_TOP_CTU_CAN_FD/test_type: feature
+            /TB_TOP_CTU_CAN_FD/iterations: 1
+            /TB_TOP_CTU_CAN_FD/timeout: 1000 ms
+
+            # DUT generics
+            /TB_TOP_CTU_CAN_FD/rx_buffer_size: 128
+            /TB_TOP_CTU_CAN_FD/txt_buffer_count: 4
+            /TB_TOP_CTU_CAN_FD/sup_filtA: true
+            /TB_TOP_CTU_CAN_FD/sup_filtB: false
+            /TB_TOP_CTU_CAN_FD/sup_filtC: false
+            /TB_TOP_CTU_CAN_FD/sup_range: false
+            /TB_TOP_CTU_CAN_FD/sup_traffic_ctrs: true
+            /TB_TOP_CTU_CAN_FD/sup_parity: true
+            /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
+
             # C_TECH_FPGA
             /TB_TOP_CTU_CAN_FD/target_technology: 1
 
             # DUT Bit timing settings
-            /TB_TOP_CTU_CAN_FD/cfg_brp: 1
-            /TB_TOP_CTU_CAN_FD/cfg_prop: 1
-            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 3
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 3
-            /TB_TOP_CTU_CAN_FD/cfg_sjw: 3
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
-            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 0
-            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 2
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 2
-            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 2
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
 
             # Secondary sample point config
             /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
-            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 3
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 255
 
             # Clock configuration
             /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
@@ -360,7 +749,20 @@ targets:
 
     ###############################################################################################
     ###############################################################################################
-    # RTL compliance tests targets
+    ###############################################################################################
+    ##   ____ _____ _                ____ ___  __  __ ____  _     ___    _    _   _  ____ _____
+    ##  |  _ \_   _| |              / ___/ _ \|  \/  |  _ \| |   |_ _|  / \  | \ | |/ ___| ____|
+    ##  | |_) || | | |      _____  | |  | | | | |\/| | |_) | |    | |  / _ \ |  \| | |   |  _|
+    ##  |  _ < | | | |___  |_____| | |__| |_| | |  | |  __/| |___ | | / ___ \| |\  | |___| |___
+    ##  |_| \_\|_| |_____|          \____\___/|_|  |_|_|   |_____|___/_/   \_\_| \_|\____|_____|
+    ##
+    ###############################################################################################
+    ###############################################################################################
+    ###############################################################################################
+
+    ###############################################################################################
+    ###############################################################################################
+    # SMALL CONFIG
     ###############################################################################################
     ###############################################################################################
 
@@ -369,7 +771,6 @@ targets:
     # ASIC
     # Maximal bit rate
     # Compliance Tests
-    # Note: Config should not affect compliance tests
     ###############################################################################################
     tb_rtl_small_asic_max_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
@@ -425,7 +826,6 @@ targets:
     # ASIC
     # Typical bit rate
     # Compliance Tests
-    # Note: Config should not affect compliance tests
     ###############################################################################################
     tb_rtl_small_asic_typ_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
@@ -481,7 +881,6 @@ targets:
     # ASIC
     # Minimal bit rate
     # Compliance Tests
-    # Note: Config should not affect compliance tests
     ###############################################################################################
     tb_rtl_small_asic_min_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
@@ -534,11 +933,16 @@ targets:
 
 
     ###############################################################################################
+    ###############################################################################################
+    # MEDIUM CONFIG
+    ###############################################################################################
+    ###############################################################################################
+
+    ###############################################################################################
     # Medium Config
     # ASIC
     # Maximal bit rate
     # Compliance Tests
-    # Note: Config should not affect compliance tests
     ###############################################################################################
     tb_rtl_medium_asic_max_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
@@ -594,7 +998,6 @@ targets:
     # ASIC
     # Typical bit rate
     # Compliance Tests
-    # Note: Config should not affect compliance tests
     ###############################################################################################
     tb_rtl_medium_asic_typ_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
@@ -650,7 +1053,6 @@ targets:
     # ASIC
     # Minimal bit rate
     # Compliance Tests
-    # Note: Config should not affect compliance tests
     ###############################################################################################
     tb_rtl_medium_asic_min_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
@@ -703,11 +1105,16 @@ targets:
 
 
     ###############################################################################################
+    ###############################################################################################
+    # BIG CONFIG
+    ###############################################################################################
+    ###############################################################################################
+
+    ###############################################################################################
     # Big Config
     # ASIC
     # Maximal bit rate
     # Compliance Tests
-    # Note: Config should not affect compliance tests
     ###############################################################################################
     tb_rtl_big_asic_max_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
@@ -763,7 +1170,6 @@ targets:
     # ASIC
     # Typical bit rate
     # Compliance Tests
-    # Note: Config should not affect compliance tests
     ###############################################################################################
     tb_rtl_big_asic_typ_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
@@ -819,7 +1225,6 @@ targets:
     # ASIC
     # Minimal bit rate
     # Compliance Tests
-    # Note: Config should not affect compliance tests
     ###############################################################################################
     tb_rtl_big_asic_min_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
@@ -873,7 +1278,12 @@ targets:
 
     ###############################################################################################
     ###############################################################################################
-    # Xilinx Unisim Gate level targets
+    ##  __  _____ _     ___ _   ___  __   ____    _  _____ _____
+    ##  \ \/ /_ _| |   |_ _| \ | \ \/ /  / ___|  / \|_   _| ____|
+    ##   \  / | || |    | ||  \| |\  /  | |  _  / _ \ | | |  _|
+    ##   /  \ | || |___ | || |\  |/  \  | |_| |/ ___ \| | | |___
+    ##  /_/\_\___|_____|___|_| \_/_/\_\  \____/_/   \_\_| |_____|
+    ##
     ###############################################################################################
     ###############################################################################################
 
@@ -989,11 +1399,131 @@ targets:
         source_list_files:
             - tb_ctu_can_fd_gate_vunit
 
-    # TODO: Consider also TYP and MIN gate targets for Compliance tests!
+    ###############################################################################################
+    # Small Config
+    # FPGA
+    # Typical bit rate
+    # Compliance tests
+    ###############################################################################################
+    tb_gate_xilinx_small_fpga_typ_compliance:
+        top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
+        test_list_file: test/tlf_compliance_full_max.yml
+        generics:
+            #log_level: info
+            #error_tolerance: 0
+            #debug: false
+            /TB_TOP_CTU_CAN_FD/iterations: 1
+            /TB_TOP_CTU_CAN_FD/timeout: 200 ms
+            /TB_TOP_CTU_CAN_FD/test_type: compliance
+
+            # DUT generics
+            /TB_TOP_CTU_CAN_FD/rx_buffer_size: 32
+            /TB_TOP_CTU_CAN_FD/txt_buffer_count: 2
+            /TB_TOP_CTU_CAN_FD/sup_filtA: false
+            /TB_TOP_CTU_CAN_FD/sup_filtB: false
+            /TB_TOP_CTU_CAN_FD/sup_filtC: false
+            /TB_TOP_CTU_CAN_FD/sup_range: false
+            /TB_TOP_CTU_CAN_FD/sup_traffic_ctrs: false
+            /TB_TOP_CTU_CAN_FD/sup_parity: false
+            /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
+
+            # DUT Bit timing settings
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 5
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 7
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
+
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 5
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 13
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 3
+
+            # Clock configuration
+            /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
+
+        sim_options:
+            vcs: "-vhpi VCS_VHPI_COSIM_LIB:handle_register"
+
+        source_list_files:
+            - tb_ctu_can_fd_gate_vunit
+
+    ###############################################################################################
+    # Small Config
+    # FPGA
+    # Minimal bit rate
+    # Compliance tests
+    ###############################################################################################
+    tb_gate_xilinx_small_fpga_min_compliance:
+        top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
+        test_list_file: test/tlf_compliance_full_max.yml
+        generics:
+            #log_level: info
+            #error_tolerance: 0
+            #debug: false
+            /TB_TOP_CTU_CAN_FD/iterations: 1
+            /TB_TOP_CTU_CAN_FD/timeout: 400 ms
+            /TB_TOP_CTU_CAN_FD/test_type: compliance
+
+            # DUT generics
+            /TB_TOP_CTU_CAN_FD/rx_buffer_size: 32
+            /TB_TOP_CTU_CAN_FD/txt_buffer_count: 2
+            /TB_TOP_CTU_CAN_FD/sup_filtA: false
+            /TB_TOP_CTU_CAN_FD/sup_filtB: false
+            /TB_TOP_CTU_CAN_FD/sup_filtC: false
+            /TB_TOP_CTU_CAN_FD/sup_range: false
+            /TB_TOP_CTU_CAN_FD/sup_traffic_ctrs: false
+            /TB_TOP_CTU_CAN_FD/sup_parity: false
+            /TB_TOP_CTU_CAN_FD/reset_buffer_rams: false
+
+            # DUT Bit timing settings
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
+            /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
+
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
+            /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 255
+
+            # Secondary sample point config
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_src: 0
+            /TB_TOP_CTU_CAN_FD/cfg_ssp_offset: 3
+
+            # Clock configuration
+            /TB_TOP_CTU_CAN_FD/cfg_sys_clk_period: 10 ns
+
+        sim_options:
+            vcs: "-vhpi VCS_VHPI_COSIM_LIB:handle_register"
+
+        source_list_files:
+            - tb_ctu_can_fd_gate_vunit
+
 
     ###############################################################################################
     ###############################################################################################
-    # Unit test targets
+    ##   _   _ _   _ ___ _____   _____         _
+    ##  | | | | \ | |_ _|_   _| |_   _|__  ___| |_ ___
+    ##  | | | |  \| || |  | |     | |/ _ \/ __| __/ __|
+    ##  | |_| | |\  || |  | |     | |  __/\__ \ |_\__ \
+    ##   \___/|_| \_|___| |_|     |_|\___||___/\__|___/
+    ##
     ###############################################################################################
     ###############################################################################################
 
