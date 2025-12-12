@@ -112,12 +112,12 @@ package body tx_cmd_set_abort_ftest is
     procedure tx_cmd_set_abort_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable txt_state          :       SW_TXT_Buffer_state_type;
+        variable can_frame          :       t_ctu_frame;
+        variable txt_state          :       t_ctu_txt_buff_state;
         variable num_buffers        :       natural;
     begin
 
-        get_tx_buf_count(num_buffers, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_buffers, DUT_NODE, chn);
 
         for buf_nr in 1 to num_buffers loop
 
@@ -133,18 +133,18 @@ package body tx_cmd_set_abort_ftest is
             -----------------------------------------------------------------------
             info_m("Step 1");
 
-            CAN_generate_frame(CAN_frame);
-            CAN_insert_TX_frame(CAN_frame, buf_nr, DUT_NODE, chn);
+            generate_can_frame(can_frame);
+            ctu_put_tx_frame(can_frame, buf_nr, DUT_NODE, chn);
 
-            CAN_wait_sample_point(DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
             wait for 11 ns; -- This command is pipelined, delay must be inserted!
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_ready, "TXT Buffer ready!");
 
-            send_TXT_buf_cmd(buf_set_abort, buf_nr, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_abort, buf_nr, DUT_NODE, chn);
             wait for 11 ns; -- This command is pipelined, delay must be inserted!
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_aborted, "Set Abort: Ready -> Aborted");
 
             -----------------------------------------------------------------------
@@ -155,21 +155,21 @@ package body tx_cmd_set_abort_ftest is
             -----------------------------------------------------------------------
             info_m("Step 2");
 
-            send_TXT_buf_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_tx_progress, "TXT Buffer TX in Progress");
 
-            send_TXT_buf_cmd(buf_set_abort, buf_nr, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_abort, buf_nr, DUT_NODE, chn);
             wait for 11 ns; -- This command is pipelined, delay must be inserted!
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_ab_progress,
                 "Set Abort: TX in Progress -> Abort in Progress");
 
-            CAN_wait_frame_sent(DUT_NODE, chn);
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_done,
                 "Set Abort: Done after Abort in Progress with Succesfull transmission");
 

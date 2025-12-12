@@ -127,12 +127,12 @@ begin
     ---------------------------------------------------------------------------
     test_process : process
         -- 2 Mbit / 500 Kbit, 80 % sample point
-        variable bus_timing     : bit_time_config_type :=
+        variable bus_timing     : t_ctu_bit_time_cfg :=
             (2, 1, 40, 39, 20, 10, 20, 14, 15, 10);
         variable data_set : t_reference_data_set;
         variable driver_item : t_can_driver_entry :=
             ('0', 0 ns, false, (OTHERS => '0'));
-        variable rx_frame : SW_CAN_frame_type;
+        variable rx_frame : t_ctu_frame;
         variable result : boolean;
         variable reference_offset : natural;
     begin
@@ -142,14 +142,14 @@ begin
         ctu_vip_test_result.set_result(true);
 
         -- Configure bit timing
-        CAN_configure_timing(bus_timing, DUT_NODE, default_channel);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, default_channel);
 
         -- Enable CAN controllers
-        CAN_turn_controller(true, DUT_NODE, default_channel);
+        ctu_turn(true, DUT_NODE, default_channel);
         info_m("DUT is ON");
 
         -- Wait till integration is over in both nodes
-        CAN_wait_bus_on(DUT_NODE, default_channel);
+        ctu_wait_err_active(DUT_NODE, default_channel);
         info_m("Bus integration finished");
 
         if (test_name = "data_set_1") then
@@ -201,12 +201,12 @@ begin
             can_agent_driver_wait_finish(default_channel);
 
             info_m("Reading out CAN frame...");
-            CAN_read_frame(rx_frame, DUT_NODE, default_channel);
+            ctu_read_frame(rx_frame, DUT_NODE, default_channel);
 
             info_m("Comparing received vs golden frame...");
             -- Pre-calculate RWCNT of TX frame
-            decode_dlc_rx_buff(data_set(frame_index).frame.dlc, data_set(frame_index).frame.rwcnt);
-            CAN_compare_frames(rx_frame, data_set(frame_index).frame, false, result);
+            dlc_to_rwcnt(data_set(frame_index).frame.dlc, data_set(frame_index).frame.rwcnt);
+            compare_can_frames(rx_frame, data_set(frame_index).frame, false, result);
 
             check_m(result, "Frames equal");
         end loop;

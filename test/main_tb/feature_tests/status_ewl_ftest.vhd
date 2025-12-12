@@ -107,14 +107,14 @@ package body status_ewl_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
         
-        variable mode_1             :     SW_mode;
-        variable err_counters       :     SW_error_counters;
-        variable fault_th           :     SW_fault_thresholds := (0,0);
+        variable mode_1             :     t_ctu_mode;
+        variable err_counters       :     t_ctu_err_ctrs;
+        variable fault_th           :     t_ctu_fault_thresholds := (0,0);
         variable exp_stat_ewl       :     boolean;
     begin
 
@@ -125,16 +125,16 @@ package body status_ewl_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
         -- Random REC and TEC
         rand_int_v(255, err_counters.rx_counter);
         rand_int_v(255, err_counters.tx_counter);
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
         -- Random EWL
         rand_int_v(255, fault_th.ewl);
-        set_fault_thresholds(fault_th, DUT_NODE, chn);
+        ctu_set_fault_thresholds(fault_th, DUT_NODE, chn);
 
         -- Calculate expected status
         if (err_counters.tx_counter >= fault_th.ewl or
@@ -145,7 +145,7 @@ package body status_ewl_ftest is
             exp_stat_ewl := false;
         end if;
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.error_warning = exp_stat_ewl,
             "STAT[EWL] equals expected value! " &
             " Expected: " & boolean'image(exp_stat_ewl) &

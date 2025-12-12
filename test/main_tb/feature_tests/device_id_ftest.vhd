@@ -110,7 +110,7 @@ package body device_id_ftest is
         -- @1. Read device ID and check it.
         -----------------------------------------------------------------------
         info_m("Step 1: Read device ID");
-        CAN_read(r_data, DEVICE_ID_ADR, DUT_NODE, chn);
+        ctu_read(r_data, DEVICE_ID_ADR, DUT_NODE, chn);
         
         check_m(r_data(DEVICE_ID_H downto DEVICE_ID_L) = CTU_CAN_FD_ID,
             "CTU CAN FD device ID check");

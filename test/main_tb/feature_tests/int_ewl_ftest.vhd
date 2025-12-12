@@ -137,15 +137,15 @@ package body int_ewl_ftest is
     procedure int_ewl_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     SW_CAN_frame_type;
+        variable can_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
-        variable int_mask           :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_ena            :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_stat           :     SW_interrupts := SW_interrupts_rst_val;
-        variable mode               :     SW_mode := SW_mode_rst_val;
-        variable buf_info           :     SW_RX_Buffer_info;
-        variable err_ctrs           :     SW_error_counters;
+        variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable mode               :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable buf_info           :     t_ctu_rx_buf_state;
+        variable err_ctrs           :     t_ctu_err_ctrs;
     begin
 
         -----------------------------------------------------------------------
@@ -156,13 +156,13 @@ package body int_ewl_ftest is
         info_m("Step 1: Setting EWL Interrupt");
 
         int_mask.error_warning_int := false;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
         int_ena.error_warning_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
         mode.test := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Set TX Error counter to 96. Check that EWL Interrupt was set. 
@@ -170,11 +170,11 @@ package body int_ewl_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2: Check EWL from TX Error counter");
 
-        read_error_counters(err_ctrs, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_ctrs, DUT_NODE, chn);
         err_ctrs.tx_counter := 96;
-        set_error_counters(err_ctrs, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_ctrs, DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_m(int_stat.error_warning_int,
                 "EWL Interrupt set when RX Error counter >= EWL!");
         interrupt_agent_check_asserted(chn);
@@ -186,12 +186,12 @@ package body int_ewl_ftest is
         info_m("Step 3: Check EWL from TX counter toggles INT pin.");
 
         int_ena.error_warning_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_not_asserted(chn);
 
         int_ena.error_warning_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_asserted(chn);
 
@@ -203,24 +203,24 @@ package body int_ewl_ftest is
         info_m("Step 4: Check EWL is set again.");
 
         int_stat.error_warning_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.error_warning_int,
             "EWL Interrupt set again when RX Error counter >= EWL!");
 
         err_ctrs.tx_counter := 95;
-        set_error_counters(err_ctrs, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_ctrs, DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_m(int_stat.error_warning_int,
             "EWL Interrupt set when TX Error counter < EWL!");
         interrupt_agent_check_asserted(chn);
         
         int_stat.error_warning_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.error_warning_int,
             "EWL Interrupt cleared!");
 
@@ -231,9 +231,9 @@ package body int_ewl_ftest is
         info_m("Step 5: Check EWL from RX Error counter");
 
         err_ctrs.rx_counter := 96;
-        set_error_counters(err_ctrs, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_ctrs, DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_m(int_stat.error_warning_int, "EWL Interrupt set when TX Error counter >= EWL!");
         interrupt_agent_check_asserted(chn);
 
@@ -244,12 +244,12 @@ package body int_ewl_ftest is
         info_m("Step 6: Check EWL from RX counter toggles INT pin.");
 
         int_ena.error_warning_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_not_asserted(chn);
 
         int_ena.error_warning_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_asserted(chn);
 
@@ -261,24 +261,24 @@ package body int_ewl_ftest is
         info_m("Step 7: Check EWL from RX counter is set again.");
 
         int_stat.error_warning_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.error_warning_int,
             "EWL Interrupt not set again when TX Error counter >= EWL!");
         
         err_ctrs.rx_counter := 95;
-        set_error_counters(err_ctrs, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_ctrs, DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_m(int_stat.error_warning_int,
             "EWL Interrupt set when RX Error counter < EWL!");
         interrupt_agent_check_asserted(chn);
 
         int_stat.error_warning_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
         
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.error_warning_int, "EWL Interrupt cleared!");
 
         -----------------------------------------------------------------------
@@ -288,12 +288,12 @@ package body int_ewl_ftest is
         info_m("Step 8: Check EWL is not set when masked!");
 
         int_mask.error_warning_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
         err_ctrs.tx_counter := 96;
-        set_error_counters(err_ctrs, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_ctrs, DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.error_warning_int, "EWL Interrupt not set when masked!");
         interrupt_agent_check_not_asserted(chn);
 
@@ -304,18 +304,18 @@ package body int_ewl_ftest is
         info_m("Step 9: Check EWL Interrupt enable works OK!");
 
         int_ena.error_warning_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
         int_ena.error_warning_int := true;
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
 
         check_false_m(int_ena.error_warning_int, "EWL Interrupt enabled!");
 
         int_ena.error_warning_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.error_warning_int := false;
 
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_m(int_ena.error_warning_int, "EWL Interrupt disabled!");
 
         -----------------------------------------------------------------------
@@ -325,17 +325,17 @@ package body int_ewl_ftest is
         info_m("Step 10: Check EWL Interrupt mask works OK!");
 
         int_mask.error_warning_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.error_warning_int := false;
 
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_m(int_mask.error_warning_int, "EWL Interrupt masked!");
 
         int_mask.error_warning_int := false;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.error_warning_int := true;
 
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_false_m(int_mask.error_warning_int, "EWL Interrupt masked!");
 
         info_m("Finished EWL interrupt test");

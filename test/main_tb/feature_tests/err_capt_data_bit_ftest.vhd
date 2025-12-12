@@ -108,14 +108,14 @@ package body err_capt_data_bit_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
         
         variable frame_sent         :     boolean;
         
-        variable err_capt           :     SW_error_capture;
+        variable err_capt           :     t_ctu_err_capt;
         variable tmp                :     natural;
         
         variable tx_bus_level       :     std_logic;
@@ -126,7 +126,7 @@ package body err_capt_data_bit_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
 
         -----------------------------------------------------------------------
@@ -138,7 +138,7 @@ package body err_capt_data_bit_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.rtr := NO_RTR_FRAME;
         
         -- Don't sample by SSP!
@@ -146,37 +146,37 @@ package body err_capt_data_bit_ftest is
         
         if (frame_1.data_length = 0) then
             frame_1.data_length := 1;
-            decode_length(frame_1.data_length, frame_1.dlc);
+            length_to_dlc(frame_1.data_length, frame_1.dlc);
         end if;
         
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-        CAN_wait_pc_state(pc_deb_data, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
 
         -- Wait for random number of bits within data field
         rand_int_v((frame_1.data_length * 8) - 1, tmp);
         info_m("Waiting for: " & integer'image(tmp) & " bits!");
         for i in 0 to tmp - 1 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
-        CAN_wait_sync_seg(DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
         wait for 20 ns;
 
         get_can_tx(DUT_NODE, tx_bus_level, chn);
         force_bus_level(not tx_bus_level, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns; -- To be sure that opposite bit is sampled!
         release_bus_level(chn);
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.error_transmission, "Error frame is being transmitted!");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_type = can_err_bit, "Bit error detected!");
         check_m(err_capt.err_pos = err_pos_data, "Error detected in Data field!");
         
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
   end procedure;
 

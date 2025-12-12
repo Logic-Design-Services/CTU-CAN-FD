@@ -87,14 +87,14 @@
 --  @2. Generate random frame where bit rate is not switched. Insert the frame
 --      to DUT. Wait until DUT starts transmission. Wait for random time
 --      until DUT transmits Dominant bit. Force the bus-level Recessive for one
---      bit time! This should invoke bit error in DUT. Wait until bus is idle.
+--      bit time! This should invoke bit error in DUT. Wait until Error frame.
 --      Check that ERR_NORM in DUT and Test Node incremented by 1. Check that ERR_FD
---      in DUT and Test Node remained the same!
+--      in DUT and Test Node remained the same! Wait until bus is idle.
 --  @3. Generate random frame where bit rate shall be switched. Wait until data
 --      portion of that frame. Wait until Recessive bit is transmitted. Force
---      bus Dominant for 1 bit time! Wait until bus is idle. Check that ERR_FD
+--      bus Dominant for 1 bit time! Wait until error frame. Check that ERR_FD
 --      incremented in DUT and Test node by 1. Check that ERR_NORM remained the
---      same in DUT and Test node.
+--      same in DUT and Test node. Wait until bus is idle.
 --
 -- @TestInfoEnd
 --------------------------------------------------------------------------------
@@ -122,13 +122,13 @@ package body err_norm_fd_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
-        variable err_counters_1_1   :     SW_error_counters;
-        variable err_counters_1_2   :     SW_error_counters;
+        variable err_counters_1_1   :     t_ctu_err_ctrs;
+        variable err_counters_1_2   :     t_ctu_err_ctrs;
 
-        variable err_counters_2_1   :     SW_error_counters;
-        variable err_counters_2_2   :     SW_error_counters;
+        variable err_counters_2_1   :     t_ctu_err_ctrs;
+        variable err_counters_2_2   :     t_ctu_err_ctrs;
 
         variable frame_sent         :     boolean;
         variable rand_val           :     integer;
@@ -149,23 +149,23 @@ package body err_norm_fd_ftest is
         --     frame to DUT. Wait until DUT starts transmission. Wait for
         --     random time until DUT transmits Dominant bit. Force the bus-
         --     level Recessive for one bit time! This should invoke bit error in
-        --     DUT. Wait until bus is idle. Check that ERR_NORM in DUT and
+        --     DUT. Wait until error frame. Check that ERR_NORM in DUT and
         --     2 incremented by 1. Check that ERR_FD in DUT and Test Node
-        --     remained the same!
+        --     remained the same! Wait until bus is idle.
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
 
-        read_error_counters(err_counters_1_1, DUT_NODE, chn);
-        read_error_counters(err_counters_1_2, TEST_NODE, chn);
+        ctu_get_err_ctrs(err_counters_1_1, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_1_2, TEST_NODE, chn);
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         if (frame_1.frame_format = FD_CAN) then
             frame_1.brs := BR_NO_SHIFT;
         end if;
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- Should be enough to cover many parts of CAN frame but not go beyond
         -- frame!
@@ -175,7 +175,7 @@ package body err_norm_fd_ftest is
         info_m("Waiting for:" & integer'image(wait_time) & " bits!");
 
         for i in 1 to wait_time loop
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             info_m("Wait sync");
             wait for 20 ns;
         end loop;
@@ -188,14 +188,14 @@ package body err_norm_fd_ftest is
         end loop;
 
         force_bus_level(RECESSIVE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
-        wait for 20 ns; -- To be sure that opposite bit is sampled!
+        ctu_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_input_delay(chn);
         release_bus_level(chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        read_error_counters(err_counters_2_1, DUT_NODE, chn);
-        read_error_counters(err_counters_2_2, TEST_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
+        ctu_wait_err_frame(TEST_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2_1, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2_2, TEST_NODE, chn);
 
         check_m(err_counters_1_1.err_norm + 1 = err_counters_2_1.err_norm,
                 "ERR_NORM incremented by 1 in transmitter!");
@@ -207,27 +207,31 @@ package body err_norm_fd_ftest is
         check_m(err_counters_1_2.err_fd = err_counters_2_2.err_fd,
                 "ERR_FD not incremented by 1 in receiver!");
 
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+
         -----------------------------------------------------------------------
         -- @3. Generate random frame where bit rate shall be switched. Wait
         --     until data portion of that frame. Wait until Recessive bit is
-        --     transmitted. Force bus Dominant for 1 bit time! Wait until bus is
-        --     idle. Check that ERR_FD incremented in DUT and Test node by 1.
+        --     transmitted. Force bus Dominant for 1 bit time! Wait until error
+        --     frame. Check that ERR_FD incremented in DUT and Test node by 1.
         --     Check that ERR_NORM remained the same in DUT and Test node.
+        --     Wait until bus is idle.
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        read_error_counters(err_counters_1_1, DUT_NODE, chn);
-        read_error_counters(err_counters_1_2, TEST_NODE, chn);
+        ctu_get_err_ctrs(err_counters_1_1, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_1_2, TEST_NODE, chn);
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.frame_format := FD_CAN;
         frame_1.brs := BR_SHIFT;
 
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
-        CAN_wait_not_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_control, DUT_NODE, chn);
 
         -- Now we should be in Data bit rate! This is either CRC or data field!
         rand_int_v(15, wait_time);
@@ -236,7 +240,7 @@ package body err_norm_fd_ftest is
         info_m("Waiting for:" & integer'image(wait_time) & " bits!");
 
         for i in 1 to wait_time loop
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             info_m("Wait sync");
             wait for 20 ns;
         end loop;
@@ -249,15 +253,15 @@ package body err_norm_fd_ftest is
         end loop;
 
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
-        wait for 20 ns;
+        ctu_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_input_delay(chn);
         release_bus_level(chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        read_error_counters(err_counters_2_1, DUT_NODE, chn);
-        read_error_counters(err_counters_2_2, TEST_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
+        ctu_wait_err_frame(TEST_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2_1, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters_2_2, TEST_NODE, chn);
 
         check_m((err_counters_1_1.err_fd + 1 = err_counters_2_1.err_fd),
                 "ERR_FD incremented by 1 in transmitter!");
@@ -268,6 +272,9 @@ package body err_norm_fd_ftest is
                 "ERR_NORM not incremented by 1 in transmitter!");
         check_m(err_counters_1_2.err_norm = err_counters_2_2.err_norm,
                 "ERR_NORM not incremented by 1 in receiver!");
+
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
   end procedure;
 end package body;

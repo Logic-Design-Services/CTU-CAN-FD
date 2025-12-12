@@ -115,17 +115,17 @@ package body txt_buffer_transitions_2_ftest is
     procedure txt_buffer_transitions_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable command            :       SW_command := SW_command_rst_val;
-        variable status             :       SW_status;
-	    variable txt_buf_state	    :	    SW_TXT_Buffer_state_type;
-        variable mode               :       SW_mode;
+        variable can_frame          :       t_ctu_frame;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable status             :       t_ctu_status;
+	    variable txt_buf_state	    :	    t_ctu_txt_buff_state;
+        variable mode               :       t_ctu_mode;
         variable num_txt_bufs       :       natural;
         variable frame_sent         :       boolean;
-        variable err_counters       :       SW_error_counters;
-        variable fault_state        :       SW_fault_state;
+        variable err_counters       :       t_ctu_err_ctrs;
+        variable fault_state        :       t_ctu_fault_state;
         variable bus_val            :       std_logic;
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
         variable tseg1              :       natural;
     begin
 
@@ -133,10 +133,10 @@ package body txt_buffer_transitions_2_ftest is
         -- @1. Loop for all TXT Buffers and incrementing wait times within a bit:
         -------------------------------------------------------------------------------------------
         info_m("Step 1");
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
 
         -- Query the bus timing
-        CAN_read_timing_v(bus_timing, DUT_NODE, chn);
+        ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
         tseg1 := bus_timing.tq_nbt * (1 + bus_timing.prop_nbt + bus_timing.ph1_nbt);
 
         for txt_buf_index in 1 to num_txt_bufs loop
@@ -149,12 +149,12 @@ package body txt_buffer_transitions_2_ftest is
                 -----------------------------------------------------------------------------------
                 info_m("Step 2.1 with wait cycles: " & integer'image(wait_cycles));
 
-                CAN_generate_frame(CAN_frame);
-                CAN_insert_TX_frame(CAN_frame, txt_buf_index, DUT_NODE, chn);
+                generate_can_frame(can_frame);
+                ctu_put_tx_frame(can_frame, txt_buf_index, DUT_NODE, chn);
 
-                CAN_wait_sync_seg(DUT_NODE, chn);
+                ctu_wait_sync_seg(DUT_NODE, chn);
 
-                send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
                 -----------------------------------------------------------------------------------
                 -- @2.2. Wait until bit phase small amount of time before sample point + per-loop
@@ -173,7 +173,7 @@ package body txt_buffer_transitions_2_ftest is
                     clk_agent_wait_cycle(chn);
                 end loop;
 
-                send_TXT_buf_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
 
                 -----------------------------------------------------------------------------------
                 -- @2.3. Wait for some time. Now either TXT Buffer must have been aborted, or the
@@ -184,7 +184,7 @@ package body txt_buffer_transitions_2_ftest is
 
                 wait for 1000 ns;
 
-                get_tx_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
+                ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
                 check_m(txt_buf_state = buf_ab_progress or txt_buf_state = buf_aborted,
                         "TXT Buffer " & integer'image(txt_buf_index) & " aborted or abort in progress");
 
@@ -196,7 +196,7 @@ package body txt_buffer_transitions_2_ftest is
                 -- The first cycle where we are in abort in progress is where we have hit
                 -- simultaneous lock and Set Abort
                 info_m("TXT Buffer abort in Progress!");
-                CAN_wait_bus_idle(DUT_NODE, chn);
+                ctu_wait_bus_idle(DUT_NODE, chn);
 
                 exit;
 

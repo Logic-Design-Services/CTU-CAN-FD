@@ -115,24 +115,24 @@ package body rx_err_log_timestamp_ftest is
     procedure rx_err_log_timestamp_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
+        variable can_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
 
-        variable mode_1             : SW_mode := SW_mode_rst_val;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
 
         variable rand_vect          : std_logic_vector(31 downto 0);
         variable ts_start           : std_logic_vector(63 downto 0);
         variable n_bits             : natural;
         variable can_tx             : std_logic;
-        variable pc_dbg             : SW_PC_Debug;
+        variable ff             : t_ctu_frame_field;
         variable exit_flag          : std_logic;
         variable exp_ts             : unsigned(63 downto 0);
-        variable bust               : bit_time_config_type;
+        variable bust               : t_ctu_bit_time_cfg;
         variable diff               : unsigned(63 downto 0);
         variable cycles_per_bit     : integer;
 
-        variable rx_buf_info        : SW_RX_Buffer_info;
-        variable err_counters       : SW_error_counters;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
+        variable err_counters       : t_ctu_err_ctrs;
     begin
 
         -------------------------------------------------------------------------------------------
@@ -142,16 +142,16 @@ package body rx_err_log_timestamp_ftest is
 
         mode_1.error_logging := true;
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         -- Reset error counters not to go error passive in many iterations!
         err_counters.tx_counter := 0;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
         rand_logic_vect_v(rand_vect, 0.5);
-        ftr_tb_set_timestamp(('0' & rand_vect(30 downto 0) & rand_vect), chn);
+        set_timestamp(('0' & rand_vect(30 downto 0) & rand_vect), chn);
 
-        CAN_read_timing_v(bust, DUT_NODE, chn);
+        ctu_get_bit_time_cfg_v(bust, DUT_NODE, chn);
         cycles_per_bit := bust.tq_nbt * (1 + bust.prop_nbt + bust.ph1_nbt + bust.ph2_nbt);
 
         -------------------------------------------------------------------------------------------
@@ -161,15 +161,15 @@ package body rx_err_log_timestamp_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(can_frame);
         -- This is to easy compute the expected timestamp in Error frame!
-        CAN_frame.brs := BR_NO_SHIFT;
+        can_frame.brs := BR_NO_SHIFT;
 
-        CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(can_frame, 1, DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
-        CAN_read_timestamp(ts_start, DUT_NODE, chn);
+        ctu_read_timestamp(ts_start, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @3. Wait for random number of DUT bits with dominant bit being sent.
@@ -182,27 +182,27 @@ package body rx_err_log_timestamp_ftest is
 
         while (true) loop
             n_bits := n_bits + 1;
-            CAN_wait_sample_point(DUT_NODE, chn, false);
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn, false);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             wait for 20 ns;
 
             get_can_tx(DUT_NODE, can_tx, chn);
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
             rand_logic_v(exit_flag, 0.025);
 
             -- With a chance of 2.5 % quit on a Dominant bit. At latest in CRC Delim!
-            if ((exit_flag = '1' and can_tx = DOMINANT) or (pc_dbg = pc_deb_crc_delim)) then
+            if ((exit_flag = '1' and can_tx = DOMINANT) or (ff = ff_crc_delim)) then
                 exit;
             end if;
         end loop;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         wait for 20 ns;
         release_bus_level(chn);
 
-        CAN_wait_error_frame(DUT_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_err_frame(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @4. Pre-compute expected value of Logged RX Error frame timestamp based on
@@ -214,10 +214,10 @@ package body rx_err_log_timestamp_ftest is
 
         exp_ts := unsigned(ts_start) + (n_bits + 1) * cycles_per_bit;
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
 
         -- Check timestamp !

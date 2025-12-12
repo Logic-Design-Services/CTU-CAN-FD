@@ -113,19 +113,19 @@ package body status_idle_ftest is
         signal      chn             : inout  t_com_channel
     ) is        
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
-        variable stat_2             :     SW_status;
+        variable stat_1             :     t_ctu_status;
+        variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable ff             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
 
-        variable mode_1             :     SW_mode;
+        variable mode_1             :     t_ctu_mode;
         
-        variable err_counters       :     SW_error_counters := (0,0,0,0);
-        variable fault_state        :     SW_fault_state;
+        variable err_counters       :     t_ctu_err_ctrs := (0,0,0,0);
+        variable fault_state        :     t_ctu_fault_state;
 
     begin
 
@@ -137,41 +137,41 @@ package body status_idle_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.bus_status, "DUT idle after reset!");
 
-        CAN_generate_frame(frame_1);
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+        generate_can_frame(frame_1);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.bus_status, "DUT not idle after frame started!");
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg /= pc_deb_intermission) loop
+        while (ff /= ff_intermission) loop
             wait for 200 ns;
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
 
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg /= pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff /= ff_intermission) then
                 check_false_m(stat_1.bus_status, "DUT not idle during frame!");
             end if;
         end loop;
         
-        while (pc_dbg = pc_deb_intermission) loop
+        while (ff = ff_intermission) loop
             wait for 200 ns;
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
 
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg = pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff = ff_intermission) then
                 check_false_m(stat_1.bus_status, "DUT not idle during frame!");
             end if;
         end loop;
         mem_bus_agent_enable_transaction_reporting(chn);
         
         wait for 20 ns; -- To cover latency of RX Trigger for sure!
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.bus_status, "DUT idle after frame has ended!");
 
         -----------------------------------------------------------------------
@@ -182,38 +182,38 @@ package body status_idle_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        CAN_generate_frame(frame_1);
-        CAN_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+        generate_can_frame(frame_1);
+        ctu_send_frame(frame_1, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_false_m(stat_1.bus_status, "DUT not idle after frame started!");
         
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg /= pc_deb_intermission) loop
+        while (ff /= ff_intermission) loop
             wait for 200 ns;
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
 
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg /= pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff /= ff_intermission) then
                 check_false_m(stat_1.bus_status, "DUT not idle during frame!");
             end if;
         end loop;
 
-        while (pc_dbg = pc_deb_intermission) loop
+        while (ff = ff_intermission) loop
             wait for 200 ns;
-            get_controller_status(stat_1, DUT_NODE, chn);
+            ctu_get_status(stat_1, DUT_NODE, chn);
 
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg = pc_deb_intermission) then
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff = ff_intermission) then
                 check_false_m(stat_1.bus_status, "DUT not idle during frame!");
             end if;
         end loop;
         mem_bus_agent_enable_transaction_reporting(chn);
 
         wait for 20 ns; -- To cover latency of RX Trigger for sure!
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.bus_status, "DUT idle after frame has ended!");
 
         -----------------------------------------------------------------------
@@ -223,15 +223,15 @@ package body status_idle_ftest is
         info_m("Step 3");
 
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         err_counters.tx_counter := 256;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_bus_off, "Unit bus-off!");
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.bus_status, "DUT STAT[IDLE] set when node is bus-off!");        
 
         wait for 100 ns;

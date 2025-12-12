@@ -96,7 +96,8 @@ source_list:
 
     - file: txt_buffer/txt_buffer_fsm.vhd
     - file: txt_buffer/txt_buffer_ram.vhd
-    - file: txt_buffer/txt_buffer.vhd
+    - file: txt_buffer/txt_buffer_even.vhd
+    - file: txt_buffer/txt_buffer_odd.vhd
 
     - file: can_top_level.vhd
     - file: can_top_ahb.vhd

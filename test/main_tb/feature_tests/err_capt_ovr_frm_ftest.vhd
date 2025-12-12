@@ -110,17 +110,17 @@ package body err_capt_ovr_frm_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;    
+        variable stat_1             :     t_ctu_status;    
 
         variable wait_time          :     natural;
         variable frame_sent         :     boolean;
-        variable err_capt           :     SW_error_capture;
-        variable mode_2             :     SW_mode;
+        variable err_capt           :     t_ctu_err_capt;
+        variable mode_2             :     t_ctu_mode;
         
-        variable pc_dbg             :     SW_PC_Debug;
+        variable ff             :     t_ctu_frame_field;
     begin
 
         -----------------------------------------------------------------------
@@ -128,7 +128,7 @@ package body err_capt_ovr_frm_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
         
         -----------------------------------------------------------------------
@@ -139,37 +139,37 @@ package body err_capt_ovr_frm_ftest is
         --     transmitting Error frame. Read Error code capture and check that
         --     error occured in Overload frame and it was a bit error!
         -----------------------------------------------------------------------        
-        CAN_generate_frame(frame_1);
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
+        generate_can_frame(frame_1);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         wait for 20 ns;
         
         -- Cause overload condition
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns; -- To be sure that opposite bit is sampled!
         release_bus_level(chn);
         
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-        check_m(pc_dbg = pc_deb_overload, "Overload frame transmitted!");
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        check_m(ff = ff_overload, "Overload frame transmitted!");
         
         rand_int_v(4, wait_time);
         info_m("Waiting for: " & integer'image(wait_time) & " bits!");
         for i in 1 to wait_time loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop; 
         wait for 20 ns;
 
         -- Cause bit error in Overload frame!
         force_bus_level(RECESSIVE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns; -- To be sure that opposite bit is sampled!
         release_bus_level(chn);
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.error_transmission, "Error frame is being transmitted!");
 
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_type = can_err_bit, "Bit error detected!");
         check_m(err_capt.err_pos = err_pos_overload_frame,
                 "Error detected in Overload frame!");

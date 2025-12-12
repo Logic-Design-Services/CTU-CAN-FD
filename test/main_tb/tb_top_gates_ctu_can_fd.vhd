@@ -101,6 +101,8 @@ entity tb_top_ctu_can_fd is
         iterations              : natural := 1;
         timeout                 : string := "10 ms";
 
+        is_force_supported      : boolean := false;
+
         -- Reference test iterations
         reference_iterations    : natural range 1 to 1000 := 10;
 
@@ -121,6 +123,10 @@ entity tb_top_ctu_can_fd is
         cfg_ph_1_fd             : natural := 1;
         cfg_ph_2_fd             : natural := 2;
         cfg_sjw_fd              : natural := 2;
+
+        -- Secondary sample point config
+        cfg_ssp_src             : natural := 0;
+        cfg_ssp_offset          : natural := 10;
 
         -- DUT configuration
         rx_buffer_size          : natural := 64;
@@ -194,6 +200,10 @@ architecture tb of tb_top_ctu_can_fd is
        cfg_ph_1_fd             : natural;
        cfg_ph_2_fd             : natural;
        cfg_sjw_fd              : natural;
+
+       -- Secondary sample point config
+       cfg_ssp_src             : natural;
+       cfg_ssp_offset          : natural;
 
        -- Seed
        seed                    : natural := 0;
@@ -297,6 +307,9 @@ begin
         cfg_ph_2_fd             => cfg_ph_2_fd,
         cfg_sjw_fd              => cfg_sjw_fd,
 
+        cfg_ssp_src             => cfg_ssp_src,
+        cfg_ssp_offset          => cfg_ssp_offset,
+
         seed                    => seed,
         reference_iterations    => reference_iterations
     )
@@ -362,6 +375,7 @@ begin
         info("  Reference test iterations: " & integer'image(reference_iterations));
         info("  Timeout: " & timeout);
         info("  Finish on error: " & integer'image(finish_on_error));
+        info("  Force support: " & boolean'image(is_force_supported));
         info("");
         info("DUT configuration:");
         info("  RX buffer size: " & integer'image(rx_buffer_size));
@@ -387,11 +401,16 @@ begin
         info("  PROP: " & integer'image(cfg_prop_fd));
         info("  PH2: " & integer'image(cfg_ph_2_fd));
         info("  SJW: " & integer'image(cfg_sjw_fd));
+        info("Secondary sample point:");
+        info("  Source: " & integer'image(cfg_ssp_src));
+        info("  Offset: " & integer'image(cfg_ssp_offset));
         info("");
         info("***************************************************************");
 
         show(get_logger(default_checker), display_handler, pass);
         set_log_verbosity(log_level, global_verbosity);
+
+        tb_force.set_force_supported(is_force_supported);
 
         for i in 1 to iterations loop
             info("***************************************************************");

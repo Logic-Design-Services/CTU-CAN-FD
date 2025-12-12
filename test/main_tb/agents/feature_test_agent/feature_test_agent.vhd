@@ -106,7 +106,11 @@ entity feature_test_agent is
         cfg_prop_fd             : natural;
         cfg_ph_1_fd             : natural;
         cfg_ph_2_fd             : natural;
-        cfg_sjw_fd              : natural
+        cfg_sjw_fd              : natural;
+
+        -- Secondary sample point config
+        cfg_ssp_src             : natural;
+        cfg_ssp_offset          : natural
     );
     port(
         -----------------------------------------------------------------------
@@ -361,7 +365,7 @@ begin
     ---------------------------------------------------------------------------
     ---------------------------------------------------------------------------
     test_process : process
-        variable bus_timing     :    bit_time_config_type :=(
+        variable bus_timing     :    t_ctu_bit_time_cfg :=(
             tq_nbt      => cfg_brp,
             tq_dbt      => cfg_brp_fd,
             prop_nbt    => cfg_prop,
@@ -384,26 +388,35 @@ begin
         info_m("Clearing TXT Buffer memories!");
         info_m("***************************************************************");
         info_m("DUT node:");
-        CAN_init_txtb_mems(DUT_NODE, default_channel);
+        ctu_init_txtb_mems(DUT_NODE, default_channel);
         info_m("Test node:");
-        CAN_init_txtb_mems(TEST_NODE, default_channel);
+        ctu_init_txtb_mems(TEST_NODE, default_channel);
 
         -- Configure bit timing
-        CAN_configure_timing(bus_timing, DUT_NODE, default_channel);
-        CAN_configure_timing(bus_timing, TEST_NODE, default_channel);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, default_channel);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, default_channel);
+
+        -- Configure secondary sample point
+        ctu_set_ssp(t_ctu_ssp_kind'val(cfg_ssp_src),
+                          std_logic_vector(to_unsigned(cfg_ssp_offset, 8)),
+                          DUT_NODE, default_channel);
+
+        ctu_set_ssp(t_ctu_ssp_kind'val(cfg_ssp_src),
+                          std_logic_vector(to_unsigned(cfg_ssp_offset, 8)),
+                          TEST_NODE, default_channel);
 
         -- Set default retransmitt limit to 0 (Failed frames are not retransmited)
-        CAN_enable_retr_limit(true, 0, DUT_NODE, default_channel);
-        CAN_enable_retr_limit(true, 0, TEST_NODE, default_channel);
+        ctu_set_retr_limit(true, 0, DUT_NODE, default_channel);
+        ctu_set_retr_limit(true, 0, TEST_NODE, default_channel);
 
         -- Enable CAN controllers
-        CAN_turn_controller(true, DUT_NODE, default_channel);
-        CAN_turn_controller(true, TEST_NODE, default_channel);
+        ctu_turn(true, DUT_NODE, default_channel);
+        ctu_turn(true, TEST_NODE, default_channel);
         info_m("Controllers are ON");
 
         -- Wait till integration is over in both nodes
-        CAN_wait_bus_on(DUT_NODE, default_channel);
-        CAN_wait_bus_on(TEST_NODE, default_channel);
+        ctu_wait_err_active(DUT_NODE, default_channel);
+        ctu_wait_err_active(TEST_NODE, default_channel);
         info_m("Bus integration finished");
 
         -- Execute feature test

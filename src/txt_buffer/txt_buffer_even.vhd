@@ -68,7 +68,7 @@
 
 --------------------------------------------------------------------------------
 -- Module:
---  TXT Buffer
+--  TXT Buffer - Even index
 --
 -- Purpose:
 --  Stores single frame for transmission in internal RAM. Accessed from Memory
@@ -89,7 +89,7 @@ use ctu_can_fd_rtl.CAN_FD_frame_format.all;
 
 use ctu_can_fd_rtl.can_registers_pkg.all;
 
-entity txt_buffer is
+entity txt_buffer_even is
     generic (
         -- Number of TXT Buffers
         G_TXT_BUFFER_COUNT      :     natural range 2 to 8;
@@ -148,9 +148,6 @@ entity txt_buffer is
         txtb_port_a_be          : in  std_logic_vector(3 downto 0);
         txtb_state              : out std_logic_vector(3 downto 0);
 
-        -- TXT Buffer is backup buffer
-        txtb_is_bb              : in  std_logic;
-
         -------------------------------------------------------------------------------------------
         -- Interrupt Manager Interface
         -------------------------------------------------------------------------------------------
@@ -193,18 +190,15 @@ entity txt_buffer is
         -- Parity error really occured
         txtb_parity_error_valid : out std_logic;
 
-        -- Parity error in Backup buffer
-        txtb_bb_parity_error    : out std_logic;
-
         -- Index of TXT Buffer which is being read
         txtb_index_muxed        : in  natural range 0 to G_TXT_BUFFER_COUNT - 1
     );
 end entity;
 
-architecture rtl of txt_buffer is
+architecture rtl of txt_buffer_even is
 
     -----------------------------------------------------------------------------------------------
-    -- Signal aliases
+    -- Internal signals
     -----------------------------------------------------------------------------------------------
 
     -- TXT Buffer memory protection
@@ -218,6 +212,17 @@ architecture rtl of txt_buffer is
 
     -- TXT Buffer parity error
     signal txtb_parity_error_valid_i    : std_logic;
+
+    -- TXT Buffer SW commands - registered
+    signal mr_tx_command_txce_q         : std_logic;
+    signal mr_tx_command_txcr_q         : std_logic;
+    signal mr_tx_command_txca_q         : std_logic;
+
+    -- Auxiliarly signals
+    signal tx_command_txce_valid        : std_logic;
+    signal tx_command_txcr_valid        : std_logic;
+    signal abort_applied                : std_logic;
+    signal abort_or_skipped             : std_logic;
 
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------
@@ -280,15 +285,36 @@ begin
 
     txtb_parity_error_valid <= txtb_parity_error_valid_i;
 
-    -----------------------------------------------------------------------------------------------
-    -- If parity error occurs in Backup Buffer during TXTB modes, then set STATUS[TXDPE] = 1.
-    -----------------------------------------------------------------------------------------------
-    txtb_bb_parity_error <= '1' when (txtb_parity_error_valid_i = '1' and
-                                      (G_ID mod 2) = 1 and
-                                      mr_mode_txbbm = '1')
-                                else
-                            '0';
 
+    -----------------------------------------------------------------------------------------------
+    -- Register the TXT Buffer commands -> Breaks paths from memory bus
+    -----------------------------------------------------------------------------------------------
+    sw_command_reg_proc : process(res_n, clk_sys)
+    begin
+        if (res_n = '0') then
+            mr_tx_command_txce_q <= '0';
+            mr_tx_command_txcr_q <= '0';
+            mr_tx_command_txca_q <= '0';
+        elsif (rising_edge(clk_sys)) then
+            mr_tx_command_txce_q <= mr_tx_command_txce;
+            mr_tx_command_txcr_q <= mr_tx_command_txcr;
+            mr_tx_command_txca_q <= mr_tx_command_txca;
+        end if;
+    end process;
+
+    tx_command_txce_valid <= '1' when (mr_tx_command_txce_q = '1' and mr_tx_command_txbi = '1')
+                                 else
+                             '0';
+    tx_command_txcr_valid <= '1' when (mr_tx_command_txcr_q = '1' and mr_tx_command_txbi = '1')
+                                 else
+                             '0';
+
+    abort_applied <= '1' when (mr_tx_command_txca_q = '1' and mr_tx_command_txbi = '1')
+                         else
+                     '0';
+
+    -- Even TXT Buffer can't be skipped, only abort applies here
+    abort_or_skipped <= abort_applied;
 
     -----------------------------------------------------------------------------------------------
     -- Clock gater for TXT Buffer RAM
@@ -358,16 +384,15 @@ begin
         mr_mode_rom             => mr_mode_rom,                 -- IN
         mr_settings_tbfbo       => mr_settings_tbfbo,           -- IN
 
-        mr_tx_command_txce      => mr_tx_command_txce,          -- IN
-        mr_tx_command_txcr      => mr_tx_command_txcr,          -- IN
-        mr_tx_command_txca      => mr_tx_command_txca,          -- IN
-        mr_tx_command_txbi      => mr_tx_command_txbi,          -- IN
+        tx_command_txce_valid   => tx_command_txce_valid,       -- IN
+        tx_command_txcr_valid   => tx_command_txcr_valid,       -- IN
+        abort_applied           => abort_applied,               -- IN
+        abort_or_skipped        => abort_or_skipped,            -- IN
 
         txtb_hw_cmd             => txtb_hw_cmd,                 -- IN
         txtb_hw_cmd_cs          => txtb_hw_cmd_cs,              -- IN
         is_bus_off              => is_bus_off,                  -- IN
         txtb_parity_error_valid => txtb_parity_error_valid_i,   -- IN
-        txtb_is_bb              => txtb_is_bb,                  -- IN
 
         txtb_allow_bb           => txtb_allow_bb,               -- OUT
         txtb_user_accessible    => txtb_user_accessible,        -- OUT

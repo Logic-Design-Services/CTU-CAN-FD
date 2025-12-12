@@ -98,11 +98,10 @@ end dlc_decoder;
 
 architecture rtl of dlc_decoder is
 
-    signal data_len_8_to_64         : std_logic_vector(6 downto 0);
     signal data_len_8_to_64_integer : natural range 0 to 64;
 
     -- Data length fot standard CAN 2.0 frame
-    signal data_len_can_2_0         : std_logic_vector(6 downto 0);
+    signal data_len_can_2_0         : std_logic_vector(3 downto 0);
 
     -- Data length fot standard CAN FD frame
     signal data_len_can_fd          : std_logic_vector(6 downto 0);
@@ -125,27 +124,23 @@ begin
         64 when (dlc = "1111") else
         0;
 
-    -- Typecast byte length in CAN FD frame to vector
-    data_len_8_to_64 <= std_logic_vector(to_unsigned(data_len_8_to_64_integer, 7));
-
-
     -- Mux for CAN 2.0 DLC:
     --  1. Take DLC itself for values less or equal than 8
     --  2. Hard-code 8 (all DLCs above 8 mean 8 bytes in spec.)
-    data_len_can_2_0 <= ("000" & dlc) when (dlc_int <= 8)
-                                      else
-                        "0001000";
+    data_len_can_2_0 <= dlc when (dlc_int <= 8)
+                            else
+                        "1000";
 
     -- Mux for CAN FD DLC:
     --  1. Take DLC itself for values less or equal than 8
     --  2. Use decoder above for values higher than 8.
     data_len_can_fd <= ("000" & dlc) when (dlc_int <= 8)
                                      else
-                       data_len_8_to_64;
+                       std_logic_vector(to_unsigned(data_len_8_to_64_integer, 7));
 
     -- According the CAN frame type, select output vector
-    data_length <= data_len_can_2_0 when (frame_type = NORMAL_CAN)
-                                    else
+    data_length <= "000" & data_len_can_2_0 when (frame_type = NORMAL_CAN)
+                                            else
                    data_len_can_fd;
 
 end rtl;

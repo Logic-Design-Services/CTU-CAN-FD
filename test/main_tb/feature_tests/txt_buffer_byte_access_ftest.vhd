@@ -106,13 +106,13 @@ package body txt_buffer_byte_access_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_tx           :     SW_CAN_frame_type;
-        variable frame_rx           :     SW_CAN_frame_type;
+        variable frame_tx           :     t_ctu_frame;
+        variable frame_rx           :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable ff             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
         variable frame_equal        :     boolean;
     begin
@@ -123,21 +123,21 @@ package body txt_buffer_byte_access_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_generate_frame(frame_tx);
+        generate_can_frame(frame_tx);
         frame_tx.data_length := 64;
         frame_tx.frame_format := FD_CAN;
-        decode_length(frame_tx.data_length, frame_tx.dlc);
-        decode_dlc_rx_buff(frame_tx.dlc, frame_tx.rwcnt);
+        length_to_dlc(frame_tx.data_length, frame_tx.dlc);
+        dlc_to_rwcnt(frame_tx.dlc, frame_tx.rwcnt);
         for i in 0 to 63 loop
             rand_logic_vect_v(frame_tx.data(i), 0.5);
         end loop;
 
-        CAN_insert_TX_frame(frame_tx, 1, DUT_NODE, chn, byte_access => true);
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_put_tx_frame(frame_tx, 1, DUT_NODE, chn, byte_access => true);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
         
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
         
         -----------------------------------------------------------------------
         -- @2. Read received frame from Test Node and check that it is matching
@@ -145,8 +145,8 @@ package body txt_buffer_byte_access_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        CAN_read_frame(frame_rx, TEST_NODE, chn);
-        CAN_compare_frames(frame_rx, frame_tx, false, frame_equal);
+        ctu_read_frame(frame_rx, TEST_NODE, chn);
+        compare_can_frames(frame_rx, frame_tx, false, frame_equal);
 
         check_m(frame_equal, "TX/RX frame match");
 

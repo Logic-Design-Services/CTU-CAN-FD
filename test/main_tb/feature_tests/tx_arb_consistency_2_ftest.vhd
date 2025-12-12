@@ -78,6 +78,8 @@
 --      for transmission.
 --
 -- @Test sequence:
+--  @1. Reconfigure bit timing to sufficiently high for TXT Buffer validation
+--      to fit within one bit time.
 --  @1.1 Loop with incrementing wait time:
 --      @1. Generate two random frames and insert them to TXT Buffer 1 and 2.
 --          Configure priority of TXT Buffer 1 higher than TXT Buffer 2.
@@ -113,56 +115,88 @@ package body tx_arb_consistency_2_ftest is
     procedure tx_arb_consistency_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_rx_1     :       SW_CAN_frame_type;
-        variable CAN_frame_rx_2     :       SW_CAN_frame_type;
-        variable CAN_frame_tx_1     :       SW_CAN_frame_type;
-        variable CAN_frame_tx_2     :       SW_CAN_frame_type;
+        variable can_frame_rx_1     :       t_ctu_frame;
+        variable can_frame_rx_2     :       t_ctu_frame;
+        variable can_frame_tx_1     :       t_ctu_frame;
+        variable can_frame_tx_2     :       t_ctu_frame;
 
         variable frame_equal        :       boolean := false;
         variable tmp_int            :       natural := 0;
 
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
 
         variable frames_equal_1     :       boolean;
         variable frames_equal_2     :       boolean;
     begin
 
         -----------------------------------------------------------------------
-        --  @1 Loop with incrementing wait time:
+        -- @1. Reconfigure bit timing to sufficiently high for TXT Buffer
+        --     validation to fit within one bit time.
+        -----------------------------------------------------------------------
+        info_m("Step 1");
+
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
+
+        -- For this test, relaxed timing is needed since the test relies on the
+        -- fact that TXT Buffer validation will finish within one bit!
+        bus_timing.prop_nbt := 10;
+        bus_timing.ph1_nbt := 5;
+        bus_timing.ph2_nbt := 5;
+        bus_timing.sjw_nbt := 5;
+        bus_timing.tq_nbt := 2;
+
+        bus_timing.prop_dbt := 10;
+        bus_timing.ph1_dbt := 5;
+        bus_timing.ph2_dbt := 5;
+        bus_timing.sjw_nbt := 5;
+        bus_timing.tq_dbt := 1;
+
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
+
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
+
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
+
+        -----------------------------------------------------------------------
+        --  @2 Loop with incrementing wait time:
         -----------------------------------------------------------------------
         for wait_cycles in 0 to 10 loop
 
             -----------------------------------------------------------------------
-            -- @1.1 Generate two random frames and insert them to TXT Buffer 1 and
+            -- @2.1 Generate two random frames and insert them to TXT Buffer 1 and
             --      2. Configure priority of TXT Buffer 1 higher than TXT Buffer 2.
             -----------------------------------------------------------------------
-            info_m("Step 1");
+            info_m("Step 2.1");
 
-            CAN_generate_frame(CAN_frame_tx_1);
-            CAN_generate_frame(CAN_frame_tx_2);
+            generate_can_frame(can_frame_tx_1);
+            generate_can_frame(can_frame_tx_2);
 
-            CAN_insert_TX_frame(CAN_frame_tx_1, 1, DUT_NODE, chn);
-            CAN_insert_TX_frame(CAN_frame_tx_2, 2, DUT_NODE, chn);
+            ctu_put_tx_frame(can_frame_tx_1, 1, DUT_NODE, chn);
+            ctu_put_tx_frame(can_frame_tx_2, 2, DUT_NODE, chn);
 
-            CAN_configure_tx_priority(1, 5, DUT_NODE, chn);
-            CAN_configure_tx_priority(2, 3, DUT_NODE, chn);
+            ctu_set_txt_buf_prio(1, 5, DUT_NODE, chn);
+            ctu_set_txt_buf_prio(2, 3, DUT_NODE, chn);
 
-            CAN_read_timing_v(bus_timing, DUT_NODE, chn);
-
-            -----------------------------------------------------------------------
-            -- @2. Wait until sample point and issue Set ready command to TXT
-            --     Buffer 2.
-            -----------------------------------------------------------------------
-            info_m("Step 2");
-
-            CAN_wait_sample_point(DUT_NODE, chn, false);
-            send_TXT_buf_cmd(buf_set_ready, 2, DUT_NODE, chn);
+            ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
 
             -----------------------------------------------------------------------
-            -- @3. Wait number of cycles given by iteration, and issue Set Ready
-            --     Command to TXT Buffer 1.
+            -- @2.2 Wait until sample point and issue Set ready command to TXT
+            --      Buffer 2.
             -----------------------------------------------------------------------
-            info_m("Step 3");
+            info_m("Step 2.2");
+
+            ctu_wait_sample_point(DUT_NODE, chn, false);
+            ctu_give_txt_cmd(buf_set_ready, 2, DUT_NODE, chn);
+
+            -----------------------------------------------------------------------
+            -- @2.3 Wait number of cycles given by iteration, and issue Set Ready
+            --      Command to TXT Buffer 1.
+            -----------------------------------------------------------------------
+            info_m("Step 2.3");
 
             if (wait_cycles > 0) then
                 for i in 1 to wait_cycles loop
@@ -170,27 +204,30 @@ package body tx_arb_consistency_2_ftest is
                 end loop;
             end if;
 
-            send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
             -----------------------------------------------------------------------
-            -- @4. Wait until frame is sent, and verify that frame from TXT Buffer 1
-            --      was succesfully sent (wait times are shorter than bit time!)
+            -- @2.4 Wait until frame is sent, and verify that frame from
+            --      TXT Buffer 1 was succesfully sent
+            --      (wait times are shorter than bit time!)
             -----------------------------------------------------------------------
-            CAN_wait_frame_sent(TEST_NODE, chn);
+            info_m("Step 2.4");
 
-            CAN_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
-            CAN_compare_frames(CAN_frame_rx_1, CAN_frame_tx_1, false, frames_equal_1);
+            ctu_wait_frame_sent(TEST_NODE, chn);
+
+            ctu_read_frame(can_frame_rx_1, TEST_NODE, chn);
+            compare_can_frames(can_frame_rx_1, can_frame_tx_1, false, frames_equal_1);
 
             check_m(frames_equal_1, "First frame was properly received!");
 
-            CAN_wait_frame_sent(TEST_NODE, chn);
-            CAN_read_frame(CAN_frame_rx_2, TEST_NODE, chn);
-            CAN_compare_frames(CAN_frame_rx_2, CAN_frame_tx_2, false, frames_equal_2);
+            ctu_wait_frame_sent(TEST_NODE, chn);
+            ctu_read_frame(can_frame_rx_2, TEST_NODE, chn);
+            compare_can_frames(can_frame_rx_2, can_frame_tx_2, false, frames_equal_2);
 
             check_m(frames_equal_2, "Second frame was properly received!");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
         end loop;
 

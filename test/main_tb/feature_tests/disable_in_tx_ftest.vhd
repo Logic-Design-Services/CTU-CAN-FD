@@ -110,8 +110,8 @@ package body disable_in_tx_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         variable r_data     : std_logic_vector(31 downto 0) := (OTHERS => '0');
-        variable CAN_frame  : SW_CAN_frame_type;
-        variable CAN_frame_2: SW_CAN_frame_type;
+        variable can_frame  : t_ctu_frame;
+        variable can_frame_2: t_ctu_frame;
         variable outcome    : boolean;
         variable frame_sent : boolean;
     begin
@@ -121,16 +121,16 @@ package body disable_in_tx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
         
         -----------------------------------------------------------------------
         -- @2. Wait until frame starts in DUT, and disable DUT.
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
-        CAN_turn_controller(false, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Wait until bus is idle in Test Node (Test Node will transmitt
@@ -138,7 +138,7 @@ package body disable_in_tx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
         
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
         wait for 1000 ns;
 
         -----------------------------------------------------------------------
@@ -147,18 +147,18 @@ package body disable_in_tx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4");
         
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_wait_bus_on(DUT_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
 
-        CAN_generate_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
-        CAN_read_frame(CAN_frame_2, TEST_NODE, chn);
-        CAN_compare_frames(CAN_frame, CAN_frame_2, false, outcome);
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
+        compare_can_frames(can_frame, can_frame_2, false, outcome);
 
         check_m(outcome, "TX/RX frames equal");
 

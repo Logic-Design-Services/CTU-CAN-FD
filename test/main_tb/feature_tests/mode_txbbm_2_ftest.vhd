@@ -114,27 +114,27 @@ package body mode_txbbm_2_ftest is
     procedure mode_txbbm_2_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
         
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
-        variable err_counters_2     :       SW_error_counters := (0, 0, 0, 0);
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
+        variable err_counters_2     :       t_ctu_err_ctrs := (0, 0, 0, 0);
 
-        variable fault_th           :       SW_fault_thresholds;
-        variable fault_th_2         :       SW_fault_thresholds;
+        variable fault_th           :       t_ctu_fault_thresholds;
+        variable fault_th_2         :       t_ctu_fault_thresholds;
 
         variable txt_buf_count      :       natural;
         variable tmp_int            :       natural;
         variable txt_buf_index      :       natural;
 
         variable txt_buf_vector     :       std_logic_vector(7 downto 0) := x"00";
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
 
-        variable status_1           :       SW_status;
+        variable status_1           :       t_ctu_status;
     begin
 
         -----------------------------------------------------------------------
@@ -146,14 +146,14 @@ package body mode_txbbm_2_ftest is
 
         mode_1.tx_buf_backup := true;
         mode_1.parity_check := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
 
-        get_tx_buf_count(txt_buf_count, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Loop 10 times
@@ -170,18 +170,18 @@ package body mode_txbbm_2_ftest is
 
             for i in 1 to txt_buf_count loop
                 rand_int_v(7, tmp_int);
-                CAN_configure_tx_priority(i, tmp_int, DUT_NODE, chn);
+                ctu_set_txt_buf_prio(i, tmp_int, DUT_NODE, chn);
             end loop;
 
             -- Pick random TXT Buffer which is "original" buffer.
-            pick_random_txt_buffer(txt_buf_index, DUT_NODE, chn);
+            ctu_get_rand_txt_buf(txt_buf_index, DUT_NODE, chn);
             if (txt_buf_index mod 2 = 0) then
                 txt_buf_index := txt_buf_index - 1;
             end if;
 
-            CAN_generate_frame(CAN_TX_frame);
-            CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
-            CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index + 1, DUT_NODE, chn);
+            generate_can_frame(can_tx_frame);
+            ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(can_tx_frame, txt_buf_index + 1, DUT_NODE, chn);
             
             -----------------------------------------------------------------------
             -- @2.2 Send set ready command to selected original TXT Buffer. Wait
@@ -194,13 +194,13 @@ package body mode_txbbm_2_ftest is
             txt_buf_vector := x"00";
             txt_buf_vector(txt_buf_index - 1) := '1';
 
-            send_TXT_buf_cmd(buf_set_ready, txt_buf_vector, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, txt_buf_vector, DUT_NODE, chn);
 
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
             
-            get_tx_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_tx_progress, "'Original' TXT Buffer is in 'TX in Progress'");
-            get_tx_buf_state(txt_buf_index + 1, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index + 1, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_ready, "'Backup' TXT Buffer is in 'TX Ready'");
 
             -----------------------------------------------------------------------
@@ -210,16 +210,16 @@ package body mode_txbbm_2_ftest is
             -----------------------------------------------------------------------
             info_m("Step 2.3");
             
-            CAN_wait_frame_sent(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
-            get_tx_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_failed, "'Original' TXT Buffer is in 'TX Failed'");
-            get_tx_buf_state(txt_buf_index + 1, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index + 1, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_aborted, "'Backup' TXT Buffer is in 'Aborted'");
 
-            get_controller_status(status_1, DUT_NODE, chn);
+            ctu_get_status(status_1, DUT_NODE, chn);
             check_false_m(status_1.tx_parity_error, "Parity error not set!");
             check_false_m(status_1.tx_double_parity_error, "Double parity error not set!");
         end loop;

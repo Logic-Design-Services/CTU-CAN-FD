@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2021-present Ondrej Ille
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to use, copy, modify, merge, publish, distribute the Component for
 -- educational, research, evaluation, self-interest purposes. Using the
 -- Component for commercial purposes is forbidden unless previously agreed with
 -- Copyright holder.
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,38 +20,38 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 -- -------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2015-2020 MIT License
--- 
+--
 -- Authors:
 --     Ondrej Ille <ondrej.ille@gmail.com>
 --     Martin Jerabek <martin.jerabek01@gmail.com>
--- 
--- Project advisors: 
+--
+-- Project advisors:
 -- 	Jiri Novak <jnovak@fel.cvut.cz>
 -- 	Pavel Pisa <pisa@cmp.felk.cvut.cz>
--- 
+--
 -- Department of Measurement         (http://meas.fel.cvut.cz/)
 -- Faculty of Electrical Engineering (http://www.fel.cvut.cz)
 -- Czech Technical University        (http://www.cvut.cz/)
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to deal in the Component without restriction, including without limitation
 -- the rights to use, copy, modify, merge, publish, distribute, sublicense,
 -- and/or sell copies of the Component, and to permit persons to whom the
 -- Component is furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,11 +59,11 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -114,67 +114,64 @@ package body status_eft_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
         variable frame_sent         :     boolean;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;        
+        variable ff             :     t_ctu_frame_field;
 
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
-        variable mode_2             :     SW_mode := SW_mode_rst_val;
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :     t_ctu_mode := t_ctu_mode_rst_val;
 
         variable go_err_passive     :     std_logic;
-        variable err_counters       :     SW_error_counters := (0,0,0,0);
-        variable fault_state        :     SW_fault_state;
+        variable err_counters       :     t_ctu_err_ctrs := (0,0,0,0);
+        variable fault_state        :     t_ctu_fault_state;
     begin
 
         -----------------------------------------------------------------------
         --  @1. Set Test node to ACF mode. Enable test mode in DUT. Send frame
         --     by DUT. Randomize if DUT will be error active or error
-        --     passive. Monitor STATUS[EFT] and check that it is not set 
+        --     passive. Monitor STATUS[EFT] and check that it is not set
         --     during whole duration of the frame. Wait till ACK field.
         -----------------------------------------------------------------------
         info_m("Step 1");
 
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
-        
+        ctu_set_mode(mode_1, DUT_NODE, chn);
+
         -- Randomize error active or passive!
         rand_logic_v(go_err_passive, 0.5);
         if (go_err_passive = '1') then
             info_m("Going Error passive!");
-            err_counters.rx_counter := 140; -- Should be in error passive! 
-            set_error_counters(err_counters, DUT_NODE, chn);
-            get_fault_state(fault_state, DUT_NODE, chn);
+            err_counters.rx_counter := 140; -- Should be in error passive!
+            ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state, DUT_NODE, chn);
             check_m(fault_state = fc_error_passive, "DUT Error Passive!");
         else
             info_m("Going Error active!");
-            err_counters.rx_counter := 0; -- Should be in error active! 
-            set_error_counters(err_counters, DUT_NODE, chn);
-            get_fault_state(fault_state, DUT_NODE, chn);
+            err_counters.rx_counter := 0; -- Should be in error active!
+            ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state, DUT_NODE, chn);
             check_m(fault_state = fc_error_active, "DUT Error Active!");
         end if;
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         -- Needed so that there is no prolonged ACK slot!
         frame_1.frame_format := NORMAL_CAN;
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
         mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg /= pc_deb_ack) loop
-            wait for 200 ns; -- To make checks more sparse!
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-            
-            get_controller_status(stat_1, DUT_NODE, chn);
+        while (ff /= ff_ack) loop
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_false_m(stat_1.error_transmission,
                 "STAT[EFT] not set before ACK!");
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
         end loop;
-        mem_bus_agent_enable_transaction_reporting(chn);
 
         -----------------------------------------------------------------------
         --  @2. Wait till DUT is NOT is ACK field anymore. Now since ACK was
@@ -186,35 +183,26 @@ package body status_eft_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-        mem_bus_agent_disable_transaction_reporting(chn);
-        while (pc_dbg = pc_deb_ack) loop            
-            wait for 100 ns; -- To make checks more sparse!
-            
-            get_controller_status(stat_1, DUT_NODE, chn);
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-            
-            if (pc_dbg = pc_deb_ack) then
-                check_false_m(stat_1.error_transmission, "STAT[EFT] not set in ACK!");
-            end if;
+        while (ff = ff_ack) loop
+            check_false_m(stat_1.error_transmission, "STAT[EFT] not set in ACK!");
+            ctu_get_status(stat_1, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
         end loop;
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-        while (pc_dbg /= pc_deb_intermission) loop            
-            wait for 100 ns; -- To make checks more sparse!
-
-            get_controller_status(stat_1, DUT_NODE, chn);
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-            if (pc_dbg /= pc_deb_intermission) then
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        while (ff /= ff_intermission) loop
+            ctu_get_status(stat_1, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
+            if (ff /= ff_intermission) then
                 check_m(stat_1.error_transmission, "STAT[EFT] set during Error frame!");
             end if;
         end loop;
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         while (stat_1.bus_status = false) loop -- Loop until bus is idle
             wait for 100 ns; -- To make checks more sparse!
-            
-            get_controller_status(stat_1, DUT_NODE, chn);
+
+            ctu_get_status(stat_1, DUT_NODE, chn);
             check_false_m(stat_1.error_transmission, "STAT[EFT] not set in Intermission!");
         end loop;
         mem_bus_agent_enable_transaction_reporting(chn);

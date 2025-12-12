@@ -113,17 +113,17 @@ package body txt_buffer_transitions_3_ftest is
     procedure txt_buffer_transitions_3_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable command            :       SW_command := SW_command_rst_val;
-        variable status             :       SW_status;
-	    variable txt_buf_state	    :	    SW_TXT_Buffer_state_type;
-        variable mode               :       SW_mode;
+        variable can_frame          :       t_ctu_frame;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable status             :       t_ctu_status;
+	    variable txt_buf_state	    :	    t_ctu_txt_buff_state;
+        variable mode               :       t_ctu_mode;
         variable num_txt_bufs       :       natural;
         variable frame_sent         :       boolean;
-        variable err_counters       :       SW_error_counters;
-        variable fault_state        :       SW_fault_state;
+        variable err_counters       :       t_ctu_err_ctrs;
+        variable fault_state        :       t_ctu_fault_state;
         variable can_tx_val         :       std_logic;
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
         variable tseg1              :       natural;
     begin
 
@@ -131,20 +131,20 @@ package body txt_buffer_transitions_3_ftest is
         -- @1. Loop for all TXT Buffers and incrementing wait times within a bit:
         -------------------------------------------------------------------------------------------
         info_m("Step 1");
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
 
         -- Configure test mode to allow clearing error counters between iterations so that
         -- we dont get to bus off!
         mode.test := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         -- Query the bus timing
-        CAN_read_timing_v(bus_timing, DUT_NODE, chn);
+        ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
         tseg1 := bus_timing.tq_nbt * (1 + bus_timing.prop_nbt + bus_timing.ph1_nbt);
 
         -- Generate single common frame
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
 
         for txt_buf_index in 1 to num_txt_bufs loop
             for wait_cycles in 0 to 20 loop
@@ -156,10 +156,10 @@ package body txt_buffer_transitions_3_ftest is
                 -----------------------------------------------------------------------------------
                 info_m("Step 1.1 with wait cycles: " & integer'image(wait_cycles));
 
-                CAN_insert_TX_frame(CAN_frame, txt_buf_index, DUT_NODE, chn);
-                send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+                ctu_put_tx_frame(can_frame, txt_buf_index, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-                CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+                ctu_wait_frame_start(true, false, DUT_NODE, chn);
                 wait for 1000 ns;
 
                 while (true) loop
@@ -197,14 +197,14 @@ package body txt_buffer_transitions_3_ftest is
                     clk_agent_wait_cycle(chn);
                 end loop;
 
-                send_TXT_buf_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
 
                 -----------------------------------------------------------------------------------
                 -- @1.3. Wait until Sample point and release the bus value.
                 -----------------------------------------------------------------------------------
                 info_m("Step 1.3 with wait cycles: " & integer'image(wait_cycles));
 
-                CAN_wait_sample_point(DUT_NODE, chn);
+                ctu_wait_sample_point(DUT_NODE, chn);
                 wait for 50 ns;
 
                 release_bus_level(chn);
@@ -214,9 +214,9 @@ package body txt_buffer_transitions_3_ftest is
                 -----------------------------------------------------------------------------------
                 info_m("Step 1.4 with wait cycles: " & integer'image(wait_cycles));
 
-                CAN_wait_bus_idle(DUT_NODE, chn);
+                ctu_wait_bus_idle(DUT_NODE, chn);
                 err_counters.tx_counter := 0;
-                set_error_counters(err_counters, DUT_NODE, chn);
+                ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
                 wait for 100 ns;
             end loop;

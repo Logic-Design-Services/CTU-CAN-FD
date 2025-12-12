@@ -109,16 +109,16 @@ package body err_capt_arb_stuff_ftest is
         signal      chn             : inout  t_com_channel
     ) is        
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;    
+        variable ff             :     t_ctu_frame_field;    
 
         variable frame_sent         :     boolean;
         
-        variable err_capt           :     SW_error_capture;
+        variable err_capt           :     t_ctu_err_capt;
 
     begin
 
@@ -127,7 +127,7 @@ package body err_capt_arb_stuff_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
         
         -----------------------------------------------------------------------        
@@ -140,36 +140,36 @@ package body err_capt_arb_stuff_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.ident_type := BASE;
         frame_1.identifier := 1; -- First 4 bits should be dominant!
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
-        CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
 
         for i in 1 to 4 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
         wait for 20 ns;
         
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
 
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.error_transmission, "Error frame transmitted by DUT!");
         release_bus_level(chn);
 
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_type = can_err_stuff, "Stuff error detected!");
         check_m(err_capt.err_pos = err_pos_arbitration, "Error detected in Arbitration!");
                 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -- The other node shoul have also detected stuff error in arbitration (due to
         -- that Error frame), check it!
-        CAN_read_error_code_capture(err_capt, TEST_NODE, chn);
+        ctu_get_err_capt(err_capt, TEST_NODE, chn);
         check_m(err_capt.err_type = can_err_stuff, "Stuff error detected!");
         check_m(err_capt.err_pos = err_pos_arbitration, "Error detected in Arbitration!");
 

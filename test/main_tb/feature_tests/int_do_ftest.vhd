@@ -131,15 +131,15 @@ package body int_do_ftest is
     procedure int_do_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     SW_CAN_frame_type;
+        variable can_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
-        variable int_mask           :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_ena            :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_stat           :     SW_interrupts := SW_interrupts_rst_val;
-        variable command            :     SW_command := SW_command_rst_val;
-        variable buf_info           :     SW_RX_Buffer_info;
-        variable status             :     SW_status;
+        variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
+        variable buf_info           :     t_ctu_rx_buf_state;
+        variable status             :     t_ctu_status;
     begin
 
         -----------------------------------------------------------------------
@@ -150,8 +150,8 @@ package body int_do_ftest is
 
         int_mask.data_overrun_int := false;
         int_ena.data_overrun_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Read RX Buffer size of DUT and send number of RTR frames by 
@@ -159,18 +159,18 @@ package body int_do_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2: Filling RX Buffer FIFO");
 
-        get_rx_buf_state(buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
         info_m("Buffer size: " & Integer'image(buf_info.rx_buff_size));
         
         -- Send RTR frames till we fill the buffer
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.rtr := RTR_FRAME;
-        CAN_frame.frame_format := NORMAL_CAN;
+        generate_can_frame(can_frame);
+        can_frame.rtr := RTR_FRAME;
+        can_frame.frame_format := NORMAL_CAN;
         for i in 0 to (buf_info.rx_buff_size / 4) - 1 loop
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(TEST_NODE, chn);
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(TEST_NODE, chn);
 
-            read_int_status(int_stat, DUT_NODE, chn);
+            ctu_get_int_status(int_stat, DUT_NODE, chn);
             check_false_m(int_stat.data_overrun_int,
                 "DO Interrupt not set when filling FIFO!");
             interrupt_agent_check_not_asserted(chn);
@@ -182,10 +182,10 @@ package body int_do_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3: Overruning RX Buffer FIFO");   
         
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(TEST_NODE, chn);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(TEST_NODE, chn);
         
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_m(int_stat.data_overrun_int, "DO Interrupt set after filling FIFO!");
         interrupt_agent_check_asserted(chn);
 
@@ -196,12 +196,12 @@ package body int_do_ftest is
         info_m("Step 4: Check DO Interrupt toggles INT pin");
 
         int_ena.data_overrun_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_not_asserted(chn);
         
         int_ena.data_overrun_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_asserted(chn);
 
@@ -212,10 +212,10 @@ package body int_do_ftest is
         info_m("Step 5: Clear DO Interrupt - DOR Flag Set.");
 
         int_stat.data_overrun_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
 
         int_stat.data_overrun_int := false;
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
 
         check_m(int_stat.data_overrun_int, "DO Interrupt still set after clear!");
         interrupt_agent_check_asserted(chn);  
@@ -227,12 +227,12 @@ package body int_do_ftest is
         info_m("Step 6: Clear DO Interrupt - DOR Flag Cleared.");
 
         command.clear_data_overrun := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         command.clear_data_overrun := false;
 
         int_stat.data_overrun_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
 
         check_false_m(int_stat.data_overrun_int, "DO Interrupt cleared!");
         interrupt_agent_check_not_asserted(chn);     
@@ -245,21 +245,21 @@ package body int_do_ftest is
         info_m("Step 7: DO Interrupt not set when masked!");
 
         int_mask.data_overrun_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(TEST_NODE, chn);
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(TEST_NODE, chn);
         
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.data_overrun_int, "DO Interrupt not set when masked!");
         interrupt_agent_check_not_asserted(chn);
         
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.data_overrun, "DOR flag not set!");
         
         -- Clear DOR flag again.
         command.clear_data_overrun := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         command.clear_data_overrun := false;
         
         -----------------------------------------------------------------------
@@ -269,16 +269,16 @@ package body int_do_ftest is
         info_m("Step 8: Check DO Interrupt enable works OK!");
         
         int_ena.data_overrun_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.data_overrun_int := true;
 
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_false_m(int_ena.data_overrun_int, "DO Interrupt enabled!");
 
         int_ena.data_overrun_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.data_overrun_int := false;
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_m(int_ena.data_overrun_int, "DO Interrupt disabled!");
 
         -----------------------------------------------------------------------
@@ -288,15 +288,15 @@ package body int_do_ftest is
         info_m("Step 9: Check DO Interrupt mask works OK!");
 
         int_mask.data_overrun_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.data_overrun_int := false;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_m(int_mask.data_overrun_int, "DO Interrupt masked!");
 
         int_mask.data_overrun_int := false;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.data_overrun_int := true;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_false_m(int_mask.data_overrun_int, "DO Interrupt masked!");
 
         info_m("Finished DO interrupt test");

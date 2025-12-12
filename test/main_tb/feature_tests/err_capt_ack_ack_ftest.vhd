@@ -110,17 +110,17 @@ package body err_capt_ack_ack_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;    
+        variable ff             :     t_ctu_frame_field;    
 
         variable frame_sent         :     boolean;
         
-        variable err_capt           :     SW_error_capture;
-        variable mode_2             :     SW_mode := SW_mode_rst_val;
+        variable err_capt           :     t_ctu_err_capt;
+        variable mode_2             :     t_ctu_mode := t_ctu_mode_rst_val;
 
     begin
 
@@ -129,7 +129,7 @@ package body err_capt_ack_ack_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
         
         -----------------------------------------------------------------------        
@@ -143,30 +143,30 @@ package body err_capt_ack_ack_ftest is
         info_m("Step 2");
         
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.frame_format := NORMAL_CAN;
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-        while (pc_dbg = pc_deb_ack) loop
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        while (ff = ff_ack) loop
             check_bus_level(RECESSIVE, "Recessive ACK received in DUT!", chn);
-            CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
+            ctu_get_curr_ff(ff, DUT_NODE, chn);
         end loop;
 
         -- Now state has changed, we should be in Error frame because ACK was
         -- recessive
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.error_transmission, "Error frame transmitted by DUT!");
 
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_type = can_err_ack, "ACK error detected!");
         check_m(err_capt.err_pos = err_pos_ack, "Error detected in ACK field!");
                 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
   end procedure;
 

@@ -140,15 +140,15 @@ package body mode_pex_ftest is
         constant node               :       t_feature_node;
         signal   chn                : inout t_com_channel
     ) is
-        variable status             :       SW_status;
-        variable command            :       SW_command := SW_command_rst_val;
+        variable status             :       t_ctu_status;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
     begin
-        get_controller_status(status, node, chn);
+        ctu_get_status(status, node, chn);
         
         if (expected) then
             check_m(status.protocol_exception, "STATUS[PEX] is set");
             command.clear_pexs_flag := true;
-            give_controller_command(command, node, chn);
+            ctu_give_cmd(command, node, chn);
         else
             check_false_m(status.protocol_exception, "STATUS[PEX] is not set");
         end if;
@@ -156,7 +156,7 @@ package body mode_pex_ftest is
     end procedure;
 
     procedure wait_till_fdf(
-        variable can_frame          :       SW_CAN_frame_type;
+        variable can_frame          :       t_ctu_frame;
         constant node               :       t_feature_node;
         signal   chn                : inout t_com_channel
     ) is
@@ -170,10 +170,10 @@ package body mode_pex_ftest is
             num_bits_to_wait := 33;
         end if;
         
-        CAN_wait_tx_rx_start(false, true, node, chn);
+        ctu_wait_frame_start(false, true, node, chn);
         wait for 15 ns;
         for i in 1 to num_bits_to_wait loop
-            CAN_wait_sample_point(node, chn);
+            ctu_wait_sample_point(node, chn);
         end loop;
     end procedure;
 
@@ -184,34 +184,34 @@ package body mode_pex_ftest is
         constant node               :       t_feature_node;
         signal   chn                : inout t_com_channel
     ) is
-        variable mode               : SW_mode := SW_mode_rst_val;
+        variable mode               : t_ctu_mode := t_ctu_mode_rst_val;
     begin
-        get_core_mode(mode, DUT_NODE, chn);
+        ctu_get_mode(mode, DUT_NODE, chn);
         mode.pex_support := pex_ena;
         mode.flexible_data_rate := fde_ena;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
     end procedure;
 
 
     procedure mode_pex_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       SW_PC_Debug;   
+        variable ff             :       t_ctu_frame_field;   
     begin
 
         info_m("Generating random CAN FD frame");
-        CAN_generate_frame(CAN_TX_frame);
-        CAN_TX_frame.frame_format := FD_CAN;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.frame_format := FD_CAN;
 
         ------------------------------------------------------------------------
         -- @1. First part - CAN 2.0 - no protocol exception.
@@ -226,7 +226,7 @@ package body mode_pex_ftest is
             
             configure_pex_fdf(pex_ena => false, fde_ena => false,
                               node => DUT_NODE, chn => chn);
-            CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
 
             --------------------------------------------------------------------
             -- @1.2 Wait until sample poing of r0/FDF bit. Check that DUT sends
@@ -234,12 +234,12 @@ package body mode_pex_ftest is
             --------------------------------------------------------------------
             info_m("Step 1.2");
             
-            wait_till_fdf(CAN_TX_frame, DUT_NODE, chn);
+            wait_till_fdf(can_tx_frame, DUT_NODE, chn);
             wait for 20 ns;
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_m(status.error_transmission, "Error frame being transmitted");
             
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
             -------------------------------------------------------------------
             -- @1.3 Check that STATUS[PEXS] is not set (no Protocol exception 
@@ -262,7 +262,7 @@ package body mode_pex_ftest is
             
             configure_pex_fdf(pex_ena => true, fde_ena => false,
                               node => DUT_NODE, chn => chn);
-            CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
 
             --------------------------------------------------------------------
             -- @2.2 Wait until start of r0/FDF bit. Wait one more bit and check 
@@ -271,14 +271,14 @@ package body mode_pex_ftest is
             --------------------------------------------------------------------
             info_m("Step 2.2");
             
-            wait_till_fdf(CAN_TX_frame, DUT_NODE, chn);
+            wait_till_fdf(can_tx_frame, DUT_NODE, chn);
             wait for 20 ns;
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_false_m(status.error_transmission, "Error frame not transmitted");
             
             -- TODO: If we add "Integrating" STATUS bit, use it to check it!
             --check_m(status.bus_status, "Node is off the bus (integrating)");
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
             --------------------------------------------------------------------
             -- @2.3 Check that STATUS[PEXS] is set. Clear it via COMMAND[CPEXS]
@@ -301,7 +301,7 @@ package body mode_pex_ftest is
             
             configure_pex_fdf(pex_ena => false, fde_ena => true,
                               node => DUT_NODE, chn => chn);
-            CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
             
             -------------------------------------------------------------------
             -- @3.2 Wait till sample point of FDF in Test node and force CAN RX
@@ -309,7 +309,7 @@ package body mode_pex_ftest is
             -------------------------------------------------------------------
             info_m("Step 3.2");
             
-            wait_till_fdf(CAN_TX_frame, DUT_NODE, chn);
+            wait_till_fdf(can_tx_frame, DUT_NODE, chn);
             force_can_rx(RECESSIVE, DUT_NODE, chn);
 
             -------------------------------------------------------------------
@@ -319,12 +319,12 @@ package body mode_pex_ftest is
             -------------------------------------------------------------------
             info_m("Step 3.3");
             
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             wait for 20 ns;
             release_can_rx(chn);
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_m(status.error_transmission, "Error frame transmitted");
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
             -------------------------------------------------------------------
             -- @3.4 Check that STATUS[PEXS] is not set.
@@ -346,7 +346,7 @@ package body mode_pex_ftest is
             
             configure_pex_fdf(pex_ena => true, fde_ena => true,
                               node => DUT_NODE, chn => chn);
-            CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
             
             --------------------------------------------------------------------
             -- @4.2 Wait till sample point of FDF in Test node and force CAN RX
@@ -354,7 +354,7 @@ package body mode_pex_ftest is
             --------------------------------------------------------------------
             info_m("Part 4.2");
             
-            wait_till_fdf(CAN_TX_frame, DUT_NODE, chn);
+            wait_till_fdf(can_tx_frame, DUT_NODE, chn);
             force_can_rx(RECESSIVE, DUT_NODE, chn);
 
             --------------------------------------------------------------------
@@ -364,15 +364,15 @@ package body mode_pex_ftest is
             --------------------------------------------------------------------
             info_m("Step 4.3");
 
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             wait for 20 ns;
             release_can_rx(chn);
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_false_m(status.error_transmission, "Error frame NOT transmitted");
             
             -- TODO: Check integration status bit if added!
             
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
             
             --------------------------------------------------------------------
             -- @4.4 Check that STATUS[PEXS] is set. Clear it via COMMAND[CPEXS]

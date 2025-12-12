@@ -124,15 +124,15 @@ package body int_al_ftest is
     procedure int_al_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     SW_CAN_frame_type;
+        variable can_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
-        variable int_mask           :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_ena            :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_stat           :     SW_interrupts := SW_interrupts_rst_val;
-        variable command            :     SW_command := SW_command_rst_val;
-        variable buf_info           :     SW_RX_Buffer_info;
-        variable status             :     SW_status;
+        variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
+        variable buf_info           :     t_ctu_rx_buf_state;
+        variable status             :     t_ctu_status;
     begin
 
         -----------------------------------------------------------------------
@@ -143,8 +143,8 @@ package body int_al_ftest is
         
         int_mask.arb_lost_int := false;
         int_ena.arb_lost_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Send frame by DUT and Test Node at the same time, make DUTs
@@ -153,16 +153,16 @@ package body int_al_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
-        rand_int_v(2047, CAN_frame.identifier);
-        CAN_insert_TX_frame(CAN_frame, 1, TEST_NODE, chn);
-        CAN_frame.identifier := CAN_frame.identifier + 1;
-        CAN_insert_TX_frame(CAN_frame, 1, DUT_NODE, chn);
+        generate_can_frame(can_frame);
+        rand_int_v(2047, can_frame.identifier);
+        ctu_put_tx_frame(can_frame, 1, TEST_NODE, chn);
+        can_frame.identifier := can_frame.identifier + 1;
+        ctu_put_tx_frame(can_frame, 1, DUT_NODE, chn);
         
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Wait until the end of arbitration in DUT. Check that AL Interrupt
@@ -170,16 +170,16 @@ package body int_al_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
-        CAN_wait_not_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_arbitration, DUT_NODE, chn);
         
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_m(int_stat.arb_lost_int,
                 "AL Interrupt set after Arbitration lost!");
         interrupt_agent_check_asserted(chn);
         
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
         
         -----------------------------------------------------------------------
         -- @4. Disable AL Interrupt and check INT pin goes low. Enable AL 
@@ -188,12 +188,12 @@ package body int_al_ftest is
         info_m("Step 4");
 
         int_ena.arb_lost_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_not_asserted(chn);
         
         int_ena.arb_lost_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_asserted(chn);
 
@@ -204,8 +204,8 @@ package body int_al_ftest is
         info_m("Step 5");
 
         int_stat.arb_lost_int := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
 
         check_false_m(int_stat.arb_lost_int, "AL Interrupt cleared!");
         interrupt_agent_check_not_asserted(chn);  
@@ -218,23 +218,23 @@ package body int_al_ftest is
         info_m("Step 6");
 
         int_mask.arb_lost_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
-        send_TXT_buf_cmd(buf_set_ready, 1, TEST_NODE, chn);
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, TEST_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
-        CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
-        CAN_wait_not_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_arbitration, DUT_NODE, chn);
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.arb_lost_int,
                       "AL Interrupt not set when masked");
         interrupt_agent_check_not_asserted(chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @7. Disable AL Interrupt and check it was disabled. Enable AL
@@ -243,16 +243,16 @@ package body int_al_ftest is
         info_m("Step 7");
 
         int_ena.arb_lost_int := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.arb_lost_int := true;
 
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_false_m(int_ena.arb_lost_int, "AL Interrupt Disabled!");
 
         int_ena.arb_lost_int := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.arb_lost_int := false;
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_m(int_ena.arb_lost_int, "AL Interrupt Enabled!");
         
         -----------------------------------------------------------------------
@@ -262,15 +262,15 @@ package body int_al_ftest is
         info_m("Step 8");
 
         int_mask.arb_lost_int := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.arb_lost_int := false;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_m(int_mask.arb_lost_int, "AL Interrupt masked!");
 
         int_mask.arb_lost_int := false;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.arb_lost_int := true;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_false_m(int_mask.arb_lost_int, "AL Interrupt masked!");
 
         info_m("Finished AL interrupt test");

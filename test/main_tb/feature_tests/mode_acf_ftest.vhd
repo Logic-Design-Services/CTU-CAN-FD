@@ -112,13 +112,14 @@ package body mode_acf_ftest is
     procedure mode_acf_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
         variable dut_can_tx         :       std_logic;
+        variable bit_duration       :       time;
     begin
 
         -------------------------------------------------------------------------------------------
@@ -127,7 +128,9 @@ package body mode_acf_ftest is
         info_m("Step 1");
 
         mode_2.self_test := true;
-        set_core_mode(mode_1, TEST_NODE, chn);
+        ctu_set_mode(mode_1, TEST_NODE, chn);
+
+        ctu_measure_bit_duration(DUT_NODE, chn, bit_duration);
 
         -------------------------------------------------------------------------------------------
         -- @2. Loop through following frame types: CAN 2.0 and CAN FD
@@ -142,16 +145,16 @@ package body mode_acf_ftest is
             info_m("Step 2.1");
 
             mode_1.acknowledge_forbidden := true;
-            set_core_mode(mode_1, DUT_NODE, chn);
+            ctu_set_mode(mode_1, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @2.2. Generate CAN frame and send it by Test Node.
             ---------------------------------------------------------------------------------------
             info_m("Step 2.2");
 
-            CAN_generate_frame(CAN_frame);
-            CAN_frame.frame_format := frame_format;
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            generate_can_frame(can_frame);
+            can_frame.frame_format := frame_format;
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
 
             ---------------------------------------------------------------------------------------
             -- @2.3. Wait until ACK field in DUT. Check DUT transmitts RECESSIVE.
@@ -159,14 +162,15 @@ package body mode_acf_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.3");
 
-            CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
-            CAN_wait_sync_seg(DUT_NODE, chn);
-            wait for 30 ns;
+            ctu_wait_ff(ff_ack, DUT_NODE, chn);
+
+            -- Reliable way how to wait until the middle of bit
+            wait for bit_duration / 2;
 
             get_can_tx(DUT_NODE, dut_can_tx, chn);
             check_m(dut_can_tx = RECESSIVE, "DUT sends recessive ACK when MODE[ACF]=1");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @2.4. Disable Acknowledge Forbidden mode in DUT.
@@ -174,14 +178,14 @@ package body mode_acf_ftest is
             info_m("Step 2.4");
 
             mode_1.acknowledge_forbidden := false;
-            set_core_mode(mode_1, DUT_NODE, chn);
+            ctu_set_mode(mode_1, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @2.5. Send the same CAN frame as in 2.2.
             ---------------------------------------------------------------------------------------
             info_m("Step 2.5");
 
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
 
             ---------------------------------------------------------------------------------------
             -- @2.6. Wait until ACK field in DUT. Check DUT transmitts DOMINANT.
@@ -189,14 +193,15 @@ package body mode_acf_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 2.6");
 
-            CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
-            CAN_wait_sync_seg(DUT_NODE, chn);
-            wait for 30 ns;
+            ctu_wait_ff(ff_ack, DUT_NODE, chn);
+
+            -- Reliable way how to wait until the middle of bit
+            wait for bit_duration / 2;
 
             get_can_tx(DUT_NODE, dut_can_tx, chn);
             check_m(dut_can_tx = DOMINANT, "DUT sends Dominant ACK when MODE[ACF]=0");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
         end loop;
 

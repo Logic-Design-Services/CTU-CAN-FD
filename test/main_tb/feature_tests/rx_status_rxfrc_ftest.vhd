@@ -105,16 +105,16 @@ package body rx_status_rxfrc_ftest is
     procedure rx_status_rxfrc_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable RX_CAN_frame       :       SW_CAN_frame_type;
+        variable can_frame          :       t_ctu_frame;
+        variable RX_can_frame       :       t_ctu_frame;
         variable send_more          :       boolean := true;
         variable in_RX_buf          :       natural;
         variable frame_sent         :       boolean := false;
         variable number_frms_sent   :       natural;
 
-        variable buf_info           :       SW_RX_Buffer_info;
-        variable command            :       SW_command := SW_command_rst_val;
-        variable status             :       SW_status;
+        variable buf_info           :       t_ctu_rx_buf_state;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable status             :       t_ctu_status;
         variable frame_counter      :       natural;
 
         variable big_rx_buffer      :       boolean;
@@ -127,10 +127,10 @@ package body rx_status_rxfrc_ftest is
         info_m("Step 1");
 
         command.release_rec_buffer := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
         command.release_rec_buffer := false;
 
-        get_rx_buf_state(buf_info, DUT_NODE, chn);
+        ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Free memory, buffer status and message count is checked.
@@ -155,23 +155,23 @@ package body rx_status_rxfrc_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_generate_frame(CAN_frame);
+        generate_can_frame(can_frame);
 
         -- No data bytes is minimal frame size to get the highest possible frame
         -- count in RX Buffer!
-        CAN_frame.identifier := CAN_frame.identifier mod (2 ** 11);
-        CAN_frame.ident_type := BASE;
-        CAN_frame.frame_format := NORMAL_CAN;
-        CAN_frame.data_length := 0;
-        decode_length(CAN_frame.data_length, CAN_frame.dlc);
-        decode_dlc_rx_buff(CAN_frame.dlc, CAN_frame.rwcnt);
+        can_frame.identifier := can_frame.identifier mod (2 ** 11);
+        can_frame.ident_type := BASE;
+        can_frame.frame_format := NORMAL_CAN;
+        can_frame.data_length := 0;
+        length_to_dlc(can_frame.data_length, can_frame.dlc);
+        dlc_to_rwcnt(can_frame.dlc, can_frame.rwcnt);
 
         for i in 1 to buf_info.rx_buff_size/4 loop
             info_m("Sending frame nr: " & integer'image(i));
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
 
             check_m(buf_info.rx_frame_count = i,
                     "RX Buffer frame count incremented");
@@ -185,12 +185,12 @@ package body rx_status_rxfrc_ftest is
 
         for i in 1 to buf_info.rx_buff_size/4 loop
             info_m("Reading frame nr: " & integer'image(i));
-            CAN_read_frame(RX_CAN_frame, DUT_NODE, chn);
-            CAN_compare_frames(CAN_frame, RX_CAN_frame, false, frames_match);
+            ctu_read_frame(RX_can_frame, DUT_NODE, chn);
+            compare_can_frames(can_frame, RX_can_frame, false, frames_match);
 
             check_m(frames_match, "Frame at position: " & integer'image(i) & " matches");
 
-            get_rx_buf_state(buf_info, DUT_NODE, chn);
+            ctu_get_rx_buf_state(buf_info, DUT_NODE, chn);
 
             check_m(buf_info.rx_frame_count = buf_info.rx_buff_size/4 - i,
                     "RX Buffer frame count decremented");

@@ -123,8 +123,8 @@ package body fault_state_ftest is
     ) is
         variable frame_sent         :       boolean := false;
 
-        variable err_counters       :       SW_error_counters;
-        variable fault_state        :       SW_fault_state;
+        variable err_counters       :       t_ctu_err_ctrs;
+        variable fault_state        :       t_ctu_fault_state;
 
         variable tx_lt_erp          :       natural;
         variable rx_lt_erp          :       natural;
@@ -133,8 +133,8 @@ package body fault_state_ftest is
         variable tx_mt_bof          :       natural;
         variable rx_mt_bof          :       natural;
         
-        variable command            :       SW_command := SW_command_rst_val;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
     begin
 
         -----------------------------------------------------------------------
@@ -170,13 +170,13 @@ package body fault_state_ftest is
         info_m("Step 1");
         
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
         err_counters.tx_counter := tx_lt_erp;
         err_counters.rx_counter := rx_lt_erp;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_active, "Node Error active!");
 
         -----------------------------------------------------------------------
@@ -186,9 +186,9 @@ package body fault_state_ftest is
         info_m("Step 2");
         
         err_counters.rx_counter := rx_mt_erp;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_passive, "Node Error passive!");
 
         -----------------------------------------------------------------------
@@ -201,21 +201,21 @@ package body fault_state_ftest is
         info_m("Step 3");
         
         err_counters.tx_counter := tx_mt_erp;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_passive, "Node Error passive!");       
 
         err_counters.rx_counter := rx_lt_erp;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_passive, "Node Error passive!");
         
         err_counters.tx_counter := tx_lt_erp;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_active, "Node Error active!");        
 
         -----------------------------------------------------------------------
@@ -225,9 +225,9 @@ package body fault_state_ftest is
         info_m("Step 4");
         
         err_counters.rx_counter := rx_mt_bof;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_passive, "Node Error passive!");
 
         -----------------------------------------------------------------------
@@ -237,9 +237,9 @@ package body fault_state_ftest is
         info_m("Step 5");
         
         err_counters.tx_counter := tx_mt_bof;
-        set_error_counters(err_counters, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
         
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_bus_off, "Node Bus off!");
 
         -----------------------------------------------------------------------
@@ -249,31 +249,31 @@ package body fault_state_ftest is
         info_m("Step 6");
         
         command.err_ctrs_rst := true;
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns; -- To make sure sample point is missed!
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
 
         -- Wait for 128 * 11 + 10 consecutive recessive bits
         for i in 0 to (128 * 11) - 1 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
         for i in 0 to 10 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_bus_off,
             "Node not reintegrated before 129 * 11 bits");
 
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
         
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_active,
             "Node reintegration finished after 129 * 11 bits");
 
-        read_error_counters(err_counters, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
         check_m(err_counters.tx_counter = 0, "TX Error counter erased!");
         check_m(err_counters.rx_counter = 0, "RX Error counter erased!");
 

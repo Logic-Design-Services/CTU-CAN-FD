@@ -113,6 +113,10 @@ entity ctu_can_fd_vip is
         cfg_ph_2_fd             : natural;
         cfg_sjw_fd              : natural;
 
+        -- Secondary sample point config
+        cfg_ssp_src             : natural;
+        cfg_ssp_offset          : natural;
+
         -- Seed
         seed                    : natural := 0;
 
@@ -356,7 +360,9 @@ begin
             cfg_prop_fd         => cfg_prop_fd,
             cfg_ph_1_fd         => cfg_ph_1_fd,
             cfg_ph_2_fd         => cfg_ph_2_fd,
-            cfg_sjw_fd          => cfg_sjw_fd
+            cfg_sjw_fd          => cfg_sjw_fd,
+            cfg_ssp_src         => cfg_ssp_src,
+            cfg_ssp_offset      => cfg_ssp_offset
         )
         port map (
             -- Test node connections
@@ -452,7 +458,6 @@ begin
     ---------------------------------------------------------------------------
     -- Test specific deposits
     ---------------------------------------------------------------------------
-
     process
     begin
         wait for 5 ns;
@@ -496,11 +501,7 @@ begin
             end if;
 
         end if;
-
     end process;
-
-
-
 
     ---------------------------------------------------------------------------
     -- Propagate finish config

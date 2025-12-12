@@ -110,42 +110,49 @@ package body txt_buffer_transitions_4_ftest is
     procedure txt_buffer_transitions_4_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
-        variable command            :       SW_command := SW_command_rst_val;
-        variable status             :       SW_status;
-	    variable txt_buf_state	    :	    SW_TXT_Buffer_state_type;
-        variable mode               :       SW_mode := SW_mode_rst_val;
+        variable can_frame          :       t_ctu_frame;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
+        variable status             :       t_ctu_status;
+	    variable txt_buf_state	    :	    t_ctu_txt_buff_state;
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
         variable num_txt_bufs       :       natural;
         variable frame_sent         :       boolean;
-        variable err_counters       :       SW_error_counters;
-        variable fault_state        :       SW_fault_state;
+        variable err_counters       :       t_ctu_err_ctrs;
+        variable fault_state        :       t_ctu_fault_state;
         variable can_tx_val         :       std_logic;
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
         variable tseg1              :       natural;
 
         variable tst_mem            :       t_tgt_test_mem;
         variable corrupt_wrd_index  :       natural;
         variable corrupt_bit_index  :       natural;
         variable r_data             :       std_logic_vector(31 downto 0);
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
+
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_parity = false) then
+            info_m("Skipping the test since sup_parity = false -> Can't invoke Parity Error");
+            return;
+        end if;
 
         -------------------------------------------------------------------------------------------
         -- @1. Loop for all TXT Buffers and incrementing wait times within a bit:
         -------------------------------------------------------------------------------------------
         info_m("Step 1");
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
 
         -- Configure test mode to allow bit-flips via test channel in TXT Buffer Memory.
         mode.test := true;
         mode.parity_check := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         -- Generate single common frame
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.frame_format := FD_CAN;
-        CAN_frame.data_length := 16;
-        CAN_frame.rtr := NO_RTR_FRAME;
-        decode_length(CAN_frame.data_length, CAN_frame.dlc);
+        generate_can_frame(can_frame);
+        can_frame.frame_format := FD_CAN;
+        can_frame.data_length := 16;
+        can_frame.rtr := NO_RTR_FRAME;
+        length_to_dlc(can_frame.data_length, can_frame.dlc);
 
         for txt_buf_index in 1 to num_txt_bufs loop
 
@@ -155,21 +162,21 @@ package body txt_buffer_transitions_4_ftest is
             -----------------------------------------------------------------------------------
             info_m("Step 1.1");
 
-            CAN_insert_TX_frame(CAN_frame, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(can_frame, txt_buf_index, DUT_NODE, chn);
 
-            set_test_mem_access(true, DUT_NODE, chn);
+            ctu_set_tst_mem_access(true, DUT_NODE, chn);
 
             tst_mem := txt_buf_to_test_mem_tgt(txt_buf_index);
 
             -- Read, flip, and write back
             corrupt_wrd_index := 5;             -- Flip bit in data bytes 5-8
             rand_int_v(31, corrupt_bit_index);
-            test_mem_read(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
+            ctu_read_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
             r_data(corrupt_bit_index) := not r_data(corrupt_bit_index);
-            test_mem_write(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
+            ctu_write_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
 
             -- Disable test mem access
-            set_test_mem_access(false, DUT_NODE, chn);
+            ctu_set_tst_mem_access(false, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @1.2. Send Set Ready Command. Wait until DUT starts transmitting the frame, and then
@@ -177,21 +184,21 @@ package body txt_buffer_transitions_4_ftest is
             ---------------------------------------------------------------------------------------
             info_m("Step 1.2");
 
-            send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
-            CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+            ctu_wait_frame_start(true, false, DUT_NODE, chn);
             wait for 1000 ns;
 
-            send_TXT_buf_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_abort, txt_buf_index, DUT_NODE, chn);
 
             ---------------------------------------------------------------------------------------
             -- @1.3. Wait until bus is idle. Check TXT Buffer ended in Parity Error.
             ---------------------------------------------------------------------------------------
             info_m("Step 1.3");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
-            get_tx_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
 
             check_m(txt_buf_state = buf_parity_err, "TXT Buffer in parity error state");
 

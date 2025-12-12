@@ -107,32 +107,32 @@ package body frame_test_sdlc_ftest is
     procedure frame_test_sdlc_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
         
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
-        variable err_counters_2     :       SW_error_counters := (0, 0, 0, 0);
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
+        variable err_counters_2     :       t_ctu_err_ctrs := (0, 0, 0, 0);
 
-        variable fault_th           :       SW_fault_thresholds;
-        variable fault_th_2         :       SW_fault_thresholds;
+        variable fault_th           :       t_ctu_fault_thresholds;
+        variable fault_th_2         :       t_ctu_fault_thresholds;
 
         variable txt_buf_count      :       natural;
         variable tmp_int            :       natural;
         variable txt_buf_index      :       natural;
 
-        variable status_1           :       SW_status;
+        variable status_1           :       t_ctu_status;
 
         variable txt_buf_vector     :       std_logic_vector(7 downto 0) := x"00";
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
 
         variable swap_dlc           :       natural;
         variable expected_dlc       :       std_logic_vector(3 downto 0) := "0000";
         variable real_dlc           :       std_logic_vector(3 downto 0) := "0000";
 
-        variable err_capt           :       SW_error_capture;
+        variable err_capt           :       t_ctu_err_capt;
     begin
 
         -----------------------------------------------------------------------
@@ -145,33 +145,33 @@ package body frame_test_sdlc_ftest is
         -- not getting ACK due to flipped bit. This-way we can check that test-node
         -- has detected CRC error!
         mode_1.self_test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
-        get_tx_buf_count(txt_buf_count, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
         
         -----------------------------------------------------------------------
         -- @2. Generate random CAN FD frame. Transmit it by DUT.
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_TX_frame);
-        CAN_TX_frame.frame_format := NORMAL_CAN;
-        CAN_TX_frame.ident_type := BASE;
-        CAN_TX_frame.identifier := CAN_TX_frame.identifier mod 2**11;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.frame_format := NORMAL_CAN;
+        can_tx_frame.ident_type := BASE;
+        can_tx_frame.identifier := can_tx_frame.identifier mod 2**11;
         info_m("Transmitted frame:");
-        CAN_print_frame(CAN_TX_frame);
+        print_can_frame(can_tx_frame);
 
-        pick_random_txt_buffer(txt_buf_index, DUT_NODE, chn);
-        CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+        ctu_get_rand_txt_buf(txt_buf_index, DUT_NODE, chn);
+        ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
 
-        CAN_set_frame_test(txt_buf_index, 0, false, false, false,
+        ctu_set_tx_frame_test(txt_buf_index, 0, false, false, false,
                            DUT_NODE, chn);
 
-        send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Send again the same frame as in previous point, only swap DLC,
@@ -179,29 +179,29 @@ package body frame_test_sdlc_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+        ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
 
         rand_int_v(15, swap_dlc);
-        CAN_set_frame_test(txt_buf_index, swap_dlc, false, false, true,
+        ctu_set_tx_frame_test(txt_buf_index, swap_dlc, false, false, true,
                            DUT_NODE, chn);
 
-        send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
         -- We transnmit fixed frame format so that we move exactly to DLC!
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
         wait for 30 ns;
         -- Skip IDE and R0
-        CAN_wait_sample_point(DUT_NODE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         
         for i in 0 to 3 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             get_can_tx(DUT_NODE, real_dlc(3 - i), chn);
         end loop;
 
         wait for 50 ns;
         expected_dlc := std_logic_vector(to_unsigned(swap_dlc, 4));
-        info_m("Original DLC: " & to_string(CAN_TX_frame.dlc));
+        info_m("Original DLC: " & to_string(can_tx_frame.dlc));
         info_m("Expected DLC: " & to_string(expected_dlc));
         info_m("Real DLC:     " & to_string(real_dlc));
         check_m(expected_dlc = real_dlc, "Expected DLC = Real DLC");
@@ -215,8 +215,8 @@ package body frame_test_sdlc_ftest is
         --       never reach error frame! Therefore we don't wait for it, it
         --       is enough to check that DUT has transmitted swapped value of
         --       DLC!
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
   end procedure;
 

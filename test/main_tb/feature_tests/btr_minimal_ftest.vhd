@@ -108,11 +108,11 @@ package body btr_minimal_ftest is
     procedure btr_minimal_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       SW_CAN_frame_type;
-        variable CAN_frame_2        :       SW_CAN_frame_type;
+        variable can_frame_1        :       t_ctu_frame;
+        variable can_frame_2        :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
 
         variable clock_per_bit      :       natural := 0;
 
@@ -128,8 +128,8 @@ package body btr_minimal_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
         bus_timing.prop_nbt := 1;
         bus_timing.ph1_nbt := 3;
@@ -143,17 +143,17 @@ package body btr_minimal_ftest is
         bus_timing.sjw_nbt := 1;
         bus_timing.tq_dbt := 1;
 
-        CAN_configure_timing(bus_timing, DUT_NODE, chn);
-        CAN_configure_timing(bus_timing, TEST_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
 
-        CAN_configure_ssp(ssp_no_ssp, x"00", DUT_NODE, chn);
-        CAN_configure_ssp(ssp_no_ssp, x"00", TEST_NODE, chn);
+        ctu_set_ssp(ssp_no_ssp, x"00", DUT_NODE, chn);
+        ctu_set_ssp(ssp_no_ssp, x"00", TEST_NODE, chn);
 
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_turn_controller(true, TEST_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
 
-        CAN_wait_bus_on(DUT_NODE, chn);
-        CAN_wait_bus_on(TEST_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
 
         info_m("CAN bus nominal bit-rate:");
         info_m("PROP: " & integer'image(bus_timing.prop_nbt));
@@ -173,8 +173,8 @@ package body btr_minimal_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        ftr_tb_set_tran_delay(1 ns, DUT_NODE, chn);
-        ftr_tb_set_tran_delay(1 ns, TEST_NODE, chn);
+        set_transceiver_delay(1 ns, DUT_NODE, chn);
+        set_transceiver_delay(1 ns, TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Generate random frame which is FD frame with bit-rate shift.
@@ -182,17 +182,17 @@ package body btr_minimal_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
         
-        CAN_generate_frame(CAN_frame_1);
+        generate_can_frame(can_frame_1);
         info_m("Generated frame");
-        CAN_frame_1.frame_format := FD_CAN;
-        CAN_frame_1.brs := BR_SHIFT;
-        CAN_frame_1.rtr := NO_RTR_FRAME;
+        can_frame_1.frame_format := FD_CAN;
+        can_frame_1.brs := BR_SHIFT;
+        can_frame_1.rtr := NO_RTR_FRAME;
         
-        CAN_send_frame(CAN_frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(TEST_NODE, chn);
-        CAN_read_frame(CAN_frame_2, TEST_NODE, chn);
+        ctu_send_frame(can_frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(TEST_NODE, chn);
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
         
-        CAN_compare_frames(CAN_frame_1, CAN_frame_2, false, frames_equal);
+        compare_can_frames(can_frame_1, can_frame_2, false, frames_equal);
         check_m(frames_equal, "TX/RX frame equal!");
 
   end procedure;

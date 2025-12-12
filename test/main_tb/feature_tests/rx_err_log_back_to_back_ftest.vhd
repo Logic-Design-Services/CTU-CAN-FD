@@ -116,19 +116,27 @@ package body rx_err_log_back_to_back_ftest is
     procedure rx_err_log_back_to_back_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             : SW_mode := SW_mode_rst_val;
-        variable pc_dbg             : SW_PC_Debug;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
+        variable ff             : t_ctu_frame_field;
         variable frame_sent         : boolean;
         variable tx_val             : std_logic;
-        variable status             : SW_status;
-        variable rx_buf_info        : SW_RX_Buffer_info;
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
-        variable err_frame_2        : SW_CAN_frame_type;
+        variable status             : t_ctu_status;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
+        variable can_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
+        variable err_frame_2        : t_ctu_frame;
         variable rand_bits          : natural;
-        variable bit_timing         : bit_time_config_type;
+        variable bit_timing         : t_ctu_bit_time_cfg;
         variable ts_scratchpad      : std_logic_vector(63 downto 0);
+        variable hw_cfg             : t_ctu_hw_cfg;
     begin
+
+        -- Read HW config
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.rx_buffer_size < 64) then
+            info_m("Skipping the test since rx_buffer_size<64");
+            return;
+        end if;
 
         -------------------------------------------------------------------------------------------
         -- @1. Configure DUT to MODE[ERFM] = 1. Disable SSP in DUT. Configure
@@ -137,7 +145,7 @@ package body rx_err_log_back_to_back_ftest is
         info_m("Step 1");
 
         mode_1.error_logging := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         bit_timing.tq_nbt     := 1;
         bit_timing.tq_dbt     := 1;
@@ -152,23 +160,23 @@ package body rx_err_log_back_to_back_ftest is
         bit_timing.ph2_dbt    := 2;
         bit_timing.sjw_dbt    := 1;
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
-        CAN_configure_timing(bit_timing, DUT_NODE, chn);
-        CAN_configure_timing(bit_timing, TEST_NODE, chn);
+        ctu_set_bit_time_cfg(bit_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bit_timing, TEST_NODE, chn);
 
-        CAN_configure_ssp(ssp_no_ssp, x"00", DUT_NODE, chn);
-        CAN_configure_ssp(ssp_no_ssp, x"00", TEST_NODE, chn);
+        ctu_set_ssp(ssp_no_ssp, x"00", DUT_NODE, chn);
+        ctu_set_ssp(ssp_no_ssp, x"00", TEST_NODE, chn);
 
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_turn_controller(true, TEST_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
 
-        CAN_wait_bus_on(DUT_NODE, chn);
-        CAN_wait_bus_on(TEST_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
 
-        ftr_tb_set_tran_delay(1 ns, DUT_NODE, chn);
-        ftr_tb_set_tran_delay(1 ns, TEST_NODE, chn);
+        set_transceiver_delay(1 ns, DUT_NODE, chn);
+        set_transceiver_delay(1 ns, TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Generate CAN frame. Send it by DUT and wait till CRC field.
@@ -176,12 +184,13 @@ package body rx_err_log_back_to_back_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.frame_format := FD_CAN;
-        CAN_frame.brs := BR_SHIFT;
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        can_frame.frame_format := FD_CAN;
+        can_frame.brs := BR_SHIFT;
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_wait_pc_state(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_ff(ff_crc, DUT_NODE, chn);
+        ctu_wait_sync_seg(DUT_NODE, chn);
 
         flip_bus_level(chn);
 
@@ -190,11 +199,11 @@ package body rx_err_log_back_to_back_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
 
         wait for 20 ns;
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
         -------------------------------------------------------------------------------------------
@@ -205,7 +214,7 @@ package body rx_err_log_back_to_back_ftest is
         info_m("Step 4");
 
         for i in 1 to 16 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
 
             -- After first error frame there will be 1 error frame. When we wait right till
             -- next sample point (first error in the Error frame), the DUT starts storing its
@@ -213,14 +222,14 @@ package body rx_err_log_back_to_back_ftest is
             -- state. This works since readout of RX status is shorter than storing of new
             -- frame!
 
-            get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-            check_m(rx_buf_info.rx_frame_count = i,
+            ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+            check_m(rx_buf_state.rx_frame_count = i,
                     "Exptected frames in RX Buffer: " & integer'image(i) &
-                    " Real frames in RX Buffer: " & integer'image(rx_buf_info.rx_frame_count));
+                    " Real frames in RX Buffer: " & integer'image(rx_buf_state.rx_frame_count));
         end loop;
 
         release_bus_level(chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @5. Read all 16 Error frames logged by DUT, and check that all of them have
@@ -231,7 +240,7 @@ package body rx_err_log_back_to_back_ftest is
 
         for i in 1 to 17 loop
             info_m("Reading Error frame: " & integer'image(i));
-            CAN_read_frame(err_frame, DUT_NODE, chn);
+            ctu_read_frame(err_frame, DUT_NODE, chn);
 
             check_m(err_frame.erf = '1',                    "FRAME_FORMAT_W[ERF] = 1");
             check_m(err_frame.ivld = '1',                   "FRAME_FORMAT_W[IVLD] = 1");

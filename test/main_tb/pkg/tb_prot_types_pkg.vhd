@@ -144,6 +144,7 @@ package tb_prot_types_pkg is
     -- Values forced to DUT ingter
     -----------------------------------------------------------------------
     type t_prot_force_values is protected
+
         procedure force_tx_counter(val : std_logic_vector(31 downto 0));
         procedure release_tx_counter;
         impure function get_tx_counter_force_val return std_logic_vector;
@@ -170,6 +171,10 @@ package tb_prot_types_pkg is
 
         impure function something_to_force   return boolean;
         impure function something_to_release return boolean;
+
+        -- Check if force on DUT is supported
+        procedure set_force_supported(val : boolean);
+        impure function is_force_supported   return boolean;
 
     end protected;
 
@@ -397,6 +402,7 @@ package body tb_prot_types_pkg is
         variable to_force_err_fd        : boolean;
         variable to_release_err_fd      : boolean;
 
+        variable is_force_supported_i   : boolean;
 
         procedure force_tx_counter(val : std_logic_vector(31 downto 0)) is
         begin
@@ -539,6 +545,16 @@ package body tb_prot_types_pkg is
         begin
             return to_release_tx_counter or to_release_rx_counter or
                    to_release_err_norm   or to_release_err_fd;
+        end function;
+
+        procedure set_force_supported(val : boolean) is
+        begin
+            is_force_supported_i := val;
+        end procedure;
+
+        impure function is_force_supported return boolean is
+        begin
+            return is_force_supported_i;
         end function;
 
     end protected body;

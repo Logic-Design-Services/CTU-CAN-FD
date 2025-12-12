@@ -141,15 +141,15 @@ package body status_txpe_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
-        variable frame_2            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
+        variable frame_2            :     t_ctu_frame;
 
-        variable stat_1             :     SW_status;
-        variable command_1          :     SW_command := SW_command_rst_val;
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
-        variable rx_buf_status      :     SW_RX_Buffer_info;
+        variable stat_1             :     t_ctu_status;
+        variable command_1          :     t_ctu_command := t_ctu_command_rst_val;
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable rx_buf_status      :     t_ctu_rx_buf_state;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable ff             :     t_ctu_frame_field;
         variable frame_sent         :     boolean;
         variable frames_equal       :     boolean;
 
@@ -164,23 +164,31 @@ package body status_txpe_ftest is
         variable corrupt_insert     :     std_logic;
 
         variable tst_mem            :     t_tgt_test_mem;
-        variable txt_buf_state      :     SW_TXT_Buffer_state_type;
+        variable txt_buf_state      :     t_ctu_txt_buff_state;
         variable prt_en             :     std_logic;
         variable num_txt_bufs       :     natural;
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
+
+        -- Read HW config
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_parity = false) then
+            info_m("Skipping the test since sup_parity=false");
+            return;
+        end if;
 
         -----------------------------------------------------------------------
         -- @1. Set DUT to test mode.
         -----------------------------------------------------------------------
         info_m("Step 1");
         mode_1.test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Loop 4 times for each TXT Buffer
         -----------------------------------------------------------------------
         info_m("Step 2");
-        get_tx_buf_count(num_txt_bufs, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_txt_bufs, DUT_NODE, chn);
 
         for txt_buf in 1 to num_txt_bufs loop
             for i in 0 to 3 loop
@@ -193,20 +201,20 @@ package body status_txpe_ftest is
                 --      SETTINGS[PCHKE] = 1.
                 -------------------------------------------------------------------
                 info_m("Step 2.1");
-                CAN_generate_frame(frame_1);
+                generate_can_frame(frame_1);
                 rand_logic_v(prt_en, 0.5);
                 if (prt_en = '1') then
                     mode_1.parity_check := true;
                 else
                     mode_1.parity_check := false;
                 end if;
-                set_core_mode(mode_1, DUT_NODE, chn);
+                ctu_set_mode(mode_1, DUT_NODE, chn);
 
                 -------------------------------------------------------------------
                 -- @2.2 Insert the CAN frame for transmission into a TXT Buffer.
                 -------------------------------------------------------------------
                 info_m("Step 2.2");
-                CAN_insert_TX_frame(frame_1, txt_buf, DUT_NODE, chn);
+                ctu_put_tx_frame(frame_1, txt_buf, DUT_NODE, chn);
 
                 -------------------------------------------------------------------
                 -- @2.3 Generate random bit-flip in FRAME_FORMAT_W (loop 1),
@@ -217,17 +225,17 @@ package body status_txpe_ftest is
                 info_m("Step 2.3");
 
                 -- Enable test access
-                set_test_mem_access(true, DUT_NODE, chn);
+                ctu_set_tst_mem_access(true, DUT_NODE, chn);
                 tst_mem := txt_buf_to_test_mem_tgt(txt_buf);
 
                 -- Read, flip, and write back
-                test_mem_read(r_data, i, tst_mem, DUT_NODE, chn);
+                ctu_read_tst_mem(r_data, i, tst_mem, DUT_NODE, chn);
                 rand_int_v(31, corrupt_bit_index);
                 r_data(corrupt_bit_index) := not r_data(corrupt_bit_index);
-                test_mem_write(r_data, i, tst_mem, DUT_NODE, chn);
+                ctu_write_tst_mem(r_data, i, tst_mem, DUT_NODE, chn);
 
                 -- Disable test mem access
-                set_test_mem_access(false, DUT_NODE, chn);
+                ctu_set_tst_mem_access(false, DUT_NODE, chn);
 
                 -------------------------------------------------------------------
                 -- @2.4 Send Set Ready command to this TXT Buffer. Wait for some
@@ -237,10 +245,12 @@ package body status_txpe_ftest is
                 -------------------------------------------------------------------
                 info_m("Step 2.4");
 
-                send_TXT_buf_cmd(buf_set_ready, txt_buf, DUT_NODE, chn);
-                wait for 5 us;
+                ctu_give_txt_cmd(buf_set_ready, txt_buf, DUT_NODE, chn);
 
-                get_tx_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
+                -- Waiting for two bits is sufficient for DUT to start transmission.
+                wait for 10 us;
+
+                ctu_get_txt_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
 
                 -- TXT Buffer shall end up in parity error only when parity error
                 -- detection is enabled, otherwise DUT will go on and transmit the
@@ -250,29 +260,29 @@ package body status_txpe_ftest is
                     check_m(txt_buf_state = buf_parity_err,
                             "Bit flip + SETTINGS[PCHKE] = 1 -> TXT Buffer in parity error state!");
                 else
-                    check_m(txt_buf_state = buf_tx_progress,
-                            "Bit flip + SETTINGS[PCHKE] = 0 -> TXT Buffer in TX in progress state!");
-                    CAN_wait_bus_idle(DUT_NODE, chn);
-                    CAN_wait_bus_idle(TEST_NODE, chn);
-                    get_tx_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
+                    check_m(txt_buf_state = buf_tx_progress or txt_buf_state = buf_done,
+                            "Bit flip + SETTINGS[PCHKE] = 0 -> TXT Buffer in TX in progress or Done state!");
+                    ctu_wait_bus_idle(DUT_NODE, chn);
+                    ctu_wait_bus_idle(TEST_NODE, chn);
+                    ctu_get_txt_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
                     check_m(txt_buf_state = buf_done, "DUT: TXT Buffer TX OK");
 
-                    get_rx_buf_state(rx_buf_status, TEST_NODE, chn);
+                    ctu_get_rx_buf_state(rx_buf_status, TEST_NODE, chn);
                     check_m(rx_buf_status.rx_frame_count = 1,
                             "TEST_NODE: Frame received!");
 
                     -- Need to read-out received frame so that it does not block
                     -- RX Buffer FIFO in Test node.
-                    CAN_read_frame(frame_2, TEST_NODE, chn);
+                    ctu_read_frame(frame_2, TEST_NODE, chn);
                 end if;
 
-                get_controller_status(stat_1, DUT_NODE, chn);
+                ctu_get_status(stat_1, DUT_NODE, chn);
                 check_false_m(stat_1.transmitter, "DUT is not transmitter.");
 
                 -- Send the TXT Buffer back to Empty and check it!
-                send_TXT_buf_cmd(buf_set_empty, txt_buf, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_empty, txt_buf, DUT_NODE, chn);
                 wait for 30 ns;
-                get_tx_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
+                ctu_get_txt_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
                 check_m(txt_buf_state = buf_empty, "DUT: TXT Buffer Empty");
 
                 -------------------------------------------------------------------
@@ -281,7 +291,7 @@ package body status_txpe_ftest is
                 -------------------------------------------------------------------
                 info_m("Step 2.5");
 
-                get_controller_status(stat_1, DUT_NODE, chn);
+                ctu_get_status(stat_1, DUT_NODE, chn);
 
                 if (mode_1.parity_check) then
                     check_m(stat_1.tx_parity_error,
@@ -292,9 +302,9 @@ package body status_txpe_ftest is
                 end if;
 
                 command_1.clear_txpe := true;
-                give_controller_command(command_1, DUT_NODE, chn);
+                ctu_give_cmd(command_1, DUT_NODE, chn);
 
-                get_controller_status(stat_1, DUT_NODE, chn);
+                ctu_get_status(stat_1, DUT_NODE, chn);
                 check_false_m(stat_1.tx_parity_error, "STATUS[TXPE] = 0");
 
                 -------------------------------------------------------------------
@@ -302,8 +312,8 @@ package body status_txpe_ftest is
                 -------------------------------------------------------------------
                 info_m("Step 2.6");
 
-                CAN_insert_TX_frame(frame_1, txt_buf, DUT_NODE, chn);
-                send_TXT_buf_cmd(buf_set_ready, txt_buf, DUT_NODE, chn);
+                ctu_put_tx_frame(frame_1, txt_buf, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_ready, txt_buf, DUT_NODE, chn);
 
                 -------------------------------------------------------------------
                 -- @2.7 Wait until frame is transmitted. Read frame from Test Node
@@ -311,10 +321,10 @@ package body status_txpe_ftest is
                 -------------------------------------------------------------------
                 info_m("Step 2.7");
 
-                CAN_wait_frame_sent(DUT_NODE, chn);
-                CAN_read_frame(frame_2, TEST_NODE, chn);
+                ctu_wait_frame_sent(DUT_NODE, chn);
+                ctu_read_frame(frame_2, TEST_NODE, chn);
 
-                CAN_compare_frames(frame_1, frame_2, false, frames_equal);
+                compare_can_frames(frame_1, frame_2, false, frames_equal);
                 check_m(frames_equal, "Frames are equal.");
 
             end loop;
@@ -340,17 +350,17 @@ package body status_txpe_ftest is
                 else
                     mode_1.parity_check := false;
                 end if;
-                set_core_mode(mode_1, DUT_NODE, chn);
+                ctu_set_mode(mode_1, DUT_NODE, chn);
 
-                CAN_generate_frame(frame_1);
+                generate_can_frame(frame_1);
                 frame_1.rtr := NO_RTR_FRAME;
                 if frame_1.data_length = 0 then
                     frame_1.data_length := 1;
                 end if;
-                decode_length(frame_1.data_length, frame_1.dlc);
-                decode_dlc_rx_buff(frame_1.dlc, frame_1.rwcnt);
+                length_to_dlc(frame_1.data_length, frame_1.dlc);
+                dlc_to_rwcnt(frame_1.dlc, frame_1.rwcnt);
 
-                CAN_insert_TX_frame(frame_1, txt_buf, DUT_NODE, chn);
+                ctu_put_tx_frame(frame_1, txt_buf, DUT_NODE, chn);
 
                 -----------------------------------------------------------------------
                 -- @3.2 Flip random bit within the data word, and write this flipped
@@ -360,23 +370,23 @@ package body status_txpe_ftest is
 
                 -- Generate random word / bit index to flip
                 rand_int_v(31, corrupt_bit_index);
-                decode_dlc_rx_buff(frame_1.dlc, rwcnt);
+                dlc_to_rwcnt(frame_1.dlc, rwcnt);
                 rand_int_v(rwcnt - 4, corrupt_wrd_index);
                 corrupt_wrd_index := corrupt_wrd_index + 4;
                 info_m("Flipping word index: " & integer'image(corrupt_wrd_index));
                 info_m("Flipping bit  index: " & integer'image(corrupt_bit_index));
 
                 -- Enable test access
-                set_test_mem_access(true, DUT_NODE, chn);
+                ctu_set_tst_mem_access(true, DUT_NODE, chn);
                 tst_mem := txt_buf_to_test_mem_tgt(txt_buf);
 
                 -- Read, flip, and write back
-                test_mem_read(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
+                ctu_read_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
                 r_data(corrupt_bit_index) := not r_data(corrupt_bit_index);
-                test_mem_write(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
+                ctu_write_tst_mem(r_data, corrupt_wrd_index, tst_mem, DUT_NODE, chn);
 
                 -- Disable test mem access
-                set_test_mem_access(false, DUT_NODE, chn);
+                ctu_set_tst_mem_access(false, DUT_NODE, chn);
 
                 -----------------------------------------------------------------------
                 -- @3.3 Send Set Ready command to TXT Buffer, wait until frame
@@ -384,9 +394,9 @@ package body status_txpe_ftest is
                 -----------------------------------------------------------------------
                 info_m("Step 3.3");
 
-                send_TXT_buf_cmd(buf_set_ready, txt_buf, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_ready, txt_buf, DUT_NODE, chn);
 
-                CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+                ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
                 -----------------------------------------------------------------------
                 -- @3.4 Wait until error frame, check it is being transmitted. Check
@@ -400,36 +410,37 @@ package body status_txpe_ftest is
                 --       will be read out during control field, and thus protocol control
                 --       will never get to data field!
                 if (mode_1.parity_check) then
-                    CAN_wait_error_frame(DUT_NODE, chn);
-                    get_controller_status(stat_1, DUT_NODE, chn);
+                    ctu_wait_err_frame(DUT_NODE, chn);
+                    ctu_get_status(stat_1, DUT_NODE, chn);
 
                     check_m(stat_1.error_transmission, "Error frame is being transmitted");
 
-                    get_tx_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
+                    ctu_get_txt_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
                     check_m(txt_buf_state = buf_parity_err,
                             "Bit flip + SETTINGS[PCHKE] = 1 -> TXT Buffer in parity error state!");
 
                 -- In the case where we did not cause parity error, expect normal frame
                 -- transmission without any error frame!
                 else
-                    CAN_wait_frame_sent(DUT_NODE, chn);
-                    CAN_wait_bus_idle(DUT_NODE, chn);
+                    ctu_wait_frame_sent(DUT_NODE, chn);
+                    ctu_wait_bus_idle(DUT_NODE, chn);
+                    ctu_wait_bus_idle(TEST_NODE, chn);
 
-                    get_tx_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
+                    ctu_get_txt_buf_state(txt_buf, txt_buf_state, DUT_NODE, chn);
                     check_m(txt_buf_state = buf_done,
                             "Bit flip + SETTINGS[PCHKE] = 0 -> TXT Buffer in TX OK state!");
 
-                    get_rx_buf_state(rx_buf_status, TEST_NODE, chn);
+                    ctu_get_rx_buf_state(rx_buf_status, TEST_NODE, chn);
                     check_m(rx_buf_status.rx_frame_count = 1,
                             "TEST_NODE: Frame received!");
 
                     -- Need to read-out received frame so that it does not block
                     -- RX Buffer FIFO in Test node.
-                    CAN_read_frame(frame_2, TEST_NODE, chn);
+                    ctu_read_frame(frame_2, TEST_NODE, chn);
                 end if;
 
                 -- Check that parity flag was set, clear it!
-                get_controller_status(stat_1, DUT_NODE, chn);
+                ctu_get_status(stat_1, DUT_NODE, chn);
                 if (mode_1.parity_check) then
                     check_m(stat_1.tx_parity_error,
                             "Bit flip + SETTINGS[PCHKE] = 1 -> STATUS[TXPE] = 1");
@@ -439,9 +450,9 @@ package body status_txpe_ftest is
                 end if;
 
                 command_1.clear_txpe := true;
-                give_controller_command(command_1, DUT_NODE, chn);
+                ctu_give_cmd(command_1, DUT_NODE, chn);
 
-                get_controller_status(stat_1, DUT_NODE, chn);
+                ctu_get_status(stat_1, DUT_NODE, chn);
                 check_false_m(stat_1.tx_parity_error, "STATUS[TXPE] = 0");
 
                 ---------------------------------------------------------------------------
@@ -449,7 +460,7 @@ package body status_txpe_ftest is
                 ---------------------------------------------------------------------------
                 info_m("Step 3.5");
 
-                CAN_insert_TX_frame(frame_1, txt_buf, DUT_NODE, chn);
+                ctu_put_tx_frame(frame_1, txt_buf, DUT_NODE, chn);
 
                 ---------------------------------------------------------------------------
                 -- @3.6 Send Set Ready command. Wait until CAN frame is transmitted. Read
@@ -457,12 +468,12 @@ package body status_txpe_ftest is
                 ---------------------------------------------------------------------------
                 info_m("Step 3.6");
 
-                send_TXT_buf_cmd(buf_set_ready, txt_buf, DUT_NODE, chn);
+                ctu_give_txt_cmd(buf_set_ready, txt_buf, DUT_NODE, chn);
 
-                CAN_wait_frame_sent(DUT_NODE, chn);
-                CAN_read_frame(frame_2, TEST_NODE, chn);
+                ctu_wait_frame_sent(DUT_NODE, chn);
+                ctu_read_frame(frame_2, TEST_NODE, chn);
 
-                CAN_compare_frames(frame_1, frame_2, false, frames_equal);
+                compare_can_frames(frame_1, frame_2, false, frames_equal);
                 check_m(frames_equal, "Frames are equal.");
 
             end loop;
@@ -474,9 +485,9 @@ package body status_txpe_ftest is
             ---------------------------------------------------------------------------
             info_m("Step 3.7");
 
-            CAN_turn_controller(false, DUT_NODE, chn);
-            CAN_turn_controller(true, DUT_NODE, chn);
-            CAN_wait_bus_on(DUT_NODE, chn);
+            ctu_turn(false, DUT_NODE, chn);
+            ctu_turn(true, DUT_NODE, chn);
+            ctu_wait_err_active(DUT_NODE, chn);
 
         end loop;
 

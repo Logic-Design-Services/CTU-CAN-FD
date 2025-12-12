@@ -133,7 +133,7 @@ entity tx_arbitrator is
         txtb_index_muxed        : out natural range 0 to G_TXT_BUFFER_COUNT - 1;
 
         -- TXT Buffer is operating as backup buffer
-        txtb_is_bb              : out std_logic_vector(G_TXT_BUFFER_COUNT - 1 downto 0);
+        txtb_is_bb              : out std_logic_vector(G_TXT_BUFFER_COUNT / 2 - 1 downto 0);
 
         -------------------------------------------------------------------------------------------
         -- CAN Core Interface
@@ -420,7 +420,6 @@ begin
         -- Original Buffers
         txtb_priority_even_gen : if ((i mod 2) = 0) generate
             mr_tx_priority_txbbm(i) <= mr_tx_priority(i);
-            txtb_is_bb(i) <= '0';
         end generate;
 
         -- Backup buffers
@@ -430,10 +429,10 @@ begin
                                                          else
                                        mr_tx_priority(i - 1);
 
-            txtb_is_bb(i) <= '1' when (mr_mode_txbbm = '1' and curr_txtb_index_i = i-1 and
-                                       txtb_allow_bb(i - 1) = '1')
-                                 else
-                             '0';
+            txtb_is_bb(i / 2) <= '1' when (mr_mode_txbbm = '1' and curr_txtb_index_i = i-1 and
+                                           txtb_allow_bb(i - 1) = '1')
+                                     else
+                                 '0';
         end generate;
     end generate;
 

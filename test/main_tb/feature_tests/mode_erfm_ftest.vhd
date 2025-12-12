@@ -116,13 +116,13 @@ package body mode_erfm_ftest is
     procedure mode_erfm_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable mode_1             : SW_mode := SW_mode_rst_val;
-        variable mode_2             : SW_mode := SW_mode_rst_val;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             : t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
+        variable can_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
 
-        variable rx_buf_info        : SW_RX_Buffer_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
 
         variable frame_sent         : boolean;
     begin
@@ -133,10 +133,10 @@ package body mode_erfm_ftest is
         info_m("Step 1");
 
         mode_1.error_logging := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Generate CAN frame, and send it by DUT. Wait until Error frame is transmitted.
@@ -144,10 +144,10 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_error_frame(DUT_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_err_frame(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @3. Check that DUT RX Buffer has 0 frames in it. Check that both DUT RX
@@ -155,12 +155,12 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size,
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_mem_free = rx_buf_state.rx_buff_size,
                     "RX Buffer size = RX Buffer Free Memory");
-        check_m(rx_buf_info.rx_frame_count = 0, "RX Frame count = 0");
-        check_m(rx_buf_info.rx_write_pointer = 0, "RX Write pointer = 0");
-        check_m(rx_buf_info.rx_read_pointer = 0, "RX Write pointer = 0");
+        check_m(rx_buf_state.rx_frame_count = 0, "RX Frame count = 0");
+        check_m(rx_buf_state.rx_write_pointer = 0, "RX Write pointer = 0");
+        check_m(rx_buf_state.rx_read_pointer = 0, "RX Write pointer = 0");
 
         -------------------------------------------------------------------------------------------
         -- @4. Set MODE[ERFM] = 1 in DUT.
@@ -168,7 +168,7 @@ package body mode_erfm_ftest is
         info_m("Step 4");
 
         mode_1.error_logging := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @5. Generate CAN frame and send it by DUT. Wait until Error frame is transmitted.
@@ -176,10 +176,10 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_error_frame(DUT_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_err_frame(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @6. Check that DUT RX Buffer has 1 framae in it. Check that RX Buffer Write
@@ -187,12 +187,12 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 6");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_mem_free = rx_buf_info.rx_buff_size - 4,
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_mem_free = rx_buf_state.rx_buff_size - 4,
                     "RX Buffer size - 4 = RX Buffer Free Memory");
-        check_m(rx_buf_info.rx_write_pointer = 4, "RX Buffer Write pointer = 4");
-        check_m(rx_buf_info.rx_read_pointer = 0, "RX Buffer Read pointer = 0");
-        check_m(rx_buf_info.rx_frame_count = 1, "RX Buffer frame count = 1");
+        check_m(rx_buf_state.rx_write_pointer = 4, "RX Buffer Write pointer = 4");
+        check_m(rx_buf_state.rx_read_pointer = 0, "RX Buffer Read pointer = 0");
+        check_m(rx_buf_state.rx_frame_count = 1, "RX Buffer frame count = 1");
 
         -------------------------------------------------------------------------------------------
         -- @7. Read out the frame from RX Buffer and check that:
@@ -201,10 +201,10 @@ package body mode_erfm_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 7");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1',                            "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '1',                           "FRAME_FORMAT_W[IVLD] = 1");
-        check_m(err_frame.identifier = CAN_frame.identifier,    "Identifier match");
+        check_m(err_frame.identifier = can_frame.identifier,    "Identifier match");
 
   end procedure;
 

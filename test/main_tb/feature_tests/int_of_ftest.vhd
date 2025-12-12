@@ -124,18 +124,18 @@ package body int_of_ftest is
     procedure int_of_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :     SW_CAN_frame_type;
+        variable can_frame          :     t_ctu_frame;
         variable frame_sent         :     boolean := false;
 
-        variable int_mask           :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_ena            :     SW_interrupts := SW_interrupts_rst_val;
-        variable int_stat           :     SW_interrupts := SW_interrupts_rst_val;
-        variable command            :     SW_command := SW_command_rst_val;
-        variable buf_info           :     SW_RX_Buffer_info;
-        variable status             :     SW_status;
+        variable int_mask           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_ena            :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable int_stat           :     t_ctu_interrupts := t_ctu_interrupts_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
+        variable buf_info           :     t_ctu_rx_buf_state;
+        variable status             :     t_ctu_status;
 
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
-        variable mode_2             :     SW_mode := SW_mode_rst_val;
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :     t_ctu_mode := t_ctu_mode_rst_val;
     begin
 
         -----------------------------------------------------------------------
@@ -146,8 +146,8 @@ package body int_of_ftest is
 
         int_mask.overload_frame := false;
         int_ena.overload_frame := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Send frame by DUT, wait till intermission and check OF interrupt
@@ -157,26 +157,26 @@ package body int_of_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.overload_frame,
                       "OF Interrupt not set before overload frame");
 
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_m(int_stat.overload_frame,
                 "OF Interrupt set by overload frame");
 
         release_bus_level(chn);
 
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Disable OF Interrupt and check INT pin goes low. Enable OF
@@ -185,12 +185,12 @@ package body int_of_ftest is
         info_m("Step 3");
 
         int_ena.overload_frame := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_not_asserted(chn);
 
         int_ena.overload_frame := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         wait for 10 ns;
         interrupt_agent_check_asserted(chn);
 
@@ -201,8 +201,8 @@ package body int_of_ftest is
         info_m("Step 4");
 
         int_stat.overload_frame := true;
-        clear_int_status(int_stat, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_clr_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
 
         check_false_m(int_stat.overload_frame, "OF Interrupt cleared!");
         interrupt_agent_check_not_asserted(chn);
@@ -215,28 +215,28 @@ package body int_of_ftest is
         info_m("Step 5");
 
         int_mask.overload_frame := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
 
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.overload_frame,
                       "OF Interrupt not set before overload frame");
 
-        CAN_wait_pc_state(pc_deb_intermission, DUT_NODE, chn);
+        ctu_wait_ff(ff_intermission, DUT_NODE, chn);
         force_bus_level(DOMINANT, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns;
 
-        read_int_status(int_stat, DUT_NODE, chn);
+        ctu_get_int_status(int_stat, DUT_NODE, chn);
         check_false_m(int_stat.overload_frame,
                       "OF Interrupt not set by overload frame when masked");
 
         release_bus_level(chn);
 
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @6. Disable OF Interrupt and check it was disabled. Enable OF
@@ -245,16 +245,16 @@ package body int_of_ftest is
         info_m("Step 6");
 
         int_ena.overload_frame := false;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.overload_frame := true;
 
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_false_m(int_ena.overload_frame, "OF Interrupt Disabled!");
 
         int_ena.overload_frame := true;
-        write_int_enable(int_ena, DUT_NODE, chn);
+        ctu_set_int_ena(int_ena, DUT_NODE, chn);
         int_ena.overload_frame := false;
-        read_int_enable(int_ena, DUT_NODE, chn);
+        ctu_get_int_ena(int_ena, DUT_NODE, chn);
         check_m(int_ena.overload_frame, "OF Interrupt Enabled!");
 
         -----------------------------------------------------------------------
@@ -264,15 +264,15 @@ package body int_of_ftest is
         info_m("Step 7");
 
         int_mask.overload_frame := true;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.overload_frame := false;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_m(int_mask.overload_frame, "OF Interrupt masked!");
 
         int_mask.overload_frame := false;
-        write_int_mask(int_mask, DUT_NODE, chn);
+        ctu_set_int_mask(int_mask, DUT_NODE, chn);
         int_mask.overload_frame := true;
-        read_int_mask(int_mask, DUT_NODE, chn);
+        ctu_get_int_mask(int_mask, DUT_NODE, chn);
         check_false_m(int_mask.overload_frame, "OF Interrupt masked!");
 
         info_m("Finished OF interrupt test");

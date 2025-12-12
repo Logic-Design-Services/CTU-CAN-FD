@@ -108,14 +108,14 @@ package body command_ercrst_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
-        variable command            :     SW_command := SW_command_rst_val;
+        variable command            :     t_ctu_command := t_ctu_command_rst_val;
         
-        variable mode_1             :     SW_mode := SW_mode_rst_val;
-        variable err_ctrs           :     SW_error_counters := (0,0,0,0);
+        variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable err_ctrs           :     t_ctu_err_ctrs := (0,0,0,0);
         
-        variable fault_state        :     SW_fault_state;
+        variable fault_state        :     t_ctu_fault_state;
     begin
 
         -----------------------------------------------------------------------
@@ -126,14 +126,14 @@ package body command_ercrst_ftest is
 
         mode_1.flexible_data_rate := false;
         mode_1.test := true; -- We need it to set error counters!
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         err_ctrs.tx_counter := 256;
-        set_error_counters(err_ctrs, DUT_NODE, chn);
+        ctu_set_err_ctrs(err_ctrs, DUT_NODE, chn);
 
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         while (fault_state /= fc_bus_off) loop
-            get_fault_state(fault_state, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state, DUT_NODE, chn);
             wait for 50 ns;
         end loop;
 
@@ -147,30 +147,30 @@ package body command_ercrst_ftest is
 
         -- Now issue Error counter reset!
         command.err_ctrs_rst := true;
-        give_controller_command(command, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
 
         -- Wait till end of error frame!
         for i in 0 to 13 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
         for i in 1 to 127 loop
             info_m ("11 recessive bits nr: " & integer'image(i));
             for j in 1 to 11 loop
-                CAN_wait_sample_point(DUT_NODE, chn);
+                ctu_wait_sample_point(DUT_NODE, chn);
             end loop;
         end loop;
 
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_bus_off, "Node still bus off!");
 
         -- 30 bits is chosen just as upper bound. In fact, we would only need
         -- to account for Error delimiter + Intermission
         for i in 0 to 29 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
         
-        get_fault_state(fault_state, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state, DUT_NODE, chn);
         check_m(fault_state = fc_error_active, "Node became error active!");
 
   end procedure;

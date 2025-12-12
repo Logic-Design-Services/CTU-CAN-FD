@@ -109,23 +109,23 @@ package body settings_nisofd_ftest is
     procedure settings_nisofd_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       SW_PC_Debug;
-        variable fault_state        :       SW_fault_state;
+        variable ff             :       t_ctu_frame_field;
+        variable fault_state        :       t_ctu_fault_state;
 
-        variable err_counters       :       SW_error_counters;
+        variable err_counters       :       t_ctu_err_ctrs;
         variable buf_index          :       natural;
 
-        variable command            :       SW_command := SW_command_rst_val;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
     begin
 
         -----------------------------------------------------------------------
@@ -134,17 +134,17 @@ package body settings_nisofd_ftest is
         info_m("Step 1");
 
         mode_1.iso_fd_support := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         mode_2.iso_fd_support := false;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
-        CAN_generate_frame(CAN_TX_frame);
+        generate_can_frame(can_tx_frame);
         CAN_TX_Frame.frame_format := FD_CAN;
         CAN_TX_Frame.data_length := 4;
-        decode_length(CAN_TX_Frame.data_length, CAN_TX_Frame.dlc);
+        length_to_dlc(CAN_TX_Frame.data_length, CAN_TX_Frame.dlc);
 
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
 
         -----------------------------------------------------------------------
         -- @2. Wait until the data field in DUT. Wait until not in the data
@@ -152,13 +152,13 @@ package body settings_nisofd_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_wait_pc_state(pc_deb_data, DUT_NODE, chn);
-        CAN_wait_not_pc_state(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_data, DUT_NODE, chn);
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-        check_m(pc_dbg = pc_deb_crc, "Protocol control in CRC");
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        check_m(ff = ff_crc, "Protocol control in CRC");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         --  @3. Set SETTINGS[NISOFD]=0 in DUT. Send CAN FD frame by DUT.
@@ -166,24 +166,24 @@ package body settings_nisofd_ftest is
         info_m("Step 3");
 
         mode_1.iso_fd_support := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         mode_2.iso_fd_support := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
 
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
 
         -----------------------------------------------------------------------
         --  @4. Wait until the data field in DUT. Wait until not in the data
         --      field. Check that DUT is NOT in Stuff count field.
         -----------------------------------------------------------------------
-        CAN_wait_pc_state(pc_deb_data, DUT_NODE, chn);
-        CAN_wait_not_pc_state(pc_deb_data, DUT_NODE, chn);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_data, DUT_NODE, chn);
 
-        CAN_read_pc_debug_m(pc_dbg, DUT_NODE, chn);
-        check_m(pc_dbg = pc_deb_stuff_count, "Protocol Control in Stuff Count");
+        ctu_get_curr_ff(ff, DUT_NODE, chn);
+        check_m(ff = ff_stuff_count, "Protocol Control in Stuff Count");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
   end procedure;
 

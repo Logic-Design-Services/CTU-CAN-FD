@@ -111,11 +111,11 @@ package body btr_fd_ftest is
     procedure btr_fd_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_1        :       SW_CAN_frame_type;
-        variable CAN_frame_2        :       SW_CAN_frame_type;
+        variable can_frame_1        :       t_ctu_frame;
+        variable can_frame_2        :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
 
         variable clock_per_bit      :       natural := 0;
         
@@ -137,13 +137,13 @@ package body btr_fd_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);
 
         -- Read timing so that NBT values are kept!
-        CAN_read_timing_v(bus_timing, DUT_NODE, chn);
+        ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
 
-        CAN_generate_random_bit_timing(bus_timing, chn);
+        generate_rand_bit_time_cfg(bus_timing, chn);
 
         -- Constrain nominal bit-timing to reduce test time!
         -- This is test which verifies data bit-rate so we can afford some
@@ -160,7 +160,7 @@ package body btr_fd_ftest is
         if (bus_timing.ph2_nbt > 15) then
             bus_timing.ph2_nbt := 15;
         end if;
-        CAN_print_timing(bus_timing);
+        print_bit_time_cfg(bus_timing);
 
         -----------------------------------------------------------------------
         -- Configure delay of TX -> RX so that for any generated bit-rate, it
@@ -173,21 +173,21 @@ package body btr_fd_ftest is
         tx_delay := (((1 + bus_timing.prop_nbt + bus_timing.ph1_nbt) *
                        bus_timing.tq_nbt) / 3) * 10 ns;
         info_m("TX delay is: " & time'image(tx_delay));
-        ftr_tb_set_tran_delay(tx_delay, DUT_NODE, chn);
-        ftr_tb_set_tran_delay(tx_delay, TEST_NODE, chn);
+        set_transceiver_delay(tx_delay, DUT_NODE, chn);
+        set_transceiver_delay(tx_delay, TEST_NODE, chn);
 
 
         -- Pre-calculate expected number of clock cycles after all corrections!
         clock_per_bit := (1 + bus_timing.prop_dbt + bus_timing.ph1_dbt +
                           bus_timing.ph2_dbt) * bus_timing.tq_dbt;
 
-        CAN_configure_timing(bus_timing, DUT_NODE, chn);
-        CAN_configure_timing(bus_timing, TEST_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
 
         -- Configure SSP so that it samples in Data-bit rate and in 50 % of
         -- expected received bit! We need it only for DUT!
         ssp_pos := std_logic_vector(to_unsigned(clock_per_bit/2, 8));
-        CAN_configure_ssp(ssp_meas_n_offset, ssp_pos, DUT_NODE, chn);
+        ctu_set_ssp(ssp_meas_n_offset, ssp_pos, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Enable both Nodes and send CAN FD frame where bit-rate is shifted
@@ -197,11 +197,11 @@ package body btr_fd_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_turn_controller(true, TEST_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
 
-        CAN_wait_bus_on(DUT_NODE, chn);
-        CAN_wait_bus_on(TEST_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
 
         info_m("CAN bus nominal bit-rate:");
         info_m("BRP: " & integer'image(bus_timing.tq_nbt));
@@ -217,34 +217,34 @@ package body btr_fd_ftest is
         info_m("PH2: " & integer'image(bus_timing.ph2_dbt));
         info_m("SJW: " & integer'image(bus_timing.sjw_dbt));
 
-        CAN_generate_frame(CAN_frame_1);
-        CAN_frame_1.brs := BR_SHIFT;
-        CAN_frame_1.frame_format := FD_CAN;
+        generate_can_frame(can_frame_1);
+        can_frame_1.brs := BR_SHIFT;
+        can_frame_1.frame_format := FD_CAN;
 
         -- Force DLC length to 1 byte only not to have long test run time!
-        CAN_frame_1.dlc := "0001";
-        decode_dlc(CAN_frame_1.dlc, CAN_frame_1.data_length);
-        CAN_frame_1.data(0) := x"AA";
+        can_frame_1.dlc := "0001";
+        dlc_to_length(can_frame_1.dlc, can_frame_1.data_length);
+        can_frame_1.data(0) := x"AA";
 
         -- We need to make sure that frame is not RTR frame, because CAN FD
         -- frames have no RTR frames! This would lead to fail in check between
         -- TX and RX frame! Also, we have to re-calculate RWCNT for the check
         -- accordingly!
-        CAN_frame_1.rtr := NO_RTR_FRAME;
-        decode_dlc_rx_buff(CAN_frame_1.dlc, CAN_frame_1.rwcnt);
+        can_frame_1.rtr := NO_RTR_FRAME;
+        dlc_to_rwcnt(can_frame_1.dlc, can_frame_1.rwcnt);
 
         -- These data bytes are preloaded to have all elements of memory word
         -- defined!
-        CAN_frame_1.data(1) := x"BB";
-        CAN_frame_1.data(2) := x"CC";
-        CAN_frame_1.data(3) := x"DD";
+        can_frame_1.data(1) := x"BB";
+        can_frame_1.data(2) := x"CC";
+        can_frame_1.data(3) := x"DD";
     
-        CAN_send_frame(CAN_frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_data, DUT_NODE, chn);
+        ctu_send_frame(can_frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_ff(ff_data, DUT_NODE, chn);
 
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         t_meas_start := now;
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         t_meas_stop := now;
 
         clk_agent_get_period(chn, clk_sys_period);
@@ -261,10 +261,10 @@ package body btr_fd_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_wait_bus_idle(TEST_NODE, chn);
-        CAN_read_frame(CAN_frame_2, TEST_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
+        ctu_read_frame(can_frame_2, TEST_NODE, chn);
 
-        CAN_compare_frames(CAN_frame_1, CAN_frame_2, false, frames_equal);
+        compare_can_frames(can_frame_1, can_frame_2, false, frames_equal);
         check_m(frames_equal, "TX/RX frame equal!");
 
   end procedure;

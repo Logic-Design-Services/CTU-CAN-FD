@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2021-present Ondrej Ille
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to use, copy, modify, merge, publish, distribute the Component for
 -- educational, research, evaluation, self-interest purposes. Using the
 -- Component for commercial purposes is forbidden unless previously agreed with
 -- Copyright holder.
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,38 +20,38 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 -- -------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2015-2020 MIT License
--- 
+--
 -- Authors:
 --     Ondrej Ille <ondrej.ille@gmail.com>
 --     Martin Jerabek <martin.jerabek01@gmail.com>
--- 
--- Project advisors: 
+--
+-- Project advisors:
 -- 	Jiri Novak <jnovak@fel.cvut.cz>
 -- 	Pavel Pisa <pisa@cmp.felk.cvut.cz>
--- 
+--
 -- Department of Measurement         (http://meas.fel.cvut.cz/)
 -- Faculty of Electrical Engineering (http://www.fel.cvut.cz)
 -- Czech Technical University        (http://www.cvut.cz/)
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to deal in the Component without restriction, including without limitation
 -- the rights to use, copy, modify, merge, publish, distribute, sublicense,
 -- and/or sell copies of the Component, and to permit persons to whom the
 -- Component is furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,11 +59,11 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -91,7 +91,7 @@
 --      sent (it depends on when did the validation finish, which depends on
 --      delay between frames!). This verifies that no part of metadata has
 --      been taken from other frame, and frame was validated atomically!
---      
+--
 --
 -- @TestInfoEnd
 --------------------------------------------------------------------------------
@@ -119,17 +119,17 @@ package body tx_arb_consistency_ftest is
     procedure tx_arb_consistency_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame_rx_1     :       SW_CAN_frame_type;
-        variable CAN_frame_rx_2     :       SW_CAN_frame_type;
-        variable CAN_frame_tx_1     :       SW_CAN_frame_type;
-        variable CAN_frame_tx_2     :       SW_CAN_frame_type;
-        
+        variable can_frame_rx_1     :       t_ctu_frame;
+        variable can_frame_rx_2     :       t_ctu_frame;
+        variable can_frame_tx_1     :       t_ctu_frame;
+        variable can_frame_tx_2     :       t_ctu_frame;
+
         variable frame_equal        :       boolean := false;
         variable tmp_int            :       natural := 0;
-        
+
         variable wait_cycles        :       natural := 0;
-        variable bus_timing         :       bit_time_config_type;
-        
+        variable bus_timing         :       t_ctu_bit_time_cfg;
+
         variable frames_equal_1     :       boolean;
         variable frames_equal_2     :       boolean;
     begin
@@ -140,16 +140,16 @@ package body tx_arb_consistency_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_generate_frame(CAN_frame_tx_1);
-        CAN_generate_frame(CAN_frame_tx_2);
-        
-        CAN_insert_TX_frame(CAN_frame_tx_1, 1, DUT_NODE, chn);
-        CAN_insert_TX_frame(CAN_frame_tx_2, 2, DUT_NODE, chn);
-        
-        CAN_configure_tx_priority(1, 5, DUT_NODE, chn); 
-        CAN_configure_tx_priority(2, 3, DUT_NODE, chn);
-        
-        CAN_read_timing_v(bus_timing, DUT_NODE, chn);
+        generate_can_frame(can_frame_tx_1);
+        generate_can_frame(can_frame_tx_2);
+
+        ctu_put_tx_frame(can_frame_tx_1, 1, DUT_NODE, chn);
+        ctu_put_tx_frame(can_frame_tx_2, 2, DUT_NODE, chn);
+
+        ctu_set_txt_buf_prio(1, 5, DUT_NODE, chn);
+        ctu_set_txt_buf_prio(2, 3, DUT_NODE, chn);
+
+        ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Wait until sample point and issue Set ready command to TXT
@@ -157,8 +157,8 @@ package body tx_arb_consistency_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_wait_sample_point(DUT_NODE, chn, false);
-        send_TXT_buf_cmd(buf_set_ready, 2, DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
+        ctu_give_txt_cmd(buf_set_ready, 2, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Wait for nearly whole Bit time, and before next sample point,
@@ -169,22 +169,22 @@ package body tx_arb_consistency_ftest is
         -----------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_wait_sync_seg(DUT_NODE, chn);
-        
-        -- Wait for "PH1 - 7 cycles" always, plus up to 12 cycles random.
-        -- This will cause that set ready is issued between - 7 cycles before
+        ctu_wait_sync_seg(DUT_NODE, chn);
+
+        -- Wait for "PH1 - 4 cycles" always, plus up to 12 cycles random.
+        -- This will cause that set ready is issued between - 4 cycles before
         -- up to 5 cycles after sample point! Therefore TX Arbitrator should
-        -- be in process of TXT buffer validation!!   
+        -- be in process of TXT buffer validation!!
         rand_int_v(12, wait_cycles);
         wait_cycles := wait_cycles +
                        bus_timing.tq_nbt * (bus_timing.prop_nbt + bus_timing.ph1_nbt) -
-                       7;
+                       4;
 
         for i in 1 to wait_cycles loop
             clk_agent_wait_cycle(chn);
         end loop;
-        
-        send_TXT_buf_cmd(buf_set_ready, 1, DUT_NODE, chn);
+
+        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @4. Wait until frame is sent, and verify that either frame 2 or
@@ -193,27 +193,27 @@ package body tx_arb_consistency_ftest is
         --     part of metadata has been taken from other frame, and frame was
         --     validated atomically!
         -----------------------------------------------------------------------
-        CAN_wait_frame_sent(TEST_NODE, chn);
-        
-        CAN_read_frame(CAN_frame_rx_1, TEST_NODE, chn);
-        CAN_compare_frames(CAN_frame_rx_1, CAN_frame_tx_1, false, frames_equal_1);
-        CAN_compare_frames(CAN_frame_rx_1, CAN_frame_tx_2, false, frames_equal_2);
-        
+        ctu_wait_frame_sent(TEST_NODE, chn);
+
+        ctu_read_frame(can_frame_rx_1, TEST_NODE, chn);
+        compare_can_frames(can_frame_rx_1, can_frame_tx_1, false, frames_equal_1);
+        compare_can_frames(can_frame_rx_1, can_frame_tx_2, false, frames_equal_2);
+
         check_m(frames_equal_1 or frames_equal_2,
                 "First frame was properly received!");
-                
-        CAN_wait_frame_sent(TEST_NODE, chn);
-        CAN_read_frame(CAN_frame_rx_2, TEST_NODE, chn);
+
+        ctu_wait_frame_sent(TEST_NODE, chn);
+        ctu_read_frame(can_frame_rx_2, TEST_NODE, chn);
         if (frames_equal_1) then
-            CAN_compare_frames(CAN_frame_rx_2, CAN_frame_tx_2, false, frames_equal_1);
+            compare_can_frames(can_frame_rx_2, can_frame_tx_2, false, frames_equal_1);
         elsif (frames_equal_2) then
-            CAN_compare_frames(CAN_frame_rx_2, CAN_frame_tx_1, false, frames_equal_1);
+            compare_can_frames(can_frame_rx_2, can_frame_tx_1, false, frames_equal_1);
         end if;
 
         check_m(frames_equal_1, "Second frame was properly received!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
     end procedure;
 end package body;

@@ -111,32 +111,32 @@ package body frame_test_fcrc_ftest is
     procedure frame_test_fcrc_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable frames_equal       :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable err_counters       :       SW_error_counters := (0, 0, 0, 0);
-        variable err_counters_2     :       SW_error_counters := (0, 0, 0, 0);
+        variable err_counters       :       t_ctu_err_ctrs := (0, 0, 0, 0);
+        variable err_counters_2     :       t_ctu_err_ctrs := (0, 0, 0, 0);
 
-        variable fault_th           :       SW_fault_thresholds;
-        variable fault_th_2         :       SW_fault_thresholds;
+        variable fault_th           :       t_ctu_fault_thresholds;
+        variable fault_th_2         :       t_ctu_fault_thresholds;
 
         variable txt_buf_count      :       natural;
         variable tmp_int            :       natural;
         variable txt_buf_index      :       natural;
 
-        variable status_1           :       SW_status;
+        variable status_1           :       t_ctu_status;
 
         variable txt_buf_vector     :       std_logic_vector(7 downto 0) := x"00";
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
 
         variable golden_crc         :       std_logic_vector(20 downto 0) := (others => '0');
         variable expected_crc       :       std_logic_vector(20 downto 0) := (others => '0');
         variable real_crc           :       std_logic_vector(20 downto 0) := (others => '0');
 
-        variable err_capt           :       SW_error_capture;
+        variable err_capt           :       t_ctu_err_capt;
 
         variable crc_length         :       natural;
     begin
@@ -151,9 +151,9 @@ package body frame_test_fcrc_ftest is
         -- not getting ACK due to flipped bit. This-way we can check that test-node
         -- has detected CRC error!
         mode_1.self_test := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        get_tx_buf_count(txt_buf_count, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Generate random CAN FD frame. Transmit it by DUT, record
@@ -161,27 +161,27 @@ package body frame_test_fcrc_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_TX_frame);
-        CAN_TX_frame.frame_format := FD_CAN;
-        if (CAN_TX_frame.data_length > 16) then
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.frame_format := FD_CAN;
+        if (can_tx_frame.data_length > 16) then
             crc_length := 21;
         else
             crc_length := 17;
         end if;
 
-        pick_random_txt_buffer(txt_buf_index, DUT_NODE, chn);
-        CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+        ctu_get_rand_txt_buf(txt_buf_index, DUT_NODE, chn);
+        ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
 
-        send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+        ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-        CAN_wait_pc_state(pc_deb_crc, DUT_NODE, chn);
+        ctu_wait_ff(ff_crc, DUT_NODE, chn);
 
         for i in 0 to crc_length - 1 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             get_can_tx(DUT_NODE, golden_crc(i), chn);
         end loop;
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         --  @3. Iterate through all bits flipped:
@@ -197,17 +197,17 @@ package body frame_test_fcrc_ftest is
             -----------------------------------------------------------------------
             info_m("Step 3.1");
 
-            CAN_insert_TX_frame(CAN_TX_frame, txt_buf_index, DUT_NODE, chn);
+            ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
 
-            CAN_set_frame_test(txt_buf_index, bit_to_flip, false, true, false,
+            ctu_set_tx_frame_test(txt_buf_index, bit_to_flip, false, true, false,
                             DUT_NODE, chn);
 
-            send_TXT_buf_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-            CAN_wait_pc_state(pc_deb_crc, DUT_NODE, chn);
+            ctu_wait_ff(ff_crc, DUT_NODE, chn);
 
             for i in 0 to crc_length - 1 loop
-                CAN_wait_sample_point(DUT_NODE, chn);
+                ctu_wait_sample_point(DUT_NODE, chn);
                 get_can_tx(DUT_NODE, real_crc(i), chn);
             end loop;
 
@@ -227,16 +227,16 @@ package body frame_test_fcrc_ftest is
             -----------------------------------------------------------------------
             info_m("Step 3.2");
 
-            CAN_wait_error_frame(TEST_NODE, chn);
+            ctu_wait_err_frame(TEST_NODE, chn);
             wait for 20 ns;
 
-            CAN_read_error_code_capture(err_capt, TEST_NODE, chn);
+            ctu_get_err_capt(err_capt, TEST_NODE, chn);
 
             check_m(err_capt.err_pos = err_pos_ack, "Error in ACK field");
             check_m(err_capt.err_type = can_err_crc, "CRC error detected");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
-            CAN_wait_bus_idle(TEST_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
 
         end loop;
 

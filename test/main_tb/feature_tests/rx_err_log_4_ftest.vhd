@@ -133,16 +133,16 @@ package body rx_err_log_4_ftest is
     procedure rx_err_log_4_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          : SW_CAN_frame_type;
-        variable err_frame          : SW_CAN_frame_type;
+        variable can_frame          : t_ctu_frame;
+        variable err_frame          : t_ctu_frame;
         variable frame_sent         : boolean;
 
         variable can_tx             : std_logic;
 
-        variable mode_1             : SW_mode := SW_mode_rst_val;
-        variable status             : SW_status;
+        variable mode_1             : t_ctu_mode := t_ctu_mode_rst_val;
+        variable status             : t_ctu_status;
 
-        variable rx_buf_info        : SW_RX_Buffer_info;
+        variable rx_buf_state        : t_ctu_rx_buf_state;
     begin
 
         -------------------------------------------------------------------------------------------
@@ -151,9 +151,9 @@ package body rx_err_log_4_ftest is
         info_m("Step 1");
 
         mode_1.error_logging := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @2. Generate CAN frame and send it by DUT Node. Wait until Base ID and
@@ -163,14 +163,14 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
 
         while (true) loop
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             wait for 20 ns;
             get_can_tx(DUT_NODe, can_tx, chn);
             if (can_tx = DOMINANT) then
@@ -179,26 +179,27 @@ package body rx_err_log_4_ftest is
         end loop;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         wait for 20 ns;
         release_bus_level(chn);
 
         wait for 100 ns;
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '0', "FRAME_FORMAT_W[IVLD] = 0");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 0, "No Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @3. Generate CAN FD frame with Base ID only. Send the frame by DUT Node,
@@ -208,43 +209,44 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 3");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
-        CAN_frame.ident_type := BASE;
-        CAN_frame.identifier := CAN_frame.identifier mod 2 ** 11;
-        CAN_frame.rtr := NO_RTR_FRAME;
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
+        can_frame.ident_type := BASE;
+        can_frame.identifier := can_frame.identifier mod 2 ** 11;
+        can_frame.rtr := NO_RTR_FRAME;
 
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- SOF + 11 Bits of Base ID
         for i in 1 to 12 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
         wait for 20 ns;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         wait for 20 ns;
         release_bus_level(chn);
 
         wait for 100 ns;
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '0', "FRAME_FORMAT_W[IVLD] = 0");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 0, "No Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @4. Generate CAN frame with Base Identifier only. Send it by DUT Node
@@ -254,46 +256,47 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 4");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
-        CAN_frame.ident_type := BASE;
-        CAN_frame.identifier := CAN_frame.identifier mod 2 ** 11;
-        CAN_frame.rtr := NO_RTR_FRAME;
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
+        can_frame.ident_type := BASE;
+        can_frame.identifier := can_frame.identifier mod 2 ** 11;
+        can_frame.rtr := NO_RTR_FRAME;
 
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- SOF + 11 Bits of Base ID + RTR bit
         for i in 1 to 13 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
         -- One more bit (IDE) -> Post-IDE bit will be flipped!
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
 
         wait for 20 ns;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         wait for 20 ns;
         release_bus_level(chn);
 
         wait for 100 ns;
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '1', "FRAME_FORMAT_W[IVLD] = 1");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 0, "No Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @5. Generate CAN frame with Extended Identifier and send it by DUT Node.
@@ -303,49 +306,50 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 5");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.ident_type := EXTENDED;
+        generate_can_frame(can_frame);
+        can_frame.ident_type := EXTENDED;
 
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- SOF + 11 Bits of Base ID + RTR bit + IDE bit + First bit of Identifier Extension
         for i in 1 to 14 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
         while (true) loop
-            CAN_wait_sync_seg(DUT_NODE, chn);
-            wait for 20 ns;
-            get_can_tx(DUT_NODe, can_tx, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
+            wait for 11 ns;
+            get_can_tx(DUT_NODE, can_tx, chn);
             if (can_tx = DOMINANT) then
                 exit;
             end if;
         end loop;
 
-        wait for 20 ns;
+        --wait for 20 ns;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
-        wait for 20 ns;
+        ctu_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_input_delay(chn);
         release_bus_level(chn);
 
-        wait for 100 ns;
+        ctu_wait_sample_point(DUT_NODE, chn, false);
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '0', "FRAME_FORMAT_W[IVLD] = 0");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 0, "No Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
 
         -------------------------------------------------------------------------------------------
         -- @6. Generate CAN frame with Extended identifier and send it by DUT Node.
@@ -356,40 +360,40 @@ package body rx_err_log_4_ftest is
         -------------------------------------------------------------------------------------------
         info_m("Step 6");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.ident_type := EXTENDED;
+        generate_can_frame(can_frame);
+        can_frame.ident_type := EXTENDED;
 
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
 
         -- SOF + 11 Bits of Base ID + SRR bit + IDE bit + 18 bits + RTR bit
         for i in 1 to 33 loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop;
 
         wait for 20 ns;
 
         flip_bus_level(chn);
-        CAN_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
         wait for 20 ns;
         release_bus_level(chn);
 
         wait for 100 ns;
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 1, "Single Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 1, "Single Error frame in RX Buffer!");
 
-        CAN_read_frame(err_frame, DUT_NODE, chn);
+        ctu_read_frame(err_frame, DUT_NODE, chn);
         check_m(err_frame.erf = '1', "FRAME_FORMAT_W[ERF] = 1");
         check_m(err_frame.ivld = '1', "FRAME_FORMAT_W[IVLD] = 1");
 
-        get_rx_buf_state(rx_buf_info, DUT_NODE, chn);
-        check_m(rx_buf_info.rx_frame_count = 0, "No Error frame in RX Buffer!");
+        ctu_get_rx_buf_state(rx_buf_state, DUT_NODE, chn);
+        check_m(rx_buf_state.rx_frame_count = 0, "No Error frame in RX Buffer!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
     end procedure;
 

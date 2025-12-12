@@ -113,14 +113,14 @@ package body tx_cmd_set_ready_ftest is
     procedure tx_cmd_set_ready_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
-        variable txt_state          :       SW_TXT_Buffer_state_type;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
+        variable txt_state          :       t_ctu_txt_buff_state;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
         variable num_buffers        :       natural;
     begin
 
-        get_tx_buf_count(num_buffers, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_buffers, DUT_NODE, chn);
 
         for buf_nr in 1 to num_buffers loop
 
@@ -132,17 +132,17 @@ package body tx_cmd_set_ready_ftest is
             -----------------------------------------------------------------------
             info_m("Step 1");
 
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_empty, "TXT Buffer empty upon start");
-            CAN_generate_frame(CAN_frame);
-            CAN_insert_TX_frame(CAN_frame, buf_nr, DUT_NODE, chn);
+            generate_can_frame(can_frame);
+            ctu_put_tx_frame(can_frame, buf_nr, DUT_NODE, chn);
 
-            CAN_wait_sample_point(DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
             wait for 11 ns; -- This command is pipelined, delay must be inserted!
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_ready, "Set Ready: Empty -> Ready");
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
             ------------------------------------------------------------------------
             -- @2. Check TXT Buffer state is TX OK. Wait until sample point and issue
@@ -151,16 +151,16 @@ package body tx_cmd_set_ready_ftest is
             ------------------------------------------------------------------------
             info_m("Step 2");
 
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_done, "TXT Buffer OK after frame sent!");
 
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
 
-            send_TXT_buf_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
             wait for 11 ns; -- This command is pipelined, delay must be inserted!
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_ready, "Set Ready: TX OK -> Ready");
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
             ------------------------------------------------------------------------
             -- @3. Wait until Sample point. Issue Set Ready and consecutively Set
@@ -169,20 +169,20 @@ package body tx_cmd_set_ready_ftest is
             ------------------------------------------------------------------------
             info_m("Step 3");
 
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
             wait for 10 ns;
-            send_TXT_buf_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_abort, buf_nr, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_abort, buf_nr, DUT_NODE, chn);
             wait for 20 ns; -- Command is pipelined;
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_aborted, "TXT Buffer Aborted!");
 
-            CAN_wait_sample_point(DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
             wait for 11 ns; -- This command is pipelined, delay must be inserted!
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_ready, "Set Ready: Aborted -> Ready");
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
             -----------------------------------------------------------------------
             -- @4. Set One shot mode in DUT. Forbid ACK in Test node. Send CAN frame
@@ -192,32 +192,32 @@ package body tx_cmd_set_ready_ftest is
             -----------------------------------------------------------------------
             info_m("Step 4");
 
-            CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+            ctu_set_retr_limit(true, 0, DUT_NODE, chn);
             mode_2.acknowledge_forbidden := true;
-            set_core_mode(mode_2, TEST_NODE, chn);
+            ctu_set_mode(mode_2, TEST_NODE, chn);
 
-            CAN_generate_frame(CAN_frame);
-            CAN_send_frame(CAN_frame, buf_nr, DUT_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, buf_nr, DUT_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_failed, "TXT Buffer Failed!");
 
-            CAN_wait_sample_point(DUT_NODE, chn);
-            send_TXT_buf_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, buf_nr, DUT_NODE, chn);
             wait for 11 ns; -- This command is pipelined, delay must be inserted!
-            get_tx_buf_state(buf_nr, txt_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_ready, "Set Ready: TX Failed -> Ready");
 
-            CAN_wait_frame_sent(DUT_NODE, chn);
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_frame_sent(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
-            send_TXT_buf_cmd(buf_set_empty, buf_nr, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_empty, buf_nr, DUT_NODE, chn);
 
             -- DIsabled back th ACK forbidden for next iterations!
-            CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+            ctu_set_retr_limit(true, 0, DUT_NODE, chn);
             mode_2.acknowledge_forbidden := false;
-            set_core_mode(mode_2, TEST_NODE, chn);
+            ctu_set_mode(mode_2, TEST_NODE, chn);
 
             wait for 100 ns;
         end loop;

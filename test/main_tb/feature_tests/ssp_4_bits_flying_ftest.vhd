@@ -113,15 +113,15 @@ package body ssp_4_bits_flying_ftest is
     procedure ssp_4_bits_flying_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable measured_delay     :       natural;
         variable frames_equal       :       boolean;
         variable rand_time          :       natural;
         variable rand_time_ceiled   :       natural;
 
-        variable bus_timing         :       bit_time_config_type;
+        variable bus_timing         :       t_ctu_bit_time_cfg;
         variable trv_delay          :       time;
         variable clk_period         :       time;
     begin
@@ -134,8 +134,8 @@ package body ssp_4_bits_flying_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        CAN_turn_controller(false, DUT_NODE, chn);
-        CAN_turn_controller(false, TEST_NODE, chn);        
+        ctu_turn(false, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);        
 
         -- Should be 250 Kbit/s
         bus_timing.prop_nbt := 10;
@@ -151,8 +151,8 @@ package body ssp_4_bits_flying_ftest is
         bus_timing.tq_dbt := 1;
         bus_timing.sjw_dbt := 4;
 
-        CAN_configure_timing(bus_timing, DUT_NODE, chn);
-        CAN_configure_timing(bus_timing, TEST_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
+        ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Configure TRV_DELAY to be 4 data bit times.
@@ -163,7 +163,7 @@ package body ssp_4_bits_flying_ftest is
         -- will be 13 * 4 = 42 cycles.
         clk_agent_get_period(chn, clk_period);
         trv_delay := 42 * clk_period; 
-        ftr_tb_set_tran_delay(trv_delay, DUT_NODE, chn);
+        set_transceiver_delay(trv_delay, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @3. Configure DUTs SSP to be in Measured + offset with offset being
@@ -172,8 +172,8 @@ package body ssp_4_bits_flying_ftest is
         info_m("Step 3");
 
         -- Half of next bit: 6
-        CAN_configure_ssp(ssp_meas_n_offset, "00000110", DUT_NODE, chn);
-        CAN_configure_ssp(ssp_meas_n_offset, "00000110", TEST_NODE, chn);
+        ctu_set_ssp(ssp_meas_n_offset, "00000110", DUT_NODE, chn);
+        ctu_set_ssp(ssp_meas_n_offset, "00000110", TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @4. Enable DUT and wait till it becomes error active.
@@ -181,12 +181,12 @@ package body ssp_4_bits_flying_ftest is
         info_m("Step 4");
 
         -- Turn the controllers on!
-        CAN_turn_controller(true, DUT_NODE, chn);
-        CAN_turn_controller(true, TEST_NODE, chn);
+        ctu_turn(true, DUT_NODE, chn);
+        ctu_turn(true, TEST_NODE, chn);
 
         -- Wait till integration is over!
-        CAN_wait_bus_on(DUT_NODE, chn);
-        CAN_wait_bus_on(TEST_NODE, chn);
+        ctu_wait_err_active(DUT_NODE, chn);
+        ctu_wait_err_active(TEST_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @5. Send FD frame by DUT and verify it will be succesfully received
@@ -194,26 +194,26 @@ package body ssp_4_bits_flying_ftest is
         -----------------------------------------------------------------------
         info_m("Step 5");
 
-        CAN_generate_frame(CAN_TX_frame);
-        CAN_TX_frame.rtr := NO_RTR_FRAME;
-        CAN_TX_frame.frame_format := FD_CAN;
-        CAN_TX_frame.brs := BR_SHIFT;
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.rtr := NO_RTR_FRAME;
+        can_tx_frame.frame_format := FD_CAN;
+        can_tx_frame.brs := BR_SHIFT;
 
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
-        CAN_wait_bus_idle(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(TEST_NODE, chn);
         
         -- Check measured delay too! Include input delay!
-        read_trv_delay(measured_delay, DUT_NODE, chn);
+        ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
         check_m(measured_delay = (trv_delay / clk_period) + 2, "Measured delay is OK!" &
               " Expected: " & integer'image(trv_delay / clk_period) &
               " Measured: " & integer'image(measured_delay));
 
         -- Read from from TEST Node
-        CAN_read_frame(CAN_RX_frame, TEST_NODE, chn);
-        CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, TEST_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
         
         check_m(frames_equal, "TX RX frames match");
 

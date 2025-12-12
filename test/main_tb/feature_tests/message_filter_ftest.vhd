@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2021-present Ondrej Ille
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to use, copy, modify, merge, publish, distribute the Component for
 -- educational, research, evaluation, self-interest purposes. Using the
 -- Component for commercial purposes is forbidden unless previously agreed with
 -- Copyright holder.
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,38 +20,38 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 -- -------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2015-2020 MIT License
--- 
+--
 -- Authors:
 --     Ondrej Ille <ondrej.ille@gmail.com>
 --     Martin Jerabek <martin.jerabek01@gmail.com>
--- 
--- Project advisors: 
+--
+-- Project advisors:
 -- 	Jiri Novak <jnovak@fel.cvut.cz>
 -- 	Pavel Pisa <pisa@cmp.felk.cvut.cz>
--- 
+--
 -- Department of Measurement         (http://meas.fel.cvut.cz/)
 -- Faculty of Electrical Engineering (http://www.fel.cvut.cz)
 -- Czech Technical University        (http://www.cvut.cz/)
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to deal in the Component without restriction, including without limitation
 -- the rights to use, copy, modify, merge, publish, distribute, sublicense,
 -- and/or sell copies of the Component, and to permit persons to whom the
 -- Component is furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,19 +59,19 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 -- @TestInfoStart
 --
 -- @Purpose:
---  Bus Start feature test. Verifies if unit is capable of joining fully,
---  loaded bus.
+--  Message filter feature test. Verifies functionality of Mask filter and
+--  Range filter
 --
 -- @Test sequence:
 --      Part 1 (Message filter disabled):
@@ -106,7 +106,7 @@
 --          6. Send CAN frame whose decimal value of ID is between low threshold
 --             and high threshold.
 --          7. Verify that frame is received by Test node.
---          8. Send CAN frame whose decimal value of ID is equal to High 
+--          8. Send CAN frame whose decimal value of ID is equal to High
 --             threshold of range filter.
 --          9. Verify that frame was received by DUT.
 --         10. Send frame which is higher than high threshold by Test node.
@@ -136,52 +136,56 @@ package body message_filter_ftest is
     procedure message_filter_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
-        variable mode               :       SW_mode := SW_mode_rst_val;
-        variable rx_state           :       SW_RX_Buffer_info;
-        variable mask_filt_config   :       SW_CAN_mask_filter_config :=
+        variable mode               :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable rx_state           :       t_ctu_rx_buf_state;
+        variable mask_filt_config   :       t_ctu_mask_filt_cfg :=
                                                 (0, 0, '0', false, false);
-        variable range_filt_config  :       SW_CAN_range_filter_config := 
+        variable range_filt_config  :       t_ctu_ran_filt_cfg :=
                                                 (0, 0, '0', false, false);
-        variable command            :       SW_command := SW_command_rst_val;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
         variable tmp_int            :       natural := 0;
         variable tmp_log_vect       :       std_logic_vector(28 downto 0);
         variable tmp_log            :       std_logic := '0';
         variable should_pass        :       boolean := false;
-        variable mask_filter        :       SW_CAN_mask_filter_type;
         variable l_th               :       natural := 0;
         variable h_th               :       natural := 0;
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.brs := '0';
+        generate_can_frame(can_frame);
+        can_frame.brs := '0';
 
         ------------------------------------------------------------------------
         -- Part 1 (Message filters disabled)
         ------------------------------------------------------------------------
+
+        -- Read HW configuration
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+
         ------------------------------------------------------------------------
         -- Disable filter usage in DUT. Set configuration of all filters
         -- not to pass any frame (to make sure that frame does not pass filter
         -- by chance).
         ------------------------------------------------------------------------
-        CAN_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
-        CAN_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
-        CAN_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
-        CAN_set_range_filter(range_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
+        ctu_set_ran_filter(range_filt_config, DUT_NODE, chn);
 
         mode.acceptance_filter := false;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- Send frame by Test node. Check that frame was received!
         ------------------------------------------------------------------------
         command.release_rec_buffer := true;
-        give_controller_command(command, DUT_NODE, chn);
-        
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
-        
-        get_rx_buf_state(rx_state, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
+
+        ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
+
+        ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
         check_false_m(rx_state.rx_empty,
             "Frame is not received when Message filters are disabled!");
 
@@ -192,30 +196,47 @@ package body message_filter_ftest is
         -- any filter and frame should be dropped!
         ------------------------------------------------------------------------
         command.release_rec_buffer := true;
-        give_controller_command(command, DUT_NODE, chn);
-        
+        ctu_give_cmd(command, DUT_NODE, chn);
+
         mode.acceptance_filter := true;
-        set_core_mode(mode, DUT_NODE, chn);
+        ctu_set_mode(mode, DUT_NODE, chn);
 
-        CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
-        
-        get_rx_buf_state(rx_state, DUT_NODE, chn);
-        check_m(rx_state.rx_empty,
-            "Frame passed Message filters when all filters are disabled!");
+        if (hw_cfg.sup_filtA = false and hw_cfg.sup_filtB = false and
+            hw_cfg.sup_filtC = false and hw_cfg.sup_range = false)
+        then
+            info_m("Skipping check with all filters disabled since no filter is present in HW");
+        else
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
 
+            ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
+            check_m(rx_state.rx_empty,
+                "Frame passed Message filters when all filters are disabled!");
+        end if;
 
         ------------------------------------------------------------------------
         -- Part 2 (Mask filters)
         ------------------------------------------------------------------------
-        for i in 1 to 3 loop
-            case i is 
-                when 1 => mask_filter := filter_A;
-                when 2 => mask_filter := filter_B;
-                when 3 => mask_filter := filter_C;
-            end case;
-            CAN_frame.ident_type := BASE;
-            CAN_frame.identifier := CAN_frame.identifier mod 2048;
+        for mask_filter in t_ctu_mask_filt_kind'left to t_ctu_mask_filt_kind'right loop
+
+            -- Skip the filter if not present
+            if (mask_filter = filter_A and hw_cfg.sup_filtA = false) then
+                info_m("Skipping filter A since it is not present in HW");
+                next;
+            end if;
+
+            if (mask_filter = filter_B and hw_cfg.sup_filtB = false) then
+                info_m("Skipping filter B since it is not present in HW");
+                next;
+            end if;
+
+            if (mask_filter = filter_C and hw_cfg.sup_filtC = false) then
+                info_m("Skipping filter C since it is not present in HW");
+                next;
+            end if;
+
+            can_frame.ident_type := BASE;
+            can_frame.identifier := can_frame.identifier mod 2048;
 
             --------------------------------------------------------------------
             -- First reset value of each filter so that each next iteraion does
@@ -225,9 +246,9 @@ package body message_filter_ftest is
             mask_filt_config.acc_CAN_FD := false;
             mask_filt_config.ID_mask := 0;
             mask_filt_config.ID_value := 0;
-            CAN_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
-            CAN_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
-            CAN_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
+            ctu_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
+            ctu_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
+            ctu_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
 
             --------------------------------------------------------------------
             -- Configure several settings for one mask filter. Bit Matching
@@ -249,9 +270,9 @@ package body message_filter_ftest is
             for j in 1 to 9 loop
                 mask_filt_config.acc_CAN_2_0 := false;
                 mask_filt_config.acc_CAN_FD := false;
-                mask_filt_config.ident_type := CAN_frame.ident_type;
+                mask_filt_config.ident_type := can_frame.ident_type;
 
-                info_m("Starting scenario: " & integer'image(i) & "."); 
+                info_m("Starting scenario: " & integer'image(j) & ".");
 
                 -- Set accepted frame type based on scenario:
                 if (j < 4) then
@@ -265,14 +286,14 @@ package body message_filter_ftest is
 
                 -- Set expected frame types
                 if ((j = 1) or (j = 3) or (j = 5) or (j = 8)) then
-                    CAN_frame.frame_format := FD_CAN;
+                    can_frame.frame_format := FD_CAN;
                 else
-                    CAN_frame.frame_format := NORMAL_CAN;
+                    can_frame.frame_format := NORMAL_CAN;
                 end if;
 
                 -- Generate random mask with one bit set, use only
                 tmp_log_vect := (OTHERS => '0');
-                if (CAN_frame.ident_type = BASE) then
+                if (can_frame.ident_type = BASE) then
                     rand_int_v(10, tmp_int);
                 else
                     rand_int_v(28, tmp_int);
@@ -287,15 +308,15 @@ package body message_filter_ftest is
                 tmp_log_vect := (OTHERS => '0');
                 rand_logic_v(tmp_log, 0.5);
                 tmp_log_vect(tmp_int) := tmp_log;
-                mask_filt_config.ID_value := 
+                mask_filt_config.ID_value :=
                         to_integer(unsigned(tmp_log_vect));
                 info_m("Filter value: " & integer'image(mask_filt_config.ID_value));
 
                 -- Set equal for scenarios wher Bit mask is match, set
                 -- opposite where it is not equal!
-                id_sw_to_hw(CAN_frame.identifier, CAN_frame.ident_type,
+                id_sw_to_hw(can_frame.identifier, can_frame.ident_type,
                             tmp_log_vect);
-                if (CAN_frame.ident_type = BASE) then
+                if (can_frame.ident_type = BASE) then
                     tmp_int := tmp_int + 18;
                 end if;
 
@@ -304,9 +325,9 @@ package body message_filter_ftest is
                 else
                     tmp_log_vect(tmp_int) := not tmp_log;
                 end if;
-                id_hw_to_sw(tmp_log_vect, CAN_frame.ident_type,
-                            CAN_frame.identifier);
-                info_m("CAN ID: " & integer'image(CAN_frame.identifier));
+                id_hw_to_sw(tmp_log_vect, can_frame.ident_type,
+                            can_frame.identifier);
+                info_m("CAN ID: " & integer'image(can_frame.identifier));
 
                 -- Calculate whether frame should pass or not
                 should_pass := false;
@@ -315,22 +336,22 @@ package body message_filter_ftest is
                 end if;
 
                 -- Set filter settings
-                CAN_set_mask_filter(mask_filter, mask_filt_config, DUT_NODE, chn);
+                ctu_set_mask_filter(mask_filter, mask_filt_config, DUT_NODE, chn);
 
                 -- Send Frame by Test node and check if frame is received as
                 -- expected or not! Flush RX Buffer first!
                 command.release_rec_buffer := true;
-                give_controller_command(command, DUT_NODE, chn);
-                CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-                CAN_wait_frame_sent(DUT_NODE, chn);
+                ctu_give_cmd(command, DUT_NODE, chn);
+                ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
+                ctu_wait_frame_sent(DUT_NODE, chn);
 
                 wait for 100 ns;
-                get_rx_buf_state(rx_state, DUT_NODE, chn);
+                ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
 
                 -- Check!
                check_false_m((rx_state.rx_empty = true) and (should_pass = true),
                     "Frame should have passed but did NOT!");
-                    
+
                check_false_m((rx_state.rx_empty = false) and (should_pass = false),
                     "Frame should NOT have passed but did!");
             end loop;
@@ -339,21 +360,28 @@ package body message_filter_ftest is
         ------------------------------------------------------------------------
         -- Part 3 (Range filters)
         ------------------------------------------------------------------------
+
+        -- Skip the filter if not present
+        if (hw_cfg.sup_range = false) then
+            info_m("Skipping Range filter since it is not present in HW");
+            return;
+        end if;
+
         ------------------------------------------------------------------------
         -- Disable mask fitlters
-        ------------------------------------------------------------------------        
+        ------------------------------------------------------------------------
         mask_filt_config.acc_CAN_2_0 := false;
         mask_filt_config.acc_CAN_FD := false;
         mask_filt_config.ID_mask := 0;
         mask_filt_config.ID_value := 0;
-        CAN_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
-        CAN_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
-        CAN_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_A, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_B, mask_filt_config, DUT_NODE, chn);
+        ctu_set_mask_filter(filter_C, mask_filt_config, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- Generate random thresholds for identifier!
         ------------------------------------------------------------------------
-        if (CAN_frame.ident_type = BASE) then
+        if (can_frame.ident_type = BASE) then
             rand_int_v((2 ** 6), l_th);
             rand_int_v((2 ** 11) - 1, h_th);
         else
@@ -376,12 +404,12 @@ package body message_filter_ftest is
         range_filt_config.acc_CAN_FD := true;
         range_filt_config.ID_th_high := h_th;
         range_filt_config.ID_th_low := l_th;
-        CAN_set_range_filter(range_filt_config, DUT_NODE, chn);
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.ident_type := BASE;
-        CAN_frame.rtr := RTR_FRAME;
- 
-        info_m("ID value: " & integer'image(CAN_frame.identifier));
+        ctu_set_ran_filter(range_filt_config, DUT_NODE, chn);
+        generate_can_frame(can_frame);
+        can_frame.ident_type := BASE;
+        can_frame.rtr := RTR_FRAME;
+
+        info_m("ID value: " & integer'image(can_frame.identifier));
         info_m("Low threshold: " & integer'image(l_th));
         info_m("High threshold: " & integer'image(h_th));
 
@@ -389,18 +417,18 @@ package body message_filter_ftest is
         -- Execute test of range fitlers. Following scenarios are tested:
         --  @1. CAN ID Lower than Low TH -> FAIL.
         --  @2. CAN ID Equal to Low TH -> PASS
-        --  @3. CAN ID between Low and High TH -> PASS 
+        --  @3. CAN ID between Low and High TH -> PASS
         --  @4. CAN ID equal to High TH -> PASS
         --  @5. CAN ID higher than High TH -> FAIL
         ------------------------------------------------------------------------
         for i in 1 to 5 loop
-            
+
             case i is
-                when 1 => CAN_frame.identifier := l_th - 1;
-                when 2 => CAN_frame.identifier := l_th;
-                when 3 => CAN_frame.identifier := ((h_th - l_th) / 2) + l_th;
-                when 4 => CAN_frame.identifier := h_th;
-                when 5 => CAN_frame.identifier := h_th + 1;
+                when 1 => can_frame.identifier := l_th - 1;
+                when 2 => can_frame.identifier := l_th;
+                when 3 => can_frame.identifier := ((h_th - l_th) / 2) + l_th;
+                when 4 => can_frame.identifier := h_th;
+                when 5 => can_frame.identifier := h_th + 1;
             end case;
 
             if ((i = 2) or (i = 3) or (i = 4)) then
@@ -410,11 +438,11 @@ package body message_filter_ftest is
             end if;
 
             command.release_rec_buffer := true;
-            give_controller_command(command, DUT_NODE, chn);
+            ctu_give_cmd(command, DUT_NODE, chn);
 
-            CAN_send_frame(CAN_frame, 1, TEST_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(DUT_NODE, chn);
-            get_rx_buf_state(rx_state, DUT_NODE, chn);
+            ctu_send_frame(can_frame, 1, TEST_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
+            ctu_get_rx_buf_state(rx_state, DUT_NODE, chn);
 
             if ((rx_state.rx_empty and should_pass) or
                 ((not rx_state.rx_empty) and (not should_pass)))
@@ -427,10 +455,10 @@ package body message_filter_ftest is
                     when 2 =>
                         error_m("Frame with ID equal to Low threshold didnt pass," &
                               "but should!");
-                    when 3 =>                        
+                    when 3 =>
                         error_m("Frame with ID betwen Low and High threshold did" &
                               "not pass, but should!");
-                    when 4 =>                        
+                    when 4 =>
                         error_m("Frame with ID equal to Hig threshold did not," &
                               "pass, but should!");
                     when 5 =>

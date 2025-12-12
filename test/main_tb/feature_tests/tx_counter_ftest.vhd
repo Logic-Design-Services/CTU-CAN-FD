@@ -121,20 +121,28 @@ package body tx_counter_ftest is
     procedure tx_counter_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_frame          :       SW_CAN_frame_type;
+        variable can_frame          :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
         variable rand_value         :       natural;
 
-        variable ctrs_1             :       SW_traffic_counters;
-        variable ctrs_2             :       SW_traffic_counters;
-        variable ctrs_3             :       SW_traffic_counters;
-        variable ctrs_4             :       SW_traffic_counters;
-        variable ctrs_5             :       SW_traffic_counters;
+        variable ctrs_1             :       t_ctu_traff_ctrs;
+        variable ctrs_2             :       t_ctu_traff_ctrs;
+        variable ctrs_3             :       t_ctu_traff_ctrs;
+        variable ctrs_4             :       t_ctu_traff_ctrs;
+        variable ctrs_5             :       t_ctu_traff_ctrs;
 
-        variable status             :       SW_status;
-        variable command            :       SW_command := SW_command_rst_val;
+        variable status             :       t_ctu_status;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
         variable deposit_vect       :       std_logic_vector(31 downto 0);
+        variable hw_cfg             :       t_ctu_hw_cfg;
     begin
+
+        -- Read HW config
+        ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
+        if (hw_cfg.sup_traffic_ctrs = false) then
+            info_m("Skipping the test since sup_traffic_ctrs=false");
+            return;
+        end if;
 
         ------------------------------------------------------------------------
         -- @1. Read TX Counter from DUT. Set One-shot mode (no retransmission)
@@ -142,8 +150,8 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Read initial counter values.");
 
-        read_traffic_counters(ctrs_1, DUT_NODE, chn);
-        CAN_enable_retr_limit(true, 0, TEST_NODE, chn);
+        ctu_get_traff_ctrs(ctrs_1, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, TEST_NODE, chn);
 
         ------------------------------------------------------------------------
         --  @2. Send frame from DUT. Wait until EOF field. Read TX counter and
@@ -151,11 +159,11 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Send frame by DUT!");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
-        read_traffic_counters(ctrs_2, DUT_NODE, chn);
+        ctu_wait_ff(ff_eof, DUT_NODE, chn);
+        ctu_get_traff_ctrs(ctrs_2, DUT_NODE, chn);
 
         check_m(ctrs_1.tx_frames = ctrs_2.tx_frames,
             "TX counter unchanged before EOF!");
@@ -168,15 +176,15 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Check TX, RX counters after frame.");
 
-        CAN_wait_not_pc_state(pc_deb_eof, DUT_NODE, chn);
-        read_traffic_counters(ctrs_3, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_eof, DUT_NODE, chn);
+        ctu_get_traff_ctrs(ctrs_3, DUT_NODE, chn);
 
         check_m(ctrs_1.tx_frames + 1 = ctrs_3.tx_frames,
             "TX counter changed after EOF!");
         check_m(ctrs_1.rx_frames = ctrs_3.rx_frames,
             "RX counter unchanged after EOF!");
 
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         --  @4. Send Frame from DUT. Wait till ACK field. Corrupt ACK field to
@@ -185,15 +193,15 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Send frame and force ACK recessive!");
 
-        CAN_generate_frame(CAN_frame);
-        CAN_frame.frame_format := NORMAL_CAN;
-        CAN_send_frame(CAN_frame, 1, DUT_NODE, chn, frame_sent);
+        generate_can_frame(can_frame);
+        can_frame.frame_format := NORMAL_CAN;
+        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
 
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
         force_bus_level(RECESSIVE, chn);
-        CAN_wait_not_pc_state(pc_deb_ack, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_ack, DUT_NODE, chn);
 
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
 
         release_bus_level(chn);
@@ -204,10 +212,10 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 5: Wait until error frame!");
 
-        CAN_wait_error_frame(TEST_NODE, chn);
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_err_frame(TEST_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
-        read_traffic_counters(ctrs_4, DUT_NODE, chn);
+        ctu_get_traff_ctrs(ctrs_4, DUT_NODE, chn);
 
         check_m(ctrs_3.tx_frames = ctrs_4.tx_frames,
             "TX counter unchanged after Error frame!");
@@ -222,9 +230,9 @@ package body tx_counter_ftest is
 
         rand_int_v(6, rand_value);
         for i in 0 to rand_value - 1 loop
-            CAN_generate_frame(CAN_frame);
-            CAN_send_frame(CAN_frame, 2, DUT_NODE, chn, frame_sent);
-            CAN_wait_frame_sent(DUT_NODE, chn);
+            generate_can_frame(can_frame);
+            ctu_send_frame(can_frame, 2, DUT_NODE, chn, frame_sent);
+            ctu_wait_frame_sent(DUT_NODE, chn);
         end loop;
 
         ------------------------------------------------------------------------
@@ -232,7 +240,7 @@ package body tx_counter_ftest is
         ------------------------------------------------------------------------
         info_m("Step 7: Check TX counter was incremented by N!");
 
-        read_traffic_counters(ctrs_5, DUT_NODE, chn);
+        ctu_get_traff_ctrs(ctrs_5, DUT_NODE, chn);
         check_m(ctrs_4.tx_frames + rand_value = ctrs_5.tx_frames,
               "TX Frames counter incremented by: " & integer'image(rand_value));
 
@@ -243,8 +251,8 @@ package body tx_counter_ftest is
         info_m("Step 8");
 
         command.rx_frame_ctr_rst := true;
-        give_controller_command(command, DUT_NODE, chn);
-        read_traffic_counters(ctrs_1, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
+        ctu_get_traff_ctrs(ctrs_1, DUT_NODE, chn);
         check_m(ctrs_1.tx_frames = ctrs_5.tx_frames,
               "TX counter not cleared by COMMAND[RXFRCRST]");
 
@@ -256,8 +264,8 @@ package body tx_counter_ftest is
 
         command.rx_frame_ctr_rst := false;
         command.tx_frame_ctr_rst := true;
-        give_controller_command(command, DUT_NODE, chn);
-        read_traffic_counters(ctrs_1, DUT_NODE, chn);
+        ctu_give_cmd(command, DUT_NODE, chn);
+        ctu_get_traff_ctrs(ctrs_1, DUT_NODE, chn);
         check_m(ctrs_1.tx_frames = 0, "TX counter cleared by COMMAND[TXFRCRST]");
 
     end procedure;

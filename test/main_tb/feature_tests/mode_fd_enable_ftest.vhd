@@ -119,15 +119,15 @@ package body mode_fd_enable_ftest is
     procedure mode_fd_enable_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable err_capt           :       SW_error_capture;
+        variable err_capt           :       t_ctu_err_capt;
     begin
 
         ------------------------------------------------------------------------
@@ -136,13 +136,13 @@ package body mode_fd_enable_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Sending CAN FD frame when FD mode enabled!");
         
-        CAN_generate_frame(CAN_TX_frame);
-        CAN_TX_frame.frame_format := FD_CAN;
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        generate_can_frame(can_tx_frame);
+        can_tx_frame.frame_format := FD_CAN;
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_frame_sent(DUT_NODE, chn);
         
-        CAN_read_frame(CAN_RX_frame, DUT_NODE, chn);
-        CAN_compare_frames(CAN_RX_frame, CAN_TX_frame, false, frames_equal);
+        ctu_read_frame(can_rx_frame, DUT_NODE, chn);
+        compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
         check_m(frames_equal, "TX - RX frames matching!");
 
         ------------------------------------------------------------------------
@@ -153,13 +153,13 @@ package body mode_fd_enable_ftest is
         info_m("Step 2: Disable FD mode, send frame!");
         
         mode_1.flexible_data_rate := false;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
         
-        CAN_enable_retr_limit(true, 0, TEST_NODE, chn);
-        CAN_enable_retr_limit(true, 0, DUT_NODE, chn);
+        ctu_set_retr_limit(true, 0, TEST_NODE, chn);
+        ctu_set_retr_limit(true, 0, DUT_NODE, chn);
         
-        CAN_send_frame(CAN_TX_frame, 1, TEST_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_control, DUT_NODE, chn);
+        ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
+        ctu_wait_ff(ff_control, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @3. Wait till DUT is not in Control field. Check that it is 
@@ -169,18 +169,18 @@ package body mode_fd_enable_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Check error frame is transmitted, Form error occurs!");
         
-        CAN_wait_not_pc_state(pc_deb_control, DUT_NODE, chn);
-        get_controller_status(status, DUT_NODE, chn);
+        ctu_wait_not_ff(ff_control, DUT_NODE, chn);
+        ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission,
             "Error frame transmitted as response to CAN FD frame!");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_type = can_err_form,
-            "Error type: " & SW_error_type'image(err_capt.err_type));
+            "Error type: " & t_ctu_err_kind'image(err_capt.err_type));
         check_m(err_capt.err_pos = err_pos_ctrl,
-            "Error in :" & SW_error_position'image(err_capt.err_pos));
+            "Error in :" & t_ctu_err_pos'image(err_capt.err_pos));
         
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @4. Set Test node to Acknowledge forbidden mode. Transmitt frame by 
@@ -189,18 +189,18 @@ package body mode_fd_enable_ftest is
         --     Error code capture).
         ------------------------------------------------------------------------
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
         
-        CAN_TX_frame.frame_format := NORMAL_CAN;
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_TX_frame.frame_format := FD_CAN;
+        can_tx_frame.frame_format := NORMAL_CAN;
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
+        can_tx_frame.frame_format := FD_CAN;
         
-        CAN_wait_frame_sent(DUT_NODE, chn);
+        ctu_wait_frame_sent(DUT_NODE, chn);
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_false_m(err_capt.err_type = can_err_form, "Error type changed!");
         
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
         
         ------------------------------------------------------------------------
         -- @5. Unset ACK forbidden in Test node. Send frame by DUT.
@@ -209,10 +209,10 @@ package body mode_fd_enable_ftest is
         
         wait for 20000 ns;
         mode_2.acknowledge_forbidden := false;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
         
-        CAN_TX_frame.frame_format := FD_CAN;
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
+        can_tx_frame.frame_format := FD_CAN;
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
 
         ------------------------------------------------------------------------
         -- @6. Wait until frame is sent and check that it is received OK in
@@ -220,13 +220,13 @@ package body mode_fd_enable_ftest is
         ------------------------------------------------------------------------
         info_m("Step 5: Check Test node receives CAN 2.0 frame!");
         
-        CAN_wait_frame_sent(TEST_NODE, chn);
-        CAN_read_frame(CAN_RX_frame, TEST_NODE, chn);
+        ctu_wait_frame_sent(TEST_NODE, chn);
+        ctu_read_frame(can_rx_frame, TEST_NODE, chn);
     
-        check_m(CAN_RX_frame.frame_format = NORMAL_CAN, "CAN 2.0 frame received");
-        check_m(CAN_RX_frame.dlc = CAN_TX_frame.dlc, "TX/RX DLC matching");
+        check_m(can_rx_frame.frame_format = NORMAL_CAN, "CAN 2.0 frame received");
+        check_m(can_rx_frame.dlc = can_tx_frame.dlc, "TX/RX DLC matching");
     
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
         
   end procedure;
 

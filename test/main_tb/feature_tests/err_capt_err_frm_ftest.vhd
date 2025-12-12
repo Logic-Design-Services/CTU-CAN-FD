@@ -108,15 +108,15 @@ package body err_capt_err_frm_ftest is
         signal      chn             : inout  t_com_channel
     ) is
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;    
+        variable stat_1             :     t_ctu_status;    
 
         variable wait_time          :     natural;
         variable frame_sent         :     boolean;
-        variable err_capt           :     SW_error_capture;
-        variable mode_2             :     SW_mode;
+        variable err_capt           :     t_ctu_err_capt;
+        variable mode_2             :     t_ctu_mode;
     begin
 
         -----------------------------------------------------------------------
@@ -124,7 +124,7 @@ package body err_capt_err_frm_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
         
         -----------------------------------------------------------------------
@@ -135,24 +135,24 @@ package body err_capt_err_frm_ftest is
         --     DUT.
         -----------------------------------------------------------------------
         mode_2.acknowledge_forbidden := true;
-        set_core_mode(mode_2, TEST_NODE, chn);
+        ctu_set_mode(mode_2, TEST_NODE, chn);
         
-        CAN_generate_frame(frame_1);
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_error_frame(DUT_NODE, chn);
+        generate_can_frame(frame_1);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_err_frame(DUT_NODE, chn);
         
         rand_int_v(5, wait_time);
         for i in 1 to wait_time loop
-            CAN_wait_sample_point(DUT_NODE, chn);
+            ctu_wait_sample_point(DUT_NODE, chn);
         end loop; 
         wait for 20 ns;
         
         force_bus_level(RECESSIVE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn);
+        ctu_wait_sample_point(DUT_NODE, chn);
         wait for 20 ns; -- To be sure that opposite bit is sampled!
         release_bus_level(chn);
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_type = can_err_bit, "Bit error detected!");
         check_m(err_capt.err_pos = err_pos_err_frame,
                 "Error detected in Error frame!");

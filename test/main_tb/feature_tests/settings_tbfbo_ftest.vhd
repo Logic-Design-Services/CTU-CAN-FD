@@ -122,27 +122,27 @@ package body settings_tbfbo_ftest is
     procedure settings_tbfbo_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
 
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
-        variable status             :       SW_status;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       SW_PC_Debug;
-        variable fault_state        :       SW_fault_state;
+        variable ff             :       t_ctu_frame_field;
+        variable fault_state        :       t_ctu_fault_state;
 
-        variable err_counters       :       SW_error_counters;
+        variable err_counters       :       t_ctu_err_ctrs;
 
-        variable command            :       SW_command := SW_command_rst_val;
+        variable command            :       t_ctu_command := t_ctu_command_rst_val;
         variable num_buffers        :       natural;
     begin
 
 
-        get_tx_buf_count(num_buffers, DUT_NODE, chn);
+        ctu_get_txt_buf_cnt(num_buffers, DUT_NODE, chn);
 
         for buf_index in 1 to num_buffers loop
 
@@ -154,14 +154,14 @@ package body settings_tbfbo_ftest is
 
             mode_1.tx_buf_bus_off_failed := true;
             mode_1.test := true; -- Needed to set TEC!
-            set_core_mode(mode_1, DUT_NODE, chn);
+            ctu_set_mode(mode_1, DUT_NODE, chn);
 
-            read_error_counters(err_counters, DUT_NODE, chn);
+            ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
             err_counters.tx_counter := 254;
-            set_error_counters(err_counters, DUT_NODE, chn);
+            ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
-            CAN_generate_frame(CAN_TX_frame);
-            CAN_send_frame(CAN_TX_frame, buf_index, DUT_NODE, chn, frame_sent);
+            generate_can_frame(can_tx_frame);
+            ctu_send_frame(can_tx_frame, buf_index, DUT_NODE, chn, frame_sent);
 
             -----------------------------------------------------------------------
             -- @2. Wait until first bit of EOF and force CAN RX of DUT to
@@ -171,24 +171,24 @@ package body settings_tbfbo_ftest is
             -----------------------------------------------------------------------
             info_m("Step 2");
 
-            CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
+            ctu_wait_ff(ff_eof, DUT_NODE, chn);
             force_can_rx(DOMINANT, DUT_NODE, chn);
-            CAN_wait_sync_seg(DUT_NODE, chn);
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             release_can_rx(chn);
 
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             mem_bus_agent_disable_transaction_reporting(chn);
             check_m(status.error_transmission, "Error frame sent");
             while (status.error_transmission) loop
-                get_controller_status(status, DUT_NODE, chn);
+                ctu_get_status(status, DUT_NODE, chn);
             end loop;
             mem_bus_agent_enable_transaction_reporting(chn);
 
-            get_fault_state(fault_state, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state, DUT_NODE, chn);
             check_m(fault_state = fc_bus_off, "Node bus-off");
 
-            get_tx_buf_state(buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_index, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_failed, "TXT Buffer is failed");
 
             -----------------------------------------------------------------------
@@ -199,26 +199,26 @@ package body settings_tbfbo_ftest is
             -----------------------------------------------------------------------
             info_m("Step 3");
 
-            CAN_turn_controller(false, DUT_NODE, chn);
+            ctu_turn(false, DUT_NODE, chn);
 
             mode_1.tx_buf_bus_off_failed := false;
             mode_1.test := true; -- Needed to set TEC!
-            set_core_mode(mode_1, DUT_NODE, chn);
+            ctu_set_mode(mode_1, DUT_NODE, chn);
 
             -- Must disable one shot mode which is default for feature tests!
-            CAN_enable_retr_limit(false, 0, DUT_NODE, chn);
+            ctu_set_retr_limit(false, 0, DUT_NODE, chn);
 
             wait for 100 ns;
-            CAN_turn_controller(true, DUT_NODE, chn);
+            ctu_turn(true, DUT_NODE, chn);
 
-            CAN_wait_bus_on(DUT_NODE, chn);
+            ctu_wait_err_active(DUT_NODE, chn);
 
             command.err_ctrs_rst := true;
-            give_controller_command(command, DUT_NODE, chn);
+            ctu_give_cmd(command, DUT_NODE, chn);
 
-            read_error_counters(err_counters, DUT_NODE, chn);
+            ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
             err_counters.tx_counter := 254;
-            set_error_counters(err_counters, DUT_NODE, chn);
+            ctu_set_err_ctrs(err_counters, DUT_NODE, chn);
 
             -----------------------------------------------------------------------
             -- @4. Send frame by DUT. Wait till first bit of EOF, force CAN RX
@@ -228,27 +228,27 @@ package body settings_tbfbo_ftest is
             -----------------------------------------------------------------------
             info_m("Step 4");
 
-            CAN_send_frame(CAN_TX_frame, buf_index, DUT_NODE, chn, frame_sent);
+            ctu_send_frame(can_tx_frame, buf_index, DUT_NODE, chn, frame_sent);
 
-            CAN_wait_pc_state(pc_deb_eof, DUT_NODE, chn);
+            ctu_wait_ff(ff_eof, DUT_NODE, chn);
             wait for 10 ns;
             force_can_rx(DOMINANT, DUT_NODE, chn);
-            CAN_wait_sync_seg(DUT_NODE, chn);
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             release_can_rx(chn);
 
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_m(status.error_transmission, "Error frame sent");
             mem_bus_agent_disable_transaction_reporting(chn);
             while (status.error_transmission) loop
-                get_controller_status(status, DUT_NODE, chn);
+                ctu_get_status(status, DUT_NODE, chn);
             end loop;
             mem_bus_agent_enable_transaction_reporting(chn);
 
-            get_fault_state(fault_state, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state, DUT_NODE, chn);
             check_m(fault_state = fc_bus_off, "Node bus-off");
 
-            get_tx_buf_state(buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_index, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_ready, "TXT Buffer is ready for next transmission");
 
             -----------------------------------------------------------------------
@@ -259,17 +259,16 @@ package body settings_tbfbo_ftest is
             -----------------------------------------------------------------------
             info_m("Step 5");
 
-            CAN_wait_bus_on(DUT_NODE, chn);
+            ctu_wait_err_active(DUT_NODE, chn);
+            ctu_wait_frame_start(true, true, DUT_NODE, chn);
 
-            -- Could be one bit before it starts to transmitt
-            wait for 5000 ns;
-            get_controller_status(status, DUT_NODE, chn);
+            ctu_get_status(status, DUT_NODE, chn);
             check_m(status.transmitter, "Node is transmitting!");
 
-            get_tx_buf_state(buf_index, txt_buf_state, DUT_NODE, chn);
+            ctu_get_txt_buf_state(buf_index, txt_buf_state, DUT_NODE, chn);
             check_m(txt_buf_state = buf_tx_progress, "TXT Buffer is in progress.");
 
-            CAN_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(DUT_NODE, chn);
 
         end loop;
 

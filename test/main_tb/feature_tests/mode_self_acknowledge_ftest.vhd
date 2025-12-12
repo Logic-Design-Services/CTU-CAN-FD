@@ -106,19 +106,20 @@ package body mode_self_acknowledge_ftest is
     procedure mode_self_acknowledge_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable CAN_TX_frame       :       SW_CAN_frame_type;
-        variable CAN_RX_frame       :       SW_CAN_frame_type;
+        variable can_tx_frame       :       t_ctu_frame;
+        variable can_rx_frame       :       t_ctu_frame;
         variable frame_sent         :       boolean := false;
-        variable mode_1             :       SW_mode := SW_mode_rst_val;
-        variable mode_2             :       SW_mode := SW_mode_rst_val;
+        variable mode_1             :       t_ctu_mode := t_ctu_mode_rst_val;
+        variable mode_2             :       t_ctu_mode := t_ctu_mode_rst_val;
 
-        variable txt_buf_state      :       SW_TXT_Buffer_state_type;
-        variable rx_buf_state       :       SW_RX_Buffer_info;
-        variable status             :       SW_status;
+        variable txt_buf_state      :       t_ctu_txt_buff_state;
+        variable rx_buf_state       :       t_ctu_rx_buf_state;
+        variable status             :       t_ctu_status;
         variable frames_equal       :       boolean := false;
-        variable pc_dbg             :       SW_PC_Debug;
+        variable ff                 :       t_ctu_frame_field;
 
         variable can_tx             :       std_logic;
+        variable bit_duration       :       time;
     begin
 
         ------------------------------------------------------------------------
@@ -126,19 +127,21 @@ package body mode_self_acknowledge_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1");
 
+        ctu_measure_bit_duration(DUT_NODE, chn, bit_duration);
+
         mode_1.self_acknowledge := true;
-        set_core_mode(mode_1, DUT_NODE, chn);
+        ctu_set_mode(mode_1, DUT_NODE, chn);
 
         ------------------------------------------------------------------------
         -- @2. Send frame by DUT. Wait till ACK field in DUT Node.
         ------------------------------------------------------------------------
         info_m("Step 2");
 
-        CAN_generate_frame(CAN_TX_frame);
-        CAN_send_frame(CAN_TX_frame, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_pc_state(pc_deb_ack, DUT_NODE, chn);
-        CAN_wait_sync_seg(DUT_NODE, chn);
-        wait for 20 ns;
+        generate_can_frame(can_tx_frame);
+        ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_ff(ff_ack, DUT_NODE, chn);
+        -- Reliable way how to wait until the middle of ACK bit
+        wait for bit_duration / 2;
 
         ------------------------------------------------------------------------
         -- @3. Check that DUT Node is transmitting Dominant value.
@@ -148,7 +151,7 @@ package body mode_self_acknowledge_ftest is
 
         get_can_tx(DUT_NODE, can_tx, chn);
         check_m(can_tx = DOMINANT, "DUT transmits dominant ACK when MODE[SAM]=1");
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
   end procedure;
 

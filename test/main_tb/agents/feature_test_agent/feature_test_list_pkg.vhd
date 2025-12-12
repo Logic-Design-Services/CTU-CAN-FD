@@ -98,7 +98,6 @@ use ctu_can_fd_tb.alc_srr_rtr_2_ftest.all;
 
 use ctu_can_fd_tb.btr_ftest.all;
 use ctu_can_fd_tb.btr_fd_ftest.all;
-use ctu_can_fd_tb.btr_maximal_ftest.all;
 use ctu_can_fd_tb.btr_minimal_ftest.all;
 use ctu_can_fd_tb.btr_ssp_access_ftest.all;
 use ctu_can_fd_tb.bus_start_ftest.all;
@@ -172,10 +171,7 @@ use ctu_can_fd_tb.mode_txbbm_5_ftest.all;
 use ctu_can_fd_tb.mode_acf_ftest.all;
 use ctu_can_fd_tb.mode_erfm_ftest.all;
 
-use ctu_can_fd_tb.no_sof_tx_ftest.all;
-
 use ctu_can_fd_tb.one_shot_ftest.all;
-use ctu_can_fd_tb.overload_ftest.all;
 
 use ctu_can_fd_tb.pc_fsm_transitions_err_pas_ftest.all;
 use ctu_can_fd_tb.pc_fsm_transitions_err_pas_2_ftest.all;
@@ -293,8 +289,6 @@ package body feature_test_list_pkg is
             btr_ftest_exec(channel);
         elsif (test_name = "btr_fd") then
             btr_fd_ftest_exec(channel);
-        elsif (test_name = "btr_maximal") then
-            btr_maximal_ftest_exec(channel);
         elsif (test_name = "btr_minimal") then
             btr_minimal_ftest_exec(channel);
         elsif (test_name = "btr_ssp_access") then
@@ -432,13 +426,8 @@ package body feature_test_list_pkg is
         elsif (test_name = "mode_erfm") then
             mode_erfm_ftest_exec(channel);
 
-        elsif (test_name = "no_sof_tx") then
-            no_sof_tx_ftest_exec(channel);
-
         elsif (test_name = "one_shot") then
             one_shot_ftest_exec(channel);
-        elsif (test_name = "overload") then
-            overload_ftest_exec(channel);
 
         elsif (test_name = "pc_fsm_transitions_err_pas") then
             pc_fsm_transitions_err_pas_ftest_exec(channel);

@@ -112,25 +112,25 @@ package body single_bus_node_ftest is
     ) is
         variable alc                :       natural;
 
-        variable fault_state_1      :     SW_fault_state;
+        variable fault_state_1      :     t_ctu_fault_state;
         
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
-        variable frame_2            :     SW_CAN_frame_type;
-        variable frame_rx           :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
+        variable frame_2            :     t_ctu_frame;
+        variable frame_rx           :     t_ctu_frame;
 
-        variable mode_1             :     SW_mode;
+        variable mode_1             :     t_ctu_mode;
 
         -- Node status
-        variable stat_2             :     SW_status;
+        variable stat_2             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;
+        variable ff             :     t_ctu_frame_field;
         
-        variable txt_buf_state      :     SW_TXT_Buffer_state_type;
-        variable rx_buf_info        :     SW_RX_Buffer_info;
+        variable txt_buf_state      :     t_ctu_txt_buff_state;
+        variable rx_buf_state        :     t_ctu_rx_buf_state;
         variable frames_equal       :     boolean := false;
         
-        variable err_counters       :     SW_error_counters;
+        variable err_counters       :     t_ctu_err_ctrs;
         
         constant id_template        :     std_logic_vector(10 downto 0) :=
                 "01010101010";
@@ -146,19 +146,19 @@ package body single_bus_node_ftest is
         ------------------------------------------------------------------------
         info_m("Step 1: Disabling Test node");
 
-        CAN_turn_controller(false, TEST_NODE, chn);        
-        CAN_enable_retr_limit(false, 0, DUT_NODE, chn);
+        ctu_turn(false, TEST_NODE, chn);        
+        ctu_set_retr_limit(false, 0, DUT_NODE, chn);
         
-        --get_core_mode(mode_1, DUT_NODE, chn);
+        --ctu_get_mode(mode_1, DUT_NODE, chn);
         --mode_1.self_test := true;
-        --set_core_mode(mode_1, DUT_NODE, chn);
+        --ctu_set_mode(mode_1, DUT_NODE, chn);
         
         ------------------------------------------------------------------------
         -- @2. Transmitt frame by DUT.
         ------------------------------------------------------------------------
         info_m("Step 2: Transmit frame by DUT");
 
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.rtr := NO_RTR_FRAME;
         frame_1.frame_format := NORMAL_CAN;
         frame_1.dlc := "0001";
@@ -166,7 +166,7 @@ package body single_bus_node_ftest is
         frame_1.identifier := 256;
         frame_1.data(0) := x"AA";      
 
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
 
         ------------------------------------------------------------------------
         -- @3.  Wait until error frame starts and check that error counter is
@@ -174,20 +174,20 @@ package body single_bus_node_ftest is
         ------------------------------------------------------------------------
         info_m("Step 3: Looping till error passive");
 
-        get_fault_state(fault_state_1, DUT_NODE, chn);
+        ctu_get_fault_state(fault_state_1, DUT_NODE, chn);
         while (fault_state_1 = fc_error_active) loop
-            CAN_wait_error_frame(DUT_NODE, chn);
+            ctu_wait_err_frame(DUT_NODE, chn);
         
             -- Wait till error frame is for sure over
             for i in 0 to 13 loop
-                CAN_wait_sample_point(DUT_NODE, chn);
+                ctu_wait_sample_point(DUT_NODE, chn);
             end loop;
 
-            read_error_counters(err_counters, DUT_NODE, chn);
+            ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
             retr_index := retr_index + 1;
             check_m(err_counters.tx_counter = retr_index * 8, "TEC incremented");
                         
-            get_fault_state(fault_state_1, DUT_NODE, chn);
+            ctu_get_fault_state(fault_state_1, DUT_NODE, chn);
         end loop;
 
         ------------------------------------------------------------------------
@@ -196,20 +196,20 @@ package body single_bus_node_ftest is
         ------------------------------------------------------------------------
         info_m("Step 4: Checking TEC stays!");
 
-        read_error_counters(err_counters, DUT_NODE, chn);
+        ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
         tec_at_err_passive := err_counters.tx_counter;
         
         for i in 0 to 10 loop
             info_m("Frame in Error passive nr:" & integer'image(i));
 
-            CAN_wait_error_frame(DUT_NODE, chn);
+            ctu_wait_err_frame(DUT_NODE, chn);
         
             -- Wait till error frame is for sure over
             for j in 0 to 13 loop
-                CAN_wait_sample_point(DUT_NODE, chn);
+                ctu_wait_sample_point(DUT_NODE, chn);
             end loop;
 
-            read_error_counters(err_counters, DUT_NODE, chn);
+            ctu_get_err_ctrs(err_counters, DUT_NODE, chn);
             check_m(err_counters.tx_counter = tec_at_err_passive, "TEC stable");
         end loop;
 

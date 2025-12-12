@@ -108,19 +108,19 @@ package body err_capt_arb_bit_ftest is
         signal      chn             : inout  t_com_channel
     ) is        
         -- Generated frames
-        variable frame_1            :     SW_CAN_frame_type;
+        variable frame_1            :     t_ctu_frame;
 
         -- Node status
-        variable stat_1             :     SW_status;
+        variable stat_1             :     t_ctu_status;
 
-        variable pc_dbg             :     SW_PC_Debug;    
+        variable ff             :     t_ctu_frame_field;    
 
         variable id_vect            :     std_logic_vector(28 downto 0);
         variable wait_time          :     natural;
         
         variable frame_sent         :     boolean;
         
-        variable err_capt           :     SW_error_capture;
+        variable err_capt           :     t_ctu_err_capt;
         variable can_tx_val         :     std_logic;
     begin
 
@@ -129,7 +129,7 @@ package body err_capt_arb_bit_ftest is
         -----------------------------------------------------------------------
         info_m("Step 1");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         check_m(err_capt.err_pos = err_pos_other, "Reset of ERR_CAPT!");
         
         -----------------------------------------------------------------------        
@@ -141,12 +141,12 @@ package body err_capt_arb_bit_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
         
-        CAN_generate_frame(frame_1);
+        generate_can_frame(frame_1);
         frame_1.ident_type := EXTENDED;
-        CAN_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
-        CAN_wait_tx_rx_start(true, false, DUT_NODE, chn);
+        ctu_send_frame(frame_1, 1, DUT_NODE, chn, frame_sent);
+        ctu_wait_frame_start(true, false, DUT_NODE, chn);
         
-        CAN_wait_pc_state(pc_deb_arbitration, DUT_NODE, chn);
+        ctu_wait_ff(ff_arbitration, DUT_NODE, chn);
         
         -- Wait time is adjusted so that we are sure that we will still be in
         -- arbitration field (of base or extended). After 26 bits, if there are
@@ -158,7 +158,7 @@ package body err_capt_arb_bit_ftest is
         info_m("Waiting for:" & integer'image(wait_time) & " bits!");
 
         for i in 1 to wait_time loop
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             info_m("Wait sync");
             wait for 20 ns;
         end loop;
@@ -166,21 +166,21 @@ package body err_capt_arb_bit_ftest is
 
         get_can_tx(DUT_NODE, can_tx_val, chn);
         while (can_tx_val = RECESSIVE) loop
-            CAN_wait_sync_seg(DUT_NODE, chn);
+            ctu_wait_sync_seg(DUT_NODE, chn);
             wait for 20 ns;
             get_can_tx(DUT_NODE, can_tx_val, chn);
         end loop;
         
         -- Force bus for one bit time
         force_bus_level(RECESSIVE, chn);
-        CAN_wait_sample_point(DUT_NODE, chn, skip_stuff_bits => false);
+        ctu_wait_sample_point(DUT_NODE, chn, skip_stuff_bits => false);
         wait for 20 ns; -- To be sure that opposite bit is sampled!
         release_bus_level(chn);
         
-        get_controller_status(stat_1, DUT_NODE, chn);
+        ctu_get_status(stat_1, DUT_NODE, chn);
         check_m(stat_1.error_transmission, "Error frame is being transmitted!");
         
-        CAN_read_error_code_capture(err_capt, DUT_NODE, chn);
+        ctu_get_err_capt(err_capt, DUT_NODE, chn);
         --error_m("HOVNO");
         -- If Dominant stuff bit is sent and recessive is monitored, then this
         -- can be detected as Stuff Error, not as bit Error!
@@ -188,7 +188,7 @@ package body err_capt_arb_bit_ftest is
                 "Bit or Stuff error detected!");
         check_m(err_capt.err_pos = err_pos_arbitration, "Error detected in Arbitration!");
         
-        CAN_wait_bus_idle(DUT_NODE, chn);
+        ctu_wait_bus_idle(DUT_NODE, chn);
 
   end procedure;
 
