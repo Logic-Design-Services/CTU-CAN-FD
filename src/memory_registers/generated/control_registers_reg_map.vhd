@@ -112,7 +112,7 @@ architecture rtl of control_registers_reg_map is
   signal reg_sel : std_logic_vector(38 downto 0);
   constant ADDR_VECT
                  : std_logic_vector(233 downto 0) := "100110100101100100100011100010100001100000011111011110011101011100011011011010011001011000010111010110010101010100010011010010010001010000001111001110001101001100001011001010001001001000000111000110000101000100000011000010000001000000";
-  signal read_data_mux_in : std_logic_vector(1247 downto 0);
+  signal r_data_comb : std_logic_vector(31 downto 0);
   signal read_data_mask_n : std_logic_vector(31 downto 0);
   signal control_registers_out_i : Control_registers_out_t;
   signal write_en : std_logic_vector(3 downto 0);
@@ -2875,643 +2875,228 @@ begin
     ----------------------------------------------------------------------------
     -- Read data multiplexor
     ----------------------------------------------------------------------------
+    with address(7 downto 2) select r_data_comb <=
+        control_registers_in.version_ver_major &
+        control_registers_in.version_ver_minor &
+        control_registers_in.device_id_device_id when "000000",
+        '0' & '0' & '0' & '0' &
+        control_registers_out_i.settings_pchke &
+        control_registers_out_i.settings_fdrf &
+        control_registers_out_i.settings_tbfbo &
+        control_registers_out_i.settings_pex &
+        control_registers_out_i.settings_nisofd &
+        control_registers_out_i.settings_ena &
+        control_registers_out_i.settings_ilbp &
+        control_registers_out_i.settings_rtrth &
+        control_registers_out_i.settings_rtrle &
+        '0' & '0' & '0' &
+        control_registers_out_i.mode_erfm &
+        control_registers_out_i.mode_sam &
+        control_registers_out_i.mode_txbbm &
+        control_registers_out_i.mode_rxbam &
+        control_registers_out_i.mode_tstm &
+        control_registers_out_i.mode_acf &
+        control_registers_out_i.mode_rom &
+        control_registers_out_i.mode_tttm &
+        control_registers_out_i.mode_fde &
+        control_registers_out_i.mode_afm &
+        control_registers_out_i.mode_stm &
+        control_registers_out_i.mode_bmm &
+        control_registers_out_i.mode_rst when "000001",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.status_sprt &
+        control_registers_in.status_strgs &
+        control_registers_in.status_stcnt &
+        '0' & '0' & '0' & '0' &
+        control_registers_in.status_txdpe &
+        control_registers_in.status_txpe &
+        control_registers_in.status_rxpe &
+        control_registers_in.status_pexs &
+        control_registers_in.status_idle &
+        control_registers_in.status_ewl &
+        control_registers_in.status_txs &
+        control_registers_in.status_rxs &
+        control_registers_in.status_eft &
+        control_registers_in.status_txnf &
+        control_registers_in.status_dor &
+        control_registers_in.status_rxne when "000010",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' when "000011",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.int_stat_txbhci &
+        control_registers_in.int_stat_rbnei &
+        control_registers_in.int_stat_bsi &
+        control_registers_in.int_stat_rxfi &
+        control_registers_in.int_stat_ofi &
+        control_registers_in.int_stat_bei &
+        control_registers_in.int_stat_ali &
+        control_registers_in.int_stat_fcsi &
+        control_registers_in.int_stat_doi &
+        control_registers_in.int_stat_ewli &
+        control_registers_in.int_stat_txi &
+        control_registers_in.int_stat_rxi when "000100",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.int_ena_set_int_ena_set when "000101",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' when "000110",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.int_mask_set_int_mask_set when "000111",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' when "001000",
+        control_registers_out_i.btr_sjw &
+        control_registers_out_i.btr_brp &
+        control_registers_out_i.btr_ph2 &
+        control_registers_out_i.btr_ph1 &
+        control_registers_out_i.btr_prop when "001001",
+        control_registers_out_i.btr_fd_sjw_fd &
+        control_registers_out_i.btr_fd_brp_fd &
+        '0' &
+        control_registers_out_i.btr_fd_ph2_fd &
+        '0' &
+        control_registers_out_i.btr_fd_ph1_fd &
+        '0' &
+        control_registers_out_i.btr_fd_prop_fd when "001010",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.fault_state_bof &
+        control_registers_in.fault_state_erp &
+        control_registers_in.fault_state_era &
+        control_registers_out_i.erp_erp_limit &
+        control_registers_out_i.ewl_ew_limit when "001011",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.tec_tec_val &
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.rec_rec_val when "001100",
+        control_registers_in.err_fd_err_fd_val &
+        control_registers_in.err_norm_err_norm_val when "001101",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' when "001110",
+        '0' & '0' & '0' &
+        control_registers_out_i.filter_a_mask_bit_mask_a_val when "001111",
+        '0' & '0' & '0' &
+        control_registers_out_i.filter_a_val_bit_val_a_val when "010000",
+        '0' & '0' & '0' &
+        control_registers_out_i.filter_b_mask_bit_mask_b_val when "010001",
+        '0' & '0' & '0' &
+        control_registers_out_i.filter_b_val_bit_val_b_val when "010010",
+        '0' & '0' & '0' &
+        control_registers_out_i.filter_c_mask_bit_mask_c_val when "010011",
+        '0' & '0' & '0' &
+        control_registers_out_i.filter_c_val_bit_val_c_val when "010100",
+        '0' & '0' & '0' &
+        control_registers_out_i.filter_ran_low_bit_ran_low_val when "010101",
+        '0' & '0' & '0' &
+        control_registers_out_i.filter_ran_high_bit_ran_high_val when "010110",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.filter_status_sfr &
+        control_registers_in.filter_status_sfc &
+        control_registers_in.filter_status_sfb &
+        control_registers_in.filter_status_sfa &
+        control_registers_out_i.filter_control_frfe &
+        control_registers_out_i.filter_control_frfb &
+        control_registers_out_i.filter_control_frne &
+        control_registers_out_i.filter_control_frnb &
+        control_registers_out_i.filter_control_fcfe &
+        control_registers_out_i.filter_control_fcfb &
+        control_registers_out_i.filter_control_fcne &
+        control_registers_out_i.filter_control_fcnb &
+        control_registers_out_i.filter_control_fbfe &
+        control_registers_out_i.filter_control_fbfb &
+        control_registers_out_i.filter_control_fbne &
+        control_registers_out_i.filter_control_fbnb &
+        control_registers_out_i.filter_control_fafe &
+        control_registers_out_i.filter_control_fafb &
+        control_registers_out_i.filter_control_fane &
+        control_registers_out_i.filter_control_fanb when "010111",
+        '0' & '0' & '0' &
+        control_registers_in.rx_mem_info_rx_mem_free &
+        '0' & '0' & '0' &
+        control_registers_in.rx_mem_info_rx_buff_size when "011000",
+        '0' & '0' & '0' & '0' &
+        control_registers_in.rx_pointers_rx_rpp &
+        '0' & '0' & '0' & '0' &
+        control_registers_in.rx_pointers_rx_wpp when "011001",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_out_i.rx_settings_rtsop &
+        '0' &
+        control_registers_in.rx_status_rxfrc &
+        '0' &
+        control_registers_in.rx_status_rxmof &
+        control_registers_in.rx_status_rxf &
+        control_registers_in.rx_status_rxe when "011010",
+        control_registers_in.rx_data_rx_data when "011011",
+        control_registers_in.tx_status_tx8s &
+        control_registers_in.tx_status_tx7s &
+        control_registers_in.tx_status_tx6s &
+        control_registers_in.tx_status_tx5s &
+        control_registers_in.tx_status_tx4s &
+        control_registers_in.tx_status_tx3s &
+        control_registers_in.tx_status_tx2s &
+        control_registers_in.tx_status_tx1s when "011100",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.txtb_info_txt_buffer_count &
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' when "011101",
+        '0' &
+        control_registers_out_i.tx_priority_txt8p &
+        '0' &
+        control_registers_out_i.tx_priority_txt7p &
+        '0' &
+        control_registers_out_i.tx_priority_txt6p &
+        '0' &
+        control_registers_out_i.tx_priority_txt5p &
+        '0' &
+        control_registers_out_i.tx_priority_txt4p &
+        '0' &
+        control_registers_out_i.tx_priority_txt3p &
+        '0' &
+        control_registers_out_i.tx_priority_txt2p &
+        '0' &
+        control_registers_out_i.tx_priority_txt1p when "011110",
+        '0' & '0' &
+        control_registers_in.ts_info_ts_bits &
+        control_registers_in.alc_alc_id_field &
+        control_registers_in.alc_alc_bit &
+        '0' & '0' & '0' & '0' &
+        control_registers_in.retr_ctr_retr_ctr_val &
+        control_registers_in.err_capt_err_type &
+        control_registers_in.err_capt_err_erp &
+        control_registers_in.err_capt_err_pos when "011111",
+        '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_out_i.ssp_cfg_ssp_src &
+        control_registers_out_i.ssp_cfg_ssp_offset &
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.trv_delay_trv_delay_value when "100000",
+        control_registers_in.rx_fr_ctr_rx_fr_ctr_val when "100001",
+        control_registers_in.tx_fr_ctr_tx_fr_ctr_val when "100010",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        control_registers_in.debug_register_pc_sof &
+        control_registers_in.debug_register_pc_ovr &
+        control_registers_in.debug_register_pc_susp &
+        control_registers_in.debug_register_pc_int &
+        control_registers_in.debug_register_pc_eof &
+        control_registers_in.debug_register_pc_ackd &
+        control_registers_in.debug_register_pc_ack &
+        control_registers_in.debug_register_pc_crcd &
+        control_registers_in.debug_register_pc_crc &
+        control_registers_in.debug_register_pc_stc &
+        control_registers_in.debug_register_pc_dat &
+        control_registers_in.debug_register_pc_con &
+        control_registers_in.debug_register_pc_arb &
+        control_registers_in.debug_register_destuff_count &
+        control_registers_in.debug_register_stuff_count when "100011",
+        control_registers_in.yolo_reg_yolo_val when "100100",
+        control_registers_in.timestamp_low_timestamp_low when "100101",
+        control_registers_in.timestamp_high_timestamp_high when "100110",
+        (others => '0') when others;
 
-    data_mux_control_registers_comp : data_mux
-    generic map(
-        data_out_width                  => 32 ,
-        data_in_width                   => 1248 ,
-        sel_width                       => 6 ,
-        registered_out                  => REGISTERED_READ 
-    )
-    port map(
-        clk_sys                         => clk_sys ,-- in
-        res_n                           => res_n ,-- in
-        data_selector                   => address(7 downto 2) ,-- in
-        data_in                         => read_data_mux_in ,-- in
-        data_mask_n                     => read_data_mask_n ,-- in
-        enable                          => '1' ,-- in
-        data_out                        => r_data -- out
-    );
-
-  ------------------------------------------------------------------------------
-  -- Read data driver
-  ------------------------------------------------------------------------------
-  read_data_mux_in <=
-    -- Adress:152
-	control_registers_in.timestamp_high_timestamp_high	&
-
-    -- Adress:148
-	control_registers_in.timestamp_low_timestamp_low	&
-
-    -- Adress:144
-	control_registers_in.yolo_reg_yolo_val	&
-
-    -- Adress:140
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.debug_register_pc_sof	&
-	control_registers_in.debug_register_pc_ovr	&
-	control_registers_in.debug_register_pc_susp	&
-	control_registers_in.debug_register_pc_int	&
-	control_registers_in.debug_register_pc_eof	&
-	control_registers_in.debug_register_pc_ackd	&
-	control_registers_in.debug_register_pc_ack	&
-	control_registers_in.debug_register_pc_crcd	&
-	control_registers_in.debug_register_pc_crc	&
-	control_registers_in.debug_register_pc_stc	&
-	control_registers_in.debug_register_pc_dat	&
-	control_registers_in.debug_register_pc_con	&
-	control_registers_in.debug_register_pc_arb	&
-	control_registers_in.debug_register_destuff_count	&
-	control_registers_in.debug_register_stuff_count	&
-
-    -- Adress:136
-	control_registers_in.tx_fr_ctr_tx_fr_ctr_val	&
-
-    -- Adress:132
-	control_registers_in.rx_fr_ctr_rx_fr_ctr_val	&
-
-    -- Adress:128
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.ssp_cfg_ssp_src	&
-	control_registers_out_i.ssp_cfg_ssp_offset	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.trv_delay_trv_delay_value	&
-
-    -- Adress:124
-	'0'	&
-	'0'	&
-	control_registers_in.ts_info_ts_bits	&
-	control_registers_in.alc_alc_id_field	&
-	control_registers_in.alc_alc_bit	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.retr_ctr_retr_ctr_val	&
-	control_registers_in.err_capt_err_type	&
-	control_registers_in.err_capt_err_erp	&
-	control_registers_in.err_capt_err_pos	&
-
-    -- Adress:120
-	'0'	&
-	control_registers_out_i.tx_priority_txt8p	&
-	'0'	&
-	control_registers_out_i.tx_priority_txt7p	&
-	'0'	&
-	control_registers_out_i.tx_priority_txt6p	&
-	'0'	&
-	control_registers_out_i.tx_priority_txt5p	&
-	'0'	&
-	control_registers_out_i.tx_priority_txt4p	&
-	'0'	&
-	control_registers_out_i.tx_priority_txt3p	&
-	'0'	&
-	control_registers_out_i.tx_priority_txt2p	&
-	'0'	&
-	control_registers_out_i.tx_priority_txt1p	&
-
-    -- Adress:116
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.txtb_info_txt_buffer_count	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-
-    -- Adress:112
-	control_registers_in.tx_status_tx8s	&
-	control_registers_in.tx_status_tx7s	&
-	control_registers_in.tx_status_tx6s	&
-	control_registers_in.tx_status_tx5s	&
-	control_registers_in.tx_status_tx4s	&
-	control_registers_in.tx_status_tx3s	&
-	control_registers_in.tx_status_tx2s	&
-	control_registers_in.tx_status_tx1s	&
-
-    -- Adress:108
-	control_registers_in.rx_data_rx_data	&
-
-    -- Adress:104
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.rx_settings_rtsop	&
-	'0'	&
-	control_registers_in.rx_status_rxfrc	&
-	'0'	&
-	control_registers_in.rx_status_rxmof	&
-	control_registers_in.rx_status_rxf	&
-	control_registers_in.rx_status_rxe	&
-
-    -- Adress:100
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.rx_pointers_rx_rpp	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.rx_pointers_rx_wpp	&
-
-    -- Adress:96
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.rx_mem_info_rx_mem_free	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.rx_mem_info_rx_buff_size	&
-
-    -- Adress:92
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.filter_status_sfr	&
-	control_registers_in.filter_status_sfc	&
-	control_registers_in.filter_status_sfb	&
-	control_registers_in.filter_status_sfa	&
-	control_registers_out_i.filter_control_frfe	&
-	control_registers_out_i.filter_control_frfb	&
-	control_registers_out_i.filter_control_frne	&
-	control_registers_out_i.filter_control_frnb	&
-	control_registers_out_i.filter_control_fcfe	&
-	control_registers_out_i.filter_control_fcfb	&
-	control_registers_out_i.filter_control_fcne	&
-	control_registers_out_i.filter_control_fcnb	&
-	control_registers_out_i.filter_control_fbfe	&
-	control_registers_out_i.filter_control_fbfb	&
-	control_registers_out_i.filter_control_fbne	&
-	control_registers_out_i.filter_control_fbnb	&
-	control_registers_out_i.filter_control_fafe	&
-	control_registers_out_i.filter_control_fafb	&
-	control_registers_out_i.filter_control_fane	&
-	control_registers_out_i.filter_control_fanb	&
-
-    -- Adress:88
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.filter_ran_high_bit_ran_high_val	&
-
-    -- Adress:84
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.filter_ran_low_bit_ran_low_val	&
-
-    -- Adress:80
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.filter_c_val_bit_val_c_val	&
-
-    -- Adress:76
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.filter_c_mask_bit_mask_c_val	&
-
-    -- Adress:72
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.filter_b_val_bit_val_b_val	&
-
-    -- Adress:68
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.filter_b_mask_bit_mask_b_val	&
-
-    -- Adress:64
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.filter_a_val_bit_val_a_val	&
-
-    -- Adress:60
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.filter_a_mask_bit_mask_a_val	&
-
-    -- Adress:56
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-
-    -- Adress:52
-	control_registers_in.err_fd_err_fd_val	&
-	control_registers_in.err_norm_err_norm_val	&
-
-    -- Adress:48
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.tec_tec_val	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.rec_rec_val	&
-
-    -- Adress:44
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.fault_state_bof	&
-	control_registers_in.fault_state_erp	&
-	control_registers_in.fault_state_era	&
-	control_registers_out_i.erp_erp_limit	&
-	control_registers_out_i.ewl_ew_limit	&
-
-    -- Adress:40
-	control_registers_out_i.btr_fd_sjw_fd	&
-	control_registers_out_i.btr_fd_brp_fd	&
-	'0'	&
-	control_registers_out_i.btr_fd_ph2_fd	&
-	'0'	&
-	control_registers_out_i.btr_fd_ph1_fd	&
-	'0'	&
-	control_registers_out_i.btr_fd_prop_fd	&
-
-    -- Adress:36
-	control_registers_out_i.btr_sjw	&
-	control_registers_out_i.btr_brp	&
-	control_registers_out_i.btr_ph2	&
-	control_registers_out_i.btr_ph1	&
-	control_registers_out_i.btr_prop	&
-
-    -- Adress:32
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-
-    -- Adress:28
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.int_mask_set_int_mask_set	&
-
-    -- Adress:24
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-
-    -- Adress:20
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.int_ena_set_int_ena_set	&
-
-    -- Adress:16
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.int_stat_txbhci	&
-	control_registers_in.int_stat_rbnei	&
-	control_registers_in.int_stat_bsi	&
-	control_registers_in.int_stat_rxfi	&
-	control_registers_in.int_stat_ofi	&
-	control_registers_in.int_stat_bei	&
-	control_registers_in.int_stat_ali	&
-	control_registers_in.int_stat_fcsi	&
-	control_registers_in.int_stat_doi	&
-	control_registers_in.int_stat_ewli	&
-	control_registers_in.int_stat_txi	&
-	control_registers_in.int_stat_rxi	&
-
-    -- Adress:12
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-
-    -- Adress:8
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.status_sprt	&
-	control_registers_in.status_strgs	&
-	control_registers_in.status_stcnt	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_in.status_txdpe	&
-	control_registers_in.status_txpe	&
-	control_registers_in.status_rxpe	&
-	control_registers_in.status_pexs	&
-	control_registers_in.status_idle	&
-	control_registers_in.status_ewl	&
-	control_registers_in.status_txs	&
-	control_registers_in.status_rxs	&
-	control_registers_in.status_eft	&
-	control_registers_in.status_txnf	&
-	control_registers_in.status_dor	&
-	control_registers_in.status_rxne	&
-
-    -- Adress:4
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.settings_pchke	&
-	control_registers_out_i.settings_fdrf	&
-	control_registers_out_i.settings_tbfbo	&
-	control_registers_out_i.settings_pex	&
-	control_registers_out_i.settings_nisofd	&
-	control_registers_out_i.settings_ena	&
-	control_registers_out_i.settings_ilbp	&
-	control_registers_out_i.settings_rtrth	&
-	control_registers_out_i.settings_rtrle	&
-	'0'	&
-	'0'	&
-	'0'	&
-	control_registers_out_i.mode_erfm	&
-	control_registers_out_i.mode_sam	&
-	control_registers_out_i.mode_txbbm	&
-	control_registers_out_i.mode_rxbam	&
-	control_registers_out_i.mode_tstm	&
-	control_registers_out_i.mode_acf	&
-	control_registers_out_i.mode_rom	&
-	control_registers_out_i.mode_tttm	&
-	control_registers_out_i.mode_fde	&
-	control_registers_out_i.mode_afm	&
-	control_registers_out_i.mode_stm	&
-	control_registers_out_i.mode_bmm	&
-	control_registers_out_i.mode_rst	&
-
-    -- Adress:0
-	control_registers_in.version_ver_major	&
-	control_registers_in.version_ver_minor	&
-	control_registers_in.device_id_device_id
-;
+    ----------------------------------------------------------------------------
+    -- Output register
+    ----------------------------------------------------------------------------
+    read_data_reg_proc : process(res_n, clk_sys)
+    begin
+        if (res_n = '0') then
+            r_data <= (others => '0');
+        elsif (rising_edge(clk_sys)) then
+            if (cs = '1' and read = '1') then
+                r_data <= r_data_comb and read_data_mask_n;
+            end if;
+        end if;
+    end process;
 
     ----------------------------------------------------------------------------
     -- Read data mask - Byte enables

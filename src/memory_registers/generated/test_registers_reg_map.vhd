@@ -107,7 +107,7 @@ architecture rtl of test_registers_reg_map is
   signal reg_sel  : std_logic_vector(3 downto 0);
   constant ADDR_VECT
                  : std_logic_vector(23 downto 0) := "000011000010000001000000";
-  signal read_data_mux_in : std_logic_vector(127 downto 0);
+  signal r_data_comb : std_logic_vector(31 downto 0);
   signal read_data_mask_n : std_logic_vector(31 downto 0);
   signal test_registers_out_i : Test_registers_out_t;
   signal write_en : std_logic_vector(3 downto 0);
@@ -308,84 +308,30 @@ begin
     ----------------------------------------------------------------------------
     -- Read data multiplexor
     ----------------------------------------------------------------------------
+    with address(7 downto 2) select r_data_comb <=
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        test_registers_out_i.tst_control_twrstb &
+        test_registers_out_i.tst_control_tmaena when "000000",
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        test_registers_out_i.tst_dest_tst_mtgt &
+        test_registers_out_i.tst_dest_tst_addr when "000001",
+        test_registers_out_i.tst_wdata_tst_wdata when "000010",
+        test_registers_in.tst_rdata_tst_rdata when "000011",
+        (others => '0') when others;
 
-    data_mux_test_registers_comp : data_mux
-    generic map(
-        data_out_width                  => 32 ,
-        data_in_width                   => 128 ,
-        sel_width                       => 6 ,
-        registered_out                  => REGISTERED_READ 
-    )
-    port map(
-        clk_sys                         => clk_sys ,-- in
-        res_n                           => res_n ,-- in
-        data_selector                   => address(7 downto 2) ,-- in
-        data_in                         => read_data_mux_in ,-- in
-        data_mask_n                     => read_data_mask_n ,-- in
-        enable                          => '1' ,-- in
-        data_out                        => r_data -- out
-    );
-
-  ------------------------------------------------------------------------------
-  -- Read data driver
-  ------------------------------------------------------------------------------
-  read_data_mux_in <=
-    -- Adress:12
-	test_registers_in.tst_rdata_tst_rdata	&
-
-    -- Adress:8
-	test_registers_out_i.tst_wdata_tst_wdata	&
-
-    -- Adress:4
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	test_registers_out_i.tst_dest_tst_mtgt	&
-	test_registers_out_i.tst_dest_tst_addr	&
-
-    -- Adress:0
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	'0'	&
-	test_registers_out_i.tst_control_twrstb	&
-	test_registers_out_i.tst_control_tmaena
-;
+    ----------------------------------------------------------------------------
+    -- Output register
+    ----------------------------------------------------------------------------
+    read_data_reg_proc : process(res_n, clk_sys)
+    begin
+        if (res_n = '0') then
+            r_data <= (others => '0');
+        elsif (rising_edge(clk_sys)) then
+            if (cs = '1' and read = '1') then
+                r_data <= r_data_comb and read_data_mask_n;
+            end if;
+        end if;
+    end process;
 
     ----------------------------------------------------------------------------
     -- Read data mask - Byte enables

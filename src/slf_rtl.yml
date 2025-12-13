@@ -75,7 +75,6 @@ source_list:
     - file: tx_arbitrator/priority_decoder.vhd
     - file: tx_arbitrator/tx_arbitrator.vhd
 
-    - file: memory_registers/generated/data_mux.vhd
     - file: memory_registers/generated/memory_bus.vhd
     - file: memory_registers/generated/address_decoder.vhd
     - file: memory_registers/generated/memory_reg_rw.vhd
