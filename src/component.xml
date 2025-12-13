@@ -859,12 +859,6 @@
       </spirit:file>
 
       <spirit:file>
-        <spirit:name>memory_registers/generated/access_signaler.vhd</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
-      </spirit:file>
-
-      <spirit:file>
         <spirit:name>memory_registers/generated/address_decoder.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
@@ -884,12 +878,6 @@
 
       <spirit:file>
         <spirit:name>memory_registers/generated/control_registers_reg_map.vhd</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
-      </spirit:file>
-
-      <spirit:file>
-        <spirit:name>memory_registers/generated/data_mux.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
       </spirit:file>
@@ -920,6 +908,12 @@
 
       <spirit:file>
         <spirit:name>memory_registers/generated/memory_reg_rw_lock.vhd</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
+      </spirit:file>
+
+      <spirit:file>
+        <spirit:name>memory_registers/generated/read_access_signaler.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
       </spirit:file>
@@ -1449,13 +1443,6 @@
       </spirit:file>
 
       <spirit:file>
-        <spirit:name>memory_registers/generated/access_signaler.vhd</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
-        <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
-      </spirit:file>
-
-      <spirit:file>
         <spirit:name>memory_registers/generated/address_decoder.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
@@ -1478,13 +1465,6 @@
 
       <spirit:file>
         <spirit:name>memory_registers/generated/control_registers_reg_map.vhd</spirit:name>
-        <spirit:fileType>vhdlSource</spirit:fileType>
-        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
-        <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
-      </spirit:file>
-
-      <spirit:file>
-        <spirit:name>memory_registers/generated/data_mux.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
@@ -1520,6 +1500,13 @@
 
       <spirit:file>
         <spirit:name>memory_registers/generated/memory_reg_rw_lock.vhd</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
+      </spirit:file>
+
+      <spirit:file>
+        <spirit:name>memory_registers/generated/read_access_signaler.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>

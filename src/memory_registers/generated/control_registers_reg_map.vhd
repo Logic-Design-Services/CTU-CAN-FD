@@ -2473,22 +2473,16 @@ begin
     -- RX_DATA access signallization
     ----------------------------------------------------------------------------
 
-    rx_data_access_signaller_comp : access_signaller
+    rx_data_access_signaller_comp : read_access_signaller
     generic map(
-        data_width                      => 32 ,
-        read_signalling                 => True ,
-        write_signalling                => False ,
-        read_signalling_reg             => False ,
-        write_signalling_reg            => False 
+        data_width                      => 32 
     )
     port map(
         clk_sys                         => clk_sys ,-- in
         res_n                           => res_n ,-- in
         cs                              => reg_sel(27) ,-- in
         read                            => read ,-- in
-        write                           => write ,-- in
         be                              => be(3 downto 0) ,-- in
-        write_signal                    => open ,-- out
         read_signal                     => control_registers_out_i.rx_data_read -- out
     );
 

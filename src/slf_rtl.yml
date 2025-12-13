@@ -82,7 +82,7 @@ source_list:
     - file: memory_registers/generated/memory_reg_os.vhd
     - file: memory_registers/generated/memory_reg_os_lock.vhd
     - file: memory_registers/generated/can_registers_pkg.vhd
-    - file: memory_registers/generated/access_signaler.vhd
+    - file: memory_registers/generated/read_access_signaler.vhd
     - file: memory_registers/generated/cmn_reg_map_pkg.vhd
     - file: memory_registers/generated/control_registers_reg_map.vhd
     - file: memory_registers/generated/test_registers_reg_map.vhd

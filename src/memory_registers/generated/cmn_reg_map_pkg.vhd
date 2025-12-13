@@ -162,27 +162,22 @@ component memory_reg_os_lock is
 end component memory_reg_os_lock;
 
 --------------------------------------------------------------------------------
--- Access signaller
+-- Read access signaller
 --------------------------------------------------------------------------------
-component access_signaller is
+component read_access_signaller is
     generic(
-        constant data_width           :     natural := 32;
-        constant read_signalling      :     boolean := false;
-        constant write_signalling     :     boolean := false;
-        constant read_signalling_reg  :     boolean := false;
-        constant write_signalling_reg :     boolean := false
+        -- Width of memory register whose access is being signalled
+        constant data_width           :     natural := 32
     );
     port(
         signal clk_sys                :in   std_logic;
         signal res_n                  :in   std_logic;
         signal cs                     :in   std_logic;
         signal read                   :in   std_logic;
-        signal write                  :in   std_logic;
         signal be                     :in   std_logic_vector(data_width / 8 - 1 downto 0);
-        signal write_signal           :out  std_logic;
         signal read_signal            :out  std_logic
     );
 
-end component access_signaller;
+end component read_access_signaller;
 
 end package;
