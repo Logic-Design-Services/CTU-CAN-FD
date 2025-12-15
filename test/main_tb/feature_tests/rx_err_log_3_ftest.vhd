@@ -179,7 +179,8 @@ package body rx_err_log_3_ftest is
 
         release_bus_level(chn);
 
-        wait for 200 ns;
+        ctu_wait_sample_point(DUT_NODE, chn, false);
+        ctu_wait_sample_point(DUT_NODE, chn, false);
 
         ctu_get_status(status, DUT_NODE, chn);
         check_m(status.error_transmission, "Error frame is being transmitted!");
