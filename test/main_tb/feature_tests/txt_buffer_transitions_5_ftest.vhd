@@ -128,15 +128,6 @@ package body txt_buffer_transitions_5_ftest is
         variable num_txt_bufs         :       natural;
         variable err_counters         :       t_ctu_err_ctrs;
 
-        --variable command            :       t_ctu_command := t_ctu_command_rst_val;
-        --variable status             :       t_ctu_status;
-	    --variable txt_buf_state	    :	    t_ctu_txt_buff_state;
-
-
-        --variable frame_sent         :       boolean;
-
-        --variable fault_state        :       t_ctu_fault_state;
-        --variable bus_val            :       std_logic;
     begin
 
         -------------------------------------------------------------------------------------------

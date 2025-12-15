@@ -73,7 +73,7 @@
 --  TXT Buffer FSMs corner-case transitions 4
 --
 -- @Verifies:
---  @1. When TXT Buffer is in Abortin Progress, and parity error occurs, it
+--  @1. When TXT Buffer is in Abort in Progress, and parity error occurs, it
 --      moves to Parity Error state
 --
 -- @Test sequence:
