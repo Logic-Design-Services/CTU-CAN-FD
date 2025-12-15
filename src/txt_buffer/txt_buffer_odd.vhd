@@ -330,9 +330,7 @@ begin
     -----------------------------------------------------------------------------------------------
     -- If parity error occurs in Backup Buffer during TXTB modes, then set STATUS[TXDPE] = 1.
     -----------------------------------------------------------------------------------------------
-    txtb_bb_parity_error <= '1' when (txtb_parity_error_valid_i = '1' and
-                                      (G_ID mod 2) = 1 and
-                                      mr_mode_txbbm = '1')
+    txtb_bb_parity_error <= '1' when (txtb_parity_error_valid_i = '1' and mr_mode_txbbm = '1')
                                 else
                             '0';
 
