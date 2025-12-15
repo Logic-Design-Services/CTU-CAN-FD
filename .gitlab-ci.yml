@@ -392,7 +392,7 @@ process_coverage:
         - echo "Merging code coverage results from:"
         - ls vunit_out/code_coverage/tb_rtl_*.ncdb
 
-        - nvc --cover-merge -V --output=merged.covdb vunit_out/code_coverage/tb_rtl_*.ncdb
+        - nvc --cover-merge -V --output=merged.covdb --exclude-file=exclude_files/nvc_exclusions_2v7.txt vunit_out/code_coverage/tb_rtl_*.ncdb
         - nvc --cover-report --output=code_coverage_report merged.covdb
 
         # Generate VRM
