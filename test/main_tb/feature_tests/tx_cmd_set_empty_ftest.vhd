@@ -76,17 +76,20 @@
 --  @1. Set Empty command moves TXT Buffer from TX OK, TX Error, Aborted to Empty.
 --
 -- @Test sequence:
---  @1. Check TXT Buffer is empty. Issue Set empty and check it is still empty.
+--  @1. Disable One-shot mode in DUT, disable ACK forbidden in Test Node.
+--      Check TXT Buffer is empty. Issue Set empty and check it is still empty.
 --  @2. Generate random CAN frame, send it from TXT Buffer and wait until it is
 --      received. Check TXT Buffer is in TX OK. Issue Set Empty command and
 --      check TXT Buffer is empty.
---  @3. Generate random CAN frame, send it fom TXT Buffer and issue Set Abort
+--  @3. Forbid ACK in Test node -> This is to corrupt transmission.
+--      Generate random CAN frame, send it from TXT Buffer and issue Set Abort
 --      command. Wait until frame is over and check TXT Buffer is Aborted. Issue
 --      Set Empty command and check it becomes Empty.
---  @4. Set One shot mode in DUT. Forbid ACK in Test node. Send CAN frame by Node
---      1. Wait until CAN frame is sent and check TXT Buffer from which it was
---      sent ended in TX Error. Issue Set empty command and check TXT Buffer is
---      Empty.
+--
+--  @4. Set One shot mode in DUT.
+--      Send CAN frame by Node 1. Wait until CAN frame is sent and check
+--      TXT Buffer from which it was sent ended in TX Error.
+--      Issue Set empty command and check TXT Buffer is Empty.
 --
 -- @TestInfoEnd
 --------------------------------------------------------------------------------
@@ -126,10 +129,15 @@ package body tx_cmd_set_empty_ftest is
             info_m("Testing with TXT Buffer: " & integer'image(buf_nr));
 
             -----------------------------------------------------------------------
-            -- @1. Check TXT Buffer is empty. Issue Set empty and check it is still
-            --    empty.
+            -- @1. Disable One-shot mode in DUT, disable ACK forbidden in Test Node.
+            --     Check TXT Buffer is empty. Issue Set empty and check it is still
+            --     empty.
             -----------------------------------------------------------------------
             info_m("Step 1");
+
+            ctu_set_retr_limit(false, 0, DUT_NODE, chn);
+            mode_2.acknowledge_forbidden := false;
+            ctu_set_mode(mode_2, TEST_NODE, chn);
 
             ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_empty, "TXT Buffer empty upon start");
@@ -155,12 +163,24 @@ package body tx_cmd_set_empty_ftest is
             ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_empty, "Set Empty: TX OK -> Empty");
 
+            -- Need to wait until bus is idle so that next step is not affected!
+            -- The Transmitter ends at the end of EOF, not when bus is idle.
+            -- During Intermission, the node is still "transmitter", only when
+            -- going to "Idle" it stops being transmitter! If this is not respected,
+            -- the next step would skip right away since the DUT is still transmitter!
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
+
             ------------------------------------------------------------------------
-            -- @3. Generate random CAN frame, send it fom TXT Buffer and issue Set
-            --    Abort command. Wait until frame is over and check TXT Buffer is
-            --    Aborted. Issue Set Empty command and check it becomes Empty.
+            -- @3. Forbid ACK in Test node -> This is to corrupt transmission.
+            --     Generate random CAN frame, send it from TXT Buffer and issue Set
+            --     Abort command. Wait until frame is over and check TXT Buffer is
+            --     Aborted. Issue Set Empty command and check it becomes Empty.
             ------------------------------------------------------------------------
             info_m("Step 3");
+
+            mode_2.acknowledge_forbidden := true;
+            ctu_set_mode(mode_2, TEST_NODE, chn);
 
             generate_can_frame(can_frame);
             ctu_send_frame(can_frame, buf_nr, DUT_NODE, chn, frame_sent);
@@ -176,16 +196,14 @@ package body tx_cmd_set_empty_ftest is
             check_m(txt_state = buf_empty, "Set Empty: Aborted -> Empty");
 
             -----------------------------------------------------------------------
-            -- @4. Set One shot mode in DUT. Forbid ACK in Test node. Send CAN frame
-            --     by DUT. Wait until CAN frame is sent and check TXT Buffer from
-            --     which it was sent ended in TX Error. Issue Set empty command and
-            --     check TXT Buffer is Empty.
+            -- @4. Set One shot mode in DUT.
+            --     Send CAN frame by DUT. Wait until CAN frame is sent and check
+            --     TXT Buffer from which it was sent ended in TX Error.
+            --     Issue Set empty command and check TXT Buffer is Empty.
             -----------------------------------------------------------------------
             info_m("Step 4");
 
             ctu_set_retr_limit(true, 0, DUT_NODE, chn);
-            mode_2.acknowledge_forbidden := true;
-            ctu_set_mode(mode_2, TEST_NODE, chn);
 
             generate_can_frame(can_frame);
             ctu_send_frame(can_frame, buf_nr, DUT_NODE, chn, frame_sent);
@@ -198,11 +216,6 @@ package body tx_cmd_set_empty_ftest is
             wait for 11 ns; -- This command is pipelined, delay must be inserted!
             ctu_get_txt_buf_state(buf_nr, txt_state, DUT_NODE, chn);
             check_m(txt_state = buf_empty, "Set Empty: TX Failed -> Empty");
-
-            -- Re-enable ACK fr next iterations
-            ctu_set_retr_limit(true, 0, DUT_NODE, chn);
-            mode_2.acknowledge_forbidden := false;
-            ctu_set_mode(mode_2, TEST_NODE, chn);
 
         end loop;
 

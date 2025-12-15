@@ -4989,6 +4989,7 @@ package body feature_test_agent_pkg is
     ) is
         variable rx_buf_state   : t_ctu_rx_buf_state;
         variable data           : std_logic_vector(31 downto 0);
+        variable data_16        : std_logic_vector(15 downto 0);
     begin
 
         ctu_get_rx_buf_state(rx_buf_state, node, channel);
@@ -4996,27 +4997,28 @@ package body feature_test_agent_pkg is
 
         ctu_get_txt_buf_cnt(rv.txt_buffer_count, node, channel);
 
-        ctu_read(data, FILTER_STATUS_ADR, node, channel);
+        ctu_read(data_16, FILTER_STATUS_ADR, node, channel);
+        report "FILTER_STATUS: " & to_hstring(data_16);
 
-        if (data(SFA_IND) = '1') then
+        if (data_16(SFA_IND mod 16) = '1') then
             rv.sup_filtA := true;
         else
             rv.sup_filtA := false;
         end if;
 
-        if (data(SFB_IND) = '1') then
+        if (data_16(SFB_IND mod 16) = '1') then
             rv.sup_filtB := true;
         else
             rv.sup_filtB := false;
         end if;
 
-        if (data(SFC_IND) = '1') then
+        if (data_16(SFC_IND mod 16) = '1') then
             rv.sup_filtC := true;
         else
             rv.sup_filtC := false;
         end if;
 
-        if (data(SFR_IND) = '1') then
+        if (data_16(SFR_IND mod 16) = '1') then
             rv.sup_range := true;
         else
             rv.sup_range := false;
@@ -5024,7 +5026,6 @@ package body feature_test_agent_pkg is
 
         ctu_read(data, STATUS_ADR, node, channel);
 
-        report "DATA are: " & to_hstring(data);
         if (data(STCNT_IND) = '1') then
             rv.sup_traffic_ctrs := true;
         else
@@ -5042,8 +5043,6 @@ package body feature_test_agent_pkg is
         else
             rv.sup_parity := false;
         end if;
-
-        report "FFUUUCK " & boolean'image(rv.sup_traffic_ctrs);
 
     end procedure;
 
