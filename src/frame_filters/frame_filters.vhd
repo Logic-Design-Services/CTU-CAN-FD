@@ -165,6 +165,9 @@ entity frame_filters is
         -- RX Remote transmission request Flag
         rec_is_rtr                          : in  std_logic;
 
+        -- Identifier valid
+        rec_ivld                            : in  std_logic;
+
         -- Store Metadata in RX Buffer
         store_metadata                      : in  std_logic;
 
@@ -357,7 +360,8 @@ begin
                               else
                           '0';
 
-        filter_result <= '0' when (drop_rtr_frame = '1') else
+        filter_result <= '1' when (rec_ivld = '0') else
+                         '0' when (drop_rtr_frame = '1') else
                          '1' when (int_filter_a_valid = '1' or
                                    int_filter_b_valid = '1' or
                                    int_filter_c_valid = '1' or

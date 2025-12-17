@@ -493,7 +493,7 @@ filename "version.tex"
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="36" columns="3">
+<lyxtabular version="3" rows="37" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="2cm">
@@ -1556,7 +1556,7 @@ Move to new relase of CTU CAN FD.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1565,7 +1565,7 @@ Move to new relase of CTU CAN FD.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1574,11 +1574,40 @@ Move to new relase of CTU CAN FD.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Fix code samples to readout RWCNT - 3 words.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17-12-2025
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Clarify Frame filters behavior in case of logged error frames.
 \end_layout
 
 \end_inset
@@ -5545,7 +5574,13 @@ Note The error frames ocurring in CAN frames with Base identifier before
  IDE bit have FRAME_FORMAT_W[IVLD]=0.
  The error frames ocurring in CAN frames with Extended identifier before
  RTR/RRS bit have FRAME_FORMAT_W[IVLD]=0.
- 
+\end_layout
+
+\begin_layout Description
+Note When CTU CAN FD stores error frame with FRAME_FORMAT_W[IVLD]=0 to RX
+ Buffer, every such error frame is stored regardless of frame filters configurat
+ion.
+ Therefore, invalid identifiers are not subject to frame filtration.
 \end_layout
 
 \begin_layout Subsection

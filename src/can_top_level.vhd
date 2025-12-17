@@ -1063,6 +1063,7 @@ begin
         rec_ident_type                  => rec_ident_type,                  -- IN
         rec_frame_type                  => rec_frame_type,                  -- IN
         rec_is_rtr                      => rec_is_rtr,                      -- IN
+        rec_ivld                        => rec_ivld,                        -- IN
         store_metadata                  => store_metadata,                  -- IN
         store_data                      => store_data,                      -- IN
         rec_valid                       => rec_valid,                       -- IN
