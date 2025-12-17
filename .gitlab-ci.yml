@@ -138,6 +138,7 @@ test_unit_rx_buffer:
         - cd test
         - make tb_rtl_rx_buffer_unit
         - make tb_rtl_rx_buffer_unit_logs
+    dependencies: []
     artifacts:
         when: always
         paths:
@@ -154,6 +155,7 @@ test_rtl_small_asic_max_feature:
     stage: test_rtl_feature
     tags:
         - simulation
+    dependencies: [build_compliance_lib]
     only: *only
     timeout: 2h
     script:
@@ -175,6 +177,7 @@ test_rtl_medium_asic_max_feature:
     stage: test_rtl_feature
     tags:
         - simulation
+    dependencies: [build_compliance_lib]
     only: *only
     timeout: 2h
     script:
@@ -196,6 +199,7 @@ test_rtl_big_asic_max_feature:
     stage: test_rtl_feature
     tags:
         - simulation
+    dependencies: [build_compliance_lib]
     only: *only
     timeout: 2h
     script:
@@ -217,6 +221,7 @@ test_rtl_medium_fpga_max_feature:
     stage: test_rtl_feature
     tags:
         - simulation
+    dependencies: [build_compliance_lib]
     only: *only
     timeout: 2h
     script:
@@ -238,6 +243,7 @@ test_rtl_medium_asic_typ_feature:
     stage: test_rtl_feature
     tags:
         - simulation
+    dependencies: [build_compliance_lib]
     only: *only
     timeout: 3h
     script:
@@ -263,6 +269,7 @@ test_rtl_small_asic_max_compliance:
     stage: test_rtl_compliance
     tags:
         - simulation
+    dependencies: [build_compliance_lib]
     only: *only
     timeout: 2h
     script:
@@ -284,6 +291,7 @@ test_rtl_small_asic_typ_compliance:
     stage: test_rtl_compliance
     tags:
         - simulation
+    dependencies: [build_compliance_lib]
     only: *only
     timeout: 2h
     script:
@@ -305,6 +313,7 @@ test_rtl_small_asic_min_compliance:
     stage: test_rtl_compliance
     tags:
         - simulation
+    dependencies: [build_compliance_lib]
     only: *only
     timeout: 3h
     script:
@@ -383,8 +392,10 @@ process_coverage:
         - test_rtl_medium_asic_max_feature
         - test_rtl_big_asic_max_feature
         - test_rtl_medium_fpga_max_feature
+        - test_rtl_medium_asic_typ_feature
         - test_rtl_small_asic_max_compliance
         - test_rtl_small_asic_typ_compliance
+        - test_rtl_small_asic_min_compliance
     only: *only
     script:
         # Merge code coverage and generate report
