@@ -751,13 +751,19 @@
       </spirit:file>
 
       <spirit:file>
-        <spirit:name>common_blocks/endian_swapper.vhd</spirit:name>
+        <spirit:name>common_blocks/dp_inf_ram.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
       </spirit:file>
 
       <spirit:file>
-        <spirit:name>common_blocks/inf_ram_wrapper.vhd</spirit:name>
+        <spirit:name>common_blocks/dp_inf_ram_be.vhd</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
+      </spirit:file>
+
+      <spirit:file>
+        <spirit:name>common_blocks/endian_swapper.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
       </spirit:file>
@@ -1317,14 +1323,21 @@
       </spirit:file>
 
       <spirit:file>
-        <spirit:name>common_blocks/endian_swapper.vhd</spirit:name>
+        <spirit:name>common_blocks/dp_inf_ram.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
       </spirit:file>
 
       <spirit:file>
-        <spirit:name>common_blocks/inf_ram_wrapper.vhd</spirit:name>
+        <spirit:name>common_blocks/dp_inf_ram_be.vhd</spirit:name>
+        <spirit:fileType>vhdlSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
+      </spirit:file>
+
+      <spirit:file>
+        <spirit:name>common_blocks/endian_swapper.vhd</spirit:name>
         <spirit:fileType>vhdlSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>ctu_can_fd_rtl</spirit:logicalName>
