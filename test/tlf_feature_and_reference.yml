@@ -26,6 +26,7 @@ tests:
     - name: pc_fsm_transitions_integ_2
 
     - name: txt_buffer_hazard
+    - name: tx_arb_consistency
 
     ###########################################################################
     # The following tests are ordered albhabetically
@@ -227,10 +228,6 @@ tests:
     - name: trv_delay
     - name: tst_mem_acc_rx
     - name: tst_mem_acc_txt
-    - name: tx_arb_consistency
-      generics:
-        /TB_TOP_CTU_CAN_FD/iterations: 10
-
     - name: tx_arb_consistency_2
 
     - name: tx_arb_time_tran
