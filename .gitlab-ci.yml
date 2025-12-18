@@ -138,7 +138,7 @@ test_unit_rx_buffer:
         - cd test
         - make tb_rtl_rx_buffer_unit
         - make tb_rtl_rx_buffer_unit_logs
-    dependencies: []
+    dependencies: [build_compliance_lib]
     artifacts:
         when: always
         paths:
