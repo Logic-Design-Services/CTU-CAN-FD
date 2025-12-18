@@ -75,6 +75,8 @@
 -- @Verifies:
 --  @1. When TXT Buffer is in Abort in Progress, and parity error occurs, it
 --      moves to Parity Error state
+--  @2. When Set Empty TXT Buffer command is applied on TXT Buffer in
+--      Parity Error state, the TXT Buffer will move to TX Empty state.
 --
 -- @Test sequence:
 --  @1. Loop for all TXT Buffers:
@@ -83,6 +85,7 @@
 --      @1.2. Send Set Ready Command. Wait until DUT starts transmitting the
 --            frame, and then send Set Abort Command.
 --      @1.3. Wait until bus is idle. Check TXT Buffer ended in Parity Error.
+--      @1.4. Issue Set Empty Command. Check TXT Buffer is empty.
 --
 -- @TestInfoEnd
 --------------------------------------------------------------------------------
@@ -201,6 +204,17 @@ package body txt_buffer_transitions_4_ftest is
             ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
 
             check_m(txt_buf_state = buf_parity_err, "TXT Buffer in parity error state");
+
+            ---------------------------------------------------------------------------------------
+            -- @1.4. Issue Set Empty Command. Check TXT Buffer is empty.
+            ---------------------------------------------------------------------------------------
+            info_m("Step 1.4");
+
+            ctu_give_txt_cmd(buf_set_empty, txt_buf_index, DUT_NODE, chn);
+            wait for 20 ns; -- Command is pipelined
+
+            ctu_get_txt_buf_state(txt_buf_index, txt_buf_state, DUT_NODE, chn);
+            check_m(txt_buf_state = buf_empty, "TXT Buffer in Empty state");
 
         end loop;
 
