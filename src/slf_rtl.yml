@@ -11,7 +11,8 @@ source_list:
     - file: common_blocks/dff_arst.vhd
     - file: common_blocks/rst_reg.vhd
     - file: common_blocks/clk_gate.vhd
-    - file: common_blocks/inf_ram_wrapper.vhd
+    - file: common_blocks/dp_inf_ram_be.vhd
+    - file: common_blocks/dp_inf_ram.vhd
     - file: common_blocks/shift_reg_byte.vhd
     - file: common_blocks/majority_decoder_3.vhd
     - file: common_blocks/shift_reg_preload.vhd

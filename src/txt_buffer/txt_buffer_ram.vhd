@@ -185,7 +185,7 @@ begin
     -- some FPGA families does not provide inferred RAM for asynchronously read data (in the same
     -- clock cycle).
     -----------------------------------------------------------------------------------------------
-    txt_buf_ram_inst : entity ctu_can_fd_rtl.inf_ram_wrapper
+    dp_inf_ram_be_inst : entity ctu_can_fd_rtl.dp_inf_ram_be
     generic map (
         G_WORD_WIDTH            => 32,
         G_DEPTH                 => C_TXT_BUF_DEPTH,
@@ -206,6 +206,9 @@ begin
         data_out                => txtb_port_b_data_out_i               -- OUT
     );
     txtb_port_b_data_out <= txtb_port_b_data_out_i;
+
+    -- Note: If you want to replace RAM by dedicated memory macro,
+    --       place it instead of "dp_inf_ram_be_inst"!
 
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------

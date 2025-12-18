@@ -68,7 +68,7 @@
 
 --------------------------------------------------------------------------------
 -- Module:
---  Inferred RAM wrapper.
+--  Dual Port Inferred RAM with Byte enables
 --
 -- Purpose:
 --  Dual port Memory wrapper for inferrence of RAM blocks in Intel and Xilinx
@@ -82,7 +82,7 @@ Library ieee;
 USE IEEE.std_logic_1164.all;
 USE IEEE.numeric_std.ALL;
 
-entity inf_ram_wrapper is
+entity dp_inf_ram_be is
     generic (
         -- Width of memory word (in bits)
         G_WORD_WIDTH           :     natural := 32;
@@ -122,7 +122,7 @@ entity inf_ram_wrapper is
     );
 end entity;
 
-architecture rtl of inf_RAM_wrapper is
+architecture rtl of dp_inf_ram_be is
 
     -----------------------------------------------------------------------------------------------
     -- Memory definition
