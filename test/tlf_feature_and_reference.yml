@@ -9,6 +9,7 @@ tests:
     ###########################################################################
     - name: ssp_last_crc_bit_error
     - name: rx_buf_consistency
+    - name: prescaler_maximal
 
     - name: frame_filters_mask
       generics:
@@ -40,7 +41,6 @@ tests:
 
     - name: btr
     - name: btr_fd
-    - name: btr_maximal
     - name: btr_minimal
     - name: btr_ssp_access
     - name: bus_start
