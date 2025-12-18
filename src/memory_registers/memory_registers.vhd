@@ -174,7 +174,7 @@ entity memory_registers is
         data_out                        : out std_logic_vector(31 downto 0);
 
         -- Address
-        adress                          : in std_logic_vector(15 downto 0);
+        adress                          : in std_logic_vector(11 downto 0);
 
         -- Chip Select
         scs                             : in std_logic;
@@ -459,7 +459,7 @@ begin
     control_registers_reg_map_comp : entity ctu_can_fd_rtl.control_registers_reg_map
     generic map(
         DATA_WIDTH            => 32,
-        ADDRESS_WIDTH         => 16,
+        ADDRESS_WIDTH         => 8,
         REGISTERED_READ       => true,
         CLEAR_READ_DATA       => false,
         SUP_FILT_A            => G_SUP_FILTA,
@@ -471,7 +471,7 @@ begin
     port map(
         clk_sys               => clk_control_regs,              -- IN
         res_n                 => soft_res_q_n,                  -- IN
-        address               => adress,                        -- IN
+        address               => adress(7 downto 0),            -- IN
         w_data                => data_in,                       -- IN
         r_data                => control_registers_rdata,       -- OUT
         cs                    => control_registers_cs,          -- IN
@@ -492,14 +492,14 @@ begin
         test_registers_reg_map_comp : entity ctu_can_fd_rtl.test_registers_reg_map
         generic map (
             DATA_WIDTH          => 32,
-            ADDRESS_WIDTH       => 16,
+            ADDRESS_WIDTH       => 8,
             REGISTERED_READ     => true,
             CLEAR_READ_DATA     => false
         )
         port map(
             clk_sys             => clk_test_regs,               -- IN
             res_n               => soft_res_q_n,                -- IN
-            address             => adress,                      -- IN
+            address             => adress(7 downto 0),          -- IN
             w_data              => data_in,                     -- IN
             r_data              => test_registers_rdata,        -- OUT
             cs                  => test_registers_cs,           -- IN
