@@ -862,8 +862,7 @@ begin
 
     -- Memory written either on regular write or timestamp write
     rxb_port_a_write  <= '1' when (write_raw_OK = '1' or
-                                  (select_ts_wptr = '1' and data_overrun_i = '0' and
-                                   overrun_condition = '0'))
+                                  (select_ts_wptr = '1' and data_overrun_i = '0'))
                              else
                          '0';
 

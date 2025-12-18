@@ -661,7 +661,7 @@ begin
         -- Memory Interface
         data_in                         => data_in,                         -- IN
         data_out                        => data_out,                        -- OUT
-        adress                          => adress,                          -- IN
+        adress                          => adress(11 downto 0),             -- IN
         scs                             => scs,                             -- IN
         srd                             => srd,                             -- IN
         swr                             => swr,                             -- IN

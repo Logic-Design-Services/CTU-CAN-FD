@@ -174,7 +174,7 @@ begin
     -- since some FPGA families does not provide inferred RAM for asynchronously read data (in
     -- the same clock cycle).
     -------------------------------------------------------------------------------------------
-    rx_buf_ram_inst : entity ctu_can_fd_rtl.inf_ram_wrapper
+    dp_inf_ram_inst : entity ctu_can_fd_rtl.dp_inf_ram
     generic map (
         G_WORD_WIDTH            => 32,
         G_DEPTH                 => G_RX_BUFF_SIZE,
@@ -189,7 +189,6 @@ begin
         addr_A                  => rxb_port_a_address_i,    -- IN
         write                   => rxb_port_a_write_i,      -- IN
         data_in                 => rxb_port_a_data_in_i,    -- IN
-        be                      => "1111",                  -- IN
 
         addr_B                  => rxb_port_b_address_i,    -- IN
         data_out                => rxb_port_b_data_out_i    -- OUT
@@ -197,7 +196,7 @@ begin
     rxb_port_b_data_out <= rxb_port_b_data_out_i;
 
     -- Note: If you want to replace RAM by dedicated memory macro,
-    --       place it instead of "inf_RAM_wrapper"!
+    --       place it instead of "dp_inf_ram_inst"!
 
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------

@@ -79,19 +79,20 @@
 --      corrupt consistency of data/metadata of CAN frame).
 --
 -- @Test sequence:
---  @1. Generate two random frames and insert them to TXT Buffer 1 and 2.
---      Configure priority of TXT Buffer 1 higher than TXT Buffer 2.
---  @2. Wait until sample point and issue Set ready command to TXT Buffer 2.
---  @3. Wait for nearly whole Bit time, and before next sample point, issue
---      Set ready command to TXT Buffer 1. This will re-invoke TXT Buffer
---      validation process with TXT Buffer 1. Time the command, so that when
---      Lock command is issued by CAN Core, TX Arbitrator FSM is always in
---      different state of TX frame validation.
---  @4. Wait until frame is sent, and verify that either frame 2 or frame 1 were
---      sent (it depends on when did the validation finish, which depends on
---      delay between frames!). This verifies that no part of metadata has
---      been taken from other frame, and frame was validated atomically!
---
+--  @1. Repeat for incrementing wait delay:
+--      @1.1. Generate two random frames and insert them to TXT Buffer 1 and 2.
+--            Configure priority of TXT Buffer 1 higher than TXT Buffer 2.
+--      @1.2. Wait until sample point and issue Set ready command to TXT Buffer 2.
+--      @1.3. Wait for the wait delay, issue
+--            Set ready command to TXT Buffer 1. This will re-invoke TXT Buffer
+--            validation process with TXT Buffer 1. Time the command, so that when
+--            Lock command is issued by CAN Core, TX Arbitrator FSM is always in
+--            different state of TX frame validation.
+--      @1.4. Wait until frame is sent, and verify that either frame 2 or
+--            frame 1 were sent (it depends on when did the validation finish,
+--            which depends on delay between frames!). This verifies that no
+--            part of metadata has been taken from other frame, and frame was
+--            validated atomically!
 --
 -- @TestInfoEnd
 --------------------------------------------------------------------------------
@@ -127,7 +128,7 @@ package body tx_arb_consistency_ftest is
         variable frame_equal        :       boolean := false;
         variable tmp_int            :       natural := 0;
 
-        variable wait_cycles        :       natural := 0;
+        variable cycles_per_bit     :       natural := 0;
         variable bus_timing         :       t_ctu_bit_time_cfg;
 
         variable frames_equal_1     :       boolean;
@@ -135,85 +136,85 @@ package body tx_arb_consistency_ftest is
     begin
 
         -----------------------------------------------------------------------
-        -- @1. Generate two random frames and insert them to TXT Buffer 1 and
-        --     2. Configure priority of TXT Buffer 1 higher than TXT Buffer 2.
+        --  @1. Repeat for incrementing wait delay:
         -----------------------------------------------------------------------
-        info_m("Step 1");
-
-        generate_can_frame(can_frame_tx_1);
-        generate_can_frame(can_frame_tx_2);
-
-        ctu_put_tx_frame(can_frame_tx_1, 1, DUT_NODE, chn);
-        ctu_put_tx_frame(can_frame_tx_2, 2, DUT_NODE, chn);
-
-        ctu_set_txt_buf_prio(1, 5, DUT_NODE, chn);
-        ctu_set_txt_buf_prio(2, 3, DUT_NODE, chn);
-
         ctu_get_bit_time_cfg_v(bus_timing, DUT_NODE, chn);
 
-        -----------------------------------------------------------------------
-        -- @2. Wait until sample point and issue Set ready command to TXT
-        --     Buffer 2.
-        -----------------------------------------------------------------------
-        info_m("Step 2");
+        cycles_per_bit := 2 * bus_timing.tq_nbt * (bus_timing.prop_nbt + bus_timing.ph1_nbt + bus_timing.ph2_nbt + 1);
+        info_m("Iterations to run: "  & integer'image(cycles_per_bit));
 
-        ctu_wait_sample_point(DUT_NODE, chn, false);
-        ctu_give_txt_cmd(buf_set_ready, 2, DUT_NODE, chn);
+        for i in 1 to cycles_per_bit loop
+            info_m("Iteration " & integer'image(i));
 
-        -----------------------------------------------------------------------
-        -- @3. Wait for nearly whole Bit time, and before next sample point,
-        --     issue Set ready command to TXT Buffer 1. This will re-invoke TXT
-        --     Buffer validation process with TXT Buffer 1. Time the command, so
-        --     that when Lock command is issued by CAN Core, TX Arbitrator FSM
-        --     is always in different state of TX frame validation.
-        -----------------------------------------------------------------------
-        info_m("Step 3");
+            -----------------------------------------------------------------------
+            -- @1.1 Generate two random frames and insert them to TXT Buffer 1 and
+            --      2. Configure priority of TXT Buffer 1 higher than TXT Buffer 2.
+            -----------------------------------------------------------------------
+            info_m("Step 1.1");
 
-        ctu_wait_sync_seg(DUT_NODE, chn);
+            generate_can_frame(can_frame_tx_1);
+            generate_can_frame(can_frame_tx_2);
 
-        -- Wait for "PH1 - 4 cycles" always, plus up to 12 cycles random.
-        -- This will cause that set ready is issued between - 4 cycles before
-        -- up to 5 cycles after sample point! Therefore TX Arbitrator should
-        -- be in process of TXT buffer validation!!
-        rand_int_v(12, wait_cycles);
-        wait_cycles := wait_cycles +
-                       bus_timing.tq_nbt * (bus_timing.prop_nbt + bus_timing.ph1_nbt) -
-                       4;
+            ctu_put_tx_frame(can_frame_tx_1, 1, DUT_NODE, chn);
+            ctu_put_tx_frame(can_frame_tx_2, 2, DUT_NODE, chn);
 
-        for i in 1 to wait_cycles loop
-            clk_agent_wait_cycle(chn);
+            ctu_set_txt_buf_prio(1, 5, DUT_NODE, chn);
+            ctu_set_txt_buf_prio(2, 3, DUT_NODE, chn);
+
+            -----------------------------------------------------------------------
+            -- @1.2. Wait until sample point and issue Set ready command to TXT
+            --       Buffer 2.
+            -----------------------------------------------------------------------
+            info_m("Step 1.2");
+
+            ctu_wait_sample_point(DUT_NODE, chn, false);
+            ctu_give_txt_cmd(buf_set_ready, 2, DUT_NODE, chn);
+
+            -----------------------------------------------------------------------
+            -- @3. Wait for the wait delay, issue
+            --     issue Set ready command to TXT Buffer 1. This will re-invoke TXT
+            --     Buffer validation process with TXT Buffer 1. Time the command, so
+            --     that when Lock command is issued by CAN Core, TX Arbitrator FSM
+            --     is always in different state of TX frame validation.
+            -----------------------------------------------------------------------
+            info_m("Step 1.3");
+
+            for j in 1 to i loop
+                clk_agent_wait_cycle(chn);
+            end loop;
+
+            ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
+
+            -----------------------------------------------------------------------
+            -- @4. Wait until frame is sent, and verify that either frame 2 or
+            --     frame 1 were sent (it depends on when did the validation finish,
+            --     which depends on delay between frames!). This verifies that no
+            --     part of metadata has been taken from other frame, and frame was
+            --     validated atomically!
+            -----------------------------------------------------------------------
+            ctu_wait_frame_sent(TEST_NODE, chn);
+
+            ctu_read_frame(can_frame_rx_1, TEST_NODE, chn);
+            compare_can_frames(can_frame_rx_1, can_frame_tx_1, false, frames_equal_1);
+            compare_can_frames(can_frame_rx_1, can_frame_tx_2, false, frames_equal_2);
+
+            check_m(frames_equal_1 or frames_equal_2,
+                    "First frame was properly received!");
+
+            ctu_wait_frame_sent(TEST_NODE, chn);
+            ctu_read_frame(can_frame_rx_2, TEST_NODE, chn);
+            if (frames_equal_1) then
+                compare_can_frames(can_frame_rx_2, can_frame_tx_2, false, frames_equal_1);
+            elsif (frames_equal_2) then
+                compare_can_frames(can_frame_rx_2, can_frame_tx_1, false, frames_equal_1);
+            end if;
+
+            check_m(frames_equal_1, "Second frame was properly received!");
+
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
+
         end loop;
-
-        ctu_give_txt_cmd(buf_set_ready, 1, DUT_NODE, chn);
-
-        -----------------------------------------------------------------------
-        -- @4. Wait until frame is sent, and verify that either frame 2 or
-        --     frame 1 were sent (it depends on when did the validation finish,
-        --     which depends on delay between frames!). This verifies that no
-        --     part of metadata has been taken from other frame, and frame was
-        --     validated atomically!
-        -----------------------------------------------------------------------
-        ctu_wait_frame_sent(TEST_NODE, chn);
-
-        ctu_read_frame(can_frame_rx_1, TEST_NODE, chn);
-        compare_can_frames(can_frame_rx_1, can_frame_tx_1, false, frames_equal_1);
-        compare_can_frames(can_frame_rx_1, can_frame_tx_2, false, frames_equal_2);
-
-        check_m(frames_equal_1 or frames_equal_2,
-                "First frame was properly received!");
-
-        ctu_wait_frame_sent(TEST_NODE, chn);
-        ctu_read_frame(can_frame_rx_2, TEST_NODE, chn);
-        if (frames_equal_1) then
-            compare_can_frames(can_frame_rx_2, can_frame_tx_2, false, frames_equal_1);
-        elsif (frames_equal_2) then
-            compare_can_frames(can_frame_rx_2, can_frame_tx_1, false, frames_equal_1);
-        end if;
-
-        check_m(frames_equal_1, "Second frame was properly received!");
-
-        ctu_wait_bus_idle(DUT_NODE, chn);
-        ctu_wait_bus_idle(TEST_NODE, chn);
 
     end procedure;
 end package body;

@@ -31,6 +31,36 @@
 ###############################################################################
 tests:
     - name: demo
+
+    ###########################################################################
+    # The following tests take long time in various configurations,
+    # Therefore, we put them to the beginning to avoid waiting for them
+    # at the end of parallel runs, and therefore reduce duration of parallel runs!
+    ###########################################################################
+    - name: iso_8_2_3
+    - name: iso_8_2_4
+
+    - name: iso_8_7_1
+    - name: iso_8_7_2
+    - name: iso_8_7_3
+
+    - name: iso_8_7_7
+    - name: iso_8_7_8
+
+    - name: iso_8_8_1_1
+    - name: iso_8_8_1_2
+      generics:
+        /TB_TOP_CTU_CAN_FD/cfg_brp: 3
+    - name: iso_8_8_1_3
+      generics:
+        /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 3
+
+    - name: iso_9_6_1
+    - name: iso_9_6_2
+
+    ###########################################################################
+    # The following tests are ordered as in ISO 16845
+    ###########################################################################
     - name: iso_7_1_1
     - name: iso_7_1_2
     - name: iso_7_1_3
@@ -52,7 +82,7 @@ tests:
     - name: iso_7_2_3_a
     - name: iso_7_2_3_b
 
-    # Test is not run due to extremely logn duration in long bit times.
+    # Test is not run due to extremely long duration in long bit times.
     # Does not verify bit time related logic, so it is safe to skip it!
     #- name: iso_7_2_4
     #  generics:
@@ -197,8 +227,7 @@ tests:
 
     - name: iso_8_2_1
     - name: iso_8_2_2
-    - name: iso_8_2_3
-    - name: iso_8_2_4
+
     - name: iso_8_2_5
     - name: iso_8_2_6
     - name: iso_8_2_7
@@ -258,25 +287,14 @@ tests:
     - name: iso_8_6_20
     - name: iso_8_6_21
 
-    - name: iso_8_7_1
-    - name: iso_8_7_2
-    - name: iso_8_7_3
     - name: iso_8_7_4
     - name: iso_8_7_5
     - name: iso_8_7_6
-    - name: iso_8_7_7
-    - name: iso_8_7_8
+
     - name: iso_8_7_9
       generics:
         /TB_TOP_CTU_CAN_FD/cfg_brp: 3
 
-    - name: iso_8_8_1_1
-    - name: iso_8_8_1_2
-      generics:
-        /TB_TOP_CTU_CAN_FD/cfg_brp: 3
-    - name: iso_8_8_1_3
-      generics:
-        /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 3
     - name: iso_8_8_1_4
       generics:
         /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 3
@@ -324,6 +342,3 @@ tests:
         /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 3
     - name: iso_8_8_5_1
     - name: iso_8_8_5_2
-
-    - name: iso_9_6_1
-    - name: iso_9_6_2

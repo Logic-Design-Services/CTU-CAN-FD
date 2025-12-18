@@ -178,6 +178,7 @@ use ctu_can_fd_tb.pc_fsm_transitions_err_pas_2_ftest.all;
 use ctu_can_fd_tb.pc_fsm_transitions_err_act_ftest.all;
 use ctu_can_fd_tb.pc_fsm_transitions_integ_ftest.all;
 use ctu_can_fd_tb.pc_fsm_transitions_integ_2_ftest.all;
+use ctu_can_fd_tb.prescaler_maximal_ftest.all;
 
 use ctu_can_fd_tb.rec_saturation_ftest.all;
 use ctu_can_fd_tb.retr_limit_ftest.all;
@@ -439,6 +440,8 @@ package body feature_test_list_pkg is
             pc_fsm_transitions_integ_ftest_exec(channel);
         elsif (test_name = "pc_fsm_transitions_integ_2") then
             pc_fsm_transitions_integ_2_ftest_exec(channel);
+        elsif (test_name = "prescaler_maximal") then
+            prescaler_maximal_ftest_exec(channel);
 
         elsif (test_name = "rec_saturation") then
             rec_saturation_ftest_exec(channel);
