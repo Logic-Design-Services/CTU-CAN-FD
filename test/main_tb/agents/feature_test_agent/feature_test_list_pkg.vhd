@@ -98,6 +98,7 @@ use ctu_can_fd_tb.alc_srr_rtr_2_ftest.all;
 
 use ctu_can_fd_tb.btr_ftest.all;
 use ctu_can_fd_tb.btr_fd_ftest.all;
+use ctu_can_fd_tb.btr_maximal_ftest.all;
 use ctu_can_fd_tb.btr_minimal_ftest.all;
 use ctu_can_fd_tb.btr_ssp_access_ftest.all;
 use ctu_can_fd_tb.bus_start_ftest.all;
@@ -289,6 +290,8 @@ package body feature_test_list_pkg is
             btr_ftest_exec(channel);
         elsif (test_name = "btr_fd") then
             btr_fd_ftest_exec(channel);
+        elsif (test_name = "btr_maximal") then
+            btr_maximal_ftest_exec(channel);
         elsif (test_name = "btr_minimal") then
             btr_minimal_ftest_exec(channel);
         elsif (test_name = "btr_ssp_access") then
