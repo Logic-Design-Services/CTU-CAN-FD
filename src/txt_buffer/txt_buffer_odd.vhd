@@ -145,6 +145,7 @@ entity txt_buffer_odd is
         txtb_port_a_parity      : in  std_logic;
         txtb_port_a_address     : in  std_logic_vector(4 downto 0);
         txtb_port_a_cs          : in  std_logic;
+        txtb_port_a_write       : in  std_logic;
         txtb_port_a_be          : in  std_logic_vector(3 downto 0);
         txtb_state              : out std_logic_vector(3 downto 0);
 

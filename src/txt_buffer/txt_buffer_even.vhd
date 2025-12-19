@@ -145,6 +145,7 @@ entity txt_buffer_even is
         txtb_port_a_parity      : in  std_logic;
         txtb_port_a_address     : in  std_logic_vector(4 downto 0);
         txtb_port_a_cs          : in  std_logic;
+        txtb_port_a_write       : in  std_logic;
         txtb_port_a_be          : in  std_logic_vector(3 downto 0);
         txtb_state              : out std_logic_vector(3 downto 0);
 
@@ -204,9 +205,6 @@ architecture rtl of txt_buffer_even is
     -- TXT Buffer memory protection
     signal txtb_user_accessible         : std_logic;
 
-    -- Unmask TXT Buffer RAM output
-    signal txtb_unmask_data_ram         : std_logic;
-
     -- Output of TXT Buffer RAM
     signal txtb_port_b_data_out_i       : std_logic_vector(31 downto 0);
 
@@ -229,7 +227,7 @@ architecture rtl of txt_buffer_even is
     -- RAM wrapper signals
     -----------------------------------------------------------------------------------------------
     -----------------------------------------------------------------------------------------------
-    signal txtb_port_a_write            : std_logic;
+    signal txtb_port_a_write_ok         : std_logic;
 
     -- Clock enabled
     signal txtb_ram_clk_en              : std_logic;
@@ -243,9 +241,9 @@ architecture rtl of txt_buffer_even is
 begin
 
     -- TXT Buffer RAM write signal
-    txtb_port_a_write <= '1' when (txtb_port_a_cs = '1' and txtb_user_accessible = '1')
-                             else
-                         '0';
+    txtb_port_a_write_ok <= '1' when (txtb_port_a_write = '1' and txtb_user_accessible = '1')
+                                else
+                            '0';
 
     -----------------------------------------------------------------------------------------------
     -- Output of TXT Buffer RAM is masked when it is not valid. This has several reasons:
@@ -256,17 +254,26 @@ begin
     --     not in Ready, TX in Progress or Abort in Progress (SW did not fill them yet). So we make
     --     sure that they are not used somewhere when they might be undefined yet!
     -----------------------------------------------------------------------------------------------
-    txtb_port_b_data_out <= txtb_port_b_data_out_i when (txtb_unmask_data_ram = '1')
+    txtb_port_b_data_out <= txtb_port_b_data_out_i when (txtb_unmask_data_ram = '1' or
+                                                         txtb_port_a_cs = '1')
                                                    else
                                     (others => '0');
 
     -----------------------------------------------------------------------------------------------
+    -- TXT Buffer port B address muxing:
+    --   1. From CAN Core when reading CAN frame data
+    --   2. From user when doing read access
+    -----------------------------------------------------------------------------------------------
+    txtb_port_b_address_muxed <= txtb_port_b_address when (txtb_port_b_clk_en = '1') else
+                                 txtb_port_a_address;
+
+    -----------------------------------------------------------------------------------------------
     -- Clock gating for TXT Buffer RAM. Enable when:
     --  1. Read access from CAN core
-    --  2. Write access from user
+    --  2. Any access from user
     --  3. Always in memory test mode, or in scan mode
     -----------------------------------------------------------------------------------------------
-    txtb_ram_clk_en <= '1' when (txtb_port_b_clk_en = '1' or txtb_port_a_write = '1')
+    txtb_ram_clk_en <= '1' when (txtb_port_b_clk_en = '1' or txtb_port_a_cs = '1')
                            else
                        '1' when (mr_tst_control_tmaena = '1')
                            else
@@ -361,7 +368,7 @@ begin
         txtb_port_a_address     => txtb_port_a_address,         -- IN
         txtb_port_a_data_in     => txtb_port_a_data_in,         -- IN
         txtb_port_a_parity      => txtb_port_a_parity,          -- IN
-        txtb_port_a_write       => txtb_port_a_write,           -- IN
+        txtb_port_a_write       => txtb_port_a_write_ok,        -- IN
         txtb_port_a_be          => txtb_port_a_be,              -- IN
 
         -- Port B - Read (from CAN Core)

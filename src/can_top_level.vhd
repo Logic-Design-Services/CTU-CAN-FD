@@ -290,6 +290,9 @@ architecture rtl of can_top_level is
     -- TXT Buffer chip select
     signal txtb_port_a_cs               :    std_logic_vector(txt_buffer_count - 1 downto 0);
 
+    -- TXT Buffer write
+    signal txtb_port_a_write            :    std_logic_vector(txt_buffer_count - 1 downto 0);
+
     -- TXT Buffer Port A byte enable
     signal txtb_port_a_be               :    std_logic_vector(3 downto 0);
 
@@ -692,6 +695,7 @@ begin
         txtb_port_a_data_in             => txtb_port_a_data_in,             -- OUT
         txtb_port_a_address             => txtb_port_a_address,             -- OUT
         txtb_port_a_cs                  => txtb_port_a_cs,                  -- OUT
+        txtb_port_a_write               => txtb_port_a_write,               -- OUT
         txtb_port_a_be                  => txtb_port_a_be,                  -- OUT
         mr_tx_priority                  => mr_tx_priority,                  -- OUT
         mr_tx_command_txbi              => mr_tx_command_txbi,              -- OUT
@@ -868,6 +872,7 @@ begin
                 txtb_port_a_parity          => txtb_port_a_parity,                          -- IN
                 txtb_port_a_address         => txtb_port_a_address,                         -- IN
                 txtb_port_a_cs              => txtb_port_a_cs(i),                           -- IN
+                txtb_port_a_write           => txtb_port_a_write(i),                        -- IN
                 txtb_port_a_be              => txtb_port_a_be,                              -- IN
 
                 txtb_state                  => txtb_state(i),                               -- OUT
@@ -930,6 +935,7 @@ begin
                 txtb_port_a_parity          => txtb_port_a_parity,                          -- IN
                 txtb_port_a_address         => txtb_port_a_address,                         -- IN
                 txtb_port_a_cs              => txtb_port_a_cs(i),                           -- IN
+                txtb_port_a_write           => txtb_port_a_write(i),                        -- IN
                 txtb_port_a_be              => txtb_port_a_be,                              -- IN
 
                 txtb_state                  => txtb_state(i),                               -- OUT

@@ -252,7 +252,11 @@ entity memory_registers is
         txtb_port_a_data_in             : out std_logic_vector(31 downto 0);
         txtb_port_a_address             : out std_logic_vector(4 downto 0);
         txtb_port_a_cs                  : out std_logic_vector(G_TXT_BUFFER_COUNT - 1 downto 0);
+        txtb_port_a_write               : out std_logic_vector(G_TXT_BUFFER_COUNT - 1 downto 0);
         txtb_port_a_be                  : out std_logic_vector(3 downto 0);
+
+        -- TXT Buffer RAM Port B - Read port
+        txtb_port_b_data_out            : in  t_txt_bufs_output(G_TXT_BUFFER_COUNT - 1 downto 0);
 
         -- Prioriy of buffers
         mr_tx_priority                  : out t_txt_bufs_priorities(G_TXT_BUFFER_COUNT - 1 downto 0);
@@ -322,6 +326,8 @@ architecture rtl of memory_registers is
     signal test_registers_cs            : std_logic;
     signal test_registers_cs_reg        : std_logic;
 
+    signal txtb_port_a_cs_reg           : std_logic;
+
     -- Read data from generated register modules
     signal control_registers_rdata      : std_logic_vector(31 downto 0);
     signal test_registers_rdata         : std_logic_vector(31 downto 0);
@@ -342,6 +348,13 @@ architecture rtl of memory_registers is
 
     signal clk_control_regs             : std_logic;
     signal clk_test_regs                : std_logic;
+
+    -- TXT Buffer Port A Chip Select - internal
+    signal txtb_port_a_cs_i             : std_logic_vector(G_TXT_BUFFER_COUNT - 1 downto 0);
+
+    -- TXT Buffer Read data muxed
+    signal txtb_port_b_data_out_muxed   : std_logic_vector(31 downto 0);
+    signal txtb_port_b_data_out_gated   : t_txt_bufs_output(G_TXT_BUFFER_COUNT - 1 downto 0);
 
 begin
 
@@ -370,12 +383,30 @@ begin
         );
 
     begin
-        txtb_port_a_cs(i) <= '1' when ((adress(11 downto 8) = buf_addr(i)) and
-                                        scs = '1' and swr = '1')
-                                 else
-                             '0';
+        txtb_port_a_cs_i(i) <= '1' when ((adress(11 downto 8) = buf_addr(i)) and scs = '1')
+                                   else
+                               '0';
+
+        txtb_port_a_write(i) <= '1' when (txtb_port_a_cs_i(i) = '1' and swr = '1')
+                                    else
+                                '0';
+
+        txtb_port_b_data_out_gated <= txtb_port_b_data_out(i) when (txtb_port_a_cs_reg(i) = '1')
+                                                              else
+                                      (others => '0');
     end generate txtb_port_a_cs_gen;
 
+    txtb_rdata_mux : process (txtb_port_b_data_out_gated)
+        variable tmp : std_logic_vector(31 downto 0);
+    begin
+        tmp := (others => '0');
+        for i in 0 to G_TXT_BUFFER_COUNT - 1 loop
+            tmp := tmp or txtb_port_b_data_out_gated(i);
+        end loop;
+        txtb_port_b_data_out_muxed <= tmp;
+    end process;
+
+    txtb_port_a_cs <= txtb_port_a_cs_i;
     txtb_port_a_be <= sbe;
 
     can_core_cs <= '1' when (scs = ACT_CSC) else
@@ -402,9 +433,11 @@ begin
         if (res_n = '0') then
             control_registers_cs_reg  <= '0';
             test_registers_cs_reg <= '0';
+            txtb_port_a_cs_reg <= '0';
         elsif (rising_edge(clk_sys)) then
             control_registers_cs_reg  <= control_registers_cs;
             test_registers_cs_reg <= test_registers_cs;
+            txtb_port_a_cs_reg <= txtb_port_a_cs_i;
         end if;
     end process;
 
@@ -414,6 +447,7 @@ begin
     -----------------------------------------------------------------------------------------------
     data_out <= control_registers_rdata when (control_registers_cs_reg = '1') else
                    test_registers_rdata when (test_registers_cs_reg = '1') else
+             txtb_port_b_data_out_muxed when (txtb_port_a_cs_reg = '1') else
                         (others => '0');
 
     -----------------------------------------------------------------------------------------------
