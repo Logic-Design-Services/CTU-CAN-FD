@@ -187,6 +187,7 @@ use ctu_can_fd_tb.retr_limit_3_ftest.all;
 use ctu_can_fd_tb.rx_buf_empty_read_ftest.all;
 use ctu_can_fd_tb.rx_buf_consistency_ftest.all;
 use ctu_can_fd_tb.rx_buf_consistency_2_ftest.all;
+use ctu_can_fd_tb.rx_buf_consistency_3_ftest.all;
 use ctu_can_fd_tb.rx_buf_timestamp_toggle_ftest.all;
 use ctu_can_fd_tb.rx_buf_transitions_ftest.all;
 use ctu_can_fd_tb.rx_counter_ftest.all;
@@ -457,6 +458,8 @@ package body feature_test_list_pkg is
             rx_buf_consistency_ftest_exec(channel);
         elsif (test_name = "rx_buf_consistency_2") then
             rx_buf_consistency_2_ftest_exec(channel);
+        elsif (test_name = "rx_buf_consistency_3") then
+            rx_buf_consistency_3_ftest_exec(channel);
         elsif (test_name = "rx_buf_transitions") then
             rx_buf_transitions_ftest_exec(channel);
         elsif (test_name = "rx_buf_timestamp_toggle") then
