@@ -187,6 +187,7 @@ use ctu_can_fd_tb.retr_limit_3_ftest.all;
 use ctu_can_fd_tb.rx_buf_empty_read_ftest.all;
 use ctu_can_fd_tb.rx_buf_consistency_ftest.all;
 use ctu_can_fd_tb.rx_buf_consistency_2_ftest.all;
+use ctu_can_fd_tb.rx_buf_consistency_3_ftest.all;
 use ctu_can_fd_tb.rx_buf_timestamp_toggle_ftest.all;
 use ctu_can_fd_tb.rx_buf_transitions_ftest.all;
 use ctu_can_fd_tb.rx_counter_ftest.all;
@@ -242,6 +243,7 @@ use ctu_can_fd_tb.tx_status_ftest.all;
 use ctu_can_fd_tb.timestamp_low_high_ftest.all;
 use ctu_can_fd_tb.txt_buffer_byte_access_ftest.all;
 use ctu_can_fd_tb.txt_buffer_hazard_ftest.all;
+use ctu_can_fd_tb.txt_buffer_read_access_ftest.all;
 use ctu_can_fd_tb.txt_buffer_transitions_ftest.all;
 use ctu_can_fd_tb.txt_buffer_transitions_2_ftest.all;
 use ctu_can_fd_tb.txt_buffer_transitions_3_ftest.all;
@@ -457,6 +459,8 @@ package body feature_test_list_pkg is
             rx_buf_consistency_ftest_exec(channel);
         elsif (test_name = "rx_buf_consistency_2") then
             rx_buf_consistency_2_ftest_exec(channel);
+        elsif (test_name = "rx_buf_consistency_3") then
+            rx_buf_consistency_3_ftest_exec(channel);
         elsif (test_name = "rx_buf_transitions") then
             rx_buf_transitions_ftest_exec(channel);
         elsif (test_name = "rx_buf_timestamp_toggle") then
@@ -563,6 +567,8 @@ package body feature_test_list_pkg is
             txt_buffer_byte_access_ftest_exec(channel);
         elsif (test_name = "txt_buffer_hazard") then
             txt_buffer_hazard_ftest_exec(channel);
+        elsif (test_name = "txt_buffer_read_access") then
+            txt_buffer_read_access_ftest_exec(channel);
         elsif (test_name = "txt_buffer_transitions") then
             txt_buffer_transitions_ftest_exec(channel);
         elsif (test_name = "txt_buffer_transitions_2") then

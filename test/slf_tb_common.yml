@@ -47,6 +47,7 @@ source_list:
     - file: main_tb/feature_tests/err_norm_fd_ftest.vhd
     - file: main_tb/feature_tests/btr_ssp_access_ftest.vhd
     - file: main_tb/feature_tests/txt_buffer_hazard_ftest.vhd
+    - file: main_tb/feature_tests/txt_buffer_read_access_ftest.vhd
     - file: main_tb/feature_tests/txt_buffer_transitions_ftest.vhd
     - file: main_tb/feature_tests/txt_buffer_transitions_2_ftest.vhd
     - file: main_tb/feature_tests/txt_buffer_transitions_3_ftest.vhd
@@ -117,6 +118,7 @@ source_list:
     - file: main_tb/feature_tests/rx_buf_empty_read_ftest.vhd
     - file: main_tb/feature_tests/rx_buf_consistency_ftest.vhd
     - file: main_tb/feature_tests/rx_buf_consistency_2_ftest.vhd
+    - file: main_tb/feature_tests/rx_buf_consistency_3_ftest.vhd
     - file: main_tb/feature_tests/rx_buf_transitions_ftest.vhd
     - file: main_tb/feature_tests/rx_buf_timestamp_toggle_ftest.vhd
     - file: main_tb/feature_tests/trv_delay_ftest.vhd
