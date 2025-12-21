@@ -209,15 +209,50 @@ package body frame_filters_mask_ftest is
 
                             -- Only enable the target filter
                             if (ident_type = BASE) then
-                                rand_int_v(2 ** 11 - 1, filt_cfg.ID_value);
+
+                                case frame_index is
+                                -- Unmask everything
+                                when 1 =>
+                                    filt_cfg.ID_value :=  2 ** 11 - 1;
+                                    tmp_base := (others => '1');
+                                    filt_cfg.ID_mask := to_integer(unsigned(tmp_base));
+
+                                -- Mask everything
+                                when 2 =>
+                                    filt_cfg.ID_value := 0;
+                                    tmp_base := (others => '0');
+                                    filt_cfg.ID_mask := to_integer(unsigned(tmp_base));
+
+                                -- Generate Random setting
                                 -- Make mask sparse enough so that we actually match something
-                                rand_logic_vect_v(tmp_base, 0.1);
-                                filt_cfg.ID_mask := to_integer(unsigned(tmp_base));
+                                when others =>
+                                    rand_int_v(2 ** 11 - 1, filt_cfg.ID_value);
+                                    rand_logic_vect_v(tmp_base, 0.2);
+                                    filt_cfg.ID_mask := to_integer(unsigned(tmp_base));
+                                end case;
+
                             else
-                                rand_int_v(2 ** 29 - 1, filt_cfg.ID_value);
+                                                                case frame_index is
+                                -- Unmask everything
+                                when 1 =>
+                                    filt_cfg.ID_value :=  2 ** 29 - 1;
+                                    tmp_base := (others => '1');
+                                    filt_cfg.ID_mask := to_integer(unsigned(tmp_base));
+
+                                -- Mask everything
+                                when 2 =>
+                                    filt_cfg.ID_value := 0;
+                                    tmp_base := (others => '0');
+                                    filt_cfg.ID_mask := to_integer(unsigned(tmp_base));
+
+                                -- Generate Random setting
                                 -- Make mask sparse enough so that we actually match something
-                                rand_logic_vect_v(tmp_ext, 0.1);
-                                filt_cfg.ID_mask := to_integer(unsigned(tmp_ext));
+                                when others =>
+                                    rand_int_v(2 ** 29 - 1, filt_cfg.ID_value);
+                                    rand_logic_vect_v(tmp_ext, 0.2);
+                                    filt_cfg.ID_mask := to_integer(unsigned(tmp_ext));
+                                end case;
+
                             end if;
 
                             filt_cfg.ident_type := ident_type;
@@ -232,6 +267,18 @@ package body frame_filters_mask_ftest is
                             info_m("Step 2.1");
 
                             generate_can_frame(can_tx_frame);
+
+                            case frame_index is
+                            -- Make identifier match the mask in this case!
+                            when 1 =>
+                                if (can_tx_frame.ident_type = BASE) then
+                                    can_tx_frame.identifier := 2 ** 11 - 1;
+                                else
+                                    can_tx_frame.identifier := 2 ** 29 - 1;
+                                end if;
+                            when others => null;
+                            end case;
+
                             ctu_send_frame(can_tx_frame, 1, TEST_NODE, chn, frame_sent);
                             ctu_wait_frame_sent(DUT_NODE, chn);
                             ctu_wait_bus_idle(DUT_NODE, chn);

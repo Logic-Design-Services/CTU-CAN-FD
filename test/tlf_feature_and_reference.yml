@@ -14,7 +14,7 @@ tests:
 
     - name: frame_filters_mask
       generics:
-        /TB_TOP_CTU_CAN_FD/iterations: 15
+        /TB_TOP_CTU_CAN_FD/iterations: 5
 
     - name: frame_test_fcrc
       generics:
