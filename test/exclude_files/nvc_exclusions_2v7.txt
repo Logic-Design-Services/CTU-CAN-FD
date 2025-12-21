@@ -5,6 +5,20 @@
 ###############################################################################
 
 ###############################################################################
+# CAN top Level
+###############################################################################
+
+# Do not address anything!
+exclude CTU_CAN_FD_TB.TB_TOP_CTU_CAN_FD.DUT.ADRESS(15).BIN_0_TO_1
+exclude CTU_CAN_FD_TB.TB_TOP_CTU_CAN_FD.DUT.ADRESS(14).BIN_0_TO_1
+exclude CTU_CAN_FD_TB.TB_TOP_CTU_CAN_FD.DUT.ADRESS(13).BIN_0_TO_1
+exclude CTU_CAN_FD_TB.TB_TOP_CTU_CAN_FD.DUT.ADRESS(12).BIN_0_TO_1
+
+# Transfers are always word aligned
+exclude CTU_CAN_FD_TB.TB_TOP_CTU_CAN_FD.DUT.ADRESS(1).BIN_0_TO_1
+exclude CTU_CAN_FD_TB.TB_TOP_CTU_CAN_FD.DUT.ADRESS(0).BIN_0_TO_1
+
+###############################################################################
 # Memory registers
 ###############################################################################
 
