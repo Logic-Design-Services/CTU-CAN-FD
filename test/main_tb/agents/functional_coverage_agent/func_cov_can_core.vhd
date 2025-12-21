@@ -100,7 +100,7 @@ architecture tb of func_cov_can_core is
         << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_ident_type : std_logic >>;
 
     alias tran_frame_type is
-        << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_ident_type : std_logic >>;
+        << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_frame_type : std_logic >>;
 
     alias tran_is_rtr is
         << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_is_rtr : std_logic >>;
