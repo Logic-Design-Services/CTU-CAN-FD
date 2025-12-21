@@ -396,7 +396,7 @@ begin
             err_capt_err_pos_q <= ERR_POS_RSTVAL;
             err_capt_err_erp <= ERR_ERP_RSTVAL;
         elsif (rising_edge(clk_sys)) then
-            if (err_frm_req_i = '1' or crc_err = '1') then
+            if (err_frm_req_i = '1') then
                 err_capt_err_type_q <= err_capt_err_type_d;
                 err_capt_err_pos_q <= err_pos;
                 err_capt_err_erp <= is_err_passive;
