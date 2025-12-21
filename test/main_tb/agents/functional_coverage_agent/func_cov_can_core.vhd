@@ -446,19 +446,6 @@ begin
     --   rec_is_rtr      = '1'         and
     --   store_metadata  = '1'};
 
-    -- psl rx_base_id_can_fd_rtr_cov : cover
-    --  {rec_ident_type  = BASE        and
-    --   rec_frame_type  = FD_CAN      and
-    --   rec_is_rtr      = '1'         and
-    --   store_metadata  = '1'};
-
-    -- psl rx_extended_id_can_fd_rtr_cov : cover
-    --  {rec_ident_type  = EXTENDED    and
-    --   rec_frame_type  = FD_CAN      and
-    --   rec_is_rtr      = '1'         and
-    --   store_metadata  = '1'};
-
-
     -----------------------------------------------------------------------------------------------
     -- Bit stuffing and destuffing
     -----------------------------------------------------------------------------------------------
