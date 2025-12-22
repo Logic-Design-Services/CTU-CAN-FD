@@ -261,7 +261,7 @@ package can_registers_pkg is
      alc_alc_bit                 : std_logic_vector(4 downto 0);
      alc_alc_id_field            : std_logic_vector(2 downto 0);
      ts_info_ts_bits             : std_logic_vector(5 downto 0);
-     trv_delay_trv_delay_value   : std_logic_vector(6 downto 0);
+     trv_delay_trv_delay_value   : std_logic_vector(7 downto 0);
      rx_fr_ctr_rx_fr_ctr_val     : std_logic_vector(31 downto 0);
      tx_fr_ctr_tx_fr_ctr_val     : std_logic_vector(31 downto 0);
      debug_register_stuff_count  : std_logic_vector(2 downto 0);

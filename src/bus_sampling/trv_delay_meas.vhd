@@ -143,6 +143,9 @@ entity trv_delay_measurement is
         -- Width of SSP position
         G_SSP_POS_WIDTH          :     natural;
 
+        -- Width of SSP offset
+        G_SSP_OFFSET_WIDTH       :     natural;
+
         -- Saturation level for size of SSP_delay. This is to make sure that if there is smaller
         -- shift register for secondary sampling point we don't address outside of this register.
         G_SSP_SATURATION_LVL     :     natural
@@ -175,7 +178,7 @@ entity trv_delay_measurement is
         -- Memory registers interface
         -------------------------------------------------------------------------------------------
         -- Secondary sampling point offset
-        mr_ssp_cfg_ssp_offset   :in   std_logic_vector(G_SSP_POS_WIDTH - 1 downto 0);
+        mr_ssp_cfg_ssp_offset   :in   std_logic_vector(G_SSP_OFFSET_WIDTH - 1 downto 0);
 
         -- Source of secondary sampling point (Measured, Offset, Measured and Offset)
         mr_ssp_cfg_ssp_src      :in   std_logic_vector(1 downto 0);
@@ -208,14 +211,12 @@ architecture rtl of trv_delay_measurement is
     signal trv_delay_ctr_d              : std_logic_vector(G_TRV_CTR_WIDTH - 1 downto 0);
     signal trv_delay_ctr_add            : std_logic_vector(G_TRV_CTR_WIDTH - 1 downto 0);
 
-    signal trv_delay_ctr_q_padded       : std_logic_vector(G_SSP_POS_WIDTH downto 0);
-
     -- Reset for the counter
     signal trv_delay_ctr_rst_d          : std_logic;
     signal trv_delay_ctr_rst_q_scan     : std_logic;
 
     constant C_TRV_DEL_SAT              : std_logic_vector(G_TRV_CTR_WIDTH - 1 downto 0) :=
-        std_logic_vector(to_unsigned(127, G_TRV_CTR_WIDTH));
+        std_logic_vector(to_unsigned(255, G_TRV_CTR_WIDTH));
 
     constant C_SSP_SAT_LVL_VECT         : std_logic_vector(G_SSP_POS_WIDTH - 1 downto 0) :=
         std_logic_vector(to_unsigned(G_SSP_SATURATION_LVL, G_SSP_POS_WIDTH));
@@ -229,14 +230,10 @@ architecture rtl of trv_delay_measurement is
     -- Note that output counter is one bit wider than width of counter since
     -- output value can be addition of two values of trv_ctr_width size and
     -- we want to avoid overflow.
-    signal ssp_delay_raw                : std_logic_vector(G_SSP_POS_WIDTH downto 0);
-
-    -- Saturated value of ssp_delay. If saturation is not used, ssp_delay_raw
-    -- is connected directly
-    signal ssp_delay_saturated          : std_logic_vector(G_SSP_POS_WIDTH - 1 downto 0);
+    signal ssp_delay                    : std_logic_vector(G_SSP_POS_WIDTH - 1 downto 0);
 
     -- Measured transceiver value + trv_offset
-    signal trv_delay_sum                : std_logic_vector(G_SSP_POS_WIDTH downto 0);
+    signal trv_delay_sum                : std_logic_vector(G_SSP_POS_WIDTH - 1 downto 0);
 
 begin
 
@@ -322,17 +319,10 @@ begin
     end process;
 
     -------------------------------------------------------------------------------------------
-    -- Padding to width of SSP position width + 1 (for addition calculation)
-    -------------------------------------------------------------------------------------------
-    trv_delay_ctr_q_padded(G_TRV_CTR_WIDTH - 1 downto 0) <= trv_delay_ctr_q;
-    trv_delay_ctr_q_padded(G_SSP_POS_WIDTH downto G_TRV_CTR_WIDTH) <= (others => '0');
-
-
-    -------------------------------------------------------------------------------------------
     -- Combinationally adding ssp_offset and trv_delay_ctr_q. These are one bit wider to cover
     -- possible overflow!
     -------------------------------------------------------------------------------------------
-    trv_delay_sum <= std_logic_vector(unsigned(trv_delay_ctr_q_padded) +
+    trv_delay_sum <= std_logic_vector(('0' & unsigned(trv_delay_ctr_q)) +
                                       ('0' & unsigned(mr_ssp_cfg_ssp_offset)));
 
     -------------------------------------------------------------------------------------------
@@ -340,19 +330,10 @@ begin
     --  1. Measured trv_delay + ssp_offset
     --  2. ssp_offset only.
     -------------------------------------------------------------------------------------------
-    with mr_ssp_cfg_ssp_src select ssp_delay_raw <=
+    with mr_ssp_cfg_ssp_src select ssp_delay <=
                   trv_delay_sum when SSP_SRC_MEAS_N_OFFSET,
     '0' & mr_ssp_cfg_ssp_offset when SSP_SRC_OFFSET,
                 (others => '0') when others;
-
-    -------------------------------------------------------------------------------------------
-    -- SSP Delay saturation
-    -------------------------------------------------------------------------------------------
-
-    -- Saturate if highest bit of result is set
-    ssp_delay_saturated <=
-        C_SSP_SAT_LVL_VECT when (ssp_delay_raw(G_SSP_POS_WIDTH) = '1') else
-        ssp_delay_raw(G_SSP_POS_WIDTH - 1 downto 0);
 
     -------------------------------------------------------------------------------------------
     -- SSP Shadow register. Both values are captured at the end of measurement.
@@ -367,7 +348,7 @@ begin
 
         elsif (rising_edge(clk_sys)) then
             if (ssp_shadow_ce = '1') then
-                ssp_delay_shadowed <= ssp_delay_saturated;
+                ssp_delay_shadowed <= ssp_delay;
                 trv_delay_shadowed <= trv_delay_ctr_q;
             end if;
         end if;

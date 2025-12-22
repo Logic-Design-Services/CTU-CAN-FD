@@ -493,7 +493,7 @@ filename "version.tex"
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="37" columns="3">
+<lyxtabular version="3" rows="38" columns="3">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="2cm">
@@ -1585,7 +1585,7 @@ Fix code samples to readout RWCNT - 3 words.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1594,7 +1594,7 @@ Fix code samples to readout RWCNT - 3 words.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1603,11 +1603,43 @@ Fix code samples to readout RWCNT - 3 words.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Clarify Frame filters behavior in case of logged error frames.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+21-12-2025
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Extend TRV_DELAY to 8 bits (max 255).
+ Extend SSP position capacity to 511, remove SSP saturation since it is
+ un-needed now.
+ Extend max bits in flight to 7.
 \end_layout
 
 \end_inset
@@ -3562,10 +3594,11 @@ Note Measured transmitter delay includes input delay of CTU CAN FD (which
 \end_layout
 
 \begin_layout Description
-Note Transmitter delay measurement is saturated to 127 System clock periods.
- If delay between CAN_TX and CAN_RX is higher, only 127 will be measured.
+Note Transmitter delay measurement is saturated to 255 System clock periods.
+ If delay between CAN_TX and CAN_RX is higher than 253 System clock periods,
+ only 255 will be measured.
  With 100 MHz System clock frequency, the maximal measurable transciver
- delay is 1,27 us.
+ delay is 2,53 us.
  This is more than most of CAN transceivers need.
 \end_layout
 
@@ -3687,8 +3720,8 @@ name "fig:secondary-sampling-point-2"
 \begin_layout Description
 Note Secondary sampling point offset (SSP_CFG[SSP_OFFSET]) is configurable
  between 0 - 255.
- Internal range of secondary sampling point position is also 0 - 255.
- Secondary sampling point position is saturated to 255 System clock periods.
+ Internal range of secondary sampling point position is 0 - 510 System clock
+ periods.
 \end_layout
 
 \begin_layout Description
@@ -3700,16 +3733,23 @@ Note Since CTU CAN FD input delay is 2 System clock periods (minimum time
 \end_layout
 
 \begin_layout Description
-Note CTU CAN FD can handle at most 4 bits on flight between CAN_TX and CAN_RX
- pins when using secondary sampling point.
+Note CTU CAN FD can handle at most 7 
+\begin_inset Quotes eld
+\end_inset
+
+bits in flight
+\begin_inset Quotes erd
+\end_inset
+
+ between CAN_TX and CAN_RX pins when using secondary sampling point.
  E.g.
  if System clock is 100 MHz, and Data bit rate = 5 Mbit/s, then one data
  bit time is 20 System clock periods.
- Then, latest possible position of Secondary sampling point is 20 * 4 =
- 80 System clock periods.
+ Then, latest possible position of Secondary sampling point is 20 * 7 =
+ 140 System clock periods.
  This limitation applies to final position of secondary sampling point (with
- SSP_CFG[SSP_OFFSET]/TRV_DELAY included).
- User shall not configure secondary sample point position later than 4 data
+ SSP_CFG[SSP_OFFSET] / TRV_DELAY included).
+ User shall not configure secondary sample point position later than 6 data
  bit times.
 \end_layout
 

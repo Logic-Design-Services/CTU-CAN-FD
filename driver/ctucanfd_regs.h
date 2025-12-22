@@ -1160,8 +1160,8 @@ union ctu_can_fd_trv_delay_ssp_cfg {
 	struct ctu_can_fd_trv_delay_ssp_cfg_s {
 #ifdef __LITTLE_ENDIAN_BITFIELD
   /* TRV_DELAY */
-		uint32_t trv_delay_value         : 7;
-		uint32_t reserved_15_7           : 9;
+		uint32_t trv_delay_value         : 8;
+		uint32_t reserved_15_8           : 8;
   /* SSP_CFG */
 		uint32_t ssp_offset              : 8;
 		uint32_t ssp_src                 : 2;
@@ -1170,8 +1170,8 @@ union ctu_can_fd_trv_delay_ssp_cfg {
 		uint32_t reserved_31_26          : 6;
 		uint32_t ssp_src                 : 2;
 		uint32_t ssp_offset              : 8;
-		uint32_t reserved_15_7           : 9;
-		uint32_t trv_delay_value         : 7;
+		uint32_t reserved_15_8           : 8;
+		uint32_t trv_delay_value         : 8;
 #endif
 	} s;
 };
