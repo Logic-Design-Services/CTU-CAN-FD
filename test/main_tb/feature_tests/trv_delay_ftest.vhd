@@ -1,18 +1,18 @@
 --------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2021-present Ondrej Ille
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to use, copy, modify, merge, publish, distribute the Component for
 -- educational, research, evaluation, self-interest purposes. Using the
 -- Component for commercial purposes is forbidden unless previously agreed with
 -- Copyright holder.
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,38 +20,38 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 -- -------------------------------------------------------------------------------
--- 
--- CTU CAN FD IP Core 
+--
+-- CTU CAN FD IP Core
 -- Copyright (C) 2015-2020 MIT License
--- 
+--
 -- Authors:
 --     Ondrej Ille <ondrej.ille@gmail.com>
 --     Martin Jerabek <martin.jerabek01@gmail.com>
--- 
--- Project advisors: 
+--
+-- Project advisors:
 -- 	Jiri Novak <jnovak@fel.cvut.cz>
 -- 	Pavel Pisa <pisa@cmp.felk.cvut.cz>
--- 
+--
 -- Department of Measurement         (http://meas.fel.cvut.cz/)
 -- Faculty of Electrical Engineering (http://www.fel.cvut.cz)
 -- Czech Technical University        (http://www.cvut.cz/)
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to deal in the Component without restriction, including without limitation
 -- the rights to use, copy, modify, merge, publish, distribute, sublicense,
 -- and/or sell copies of the Component, and to permit persons to whom the
 -- Component is furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
--- 
+--
 -- THE COMPONENT IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,11 +59,11 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE COMPONENT OR THE USE OR OTHER DEALINGS
 -- IN THE COMPONENT.
--- 
+--
 -- The CAN protocol is developed by Robert Bosch GmbH and protected by patents.
 -- Anybody who wants to implement this IP core on silicon has to obtain a CAN
 -- protocol license from Bosch.
--- 
+--
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
@@ -73,11 +73,11 @@
 --  Transceiver delay measurement feature test.
 --
 -- @Verifies:
---  @1. Transceiver delay measurement in its range (2 - 127).
+--  @1. Transceiver delay measurement in its range (2 - 255).
 --  @2. Shadowing of TRV_DELAY register (register updated only at the end of
 --      measurement).
 --  @3. TRV_DELAY measuremenr does not overflow when measuring delay longer than
---      127 clock cycles.
+--      255 clock cycles.
 --
 -- @Test sequence:
 --  @1. Configure SSP Offset to 7 + TRV_DELAY and SSP source to use Measured
@@ -85,12 +85,12 @@
 --      bit-rate. This-way bit-error detection will not get confused on high
 --      TRV Delays!
 --  @2. Configure delay to 1 ns in TB. Run CAN FD frame and verify that measured
---      delay is correct! 
---  @3. Configure delay to 1255 ns in TB. Run CAN FD frame and verify that
---      measured delay is 127.
---  @4. Configure Transmitter delay to 130. Run CAN FD frame and verify that
---      measured value is 127 (value has not overflown!).
---  @5. Configure transmitter delay to random value between 0 and 126. Run CAN
+--      delay is correct!
+--  @3. Configure Transmitter delay to 2535 ns in TB. Run CAN FD frame and verify that
+--      measured delay is 255.
+--  @4. Configure Transmitter delay to 2575. Run CAN FD frame and verify that
+--      measured value is 255 (value has not overflown!).
+--  @5. Configure transmitter delay to random value between 0 and 256. Run CAN
 --      FD frame and check it is measured correctly!
 --
 -- @TestInfoEnd
@@ -170,10 +170,10 @@ package body trv_delay_ftest is
         -- Wait till integration is over!
         ctu_wait_err_active(DUT_NODE, chn);
         ctu_wait_err_active(TEST_NODE, chn);
-        
+
         -----------------------------------------------------------------------
         -- @2. Configure delay to 1 ns in TB. Run CAN FD frame and verify that
-        --     measured delay is correct! 
+        --     measured delay is correct!
         -----------------------------------------------------------------------
         info_m("Step 2");
         set_transceiver_delay(1 ns, DUT_NODE, chn);
@@ -189,7 +189,7 @@ package body trv_delay_ftest is
         ctu_wait_bus_idle(TEST_NODE, chn);
 
         ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
-        
+
         -- Measured delay is always rounded up to nearest multiple of 10 ns
         -- (Delay of 1 ns -> 10 ns -> 1)!
         check_m(measured_delay = 2, "Minimal transmitter delay!" &
@@ -198,15 +198,15 @@ package body trv_delay_ftest is
 
         ctu_read_frame(can_rx_frame, TEST_NODE, chn);
         compare_can_frames(can_rx_frame, can_tx_frame, false, frames_equal);
-        
+
         check_m(frames_equal, "TX RX frames match");
 
         -----------------------------------------------------------------------
-        -- @3. Configure delay to 1255 ns in TB. Run CAN FD frame and verify
-        --     that measured delay is 127.
+        -- @3. Configure Transmitter delay to 2535 ns in TB. Run CAN FD frame
+        --     and verify that measured delay is 255.
         -----------------------------------------------------------------------
         info_m("Step 3");
-        set_transceiver_delay(1255 ns, DUT_NODE, chn);
+        set_transceiver_delay(2535 ns, DUT_NODE, chn);
 
         ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(DUT_NODE, chn);
@@ -215,11 +215,11 @@ package body trv_delay_ftest is
         ctu_wait_bus_idle(TEST_NODE, chn);
 
         ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
-        
+
         -- Measured delay is always rounded up to nearest multiple of 10 ns
-        -- (Delay of 1255 ns -> 1250 -> 125 + 2 synchronisation cycles = 127)!
-        check_m(measured_delay = 127, "Maximal transmitter delay!" &
-              " Expected: " & integer'image(127) &
+        -- (Delay of 2535 ns -> 2530 -> 253 + 2 synchronisation cycles = 255)!
+        check_m(measured_delay = 255, "Maximal transmitter delay!" &
+              " Expected: " & integer'image(255) &
               " Measured: " & integer'image(measured_delay));
 
         ctu_read_frame(can_rx_frame, TEST_NODE, chn);
@@ -228,20 +228,20 @@ package body trv_delay_ftest is
         check_m(frames_equal, "TX RX frames match");
 
         -----------------------------------------------------------------------
-        -- @4. Configure Transmitter delay to 130. Run CAN FD frame and verify
-        --     that measured value is 127 (value has not overflown!).
+        -- @4. Configure Transmitter delay to 2575 ns. Run CAN FD frame and
+        --     verify that measured value is 255 (value has not overflown!).
         -----------------------------------------------------------------------
         info_m("Step 4");
-        set_transceiver_delay(1305 ns, DUT_NODE, chn);
+        set_transceiver_delay(2575 ns, DUT_NODE, chn);
 
         ctu_send_frame(can_tx_frame, 1, DUT_NODE, chn, frame_sent);
         ctu_wait_frame_sent(TEST_NODE, chn);
 
         ctu_get_trv_delay(measured_delay, DUT_NODE, chn);
-        
-        -- Measured delay should have saturated at 127!
-        check_m(measured_delay = 127, "Saturated transmitter delay!" &
-              " Expected: " & integer'image(127) &
+
+        -- Measured delay should have saturated at 255!
+        check_m(measured_delay = 255, "Saturated transmitter delay!" &
+              " Expected: " & integer'image(255) &
               " Measured: " & integer'image(measured_delay));
 
         -- Now CAN frame should pass because SSP Offset is high enough that
@@ -253,12 +253,12 @@ package body trv_delay_ftest is
         check_m(frames_equal, "TX RX frames match");
 
         -----------------------------------------------------------------------
-        --  @5. Configure transmitter delay to random value between 0 and 126.
+        --  @5. Configure transmitter delay to random value between 0 and 253.
         --      Run CAN FD frame and check it is measured correctly!
         -----------------------------------------------------------------------
         info_m("Step 5");
 
-        rand_int_v(1259, rand_time);
+        rand_int_v(2529, rand_time);
         if (rand_time = 0) then
             rand_time := 1;
         end if;
@@ -277,7 +277,7 @@ package body trv_delay_ftest is
         if (rand_time mod 10 = 0) then
             rand_time := rand_time + 1;
         end if;
-        
+
         info_m("Random time is: " & integer'image(rand_time) & " ns");
         set_transceiver_delay((rand_time * 1 ns), DUT_NODE, chn);
 

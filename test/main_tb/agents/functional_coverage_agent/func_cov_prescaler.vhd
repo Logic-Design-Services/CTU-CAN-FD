@@ -182,7 +182,7 @@ begin
     --   and to_integer(unsigned(brp_dbt)) = 1};
 
     -- psl maximal_bit_time_nbt_cov : cover
-    --  {to_integer(unsigned(tseg1_nbt)) = 191 and to_integer(unsigned(tseg2_nbt)) = 63};
+    --  {to_integer(unsigned(tseg1_nbt)) = 127 and to_integer(unsigned(tseg2_nbt)) = 63};
 
     -- psl maximal_bit_time_dbt_cov : cover
     --  {to_integer(unsigned(tseg1_dbt)) = 95 and to_integer(unsigned(tseg2_dbt)) = 31};
@@ -206,9 +206,6 @@ begin
 
     -- psl brp_bin_4_3_cov : cover
     --  {to_integer(unsigned(brp_nbt)) = 4 and to_integer(unsigned(brp_dbt)) = 3};
-
-    -- psl brp_bin_1_2_cov : cover
-    --  {to_integer(unsigned(brp_nbt)) = 1 and to_integer(unsigned(brp_dbt)) = 2};
 
 
     -----------------------------------------------------------------------------------------------

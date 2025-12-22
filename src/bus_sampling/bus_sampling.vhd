@@ -99,11 +99,17 @@ entity bus_sampling is
         -- Depth of FIFO Cache for TX Data
         G_TX_CACHE_DEPTH        :     natural;
 
+        -- Size of TX Data cache pointer
+        G_TX_CACHE_PTR_WIDTH    :     natural;
+
         -- Width (number of bits) in transceiver delay measurement counter
         G_TRV_CTR_WIDTH         :     natural;
 
         -- Width of SSP position
-        G_SSP_POS_WIDTH          :    natural;
+        G_SSP_POS_WIDTH         :     natural;
+
+        -- Width of SSP offset
+        G_SSP_OFFSET_WIDTH      :     natural;
 
         -- Width of SSP generator counters (BTMC, SSPC)
         G_SSP_CTRS_WIDTH        :     natural
@@ -218,7 +224,7 @@ architecture rtl of bus_sampling is
 
     -- SSP delay. Calculated from trv_delay either directly or by offseting
     -- by ssp_offset.
-    signal ssp_delay                : std_logic_vector(7 downto 0);
+    signal ssp_delay                : std_logic_vector(G_SSP_POS_WIDTH - 1 downto 0);
 
     -- TX Trigger delayed by 1 clock cycle
     signal tx_trigger_q             : std_logic;
@@ -262,6 +268,7 @@ begin
     generic map (
         G_TRV_CTR_WIDTH             => G_TRV_CTR_WIDTH,
         G_SSP_POS_WIDTH             => G_SSP_POS_WIDTH,
+        G_SSP_OFFSET_WIDTH          => G_SSP_OFFSET_WIDTH,
         G_SSP_SATURATION_LVL        => G_SSP_DELAY_SAT_VAL
     )
     port map (
@@ -347,7 +354,8 @@ begin
     -------------------------------------------------------------------------------------------
     ssp_generator_inst : entity ctu_can_fd_rtl.ssp_generator
     generic map (
-        G_SSP_CTRS_WIDTH            => G_SSP_CTRS_WIDTH
+        G_SSP_CTRS_WIDTH            => G_SSP_CTRS_WIDTH,
+        G_SSP_POS_WIDTH             => G_SSP_POS_WIDTH
     )
     port map (
         -- Clock and Async reset
@@ -387,7 +395,8 @@ begin
     tx_data_cache_inst : entity ctu_can_fd_rtl.tx_data_cache
     generic map (
         G_TX_CACHE_DEPTH            => G_TX_CACHE_DEPTH,
-        G_TX_CACHE_RST_VAL          => RECESSIVE
+        G_TX_CACHE_RST_VAL          => RECESSIVE,
+        G_TX_CACHE_PTR_WIDTH        => G_TX_CACHE_PTR_WIDTH
     )
     port map (
         clk_sys                     => clk_sys,                 -- IN

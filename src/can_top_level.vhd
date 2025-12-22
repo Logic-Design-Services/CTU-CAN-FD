@@ -1333,8 +1333,10 @@ begin
     generic map(
         G_SSP_DELAY_SAT_VAL             => C_SSP_DELAY_SAT_VAL,
         G_TX_CACHE_DEPTH                => C_TX_CACHE_DEPTH,
+        G_TX_CACHE_PTR_WIDTH            => C_TX_CACHE_PTR_WIDTH,
         G_TRV_CTR_WIDTH                 => C_TRV_CTR_WIDTH,
         G_SSP_POS_WIDTH                 => C_SSP_POS_WIDTH,
+        G_SSP_OFFSET_WIDTH              => C_SSP_OFFSET_WIDTH,
         G_SSP_CTRS_WIDTH                => C_SSP_CTRS_WIDTH
     )
     port map(

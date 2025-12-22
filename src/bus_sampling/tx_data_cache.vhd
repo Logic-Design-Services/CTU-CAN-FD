@@ -92,6 +92,9 @@ entity tx_data_cache is
         -- Depth of FIFO (Number of bits that can be stored)
         G_TX_CACHE_DEPTH        :     natural range 4 to 32;
 
+        -- Size of TX Data cache pointer
+        G_TX_CACHE_PTR_WIDTH    :     natural;
+
         -- FIFO reset value
         G_TX_CACHE_RST_VAL      :     std_logic
     );
@@ -128,20 +131,20 @@ architecture rtl of tx_data_cache is
     signal tx_cache_mem         : std_logic_vector(G_TX_CACHE_DEPTH - 1 downto 0);
 
     -- Write Pointer
-    signal write_pointer_q      : natural range 0 to G_TX_CACHE_DEPTH - 1;
-    signal write_pointer_d      : natural range 0 to G_TX_CACHE_DEPTH - 1;
+    signal write_pointer_q      : unsigned(G_TX_CACHE_PTR_WIDTH - 1 downto 0);
+    signal write_pointer_d      : unsigned(G_TX_CACHE_PTR_WIDTH - 1 downto 0);
 
     -- Read pointer
-    signal read_pointer_q       : natural range 0 to G_TX_CACHE_DEPTH - 1;
-    signal read_pointer_d       : natural range 0 to G_TX_CACHE_DEPTH - 1;
+    signal read_pointer_q       : unsigned(G_TX_CACHE_PTR_WIDTH - 1 downto 0);
+    signal read_pointer_d       : unsigned(G_TX_CACHE_PTR_WIDTH - 1 downto 0);
 
 begin
 
     -------------------------------------------------------------------------------------------
     -- Combinationally incrementing write and read pointers
     -------------------------------------------------------------------------------------------
-    write_pointer_d <= (write_pointer_q + 1) mod G_TX_CACHE_DEPTH;
-    read_pointer_d <= (read_pointer_q + 1) mod G_TX_CACHE_DEPTH;
+    write_pointer_d <= write_pointer_q + 1;
+    read_pointer_d <= read_pointer_q + 1;
 
 
     -------------------------------------------------------------------------------------------
@@ -150,7 +153,7 @@ begin
     write_ptr_proc : process(clk_sys, res_n)
     begin
         if (res_n = '0') then
-            write_pointer_q        <= 0;
+            write_pointer_q        <= (others => '0');
         elsif (rising_edge(clk_sys)) then
             if (write = '1') then
                 write_pointer_q    <= write_pointer_d;
@@ -162,7 +165,7 @@ begin
     read_ptr_proc : process(clk_sys, res_n)
     begin
         if (res_n = '0') then
-            read_pointer_q         <= 0;
+            read_pointer_q         <= (others => '0');
         elsif (rising_edge(clk_sys)) then
             if (read = '1') then
                 read_pointer_q     <= read_pointer_d;
@@ -180,7 +183,7 @@ begin
             tx_cache_mem <= (others => G_TX_CACHE_RST_VAL);
         elsif (rising_edge(clk_sys)) then
             if (write = '1') then
-                tx_cache_mem(write_pointer_q) <= data_in;
+                tx_cache_mem(to_integer(write_pointer_q(2 downto 0))) <= data_in;
             end if;
         end if;
     end process;
@@ -190,25 +193,21 @@ begin
     -- Reading data from FIFO combinationally.
     -- We need to have the data available right away, not pipelined!
     -------------------------------------------------------------------------------------------
-    data_out <= tx_cache_mem(read_pointer_q);
+    data_out <= tx_cache_mem(to_integer(read_pointer_q(2 downto 0)));
 
     -------------------------------------------------------------------------------------------
     -- Assertions on input signals
     -------------------------------------------------------------------------------------------
     -- psl default clock is rising_edge(clk_sys);
 
-    -- Here be stricter to make the check easier! Allow at least one bit free
-    -- in the FIFO!
     -- psl no_fifo_overflow_asrt : assert never
-    --  ((read_pointer_q - 1 = write_pointer_q) and (write = '1'))
-    -- report "TX Cache is full, there should be less than 4 bits on the fly!";
+    --  ((read_pointer_q(3) /= write_pointer_q(3)) and
+    --   (read_pointer_q(2 downto 0) = write_pointer_q(2 downto 0)) and
+    --   (write = '1'))
+    -- report "TX Cache is full, there should be less than 8 bits on the fly!";
 
     -- psl no_empty_read : assert never
     --  (read = '1' and write_pointer_q = read_pointer_q)
     -- report "Read from empty TX CACHE";
-    --
-    -- Note: When read pointer is equal to write pointer, FIFO is for sure
-    -- empty, because we detect error when it is almost full. So we never get
-    -- to situation that read pointer equals write pointer when FIFO is full!
 
 end architecture;

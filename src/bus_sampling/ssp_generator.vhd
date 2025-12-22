@@ -90,7 +90,10 @@ use ctu_can_fd_rtl.CAN_FD_frame_format.all;
 entity ssp_generator is
     generic(
         -- Width of SSP generator counters (BTMC, SSPC)
-        G_SSP_CTRS_WIDTH     :      natural
+        G_SSP_CTRS_WIDTH     :      natural;
+
+        -- Width of SSP position
+        G_SSP_POS_WIDTH      :      natural
     );
     port(
         -------------------------------------------------------------------------------------------
@@ -112,7 +115,7 @@ entity ssp_generator is
         gen_first_ssp       :in    std_logic;
 
         -- SSP offset
-        ssp_delay           :in    std_logic_vector(7 downto 0);
+        ssp_delay           :in    std_logic_vector(G_SSP_POS_WIDTH - 1 downto 0);
 
         -- SSP enable (SSP trigger gated when disabled)
         ssp_enable          :in    std_logic;

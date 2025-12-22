@@ -3053,7 +3053,7 @@ begin
         '0' & '0' & '0' & '0' & '0' & '0' &
         control_registers_out_i.ssp_cfg_ssp_src &
         control_registers_out_i.ssp_cfg_ssp_offset &
-        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
+        '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
         control_registers_in.trv_delay_trv_delay_value when "100000",
         control_registers_in.rx_fr_ctr_rx_fr_ctr_val when "100001",
         control_registers_in.tx_fr_ctr_tx_fr_ctr_val when "100010",

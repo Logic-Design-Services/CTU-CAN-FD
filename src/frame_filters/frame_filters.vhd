@@ -384,7 +384,7 @@ begin
         if (res_n = '0') then
             ident_valid_q <= '0';
         elsif rising_edge(clk_sys) then
-            ident_valid_q   <= ident_valid_d;
+            ident_valid_q <= ident_valid_d;
         end if;
     end process valid_reg_proc;
 

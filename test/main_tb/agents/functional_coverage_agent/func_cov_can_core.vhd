@@ -100,7 +100,7 @@ architecture tb of func_cov_can_core is
         << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_ident_type : std_logic >>;
 
     alias tran_frame_type is
-        << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_ident_type : std_logic >>;
+        << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_frame_type : std_logic >>;
 
     alias tran_is_rtr is
         << signal .tb_top_ctu_can_fd.dut.can_core_inst.tran_is_rtr : std_logic >>;
@@ -445,19 +445,6 @@ begin
     --   rec_frame_type  = NORMAL_CAN  and
     --   rec_is_rtr      = '1'         and
     --   store_metadata  = '1'};
-
-    -- psl rx_base_id_can_fd_rtr_cov : cover
-    --  {rec_ident_type  = BASE        and
-    --   rec_frame_type  = FD_CAN      and
-    --   rec_is_rtr      = '1'         and
-    --   store_metadata  = '1'};
-
-    -- psl rx_extended_id_can_fd_rtr_cov : cover
-    --  {rec_ident_type  = EXTENDED    and
-    --   rec_frame_type  = FD_CAN      and
-    --   rec_is_rtr      = '1'         and
-    --   store_metadata  = '1'};
-
 
     -----------------------------------------------------------------------------------------------
     -- Bit stuffing and destuffing

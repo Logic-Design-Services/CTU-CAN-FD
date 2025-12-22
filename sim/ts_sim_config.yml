@@ -577,7 +577,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
 
             # Secondary sample point config
@@ -629,7 +629,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
 
             # Secondary sample point config
@@ -681,7 +681,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
 
             # Secondary sample point config
@@ -733,7 +733,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
 
             # Secondary sample point config
@@ -915,7 +915,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
 
             # Secondary sample point config
@@ -1087,7 +1087,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
 
             # Secondary sample point config
@@ -1259,7 +1259,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
 
             # Secondary sample point config
@@ -1495,7 +1495,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
-            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 21
+            /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_sjw_fd: 31
 
             # Secondary sample point config

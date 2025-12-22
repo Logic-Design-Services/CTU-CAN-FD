@@ -1257,10 +1257,10 @@ package can_fd_register_map is
   -- sion of CAN FD frame. After each next measurement the value is updated.
   ------------------------------------------------------------------------------
   constant TRV_DELAY_VALUE_L      : natural := 0;
-  constant TRV_DELAY_VALUE_H      : natural := 6;
+  constant TRV_DELAY_VALUE_H      : natural := 7;
 
   -- TRV_DELAY register reset values
-  constant TRV_DELAY_VALUE_RSTVAL : std_logic_vector(6 downto 0) := "0000000";
+  constant TRV_DELAY_VALUE_RSTVAL : std_logic_vector(7 downto 0) := x"00";
 
   ------------------------------------------------------------------------------
   -- SSP_CFG register

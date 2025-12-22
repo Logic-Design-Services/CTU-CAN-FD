@@ -73,14 +73,14 @@
 --  Secondary sampling point saturation test.
 --
 -- @Verifies:
---  @1. Transceiver delay measurement saturates to 127 clock cycles.
---  @2. Secondary sampling point saturates to 255 clock cycles.
+--  @1. Transceiver delay measurement saturates to 255 clock cycles.
+--  @2. Secondary sampling point saturates to 510 clock cycles.
 --
 -- @Test sequence:
---  @1. Configure low Nominal Bit Rate, so that even TRV_DELAY = 127 fits within
+--  @1. Configure low Nominal Bit Rate, so that even TRV_DELAY = 255 fits within
 --      single bit of Nominal bit-time. Configure Data bit time such that
---      TRV_DELAY = 127 and SSP_POS = 255 fits can be correctly sampled.
---      Configure TX -> RX Delay higher than 127.
+--      TRV_DELAY = 255 and SSP_POS = 255 fits can be correctly sampled.
+--      Configure TX -> RX Delay higher than 255.
 --  @2. Generate CAN FD CAN frame with bit-rate shift. Send it by DUT node
 --      and wait transmission is over.
 --  @3. Read the frame from RX Buffer of Test Node. Check it matches transmitted
@@ -123,17 +123,17 @@ package body ssp_saturation_ftest is
     begin
 
         -----------------------------------------------------------------------
-        -- @1. Configure low Nominal Bit Rate, so that even TRV_DELAY = 127
-        --     fits within single bit of Nominal bit-time. Configure Data bit
-        --     time such that TRV_DELAY = 127 and SSP_POS = 255 fits can be
-        --     correctly sampled. Configure TX -> RX Delay higher than 128.
+        --  @1. Configure low Nominal Bit Rate, so that even TRV_DELAY = 255
+        --      fits within single bit of Nominal bit-time. Configure Data bit
+        --      time such that TRV_DELAY = 255 and SSP_POS = 255 fits can be
+        --      correctly sampled. Configure TX -> RX Delay higher than 255.
         -----------------------------------------------------------------------
         info_m("Step 1");
 
-        -- PH1_NBT = 200 cycles
-        -- Bit Time (DBT) = 180 cycles
-        bus_timing.tq_nbt     := 5;
-        bus_timing.tq_dbt     := 5;
+        -- PH1_NBT = 400 cycles
+        -- Bit Time (DBT) = 360 cycles
+        bus_timing.tq_nbt     := 10;
+        bus_timing.tq_dbt     := 10;
 
         bus_timing.prop_nbt   := 20;
         bus_timing.ph1_nbt    := 19;
@@ -151,22 +151,20 @@ package body ssp_saturation_ftest is
         ctu_set_bit_time_cfg(bus_timing, DUT_NODE, chn);
         ctu_set_bit_time_cfg(bus_timing, TEST_NODE, chn);
 
-        -- SSP offest configured = 256.
-        -- TX -> RX delay = 150.
-        -- TRV_DELAY saturates to 128 (checked by step 3)
-        -- If offset did not saturate, we would see SSP at 128 + 256 = 384.
-        -- Since TX -> RX Delay = 150, then we need SSP between:
-        --   150 + 1 = 151
-        --   150 + 180 = 330
+        -- SSP offset configured = 256.
+        -- TX -> RX delay = 280.
+        -- TRV_DELAY saturates to 255 (checked by step 3)
+        -- Since TX -> RX Delay = 280, then we need SSP between:
+        --   280 + 1 = 281
+        --   280 + 360 = 640
         -- Only in this range SSP fits within the bit on the fly to be sampled correctly.
-        -- With saturated SSP we are at 255.
+        -- With saturated SSP we are at 510 (255 + 255).
         -- Thus, sending frame sucessfully checks the saturation occurs
 
         -- TODO: We could extend this test to iterate over all all possible SSP offsets.
         --       Based on SSP position we should see:
-        --          128 - 150   - Error frame
-        --          151 - 256   - Sucessfull transmission
-        --          256 +       - Still sucesfull transmission since SSP saturates!
+        --            0 - 25    - Error frame
+        --           26 - 255   - Sucessfull transmission
         ctu_set_ssp(ssp_meas_n_offset, x"FF", DUT_NODE, chn);
         ctu_set_ssp(ssp_meas_n_offset, x"FF", TEST_NODE, chn);
 
@@ -176,9 +174,9 @@ package body ssp_saturation_ftest is
         ctu_wait_err_active(DUT_NODE, chn);
         ctu_wait_err_active(TEST_NODE, chn);
 
-        -- Higher than 128
-        info_m("Random TRV_DELAY is: 1500 ns");
-        set_transceiver_delay(1500 ns, DUT_NODE, chn);
+        -- Higher than 255 * 10 ns
+        info_m("TRV_DELAY is: 2800 ns");
+        set_transceiver_delay(2800 ns, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
         -- @2. Generate CAN FD CAN frame with bit-rate shift. Send it by DUT
@@ -196,7 +194,7 @@ package body ssp_saturation_ftest is
         -----------------------------------------------------------------------
         -- @3. Read the frame from RX Buffer of Test Node. Check it matches
         --     transmitted frame.
-        --     Check that measured TRV_DELAY = 127 in DUT node.
+        --     Check that measured TRV_DELAY = 255 in DUT node.
         -----------------------------------------------------------------------
         info_m("Step 3");
 
@@ -205,7 +203,7 @@ package body ssp_saturation_ftest is
         check_m(frames_match, "TX/RX frame equal");
 
         ctu_get_trv_delay(trv_delay, DUT_NODE, chn);
-        check_m(trv_delay = 127, "Transceiver delay is 128");
+        check_m(trv_delay = 255, "Transceiver delay is 255");
 
         ctu_wait_bus_idle(DUT_NODE, chn);
         ctu_wait_bus_idle(TEST_NODE, chn);
