@@ -84,7 +84,7 @@
 --      nearest regular sample point, not earlier!
 --
 -- @Test sequence:
---  @1. Generate random TRV_DELAY between 0 and 125. Configure it in TB as delay
+--  @1. Generate random TRV_DELAY between 0 and 252. Configure it in TB as delay
 --      between CAN TX and CAN RX.
 --  @2. Generate random SSP_CFG[SSP_SRC]. If it is offset only, generate
 --      SSP_OFFSET which is higher than TRV_DELAY. If it is SSP_SRC_MEAS_N_OFFSET,
@@ -169,16 +169,24 @@ package body ssp_cfg_ftest is
         variable bit_len_dbt            : natural :=
                     bit_timing.tq_dbt * (1 + bit_timing.prop_dbt + bit_timing.ph1_dbt + bit_timing.ph2_dbt);
     begin
-        rand_int_v(1240, trv_delay);
+        rand_int_v(2520, trv_delay);
         while (
-            (trv_delay > tseg_1_nbt - 50)           or -- Account for 50ns margin!
+            -- Must be able to meet regular sample point - account for 50 ns margin
+            (trv_delay > tseg_1_nbt - 50)           or
+
+            -- Reject 0 TRV_DELAY
             (trv_delay = 0)                         or
+
+            -- Must be less than max number of bits supported "on-the-fly" in datasheet
             (trv_delay > (bit_len_dbt * 8) - 50)    or -- Account for 50 ns margin!
+
+            -- Reject exact multiple of System Clock as this may skew the measurement due
+            -- to delta-cycles!
             ((trv_delay mod 10) = 0)
         ) loop
-            -- Currently maximal measurable value of TRV_DELAY is 127.
+            -- Currently maximal measurable value of TRV_DELAY is 255.
             -- Account +3 for CTU CAN FD input delay (delay is 2, one cycle reserve for alignment issues.)
-            rand_int_v(1240, trv_delay);
+            rand_int_v(2520, trv_delay);
         end loop;
     end procedure;
 
@@ -251,7 +259,7 @@ package body ssp_cfg_ftest is
     begin
 
         -----------------------------------------------------------------------
-        -- @1. Generate random TRV_DELAY between 0 and 125. Configure it in TB
+        -- @1. Generate random TRV_DELAY between 0 and 252. Configure it in TB
         --    as delay between CAN TX and CAN RX.
         -----------------------------------------------------------------------
         info_m("Step 1");
@@ -326,7 +334,7 @@ package body ssp_cfg_ftest is
         -- @2. Generate random SSP_CFG[SSP_SRC]. If it is offset only, generate
         --    SSP_OFFSET which is higher than TRV_DELAY. If it is
         --    SSP_SRC_MEAS_N_OFFSET, set SSP_OFFSET to random value between 0
-        --    and 255. Saturate calculated value of SSP_SRC at 255. If it is
+        --    and 255. Saturate calculated value of SSP_SRC at 510. If it is
         --    SSP_SRC_NO_SSP, calculate SSP position from regular data-bit rate.
         -----------------------------------------------------------------------
         info_m("Step 2");
@@ -348,7 +356,7 @@ package body ssp_cfg_ftest is
             -- Subtract TRV_DELAY until we get there. Generated SSP leaves us
             -- margin, so this is always feasible.
             ssp_pos := to_integer(unsigned(ssp_offset_var)) + rand_trv_delay / 10;
-            while (ssp_pos > 252) loop
+            while (ssp_pos > 508) loop
                 rand_trv_delay := rand_trv_delay - 10;
                 ssp_pos := to_integer(unsigned(ssp_offset_var)) + rand_trv_delay / 10;
             end loop;
@@ -387,12 +395,12 @@ package body ssp_cfg_ftest is
 
             -- Total SSP position needs to be smaller than maximal SSP positon!
             ssp_pos := to_integer(unsigned(ssp_offset_var));
-            while (ssp_pos > 252) loop
+            while (ssp_pos > 508) loop
                 ssp_offset_var := std_logic_vector(to_unsigned( to_integer(unsigned(ssp_offset_var)) - 1, 8));
                 ssp_pos := to_integer(unsigned(ssp_offset_var));
             end loop;
 
-            -- If we are offset only, we need  to compensate for CTU CAN FD input delay!
+            -- If we are offset only, we need to compensate for CTU CAN FD input delay!
             if (ssp_pos < 4) then
                 ssp_offset_var := "00000100";
                 ssp_pos := to_integer(unsigned(ssp_offset_var));

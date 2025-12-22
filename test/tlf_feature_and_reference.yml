@@ -200,9 +200,9 @@ tests:
     - name: ssp_saturation
     - name: ssp_cfg
       generics:
-        /TB_TOP_CTU_CAN_FD/iterations: 5
+        /TB_TOP_CTU_CAN_FD/iterations: 10
 
-    - name: ssp_4_bits_flying
+    - name: ssp_7_bits_flying
     - name: ssp_last_crc_bit_error_2
     - name: status_eft
       generics:

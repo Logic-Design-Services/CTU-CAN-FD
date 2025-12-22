@@ -133,17 +133,17 @@ architecture tb of func_cov_bus_sampling is
     alias tran_delay_meas is
         << signal .tb_top_ctu_can_fd.dut.bus_sampling_inst.trv_delay_measurement_inst.tran_delay_meas : std_logic >>;
 
-    alias ssp_delay_saturated is
-        << signal .tb_top_ctu_can_fd.dut.bus_sampling_inst.trv_delay_measurement_inst.ssp_delay_saturated : std_logic_vector(C_SSP_POS_WIDTH-1 downto 0) >>;
+    alias ssp_delay is
+        << signal .tb_top_ctu_can_fd.dut.bus_sampling_inst.trv_delay_measurement_inst.ssp_delay : std_logic_vector(C_SSP_POS_WIDTH-1 downto 0) >>;
 
     -----------------------------------------------------------------------------------------------
     -- Aliases to "tx_data_cache" top
     -----------------------------------------------------------------------------------------------
     alias write_pointer_q is
-        << signal .tb_top_ctu_can_fd.dut.bus_sampling_inst.tx_data_cache_inst.write_pointer_q : natural range 0 to 7 >>;
+        << signal .tb_top_ctu_can_fd.dut.bus_sampling_inst.tx_data_cache_inst.write_pointer_q : unsigned(3 downto 0) >>;
 
     alias read_pointer_q is
-        << signal .tb_top_ctu_can_fd.dut.bus_sampling_inst.tx_data_cache_inst.read_pointer_q : natural range 0 to 7 >>;
+        << signal .tb_top_ctu_can_fd.dut.bus_sampling_inst.tx_data_cache_inst.read_pointer_q : unsigned(3 downto 0) >>;
 
 begin
 
@@ -187,8 +187,8 @@ begin
     -- Note: Protocol control FSM actually requests the measurement of TRV delay
     --       even if SSP is not used!
 
-    -- psl ssp_offset_sat_cov : cover
-    --  {ssp_delay_saturated = std_logic_vector(to_unsigned(C_SSP_DELAY_SAT_VAL, C_SSP_POS_WIDTH))};
+    -- psl ssp_offset_max_cov : cover
+    --  {ssp_delay = std_logic_vector(to_unsigned(C_SSP_DELAY_SAT_VAL, C_SSP_POS_WIDTH))};
 
 
     -----------------------------------------------------------------------------------------------
@@ -206,5 +206,14 @@ begin
 
     -- psl tx_data_cache_four_bits_on_fly_cov : cover
     --  {write_pointer_q = read_pointer_q + 4};
+
+    -- psl tx_data_cache_five_bits_on_fly_cov : cover
+    --  {write_pointer_q = read_pointer_q + 5};
+
+    -- psl tx_data_cache_six_bits_on_fly_cov : cover
+    --  {write_pointer_q = read_pointer_q + 6};
+
+    -- psl tx_data_cache_seven_bits_on_fly_cov : cover
+    --  {write_pointer_q = read_pointer_q + 7};
 
 end architecture;
