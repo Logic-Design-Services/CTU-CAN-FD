@@ -20,8 +20,8 @@ all: test coverage functional_coverage
 	junit2html --summary-matrix $*.xml > $*_summary
 
 # Remove logs from reports to reduce the log size!
-	awk ' /<system-out>/ { print; inside=1; next } /<\/system-out>/ { print ""; print; inside=0; next } !inside { print } ' $@.xml > tmp
-	mv tmp $@.xml
+	awk ' /<system-out>/ { print; inside=1; next } /<\/system-out>/ { print ""; print; inside=0; next } !inside { print } ' $*.xml > tmp
+	mv tmp $*.xml
 
 # Sum simulation time from all tests
 	cat vunit_out/test_output/*/output.txt | \
