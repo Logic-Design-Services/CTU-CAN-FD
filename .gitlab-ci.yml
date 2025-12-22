@@ -331,6 +331,28 @@ test_rtl_small_asic_min_compliance:
             junit: test/tb_rtl_small_asic_min_compliance.xml
     allow_failure: true
 
+test_rtl_small_asic_sjw0_compliance:
+    stage: test_rtl_compliance
+    tags:
+        - simulation
+    dependencies: [build_compliance_lib]
+    only: *only
+    timeout: 2h
+    script:
+        - cd test
+        - make tb_rtl_small_asic_sjw0_compliance
+        - make tb_rtl_small_asic_sjw0_compliance_logs
+    artifacts:
+        when: always
+        paths:
+            - test/tb_rtl_small_asic_sjw0_compliance.xml
+            - test/tb_rtl_small_asic_sjw0_compliance_summary
+            - test/tb_rtl_small_asic_sjw0_compliance.sim_time
+            - test/vunit_out/code_coverage
+        reports:
+            junit: test/tb_rtl_small_asic_sjw0_compliance.xml
+    allow_failure: true
+
 
 ###############################################################################
 # Test gates stage

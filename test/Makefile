@@ -17,32 +17,22 @@ all: test coverage functional_coverage
 %_logs:
 
 # Process reports
-#	junit2html --report-matrix $*.html $*.xml
-#	tar -czvf $*.gz $*.html $*.xml.html
 	junit2html --summary-matrix $*.xml > $*_summary
+
+# Remove logs from reports to reduce the log size!
+	awk ' /<system-out>/ { print; inside=1; next } /<\/system-out>/ { print ""; print; inside=0; next } !inside { print } ' $@.xml > tmp
+	mv tmp $@.xml
 
 # Sum simulation time from all tests
 	cat vunit_out/test_output/*/output.txt | \
-		grep "simulation stopped" | \
-		grep -Eo "[0-9]+(us|ns|ps)" | \
+		grep "STOP called with status" | \
+		grep -Eo "[0-9]+(us|ns|ps|fs)" | \
+		sed 's/fs//g' | \
 		sed 's/ps/000/g' | \
 		sed 's/ns/000000/g' | \
 		sed 's/us/000000000/g' | \
 		paste -sd+ | bc > $*.sim_time
 	echo "Total simulated time is `cat $*.sim_time` fs"
-
-# Cleanup
-#	rm -f $*.html
-#	rm -f $*.xml.html
-#	rm -f $*.xml
-
-
-######################################################################################
-# Coverage processing
-######################################################################################
-functional_coverage:
-	mkdir -p vunit_out/functional_coverage/html
-	$(PYTHON) $(TESTFW_DIR)/test_parse_psl_coverage.py
 
 clean:
 	rm -Rf vunit_out
