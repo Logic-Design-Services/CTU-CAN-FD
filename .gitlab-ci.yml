@@ -473,6 +473,10 @@ process_coverage:
             - test/merged.covdb
             - test/code_coverage_report
             - test/cobertura_coverage.xml
+        reports:
+            coverage_report:
+                coverage_format: cobertura
+                path: test/cobertura_coverage.xml
 
 generate_test_matrix:
     stage: coverage
