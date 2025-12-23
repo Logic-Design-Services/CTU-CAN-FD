@@ -61,6 +61,7 @@ tests:
 
     - name: disable_in_tx
     - name: dlc_can20_8_64_bytes
+    - name: dbt_maximal
 
     - name: err_capt_ack_ack
     - name: err_capt_arb_bit

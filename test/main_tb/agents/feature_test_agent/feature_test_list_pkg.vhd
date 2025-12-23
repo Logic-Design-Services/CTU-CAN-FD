@@ -110,6 +110,7 @@ use ctu_can_fd_tb.command_rrb_ftest.all;
 use ctu_can_fd_tb.counters_toggle_ftest.all;
 
 use ctu_can_fd_tb.device_id_ftest.all;
+use ctu_can_fd_tb.dbt_maximal_ftest.all;
 use ctu_can_fd_tb.disable_in_tx_ftest.all;
 use ctu_can_fd_tb.dlc_can20_8_64_bytes_ftest.all;
 
@@ -314,6 +315,8 @@ package body feature_test_list_pkg is
 
         elsif (test_name = "device_id") then
             device_id_ftest_exec(channel);
+        elsif (test_name = "dbt_maximal") then
+            dbt_maximal_ftest_exec(channel);
         elsif (test_name = "disable_in_tx") then
             disable_in_tx_ftest_exec(channel);
         elsif (test_name = "dlc_can20_8_64_bytes") then
