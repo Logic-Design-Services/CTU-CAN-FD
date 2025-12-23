@@ -444,26 +444,49 @@ process_coverage:
         - test_rtl_small_asic_min_compliance
     only: *only
     script:
-        # Merge code coverage and generate report
         - cd test
-        - echo "Merging code coverage results from:"
-        - ls vunit_out/code_coverage/tb_rtl_*.ncdb
 
-        - nvc --cover-merge -V --output=merged.covdb vunit_out/code_coverage/tb_rtl_*.ncdb
+        - echo "Copy code coverage files to dummy directory to reduce command length during merging...""
+        - rm -rf ct
+        - mkdir ct
+        - mv vunit_out/code_coverage/tb_rtl_*.ncdb ct
+
+        - echo "Code coverage files collected from simulation:"
+        - ls ct/tb_rtl_*.ncdb
+
+        - echo "Merging code coverage..."
+        - nvc --cover-merge -V --output=merged.covdb ct/tb_rtl_*.ncdb
+
+        - echo "Generating code coverage report..."
         - nvc --cover-report --output=code_coverage_report --exclude-file=exclude_files/nvc_exclusions_2v7.txt merged.covdb
 
-        # Generate VRM
-        - cd ../scripts
+        - echo "Exporting cobertura coverage format..."
+        - nvc --cover-export --format=cobertura --output=cobertura_coverage.xml --relative merged.covdb
+
+    # TODO: Update once NVC will be able to print out "average" to the job log!
+    #coverage: "/lines......: ([^%]+%)/"
+
+    artifacts:
+        when: always
+        paths:
+            - test/merged.covdb
+            - test/code_coverage_report
+            - test/cobertura_coverage.xml
+
+generate_test_matrix:
+    stage: coverage
+    tags:
+        - simulation
+    only: *only
+    script:
+        - cd scripts
         - chmod +x gen_vrm
         - ./gen_vrm
 
-    coverage: "/lines......: ([^%]+%)/"
     artifacts:
         when: always
         paths:
             - scripts/VRM.html
-            - test/merged.covdb
-            - test/code_coverage_report
 
 pages:
     stage: deploy
