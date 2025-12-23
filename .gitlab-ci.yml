@@ -442,6 +442,7 @@ process_coverage:
         - test_rtl_small_asic_max_compliance
         - test_rtl_small_asic_typ_compliance
         - test_rtl_small_asic_min_compliance
+        - test_rtl_small_asic_sjw0_compliance
     only: *only
     script:
         - cd test
