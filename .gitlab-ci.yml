@@ -137,6 +137,8 @@ test_unit_rx_buffer:
     script:
         - cd test
         - make tb_rtl_rx_buffer_unit
+    after_script:
+        - cd test
         - make tb_rtl_rx_buffer_unit_logs
     dependencies: [build_compliance_lib]
     artifacts:
@@ -161,6 +163,8 @@ test_rtl_small_asic_max_feature:
     script:
         - cd test
         - make tb_rtl_small_asic_max_feature
+    after_script:
+        - cd test
         - make tb_rtl_small_asic_max_feature_logs
     artifacts:
         when: always
@@ -183,6 +187,8 @@ test_rtl_medium_asic_max_feature:
     script:
         - cd test
         - make tb_rtl_medium_asic_max_feature
+    after_script:
+        - cd test
         - make tb_rtl_medium_asic_max_feature_logs
     artifacts:
         when: always
@@ -205,6 +211,8 @@ test_rtl_big_asic_max_feature:
     script:
         - cd test
         - make tb_rtl_big_asic_max_feature
+    after_script:
+        - cd test
         - make tb_rtl_big_asic_max_feature_logs
     artifacts:
         when: always
@@ -227,6 +235,8 @@ test_rtl_medium_fpga_max_feature:
     script:
         - cd test
         - make tb_rtl_medium_fpga_max_feature
+    after_script:
+        - cd test
         - make tb_rtl_medium_fpga_max_feature_logs
     artifacts:
         when: always
@@ -249,6 +259,8 @@ test_rtl_medium_asic_typ_feature:
     script:
         - cd test
         - make tb_rtl_medium_asic_typ_feature
+    after_script:
+        - cd test
         - make tb_rtl_medium_asic_typ_feature_logs
     artifacts:
         when: always
@@ -275,6 +287,8 @@ test_rtl_small_asic_max_compliance:
     script:
         - cd test
         - make tb_rtl_small_asic_max_compliance
+    after_script:
+        - cd test
         - make tb_rtl_small_asic_max_compliance_logs
     artifacts:
         when: always
@@ -297,6 +311,8 @@ test_rtl_small_asic_typ_compliance:
     script:
         - cd test
         - make tb_rtl_small_asic_typ_compliance
+    after_script:
+        - cd test
         - make tb_rtl_small_asic_typ_compliance_logs
     artifacts:
         when: always
@@ -319,6 +335,8 @@ test_rtl_small_asic_min_compliance:
     script:
         - cd test
         - make tb_rtl_small_asic_min_compliance
+    after_script:
+        - cd test
         - make tb_rtl_small_asic_min_compliance_logs
     artifacts:
         when: always
@@ -341,6 +359,8 @@ test_rtl_small_asic_sjw0_compliance:
     script:
         - cd test
         - make tb_rtl_small_asic_sjw0_compliance
+    after_script:
+        - cd test
         - make tb_rtl_small_asic_sjw0_compliance_logs
     artifacts:
         when: always
@@ -367,6 +387,8 @@ test_gate_xilinx_medium_fpga_max_feature:
     script:
         - cd test
         - make tb_gate_xilinx_medium_fpga_max_feature
+    after_script:
+        - cd test
         - make tb_gate_xilinx_medium_fpga_max_feature_logs
     artifacts:
         when: always
@@ -388,6 +410,8 @@ test_gate_xilinx_small_fpga_max_compliance:
     script:
         - cd test
         - make tb_gate_xilinx_small_fpga_max_compliance
+    after_script:
+        - cd test
         - make tb_gate_xilinx_small_fpga_max_compliance_logs
     artifacts:
         when: always
