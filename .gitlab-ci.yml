@@ -447,7 +447,7 @@ process_coverage:
     script:
         - cd test
 
-        - echo "Copy code coverage files to dummy directory to reduce command length during merging...""
+        - echo "Copy code coverage files to dummy directory to reduce command length during merging..."
         - rm -rf ct
         - mkdir ct
         - mv vunit_out/code_coverage/tb_rtl_*.ncdb ct
