@@ -255,6 +255,14 @@ architecture tb of func_cov_can_core is
     alias arbitration_lost_i is
         << signal .tb_top_ctu_can_fd.dut.can_core_inst.protocol_control_inst.protocol_control_fsm_inst.arbitration_lost_i : std_logic >>;
 
+    alias mr_settings_pex is
+        << signal .tb_top_ctu_can_fd.dut.can_core_inst.protocol_control_inst.protocol_control_fsm_inst.mr_settings_pex : std_logic >>;
+
+    alias mr_mode_fde is
+        << signal .tb_top_ctu_can_fd.dut.can_core_inst.protocol_control_inst.protocol_control_fsm_inst.mr_mode_fde : std_logic >>;
+
+    alias mr_settings_nisofd is
+        << signal .tb_top_ctu_can_fd.dut.can_core_inst.protocol_control_inst.protocol_control_fsm_inst.mr_settings_nisofd : std_logic >>;
 
     -----------------------------------------------------------------------------------------------
     -- Aliases to "reintegration_counter"
@@ -662,6 +670,27 @@ begin
     -- psl pex_in_s_pc_edl_r1_cov : cover
     --  {curr_state = s_pc_edl_r1 and pexs_set = '1'};
 
+    -- CAN frame being transmitted / received with various DUT compliance configurations.
+
+    -- psl classical_can_cov : cover
+    --   {curr_state = s_pc_base_id and mr_settings_pex = '0' and mr_mode_fde = '0'};
+
+    -- psl fd_tolerant_can_cov : cover
+    --   {curr_state = s_pc_base_id and mr_settings_pex = '1' and mr_mode_fde = '0'};
+
+    -- psl fd_enabled_can_cov : cover
+    --   {curr_state = s_pc_base_id and mr_settings_pex = '0' and mr_mode_fde = '1'};
+
+    -- psl fd_enabled_with_pex : cover
+    --   {curr_state = s_pc_base_id and mr_settings_pex = '1' and mr_mode_fde = '1'};
+
+    -- ISO and Non-ISO variants of the protocol
+
+    -- psl iso_fd_cov : cover
+    --   {curr_state = s_pc_base_id and mr_settings_nisofd = '0'};
+
+    -- psl non_iso_fd_cov : cover
+    --   {curr_state = s_pc_base_id and mr_settings_nisofd = '1'};
 
     -- Arbitration lost
 
