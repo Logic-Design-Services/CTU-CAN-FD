@@ -57,6 +57,7 @@ source_list:
     - file: main_tb/feature_tests/mode_txbbm_3_ftest.vhd
     - file: main_tb/feature_tests/ssp_7_bits_flying_ftest.vhd
     - file: main_tb/feature_tests/glitch_filtering_ftest.vhd
+    - file: main_tb/feature_tests/glitch_filtering_2_ftest.vhd
     - file: main_tb/feature_tests/err_capt_arb_stuff_ftest.vhd
     - file: main_tb/feature_tests/tx_status_ftest.vhd
     - file: main_tb/feature_tests/btr_ftest.vhd

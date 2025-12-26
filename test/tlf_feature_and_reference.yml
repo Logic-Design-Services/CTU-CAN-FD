@@ -99,6 +99,7 @@ tests:
     - name: frame_filters_abort
 
     - name: glitch_filtering
+    - name: glitch_filtering_2
 
     - name: invalid_frames
       generics:

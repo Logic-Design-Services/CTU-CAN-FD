@@ -137,6 +137,7 @@ use ctu_can_fd_tb.frame_test_ignore_ftest.all;
 use ctu_can_fd_tb.frame_filters_abort_ftest.all;
 
 use ctu_can_fd_tb.glitch_filtering_ftest.all;
+use ctu_can_fd_tb.glitch_filtering_2_ftest.all;
 
 use ctu_can_fd_tb.invalid_frames_ftest.all;
 use ctu_can_fd_tb.int_al_ftest.all;
@@ -366,6 +367,8 @@ package body feature_test_list_pkg is
 
         elsif (test_name = "glitch_filtering") then
             glitch_filtering_ftest_exec(channel);
+        elsif (test_name = "glitch_filtering_2") then
+            glitch_filtering_2_ftest_exec(channel);
 
         elsif (test_name = "invalid_frames") then
             invalid_frames_ftest_exec(channel);
