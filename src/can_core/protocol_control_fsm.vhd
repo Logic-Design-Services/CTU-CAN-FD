@@ -2891,7 +2891,14 @@ begin
     ack_err <= ack_err_i and rx_trigger;
     crc_err <= crc_err_i and rx_trigger;
     bit_err_arb <= bit_err_arb_i and rx_trigger;
-    decrement_rec <= decrement_rec_i and rx_trigger;
+
+    -- decrement_rec is special. It is only set upon sampling dominant bit in ACK field.
+    -- Thus previous bit must have been recessive (CRC Delimiter) - otherwise there would be
+    -- error frame.
+    -- Since Protocol Control FSM processes rx_trigger wbs, the rx_data_nbs must have changed
+    -- to dominant in the very same cycle as the rx_trigger used for gating.
+    -- See no_decrement_rec_without_rx_trigger_asrt below which checks for this case
+    decrement_rec <= decrement_rec_i;
 
     -----------------------------------------------------------------------------------------------
     -- Switching of Bit-rate
@@ -3294,6 +3301,10 @@ begin
     --  (stuff_enable = '1' or destuff_enable = '1') and
     --  (curr_state = s_pc_eof)
     -- report "Bit stuffing destuffin should be never enabled during EOF!";
+
+    -- psl no_decrement_rec_without_rx_trigger_asrt : assert never
+    --  (decrement_rec_i = '1' and rx_trigger = '0')
+    --  report "decrement_rec_i shall never be 1 without rx_trigger being 1!";
 
 
 end architecture;
