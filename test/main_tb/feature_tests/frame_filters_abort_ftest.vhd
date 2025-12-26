@@ -162,6 +162,10 @@ package body frame_filters_abort_ftest is
         info_m("Step 2");
 
         generate_can_frame(can_tx_frame_1);
+        can_tx_frame_1.data_length := can_tx_frame_1.data_length mod 8;
+        length_to_dlc(can_tx_frame_1.data_length, can_tx_frame_1.dlc);
+        dlc_to_rwcnt(can_tx_frame_1.dlc, can_tx_frame_1.rwcnt);
+
         can_tx_frame_1.ident_type := BASE;
         can_tx_frame_1.frame_format := NORMAL_CAN;
         can_tx_frame_1.identifier := 1;
@@ -181,6 +185,10 @@ package body frame_filters_abort_ftest is
         ctu_set_mode(mode_1, DUT_NODE, chn);
 
         generate_can_frame(can_tx_frame_2);
+        can_tx_frame_2.data_length := can_tx_frame_2.data_length mod 8;
+        length_to_dlc(can_tx_frame_2.data_length, can_tx_frame_2.dlc);
+        dlc_to_rwcnt(can_tx_frame_2.dlc, can_tx_frame_2.rwcnt);
+
         can_tx_frame_2.ident_type := BASE;
         can_tx_frame_2.frame_format := NORMAL_CAN;
         can_tx_frame_2.identifier := 2;
@@ -199,6 +207,11 @@ package body frame_filters_abort_ftest is
         ctu_set_mode(mode_1, DUT_NODE, chn);
 
         generate_can_frame(can_tx_frame_3);
+
+        can_tx_frame_3.data_length := can_tx_frame_3.data_length mod 8;
+        length_to_dlc(can_tx_frame_3.data_length, can_tx_frame_3.dlc);
+        dlc_to_rwcnt(can_tx_frame_3.dlc, can_tx_frame_3.rwcnt);
+
         can_tx_frame_3.ident_type := BASE;
         can_tx_frame_3.frame_format := NORMAL_CAN;
         can_tx_frame_3.identifier := 1;
