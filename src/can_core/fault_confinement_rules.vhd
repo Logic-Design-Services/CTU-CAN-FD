@@ -191,8 +191,8 @@ begin
                '0';
 
     -----------------------------------------------------------------------------------------------
-    -- Gating by ROM mode. In ROM mode, Error counters shall not increment in ROM mode. Not that
-    -- decrement does not need to be gated since the counter will stay at 0!
+    -- Gating by ROM mode. In ROM mode, Error counters shall not increment.
+    -- Decrement does not need to be gated since the counter will stay at 0!
     -----------------------------------------------------------------------------------------------
     inc_one <= '1' when (inc_one_i = '1' and mr_mode_rom = ROM_DISABLED)
                    else

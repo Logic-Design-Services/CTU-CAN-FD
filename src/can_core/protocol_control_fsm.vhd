@@ -3044,7 +3044,13 @@ begin
                            else
                        '0';
 
-    set_receiver <= '1' when (set_receiver_i = '1' and rx_trigger = '1')
+    -- No need to gate "set_receiver_i" by rx_trigger since this is always set in frame fields
+    -- where previous bits are recessive and dominant is sampled. Since Protocol control operates
+    -- with RX trigger one cycle after RX data are destuffed, it must be first cycle where such
+    -- condition is true. Thus gating by rx_data_nbs=DOMINANT is sufficient, and in the cycle
+    -- where this signal is set, the Protocol control FSM changes state. Thus it may never happed
+    -- that the "set_receiver" would hold for multiple cycles.
+    set_receiver <= '1' when (set_receiver_i = '1')
                         else
                     '0';
 
