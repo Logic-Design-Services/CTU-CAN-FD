@@ -715,9 +715,9 @@ architecture rtl of protocol_control_fsm is
     signal pex_on_fdf_enable            : std_logic;
     signal pex_on_res_enable            : std_logic;
 
-    -- Allow edges not aligned to time quanta during integration or
-    -- reintegration
-    signal accept_unaligned_edges       : std_logic;
+    -- Synchronization Edge on CAN RX that can be used during
+    -- Integration or reintegration to reset integration counter.
+    signal integ_restart_edge           : std_logic;
 
     -- Counting of consecutive bits during passive error flag
     signal rx_data_nbs_prev             : std_logic;
@@ -845,10 +845,12 @@ begin
     -- Do not accept unaligned edges to cause reset of integration counter
     -- when configured as CAN 2.0 node (Classical CAN).
     -- This reflects chapter 10.9.4 of ISO11898-1 2015
-    accept_unaligned_edges <= '0' when (mr_mode_fde = FDE_DISABLE and
-                                        mr_settings_pex = PROTOCOL_EXCEPTION_DISABLED)
-                                  else
-                              '1';
+    integ_restart_edge <= '0' when (mr_mode_fde = FDE_DISABLE and
+                                    mr_settings_pex = PROTOCOL_EXCEPTION_DISABLED)
+                              else
+                          '1' when (sync_edge = '1')
+                              else
+                          '0';
 
     -----------------------------------------------------------------------------------------------
     -- Decode maximal address in TXT Buffer on which valid data word is located.
@@ -1361,7 +1363,7 @@ begin
         is_receiver, crc_match, mr_mode_stm, tran_frame_valid, go_to_suspend, frame_start,
         ctrl_ctr_one, mr_command_ercrst_q, reinteg_ctr_expired, first_err_delim_q, go_to_stuff_count,
         ack_err_flag, crc_length_i, data_length_bits_c, ctrl_ctr_mem_index, is_bus_off,
-        block_txtb_unlock, mr_settings_pex, accept_unaligned_edges, rx_data_nbs_prev, sync_edge,
+        block_txtb_unlock, mr_settings_pex, integ_restart_edge, rx_data_nbs_prev, sync_edge,
         mr_mode_rom, mr_settings_ilbp, tx_dominant_ack, rec_lbpf_q, rec_ivld_q, allow_flipped_ack)
     begin
 
@@ -1586,7 +1588,7 @@ begin
                     ctrl_ctr_pload_i <= '1';
                 end if;
 
-                if (sync_edge = '1' and accept_unaligned_edges = '1') then
+                if (integ_restart_edge = '1') then
                     ctrl_ctr_pload_unaliged <= '1';
                 end if;
 
@@ -2512,7 +2514,7 @@ begin
                     ctrl_ctr_pload_i <= '1';
                 end if;
 
-                if (sync_edge = '1' and accept_unaligned_edges = '1') then
+                if (integ_restart_edge = '1') then
                     ctrl_ctr_pload_unaliged <= '1';
                 end if;
 
