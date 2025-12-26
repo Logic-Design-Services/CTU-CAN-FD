@@ -134,6 +134,7 @@ use ctu_can_fd_tb.frame_test_fstc_ftest.all;
 use ctu_can_fd_tb.frame_test_fcrc_ftest.all;
 use ctu_can_fd_tb.frame_test_sdlc_ftest.all;
 use ctu_can_fd_tb.frame_test_ignore_ftest.all;
+use ctu_can_fd_tb.frame_filters_abort_ftest.all;
 
 use ctu_can_fd_tb.glitch_filtering_ftest.all;
 
@@ -360,6 +361,8 @@ package body feature_test_list_pkg is
             frame_test_sdlc_ftest_exec(channel);
         elsif (test_name = "frame_test_ignore") then
             frame_test_ignore_ftest_exec(channel);
+        elsif (test_name = "frame_filters_abort") then
+            frame_filters_abort_ftest_exec(channel);
 
         elsif (test_name = "glitch_filtering") then
             glitch_filtering_ftest_exec(channel);
