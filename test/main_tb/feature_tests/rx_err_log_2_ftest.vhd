@@ -92,7 +92,7 @@
 --  @5. Check DUT node is transmitting error frame. Check RX Bufer of DUT
 --      contains single Error frame. Read it from RX Buffer of DUT, and
 --      check it has ERF_POS = ERF_POS_EOF. Wait until bus is idle.
---  @6. Generate CAN frame amd send it by DUT node. Wait until DUT Node is
+--  @6. Generate CAN frame and send it by DUT node. Wait until DUT Node is
 --      in first bit of Intermission. Flip bus value (overload condition), and
 --      wait till sample point. Release bus value.
 --  @7. Wait for one bit, and flip bus value. Wait till sample point and check
@@ -244,7 +244,7 @@ package body rx_err_log_2_ftest is
         ctu_wait_bus_idle(DUT_NODE, chn);
 
         -------------------------------------------------------------------------------------------
-        -- @6. Generate CAN frame amd send it by DUT node. Wait until DUT Node is
+        -- @6. Generate CAN frame and send it by DUT node. Wait until DUT Node is
         --     in first bit of Intermission. Flip bus value (overload condition), and
         --     wait till sample point. Release bus value.
         -------------------------------------------------------------------------------------------
