@@ -216,8 +216,13 @@ begin
     -- psl rx_buf_store_64_byte_frame_cov :
     --      cover {rec_dlc = "1111" and rec_is_rtr = '0' and commit_rx_frame = '1'};
     --
+    -- In the cycle where mr_command_crxpe is active, the rx_parity_error is cleared.
+    -- Since memory bus is driven in between falling edges, and functional coverage
+    -- is sampled with delayed clock, we can't detect case where rx_parity_error = '1'
+    -- and mr_command_crxpe = '1' simultaneously. Thus we detect falling edge due to
+    -- clear!
     -- psl rx_parity_err_clr_cov :
-    --      cover {rx_parity_error = '1' and mr_command_crxpe = '1'};
+    --      cover {rx_parity_error = '1'; rx_parity_error = '0' and mr_command_crxpe = '1'};
 
 
     -----------------------------------------------------------------------------------------------

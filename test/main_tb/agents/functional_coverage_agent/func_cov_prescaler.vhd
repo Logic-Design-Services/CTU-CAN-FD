@@ -245,28 +245,23 @@ begin
     -----------------------------------------------------------------------------------------------
 
     -- psl h_sync_ignored_due_to_previous_sync_cov : cover
-    --  {sync_flag = '1' and h_sync_edge = '1'}
-    --  report "Hard synchronisation ignored due to previous synchronization";
+    --  {sync_flag = '1' and h_sync_edge = '1'};
 
     -- psl re_sync_ignored_due_to_previous_sync_cov : cover
-    --  {sync_flag = '1' and resync_edge = '1'}
-    --  report "Re-synchronisation ignored due to previous synchronization";
+    --  {sync_flag = '1' and resync_edge = '1'};
 
     -- psl h_sync_in_tseg_1_cov : cover
-    --  {h_sync_edge_valid = '1' and is_tseg1 = '1'}
-    --  report "Hard synchronization in TSEG1";
+    --  {h_sync_edge_valid = '1' and is_tseg1 = '1'};
 
     -- psl h_sync_in_tseg_2_cov : cover
-    --  {h_sync_edge_valid = '1' and is_tseg2 = '1'}
-    --  report "Hard synchronization in TSEG2";
+    --  {h_sync_edge_valid = '1' and is_tseg2 = '1'};
 
     -- Hard synchronization in TSEG1
     -- psl re_sync_in_tseg_1_cov : cover
     --  {resync_edge_valid = '1' and is_tseg1 = '1'};
 
     -- psl re_sync_in_tseg_2_cov : cover
-    --  {resync_edge_valid = '1' and is_tseg2 = '1'}
-    --  report "Hard synchronization in TSEG2";
+    --  {resync_edge_valid = '1' and is_tseg2 = '1'};
 
 
     -----------------------------------------------------------------------------------------------
