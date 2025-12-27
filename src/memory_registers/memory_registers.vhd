@@ -370,8 +370,7 @@ begin
         );
 
     begin
-        txtb_port_a_cs(i) <= '1' when ((adress(11 downto 8) = buf_addr(i)) and
-                                        scs = '1' and swr = '1')
+        txtb_port_a_cs(i) <= '1' when ((adress(11 downto 8) = buf_addr(i)) and scs = '1' and swr = '1')
                                  else
                              '0';
     end generate txtb_port_a_cs_gen;
