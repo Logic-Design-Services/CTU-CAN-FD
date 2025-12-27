@@ -186,14 +186,10 @@ package body tx_arb_time_tran_ftest is
         -- timestamp are clocked properly!
         rand_logic_vect_v(ts_rand, 0.5);
 
-        -- Keep highest bit 0 to avoid complete overflow during the test!
-        ts_rand(63) := '0';
-
-        -- Additionally, keep bit 31=0. This is because timestamp is internally
-        -- in TB implemented from two naturals which are 0 .. 2^31 - 1. If we
-        -- would generate bit 31=1, conversion "to_integer" from such unsigned
-        -- value is out of scope of natural!
-        ts_rand(31) := '0';
+        -- If highest bit is set, then clear LSB 32 bits to avoid overflow!
+        if (ts_rand(63) = '1') then
+            ts_rand(31 downto 0) := (others => '0');
+        end if;
 
         generate_can_frame(can_frame);
         rand_int_v(10000, ts_offset);
