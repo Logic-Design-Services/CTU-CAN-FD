@@ -77,15 +77,15 @@
 --      at position of FRAME_TEST_W[TPRM].
 --
 -- @Test sequence:
---  @1. Set Test mode in DUT.
---  @2. Generate random CAN FD frame. Transmit it by DUT, record transmitted value
---      of stuff count ignoring stuff bits.
---  @3. Send again the same frame as in previous point, only flip random bit
---      of Stuff count, again record the stuff count. Check that transmitted
---      stuff count has correct bit flipped.
---  @4. Wait until error frame is transmitted (frame is corrupted, TEST_NODE
---      should transmit error frame). Check that TEST_NODE detects CRC error.
---      Wait until frame is transmitted.
+--  @1. Set Test mode in DUT. Iterate through all TXT Buffers:
+--      @1.1. Generate random CAN FD frame. Transmit it by DUT, record
+--            transmitted value of stuff count ignoring stuff bits.
+--      @1.2. Send again the same frame as in previous point, only flip random
+--            bit of Stuff count, again record the stuff count. Check that
+--            transmitted stuff count has correct bit flipped.
+--      @1.3. Wait until error frame is transmitted (frame is corrupted, TEST_NODE
+--            should transmit error frame). Check that TEST_NODE detects CRC error.
+--            Wait until frame is transmitted.
 --
 -- @TestInfoEnd
 --------------------------------------------------------------------------------
@@ -125,7 +125,6 @@ package body frame_test_fstc_ftest is
 
         variable txt_buf_count      :       natural;
         variable tmp_int            :       natural;
-        variable txt_buf_index      :       natural;
 
         variable status_1           :       t_ctu_status;
 
@@ -141,7 +140,7 @@ package body frame_test_fstc_ftest is
     begin
 
         -----------------------------------------------------------------------
-        -- @1. Set Test mode in DUT.
+        -- @1. Set Test mode in DUT. Iterate through all TXT Buffers
         -----------------------------------------------------------------------
         info_m("Step 1");
 
@@ -154,79 +153,83 @@ package body frame_test_fstc_ftest is
 
         ctu_get_txt_buf_cnt(txt_buf_count, DUT_NODE, chn);
 
-        -----------------------------------------------------------------------
-        -- @2. Generate random CAN FD frame. Transmit it by DUT, record
-        --     transmitted value of stuff count ignoring stuff bits.
-        -----------------------------------------------------------------------
-        info_m("Step 2");
+        for txt_buf_index in 1 to txt_buf_count loop
 
-        generate_can_frame(can_tx_frame);
-        can_tx_frame.frame_format := FD_CAN;
+            info_m("Using TXT Buffer:" & integer'image(txt_buf_index));
 
-        ctu_get_rand_txt_buf(txt_buf_index, DUT_NODE, chn);
-        ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
+            -----------------------------------------------------------------------
+            -- @1.1. Generate random CAN FD frame. Transmit it by DUT, record
+            --       transmitted value of stuff count ignoring stuff bits.
+            -----------------------------------------------------------------------
+            info_m("Step 1.1");
 
-        ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+            generate_can_frame(can_tx_frame);
+            can_tx_frame.frame_format := FD_CAN;
 
-        ctu_wait_ff(ff_stuff_count, DUT_NODE, chn);
+            ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
+            ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
 
-        for i in 0 to 3 loop
-            ctu_wait_sample_point(DUT_NODE, chn);
-            get_can_tx(DUT_NODE, golden_stc(i), chn);
+            ctu_wait_ff(ff_stuff_count, DUT_NODE, chn);
+
+            for i in 0 to 3 loop
+                ctu_wait_sample_point(DUT_NODE, chn);
+                get_can_tx(DUT_NODE, golden_stc(i), chn);
+            end loop;
+
+            info_m("Original stuff count value is: 0x" & to_string(golden_stc));
+
+            ctu_wait_bus_idle(DUT_NODE, chn);
+
+            -----------------------------------------------------------------------
+            -- @1.2 Send again the same frame as in previous point, only flip
+            --      random bit of Stuff count, again record the stuff count.
+            --      Check that transmitted stuff count has correct bit flipped.
+            -----------------------------------------------------------------------
+            info_m("Step 1.2");
+
+            ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
+
+            rand_int_v(3, bit_to_flip);
+            ctu_set_tx_frame_test(txt_buf_index, bit_to_flip, true, false, false,
+                                DUT_NODE, chn);
+
+            ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
+
+            ctu_wait_ff(ff_stuff_count, DUT_NODE, chn);
+
+            for i in 0 to 3 loop
+                ctu_wait_sample_point(DUT_NODE, chn);
+                get_can_tx(DUT_NODE, real_stc(i), chn);
+            end loop;
+
+            -- Calculate expected stuff count
+            expected_stc := golden_stc;
+            expected_stc(bit_to_flip) := not expected_stc(bit_to_flip);
+
+            info_m("Golden stuff count: " & to_string(golden_stc));
+            info_m("Expected stuff count: " & to_string(expected_stc));
+            info_m("Real stuff count: " & to_string(real_stc));
+            check_m(expected_stc = real_stc, "Expected Stuff count = Real stuff count");
+
+            -----------------------------------------------------------------------
+            -- @1.3 Wait until error frame is transmitted (frame is corrupted,
+            --      TEST_NODE should transmit error frame). Check that TEST_NODE
+            --      detects Form error. Wait until frame is transmitted.
+            -----------------------------------------------------------------------
+            info_m("Step 1.3");
+
+            ctu_wait_err_frame(TEST_NODE, chn);
+            wait for 20 ns;
+
+            ctu_get_err_capt(err_capt, TEST_NODE, chn);
+
+            check_m(err_capt.err_pos = err_pos_ack, "Error in ACK field");
+            check_m(err_capt.err_type = can_err_crc, "CRC error detected");
+
+            ctu_wait_bus_idle(DUT_NODE, chn);
+            ctu_wait_bus_idle(TEST_NODE, chn);
+
         end loop;
-
-        info_m("Original stuff count value is: 0x" & to_string(golden_stc));
-
-        ctu_wait_bus_idle(DUT_NODE, chn);
-
-        -----------------------------------------------------------------------
-        -- @3. Send again the same frame as in previous point, only flip
-        --     random bit of Stuff count, again record the stuff count.
-        --     Check that transmitted stuff count has correct bit flipped.
-        -----------------------------------------------------------------------
-        info_m("Step 3");
-
-        ctu_put_tx_frame(can_tx_frame, txt_buf_index, DUT_NODE, chn);
-
-        rand_int_v(3, bit_to_flip);
-        ctu_set_tx_frame_test(txt_buf_index, bit_to_flip, true, false, false,
-                              DUT_NODE, chn);
-
-        ctu_give_txt_cmd(buf_set_ready, txt_buf_index, DUT_NODE, chn);
-
-        ctu_wait_ff(ff_stuff_count, DUT_NODE, chn);
-
-        for i in 0 to 3 loop
-            ctu_wait_sample_point(DUT_NODE, chn);
-            get_can_tx(DUT_NODE, real_stc(i), chn);
-        end loop;
-
-        -- Calculate expected stuff count
-        expected_stc := golden_stc;
-        expected_stc(bit_to_flip) := not expected_stc(bit_to_flip);
-
-        info_m("Golden stuff count: " & to_string(golden_stc));
-        info_m("Expected stuff count: " & to_string(expected_stc));
-        info_m("Real stuff count: " & to_string(real_stc));
-        check_m(expected_stc = real_stc, "Expected Stuff count = Real stuff count");
-
-        -----------------------------------------------------------------------
-        -- @4. Wait until error frame is transmitted (frame is corrupted,
-        --     TEST_NODE should transmit error frame). Check that TEST_NODE
-        --     detects Form error. Wait until frame is transmitted.
-        -----------------------------------------------------------------------
-        info_m("Step 4");
-
-        ctu_wait_err_frame(TEST_NODE, chn);
-        wait for 20 ns;
-
-        ctu_get_err_capt(err_capt, TEST_NODE, chn);
-
-        check_m(err_capt.err_pos = err_pos_ack, "Error in ACK field");
-        check_m(err_capt.err_type = can_err_crc, "CRC error detected");
-
-        ctu_wait_bus_idle(DUT_NODE, chn);
-        ctu_wait_bus_idle(TEST_NODE, chn);
 
   end procedure;
 
