@@ -105,9 +105,6 @@ package can_constants_pkg is
     -----------------------------------------------------------------------------------------------
     -- Memory Access
     -----------------------------------------------------------------------------------------------
-    constant ACT_CSC                        : std_logic := '1';
-    constant ACT_SRD                        : std_logic := '1';
-    constant ACT_SWR                        : std_logic := '1';
 
     -- Address ranges for identifier
     constant ID_ADRESS_HIGHER               : natural := 15;

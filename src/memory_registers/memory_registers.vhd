@@ -312,9 +312,6 @@ architecture rtl of memory_registers is
     -- TXT buffer outputs - padded
     signal mr_tst_rdata_tst_rdata_txb_i : t_txt_bufs_output(7 downto 0);
 
-    -- Main chip select signal
-    signal can_core_cs                  : std_logic;
-
     -- Chip select signals for each memory sub-block
     signal control_registers_cs         : std_logic;
     signal control_registers_cs_reg     : std_logic;
@@ -343,6 +340,9 @@ architecture rtl of memory_registers is
     signal clk_control_regs             : std_logic;
     signal clk_test_regs                : std_logic;
 
+    -- SCS and SWR
+    signal scs_and_swr                  : std_logic;
+
 begin
 
     -----------------------------------------------------------------------------------------------
@@ -359,6 +359,9 @@ begin
     -----------------------------------------------------------------------------------------------
     -- TXT Buffer RAMs chip select signals.
     -----------------------------------------------------------------------------------------------
+    scs_and_swr <= '1' when (scs = '1' and swr = '1') else
+                   '0';
+
     txtb_port_a_cs_gen : for i in 0 to G_TXT_BUFFER_COUNT - 1 generate
         type tx_buff_addr_type is array (0 to 7) of
             std_logic_vector(3 downto 0);
@@ -370,26 +373,23 @@ begin
         );
 
     begin
-        txtb_port_a_cs(i) <= '1' when ((adress(11 downto 8) = buf_addr(i)) and scs = '1' and swr = '1')
+        txtb_port_a_cs(i) <= '1' when (adress(11 downto 8) = buf_addr(i) and scs_and_swr = '1')
                                  else
                              '0';
     end generate txtb_port_a_cs_gen;
 
     txtb_port_a_be <= sbe;
 
-    can_core_cs <= '1' when (scs = ACT_CSC) else
-                   '0';
-
     -----------------------------------------------------------------------------------------------
     -- Chip selects for register map blocks
     -----------------------------------------------------------------------------------------------
     control_registers_cs <= '1' when (adress(11 downto 8) = CONTROL_REGISTERS_BLOCK) and
-                                     (can_core_cs = '1')
+                                     (scs = '1')
                                 else
                             '0';
 
     test_registers_cs <= '1' when (adress(11 downto 8) = TEST_REGISTERS_BLOCK) and
-                                  (can_core_cs = '1')
+                                  (scs = '1')
                              else
                          '0';
 
