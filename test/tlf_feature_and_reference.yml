@@ -200,6 +200,7 @@ tests:
     - name: scan_mode
     - name: settings_tbfbo
     - name: settings_nisofd
+    - name: settings_pex
     - name: single_bus_node
     - name: ssp_saturation
     - name: ssp_cfg

@@ -213,6 +213,7 @@ use ctu_can_fd_tb.rx_err_log_back_to_back_ftest.all;
 use ctu_can_fd_tb.scan_mode_ftest.all;
 use ctu_can_fd_tb.settings_tbfbo_ftest.all;
 use ctu_can_fd_tb.settings_nisofd_ftest.all;
+use ctu_can_fd_tb.settings_pex_ftest.all;
 use ctu_can_fd_tb.single_bus_node_ftest.all;
 use ctu_can_fd_tb.ssp_cfg_ftest.all;
 use ctu_can_fd_tb.ssp_saturation_ftest.all;
@@ -511,6 +512,8 @@ package body feature_test_list_pkg is
             settings_tbfbo_ftest_exec(channel);
         elsif (test_name = "settings_nisofd") then
             settings_nisofd_ftest_exec(channel);
+        elsif (test_name = "settings_pex") then
+            settings_pex_ftest_exec(channel);
         elsif (test_name = "single_bus_node") then
             single_bus_node_ftest_exec(channel);
         elsif (test_name = "ssp_cfg") then
