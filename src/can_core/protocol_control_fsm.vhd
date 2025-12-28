@@ -3280,7 +3280,7 @@ begin
 
     -- psl no_err_frm_req_in_off : assert never
     --  (err_frm_req = '1') and
-    --  (curr_state = s_pc_off or curr_state = s_pc_integrating or
+    --  (curr_state = s_pc_off or
     --   curr_state = s_pc_idle or curr_state = s_pc_intermission or
     --   curr_state = s_pc_suspend or curr_state = s_pc_reintegrating)
     --  report "Error frame request in invalid Protocol control field!";
