@@ -359,14 +359,16 @@ begin
     -- Error counters should remain unchanged according to 12.1.4.2 in ISO11898-1:2015 in following
     -- cases:
     --  1. Error passive transmitter detects ACK error.
-    --  2. Transmitter detects stuff error in Arbitration when bit should have been recessive,
-    --     but was transmitted dominant!
+    --  2. Transmitter detects stuff error in Arbitration when recessive was sent, but dominant
+    --     was received. Note that we don't need to add "tx_data = RECESSIVE" to the second
+    --     condition since when stuff_err is detected, and rx_data is dominant, it is impossible
+    --     for tx_data to be dominant. If this was the case, the core would need to transmit
+    --     intentional stuff error, and there is no such capability.
     -----------------------------------------------------------------------------------------------
     err_ctrs_unchanged <= '1' when (ack_err = '1' and is_err_passive = '1')
                               else
                           '1' when (stuff_err = '1' and is_arbitration = '1' and
-                                    is_transmitter = '1' and rx_data = DOMINANT and
-                                    tx_data = RECESSIVE)
+                                    is_transmitter = '1' and rx_data = DOMINANT)
                               else
                           '0';
 
