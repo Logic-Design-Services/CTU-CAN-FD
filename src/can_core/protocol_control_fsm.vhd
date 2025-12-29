@@ -2327,68 +2327,70 @@ begin
                 -- If we are bus-off, go to reintegration wait!
                 if (is_bus_off = '1') then
                     tick_state_reg <= '1';
-                end if;
 
-                -- Last (third) bit of intermission
-                if (ctrl_ctr_zero = '1' and is_bus_off = '0') then
-                    tick_state_reg <= '1';
-                    ctrl_ctr_pload_i <= '1';
-                    crc_spec_enable_i <= '1';
+                else
+                    -- Last (third) bit of intermission
+                    if (ctrl_ctr_zero = '1') then
+                        tick_state_reg <= '1';
+                        ctrl_ctr_pload_i <= '1';
+                        crc_spec_enable_i <= '1';
 
-                    -- Go to Base ID (sampling of DOMINANT in the third bit of intermission)!
-                    if (rx_data_nbs = DOMINANT) then
-                        ctrl_ctr_pload_val <= C_BASE_ID_DURATION;
-                        tx_load_base_id_i <= '1';
-                        sof_pulse_i <= '1';
-                        rec_ivld_i <= '0';
-
-                    -- Goes to either IDLE, Suspend, or to SOF, when there is sth. to transmitt.
-                    -- Preload SUSPEND length in any case, since other states don't care about
-                    -- control counter.
-                    else
-                        ctrl_ctr_pload_val <= C_SUSPEND_DURATION;
-                    end if;
-
-                    -- Lock TXT Buffer when there is what to transmitt, and no suspend! Unit becomes
-                    -- transmitter! If not, and DOMINANT is received, become receiver!
-                    if (tran_frame_valid = '1' and go_to_suspend = '0') then
-                        txtb_hw_cmd_d.lock <= '1';
-                        set_transmitter_i <= '1';
-                        stuff_enable_set <= '1';
-
+                        -- Go to Base ID (sampling of DOMINANT in the third bit of intermission)!
                         if (rx_data_nbs = DOMINANT) then
-                            tx_frame_no_sof_d <= '1';
+                            ctrl_ctr_pload_val <= C_BASE_ID_DURATION;
+                            tx_load_base_id_i <= '1';
+                            sof_pulse_i <= '1';
+                            rec_ivld_i <= '0';
+
+                        -- Goes to either IDLE, Suspend, or to SOF, when there is sth. to transmitt.
+                        -- Preload SUSPEND length in any case, since other states don't care about
+                        -- control counter.
+                        else
+                            ctrl_ctr_pload_val <= C_SUSPEND_DURATION;
                         end if;
 
+                        -- Lock TXT Buffer when there is what to transmitt, and no suspend! Unit becomes
+                        -- transmitter! If not, and DOMINANT is received, become receiver!
+                        if (tran_frame_valid = '1' and go_to_suspend = '0') then
+                            txtb_hw_cmd_d.lock <= '1';
+                            set_transmitter_i <= '1';
+                            stuff_enable_set <= '1';
+
+                            if (rx_data_nbs = DOMINANT) then
+                                tx_frame_no_sof_d <= '1';
+                            end if;
+
+                        elsif (rx_data_nbs = DOMINANT) then
+                            set_receiver_i   <= '1';
+                        end if;
+
+                        -- Transmission/reception started -> Enable Bit stuffing! Clear RX Shift
+                        -- Register!
+                        if (frame_start = '1') then
+                            destuff_enable_set <= '1';
+                            rx_clear_i <= '1';
+                        end if;
+
+                        -- If we dont sample dominant, nor we have sth ready for transmission, we go to
+                        -- Idle! Don't become idle when we go to suspend!
+                        if (rx_data_nbs = RECESSIVE and tran_frame_valid = '0' and
+                            go_to_suspend = '0')
+                        then
+                            set_idle_i <= '1';
+                        end if;
+
+                    -- First or second bit of intermission!
                     elsif (rx_data_nbs = DOMINANT) then
-                        set_receiver_i   <= '1';
+                        tick_state_reg <= '1';
+                        ctrl_ctr_pload_i <= '1';
+                        if (mr_mode_rom = ROM_DISABLED) then
+                            ctrl_ctr_pload_val <= C_OVR_FLG_DURATION;
+                        else
+                            ctrl_ctr_pload_val <= C_INTEGRATION_DURATION;
+                            set_idle_i <= '1';
+                        end if;
                     end if;
 
-                    -- Transmission/reception started -> Enable Bit stuffing! Clear RX Shift
-                    -- Register!
-                    if (frame_start = '1') then
-                        destuff_enable_set <= '1';
-                        rx_clear_i <= '1';
-                    end if;
-
-                    -- If we dont sample dominant, nor we have sth ready for transmission, we go to
-                    -- Idle! Don't become idle when we go to suspend!
-                    if (rx_data_nbs = RECESSIVE and tran_frame_valid = '0' and
-                        go_to_suspend = '0')
-                    then
-                        set_idle_i <= '1';
-                    end if;
-
-                -- First or second bit of intermission!
-                elsif (rx_data_nbs = DOMINANT and is_bus_off = '0') then
-                    tick_state_reg <= '1';
-                    ctrl_ctr_pload_i <= '1';
-                    if (mr_mode_rom = ROM_DISABLED) then
-                        ctrl_ctr_pload_val <= C_OVR_FLG_DURATION;
-                    else
-                        ctrl_ctr_pload_val <= C_INTEGRATION_DURATION;
-                        set_idle_i <= '1';
-                    end if;
                 end if;
 
                 -- Second or third bit of intermission, Hard Synchronisation
