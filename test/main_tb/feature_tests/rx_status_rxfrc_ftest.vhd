@@ -157,11 +157,14 @@ package body rx_status_rxfrc_ftest is
 
         generate_can_frame(can_frame);
 
-        -- No data bytes is minimal frame size to get the highest possible frame
-        -- count in RX Buffer!
-        can_frame.identifier := can_frame.identifier mod (2 ** 11);
+        -- Use fixed identifier that achieves Parity bit flip ->
+        -- To maximimize toggle coverage!
+        can_frame.identifier := 3;
         can_frame.ident_type := BASE;
         can_frame.frame_format := NORMAL_CAN;
+        can_frame.rtr := RTR_FRAME;
+        -- No data bytes is minimal frame size to get the highest possible frame
+        -- count in RX Buffer!
         can_frame.data_length := 0;
         length_to_dlc(can_frame.data_length, can_frame.dlc);
         dlc_to_rwcnt(can_frame.dlc, can_frame.rwcnt);
