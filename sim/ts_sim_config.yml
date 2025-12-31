@@ -1391,7 +1391,7 @@ targets:
     # Typical bit rate - SJW = 0
     # Compliance Tests
     ###############################################################################################
-    tb_rtl_big_asic_typ_compliance:
+    tb_rtl_big_asic_sjw0_compliance:
         top_entity: ctu_can_fd_tb.TB_TOP_CTU_CAN_FD
         test_list_file: test/tlf_compliance_full_typ.yml
         generics:
