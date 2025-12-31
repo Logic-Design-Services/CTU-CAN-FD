@@ -255,6 +255,8 @@ tests:
         /TB_TOP_CTU_CAN_FD/iterations: 15
 
     - name: tx_status
+    - name: tx_no_sof_from_idle
+
     - name: timestamp_low_high
       generics:
         /TB_TOP_CTU_CAN_FD/iterations: 15

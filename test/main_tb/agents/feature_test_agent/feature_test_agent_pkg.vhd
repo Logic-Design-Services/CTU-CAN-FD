@@ -4635,7 +4635,7 @@ package body feature_test_agent_pkg is
 
 
     procedure ctu_get_curr_ff(
-        variable ff         : out   t_ctu_frame_field;
+        variable ff             : out   t_ctu_frame_field;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     ) is
