@@ -4,8 +4,8 @@ CTU CAN FD is soft IP-Core written in VHDL which supports ISO and NON-ISO versio
 of CAN FD protocol.
 
 CTU CAN FD is compliant with ISO 11898-1:2015. CTU CAN FD is tested by ISO 16845-1 2016
-sequence in digital simulation and it has been used in dozens of FPGA and
-ASIC applications.
+sequence in digital simulation, and it has been used in dozens of FPGA applications.
+The core is also silicon proven in mass production.
 
 RTL is implemented in VHDL-93, synthesizable with most FPGA and ASIC flows.
 TB is implemented with VHDL 2008.
@@ -45,21 +45,63 @@ Architecture of CTU CAN FD is described in:
 Functional description of CTU CAN FD is described in:
 [![Datasheet](https://img.shields.io/badge/Datasheet--blue.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/Datasheet.pdf)
 
+## Synthesis
+
+CTU CAN FD has been synthesized into Xilinx and Intel FPGAs on several FPGA families
+(Zynq, Cyclone IV/V, Spartan). BRAMs are inferred for TX and RX buffers memories.
+Maximal reachable frequency is around 100 MHz on Cyclone V/IV and Xilinx Zynq devices.
+
+CTU CAN FD has been synthesized into several ASIC PDKs using commercial flows.
+
+Daily CI pipeline executes example synthesis on Xilinx Zynq device with 3 different
+device configurations:
+
+#### Small:
+
+2 TXT Buffers, 32 word RX Buffer, no frame filters
+Results: [Area](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/minimal_design_config/utilization.rpt)
+[Timing](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/minimal_design_config/timing_summary.rpt)
+
+#### Medium:
+
+4 TXT Buffers, 128 word RX Buffer, only one bit filter
+Results: [Area](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/typical_design_config/utilization.rpt)
+[Timing](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/typical_design_config/timing_summary.rpt)
+
+#### Big:
+
+8 TXT Buffers, 1024 word RX Buffer, all frame filters
+Results: [Area](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/maximal_design_config/utilization.rpt)
+[Timing](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/maximal_design_config/timing_summary.rpt)
+
+Note that design is constrained to 100 MHz with no timing violations, combinatorial loops
+or latches inferred (FPGA config without clock gate is used). These results together with
+gate level simulations (see "Test-bench" above), provide good indicator of high-quality RTL design.
+
 
 ## Test-bench
 
-CTU CAN FD has its own test-bench and VIP (verification IP) with
-ISO 16845-1 2016 compliance sequence. In addition to ISO 11898-1
-compliance, all other features of CTU CAN FD are verified.
+CTU CAN FD has its own test-bench and VIP (verification IP) with ISO 16845-1 2016 compliance sequence.
+In addition to ISO 11898-1 compliance, all other features of CTU CAN FD are verified.
 
 There are 3 types of tests available in CTU CAN FD test-bench:
-- Feature tests (open-source, VHDL)
-- Reference tests (open-source, VHDL)
-- Compliance tests (open-source, C++ library linked to simulation, [ISO16845 Compliance library](https://gitlab.com/Ondrej_Ille/iso-16845-compliance-tests)).
+- Feature tests (VHDL)
+- Reference tests (VHDL)
+- Compliance tests (C++ library linked to simulation, [ISO16845 Compliance library](https://github.com/Blebowski/iso-16845-compliance-tests)).
 
-Alltogether, there is more than 300 different tests that run in
-multiple testbench variants. The testbench reaches high statement,
-toggle, branch and expression coverage of the DUT.
+The tests are executed in multiple regression runs in a CI pipeline.
+
+Alltogether, there is more than 350 different tests that run in multiple variants.
+The test variants combine:
+
+- Test types (feature, reference, compliance)
+- DUT configurations (small, medium, big)
+- Target device (FPGA/ASIC)
+- CAN bus bit-rate (minimal, typical, maximal)
+
+The regression run reaches 100 % statement, toggle, branch and expression coverage
+as measured by NVC and VCS simulators.
+
 Functional coverage is implemented by PSL assertions.
 
 The code coverage and functional coverage can be seen in:
@@ -69,63 +111,11 @@ Description of test-bench and CTU CAN FD VIP is in:
 [![Testbench architecture](https://img.shields.io/badge/Testbench--blue.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/Testbench.pdf)
 
 Documentation of all the tests with mapping to a feature being verified:
-[![Verification Requirement Matrix](https://img.shields.io/badge/Testbench--blue.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/regression_results/VRM.html )
+[![Verification Requirement Matrix](https://img.shields.io/badge/Verification-Requirement-Matrix--orange.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/regression_results/VRM.html )
 
-CTU CAN FD is simulated as RTL, and as post-synthesis gate-level
-netlist with Xilinx UNISIM library (unit delay simulation).
+CTU CAN FD is simulated as RTL, and as post-synthesis gate-level netlist with Xilinx UNISIM library.
 
 See the instructions below in "How to run CTU CAN FD testbench" subsection.
-
-
-## Regressions (Continuous integration)
-
-The tests are executed in several regression runs:
-- Fast ASIC - DUT configuration for ASIC, short run
-- Fast FPGA - DUT configuration for FPGA, short run
-- Compliance short - Runs majority of ISO 11845-1 compliance test sequence
-
-- Nightly - DUT configuration for ASIC with different DUT parametrizations
-- Compliance typ - Runs all ISO 11845-1 tests with "typical" bit-rate on CAN bus.
-- Compliance max - Runs all ISO 11845-1 tests with "maximal" bit-rate on CAN bus.
-- Compliance min - Runs all ISO 11845-1 tests with "minimal" bit-rate on CAN bus.
-
-- Gate level simple - Runs most of feature tests on gate level netlist as DUT.
-- Gate level compliance - Runs most of ISO 11845-1 tests on gate level netlist as DUT.
-
-Short summary of results from last regression (including all test types) can be downloaded from:
-[Regression summary](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/regression_results/regression_summary.gz)
-
-
-## Synthesis
-
-CTU CAN FD has been synthesized into Xilinx and Intel FPGAs on several FPGA families
-(Zynq, Cyclone IV/V, Spartan). BRAMs are inferred for TX and RX buffers memories.
-Maximal reachable frequency is around 100 MHz on Cyclone V/IV and Xilinx Zynq devices.
-
-Daily CI pipeline executes example synthesis on Xilinx Zynq device with 3 different
-device configurations:
-
-#### Minimal:
-
-2 TXT Buffers, 32 word RX Buffer, no frame filters
-Results: [Area](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/minimal_design_config/utilization.rpt)
-[Timing](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/minimal_design_config/timing_summary.rpt)
-
-#### Typical:
-
-4 TXT Buffers, 128 word RX Buffer, only one bit filter
-Results: [Area](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/typical_design_config/utilization.rpt)
-[Timing](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/typical_design_config/timing_summary.rpt)
-
-#### Maximal:
-
-8 TXT Buffers, 1024 word RX Buffer, all frame filters
-Results: [Area](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/maximal_design_config/utilization.rpt)
-[Timing](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/synthesis/maximal_design_config/timing_summary.rpt)
-
-Note that design is constrained to 100 MHz with no timing violations, combinatorial loops
-or latches inferred (FPGA config without clock gate is used). These results together with
-gate level simulations (see "Test-bench" above), provide good indicator of high-quality RTL design.
 
 
 ## How to integrate CTU CAN FD RTL ?
@@ -142,22 +132,46 @@ There are two options how to run CTU CAN FD regression:
 2. With Synopsys VCS
 
 Each regression run corresponds to a target from `sim/ts_sim_config.yml` file.
-There are following targets available:
-   - tb_rtl_test_fast_asic
-   - tb_rtl_test_fast_fpga
-   - tb_rtl_test_nightly
-   - tb_rtl_test_compliance_short
-   - tb_rtl_test_compliance_full_typ
-   - tb_rtl_test_compliance_full_min
-   - tb_rtl_test_compliance_full_max
+
+There are following RTL simulation targets available:
+   - tb_rtl_small_asic_max_feature
+   - tb_rtl_medium_asic_max_feature
+   - tb_rtl_big_asic_max_feature
+   - tb_rtl_medium_fpga_max_feature
+   - tb_rtl_small_asic_typ_feature
+   - tb_rtl_medium_asic_typ_feature
+   - tb_rtl_big_asic_typ_feature
+   - tb_rtl_medium_fpga_typ_feature
+   - tb_rtl_small_asic_min_feature
+   - tb_rtl_medium_asic_min_feature
+   - tb_rtl_big_asic_min_feature
+   - tb_rtl_medium_fpga_min_feature
+   - tb_rtl_small_asic_max_compliance
+   - tb_rtl_small_asic_typ_compliance
+   - tb_rtl_small_asic_min_compliance
+   - tb_rtl_small_asic_sjw0_compliance
+   - tb_rtl_medium_asic_max_compliance
+   - tb_rtl_medium_asic_typ_compliance
+   - tb_rtl_medium_asic_min_compliance
+   - tb_rtl_medium_asic_sjw0_compliance
+   - tb_rtl_big_asic_max_compliance
+   - tb_rtl_big_asic_typ_compliance
+   - tb_rtl_big_asic_min_compliance
+   - tb_rtl_big_asic_sjw0_compliance
+
+There are following Xilinx Unisim gate targets available:
+   - tb_gate_xilinx_medium_fpga_max_feature:
+   - tb_gate_xilinx_small_fpga_max_compliance:
+   - tb_gate_xilinx_small_fpga_typ_compliance:
+   - tb_gate_xilinx_small_fpga_min_compliance:
 
 ### Running with NVC
 
 In CTU CAN FD repository root:
 
-1. `./run-docker-test` - This will pull and launch docker image with NVC, Vunit, CMake and C Compiler.
+1. `./run-docker-test` - Pulls and launches docker image with NVC, Vunit, CMake and C Compiler.
 2. `cd main_tb/iso-16845-compliance-tests`
-3. `./build.sh` - This builds compliance tests library
+3. `./build.sh` - Builds ISO compliance tests library
 4. `cd ../..`
 5. `VUNIT_SIMULATOR=nvc ./run.py <TARGET_NAME>` To run all tests from `<TARGET_NAME>` target.
 
@@ -245,13 +259,4 @@ The CTU CAN FD IP core functional model is part of QEMU mainline.
 QEMU CAN documentation [docs/system/devices/can.rst](https://www.qemu.org/docs/master/system/devices/can.html)
 includes section about CTU CAN FD emulation setup.
 
-
-## Roadmap
-
-There are several options for further development:
-- Adding DMA support
-- Splitting the design into two clock domains
-- Support of TTCAN protocol
-- Support of CAN XL protocol
-- Other features
 
