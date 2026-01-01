@@ -359,7 +359,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 2
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
@@ -411,7 +411,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 2
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
@@ -463,7 +463,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 2
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
@@ -515,7 +515,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 2
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
@@ -568,13 +568,13 @@ targets:
             /TB_TOP_CTU_CAN_FD/target_technology: 0
 
             # DUT Bit timing settings
-            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
-            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 127
             /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
@@ -620,13 +620,13 @@ targets:
             /TB_TOP_CTU_CAN_FD/target_technology: 0
 
             # DUT Bit timing settings
-            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
-            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 127
             /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
@@ -672,13 +672,13 @@ targets:
             /TB_TOP_CTU_CAN_FD/target_technology: 0
 
             # DUT Bit timing settings
-            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
-            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 127
             /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
@@ -725,7 +725,7 @@ targets:
 
             # DUT Bit timing settings
             /TB_TOP_CTU_CAN_FD/cfg_brp: 4
-            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 127
             /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
@@ -857,7 +857,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 2
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
@@ -906,13 +906,13 @@ targets:
             /TB_TOP_CTU_CAN_FD/target_technology: 0
 
             # DUT Bit timing settings
-            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
-            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 127
             /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
@@ -1084,7 +1084,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 2
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
@@ -1133,13 +1133,13 @@ targets:
             /TB_TOP_CTU_CAN_FD/target_technology: 0
 
             # DUT Bit timing settings
-            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
-            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 127
             /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
@@ -1311,7 +1311,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 2
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
@@ -1360,13 +1360,13 @@ targets:
             /TB_TOP_CTU_CAN_FD/target_technology: 0
 
             # DUT Bit timing settings
-            /TB_TOP_CTU_CAN_FD/cfg_brp: 4
-            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_brp: 1
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 127
             /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 4
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 31
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 31
@@ -1598,7 +1598,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 7
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 5
 
-            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 1
+            /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 2
             /TB_TOP_CTU_CAN_FD/cfg_prop_fd: 5
             /TB_TOP_CTU_CAN_FD/cfg_ph_1_fd: 7
             /TB_TOP_CTU_CAN_FD/cfg_ph_2_fd: 7
@@ -1651,7 +1651,7 @@ targets:
 
             # DUT Bit timing settings
             /TB_TOP_CTU_CAN_FD/cfg_brp: 4
-            /TB_TOP_CTU_CAN_FD/cfg_prop: 63
+            /TB_TOP_CTU_CAN_FD/cfg_prop: 127
             /TB_TOP_CTU_CAN_FD/cfg_ph_1: 63
             /TB_TOP_CTU_CAN_FD/cfg_ph_2: 63
             /TB_TOP_CTU_CAN_FD/cfg_sjw: 31
