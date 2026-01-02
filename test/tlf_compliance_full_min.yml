@@ -41,7 +41,11 @@ tests:
     - name: iso_8_2_4
 
     - name: iso_8_7_1
+      generics:
+        /TB_TOP_CTU_CAN_FD/cfg_brp: 2
     - name: iso_8_7_2
+      generics:
+        /TB_TOP_CTU_CAN_FD/cfg_brp: 2
     - name: iso_8_7_3
 
     - name: iso_8_7_7
@@ -288,8 +292,14 @@ tests:
     - name: iso_8_6_21
 
     - name: iso_8_7_4
+      generics:
+        /TB_TOP_CTU_CAN_FD/cfg_brp: 3
     - name: iso_8_7_5
+      generics:
+        /TB_TOP_CTU_CAN_FD/cfg_brp: 3
     - name: iso_8_7_6
+      generics:
+        /TB_TOP_CTU_CAN_FD/cfg_brp: 3
 
     - name: iso_8_7_9
       generics:
@@ -341,4 +351,8 @@ tests:
       generics:
         /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 3
     - name: iso_8_8_5_1
+      generics:
+        /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 3
     - name: iso_8_8_5_2
+      generics:
+        /TB_TOP_CTU_CAN_FD/cfg_brp_fd: 3
