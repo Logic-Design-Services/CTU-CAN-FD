@@ -1296,7 +1296,7 @@ package feature_test_agent_pkg is
     --  node            Node which shall be accessed (Test node or DUT).
     ----------------------------------------------------------------------------
     procedure ctu_get_txt_buf_cnt(
-        variable num_buffers    : out   natural range 1 to 8;
+        variable num_buffers    : out   natural;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     );
@@ -3539,7 +3539,7 @@ package body feature_test_agent_pkg is
 
 
     procedure ctu_get_txt_buf_cnt(
-        variable num_buffers    : out   natural range 1 to 8;
+        variable num_buffers    : out   natural;
         constant node           : in    t_feature_node;
         signal   channel        : inout t_com_channel
     )is
