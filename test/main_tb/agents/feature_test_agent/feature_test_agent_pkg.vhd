@@ -4995,6 +4995,10 @@ package body feature_test_agent_pkg is
         ctu_get_rx_buf_state(rx_buf_state, node, channel);
         rv.rx_buffer_size := rx_buf_state.rx_buff_size;
 
+        -- Some simulator incorrectly evaluate range on the output only argument,
+        -- and thus flag this as "out of range."
+        rv.txt_buffer_count := 2;
+
         ctu_get_txt_buf_cnt(rv.txt_buffer_count, node, channel);
 
         ctu_read(data_16, FILTER_STATUS_ADR, node, channel);
