@@ -295,7 +295,12 @@ package body rx_err_log_3_ftest is
 
         ctu_wait_sample_point(DUT_NODE, chn);
         ctu_wait_sync_seg(DUT_NODE, chn);
-        wait for 2 ns;
+
+        -- Need to wait for sufficient time, since it may happend that DUT receiving
+        -- the frame, does not yet see the new value on CAN_TX, and thus flipping
+        -- too early would mean we flip right into the correct value after the
+        -- change that is about to occur!
+        wait for 30 ns;
 
         get_can_rx(DUT_NODE, can_rx, chn);
         force_can_rx(not can_rx, DUT_NODE, chn);
