@@ -3564,6 +3564,9 @@ package body feature_test_agent_pkg is
         variable num_buffers : natural range 1 to 8;
         variable tmp : natural;
     begin
+        -- Some simulators incorrectly do range check on un-initialized
+        -- argument in "ctu_get_txt_buf_cnt".
+        num_buffers := 1;
         ctu_get_txt_buf_cnt(num_buffers, node, channel);
         rand_int_v(num_buffers, tmp);
         if (tmp = 0) then
@@ -4859,6 +4862,9 @@ package body feature_test_agent_pkg is
         variable num_bufs : integer;
     begin
         mem_bus_agent_disable_transaction_reporting(channel);
+        -- Some simulators incorrectly do range check on un-initialized
+        -- argument in "ctu_get_txt_buf_cnt".
+        num_bufs := 1;
         ctu_get_txt_buf_cnt(num_bufs, node, channel);
 
         for i in 1 to num_bufs loop
