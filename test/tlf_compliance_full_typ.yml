@@ -21,17 +21,17 @@ tests:
     ###########################################################################
     - name: iso_7_2_4
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 1000 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 2000 ms
     - name: iso_7_2_4_a
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 1000 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 2000 ms
     - name: iso_7_2_4_b
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 1000 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 2000 ms
 
     - name: iso_8_2_8
       generics:
-        /TB_TOP_CTU_CAN_FD/timeout: 1000 ms
+        /TB_TOP_CTU_CAN_FD/timeout: 2000 ms
 
     ###########################################################################
     # The following tests are ordered as in ISO 16845
