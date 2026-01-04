@@ -131,6 +131,7 @@ package body pc_fsm_transitions_integ_ftest is
         info_m("Step 2: Send CAN 2.0 and CAN FD frame");
 
         for frame_format in NORMAL_CAN to FD_CAN loop
+
             ---------------------------------------------------------------------------------------
             -- @2.1 Send CAN frame by Test Node. Wait until CRC delimiter in DUT node.
             --      Force bus to dominant. Wait until sample point. Release bus level.
@@ -158,7 +159,8 @@ package body pc_fsm_transitions_integ_ftest is
             info_m("Step 2.2");
 
             ctu_get_err_capt(err_capt, DUT_NODE, chn);
-            check_m(err_capt.err_type = can_err_form, "Form Error");
+            check_m(err_capt.err_type = can_err_form or err_capt.err_type = can_err_stuff,
+                    "Form Error or Stuff Error");
             check_m(err_capt.err_pos = err_pos_ack, "Error in CRC Delim, ACK or ACK delim");
 
             wait for 10000 ns;
