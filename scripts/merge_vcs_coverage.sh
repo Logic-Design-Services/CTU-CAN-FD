@@ -1,33 +1,33 @@
 #!/bin/bash
 
-ts_sim_coverage.py -o merged_fast sim_tb_rtl_test_fast_* --clear
-ts_sim_coverage.py -o merged_nightly sim_tb_rtl_test_nightly_rx_status_rx_buffer_size_4096_* sim_tb_rtl_test_nightly_* --clear
-ts_sim_coverage.py -o merged_compliance_min sim_tb_rtl_test_compliance_full_min* --clear
-ts_sim_coverage.py -o merged_compliance_typ sim_tb_rtl_test_compliance_full_typ* --clear
-ts_sim_coverage.py -o merged_compliance_max sim_tb_rtl_test_compliance_full_max* --clear
+ts_sim_coverage.py -o merged_medium_asic_max_feature sim_tb_rtl_medium_asic_max_feature_* --clear
+ts_sim_coverage.py -o merged_medium_asic_typ_feature sim_tb_rtl_medium_asic_typ_feature_* --clear
+ts_sim_coverage.py -o merged_medium_asic_max_compliance sim_tb_rtl_medium_asic_max_compliance_* --clear
+ts_sim_coverage.py -o merged_medium_asic_typ_compliance sim_tb_rtl_medium_asic_typ_compliance_* --clear
+ts_sim_coverage.py -o merged_medium_asic_min_compliane sim_tb_rtl_medium_asic_min_compliance_* --clear
+ts_sim_coverage.py -o merged_medium_asic_sjw0_compliane sim_tb_rtl_medium_asic_sjw0_compliance_* --clear
 
-rm -rf merged_nightly
-rm -rf merged_compliance_min
-rm -rf merged_compliance_typ
-rm -rf merged_compliance_max
-rm -rf merged_fast
+rm -rf merged_medium_asic_max_feature
+rm -rf merged_medium_asic_typ_feature
+rm -rf merged_medium_asic_max_compliance
+rm -rf merged_medium_asic_typ_compliance
+rm -rf merged_medium_asic_min_compliane
+rm -rf merged_medium_asic_sjw0_compliane
 
-mkdir merged_nightly
-mkdir merged_compliance_min
-mkdir merged_compliance_typ
-mkdir merged_compliance_max
-mkdir merged_fast
+mkdir merged_medium_asic_max_feature
+mkdir merged_medium_asic_typ_feature
+mkdir merged_medium_asic_max_compliance
+mkdir merged_medium_asic_typ_compliance
+mkdir merged_medium_asic_min_compliane
+mkdir merged_medium_asic_sjw0_compliane
 
-mv ../coverage_output/merged_fast.vdb merged_fast/simv.vdb
-mv ../coverage_output/merged_nightly.vdb merged_nightly/simv.vdb
-mv ../coverage_output/merged_compliance_min.vdb merged_compliance_min/simv.vdb
-mv ../coverage_output/merged_compliance_typ.vdb merged_compliance_typ/simv.vdb
-mv ../coverage_output/merged_compliance_max.vdb merged_compliance_max/simv.vdb
+mv ../coverage_output/merged_medium_asic_max_feature.vdb merged_medium_asic_max_feature/simv.vdb
+mv ../coverage_output/merged_medium_asic_typ_feature.vdb merged_medium_asic_typ_feature/simv.vdb
+mv ../coverage_output/merged_medium_asic_max_compliance.vdb merged_medium_asic_max_compliance/simv.vdb
+mv ../coverage_output/merged_medium_asic_typ_compliance.vdb merged_medium_asic_typ_compliance/simv.vdb
+mv ../coverage_output/merged_medium_asic_min_compliane.vdb merged_medium_asic_min_compliane/simv.vdb
+mv ../coverage_output/merged_medium_asic_sjw0_compliane.vdb merged_medium_asic_sjw0_compliane/simv.vdb
 
-cp sim_tb_rtl_test_nightly_alc_ide_*/_ts_flow_reference_elaboration_directory merged_fast
-cp sim_tb_rtl_test_nightly_alc_ide_*/_ts_flow_reference_elaboration_directory merged_nightly
-cp sim_tb_rtl_test_nightly_alc_ide_*/_ts_flow_reference_elaboration_directory merged_compliance_min
-cp sim_tb_rtl_test_nightly_alc_ide_*/_ts_flow_reference_elaboration_directory merged_compliance_typ
-cp sim_tb_rtl_test_nightly_alc_ide_*/_ts_flow_reference_elaboration_directory merged_compliance_max
-
-ts_sim_coverage.py merged_compliance_max merged_compliance_min merged_compliance_typ merged_fast merged_nightly -o merged_total --clear
+ts_sim_coverage.py merged_medium_asic_max_feature merged_medium_asic_typ_feature merged_medium_asic_max_compliance \
+                   merged_medium_asic_typ_compliance merged_medium_asic_min_compliane merged_medium_asic_sjw0_compliane \
+                   -o merged_total --clear
