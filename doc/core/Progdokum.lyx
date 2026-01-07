@@ -494,7 +494,7 @@ filename "version.tex"
 \align center
 \begin_inset Tabular
 <lyxtabular version="3" rows="39" columns="3">
-<features tabularvalignment="middle">
+<features islongtable="true" longtabularalignment="center">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="2cm">
 <column alignment="center" valignment="top" width="12.5cm">
