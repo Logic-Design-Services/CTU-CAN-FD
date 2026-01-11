@@ -4,7 +4,7 @@
 # $ python run.py # select automatically
 # $ # select manually
 # $ VUNIT_SIMULATOR=modelsim PATH=$PATH:$MODELSIM_BIN python run.py
-# $ VUNIT_SIMULATOR=ghdl python run.py
+# $ VUNIT_SIMULATOR=nvc python run.py
 
 import yaml
 import sys
@@ -42,21 +42,16 @@ def load_sim_cfg():
     with open(SIM_CFG_PATH) as f:
         SIM_CFG = yaml.safe_load(f)
 
-
 def load_tgt_slfs(vu, tgt):
     for slf in tgt["source_list_files"]:
         load_slf(vu, "..", slf)
 
-
 def set_comp_options(sf, file):
-    opts = SIM_CFG["comp_options"]["ghdl"].split()
-    if "comp_options" in file:
-        opts.extend(file["comp_options"].split())
-    # TODO: Add target specific elaboration options
-    #print(f"Compile options: {opts}")
-    sf.add_compile_option("ghdl.a_flags", opts)
+    # GHDL
+    ghdl_comp_opts = ["-fpsl", "-frelaxed-rules", "--ieee=synopsys"]
+    sf.add_compile_option("ghdl.a_flags", ghdl_comp_opts)
 
-    # For each analysis bump-up memory to 128 M
+    # NVC
     nvc_glob_flags = []
     nvc_glob_flags.append('-M')
     nvc_glob_flags.append('256M')
@@ -64,32 +59,16 @@ def set_comp_options(sf, file):
 
     sf.add_compile_option("nvc.a_flags", ['--psl'])
 
-
-def set_elab_options(vu, tgt, tgt_name):
-    opts = SIM_CFG["elab_options"]["ghdl"].split()
-
-    if "elab_options" in tgt:
-        if "ghdl" in tgt["elab_options"]:
-            tmp = tgt["elab_options"]["ghdl"].split(" ")
-            opts.extend(tmp)
-
-    # TODO: Add test specific elab options
-    #print(f"Adding elab flags: {opts}")
-    vu.set_sim_option("ghdl.elab_flags", opts)
-
+def set_glob_options(vu):
+    # NVC
     nvc_glob_flags = []
     nvc_glob_flags.append('-M')
-    nvc_glob_flags.append('256M')
+    nvc_glob_flags.append('512M')
     nvc_glob_flags.append('--load=main_tb/iso-16845-compliance-tests/build/Debug/src/cosimulation/libNVC_VHPI_COSIM_LIB.so')
-
-    # Disable IEEE warnings for GLS sims
-    #if ("gate" in tgt_name):
     nvc_glob_flags.append("--ieee-warnings=off")
-
     nvc_glob_flags.append("--messages=compact")
 
-    vu.set_sim_option("nvc.global_flags", nvc_glob_flags)
-
+    vu.set_sim_option("nvc.global_flags", nvc_glob_flags, allow_empty=True)
 
 def load_slf(vu, curr_path, slf_path):
     full_path = os.path.join(curr_path, slf_path)
@@ -111,7 +90,6 @@ def load_slf(vu, curr_path, slf_path):
         print(f"Loading SLF from dependant target: {full_slf}")
         load_tgt_slfs(vu, SIM_CFG["targets"][full_slf])
 
-
 def load_tgt_tlf(vu, tgt, tgt_name):
     lib_name = tgt["top_entity"].split('.')[0]
     top_lib = vu.add_library(lib_name, allow_duplicate=True)
@@ -130,6 +108,9 @@ def load_tgt_tlf(vu, tgt, tgt_name):
         # Propagate test name
         generics[SIM_CFG["test_name_generic"]] = test["name"]
 
+        # Append Target name to keep test names unique
+        test_name = tgt_name + "." + test["name"]
+
         # Target generics
         generics.update(tgt["generics"])
 
@@ -137,43 +118,45 @@ def load_tgt_tlf(vu, tgt, tgt_name):
         if "generics" in test:
             generics.update(test["generics"])
 
-        # Sim options
-        opts = SIM_CFG["sim_options"]["ghdl"].split()
-        if "sim_options" in tgt:
-            if "ghdl" in tgt["sim_options"]:
-                tmp = tgt["sim_options"]["ghdl"].split(" ")
-                opts.extend(tmp)
-
-        # TODO: Add test specific sim options
-
         # Remove hierarchy prefixes
         filtered_generics = {}
         for key, value in generics.items():
             new_key = key.split("/")[-1]
             filtered_generics[new_key] = value
 
-        # Generate coverage per test
+        sim_opts = {}
+
+        #######################################################################
+        # Set GHDL ELAB / SIM options
+        #######################################################################
+        sim_opts["ghdl.elab_flags"] = ["-Wl,-no-pie", "-fpsl", "-frelaxed-rules", "--ieee=synopsys"]
+        sim_opts["ghdl.sim_flags"] = ["--ieee-asserts=disable"]
+
+        #######################################################################
+        # Set NVC ELAB / SIM options
+        #######################################################################
+        # Per-test cde coverage
         os.system("mkdir -p vunit_out/code_coverage")
-        name = re.sub(r'[^a-zA-Z0-9_-]', '_', test["name"])
-        covdb_path = "vunit_out/code_coverage/{}_{}".format(tgt_name, name)
+        #test_name_normalized = re.sub(r'[^a-zA-Z0-9_-]', '_', test_name)
+        covdb_path = "vunit_out/code_coverage/{}_{}.ncdb".format(tgt_name, test_name)
 
-        nvc_opts = []
-        nvc_opts.append("-V")
+        nvc_elab_opts = []
+        nvc_elab_opts.append("-V")
 
-        # Collect code coverage everywhere but in the gate simulations
         if ("gate" not in tgt_name):
-            nvc_opts.append("--cover=all,include-mems,exclude-unreachable,count-from-undefined")
-            nvc_opts.append("--cover-file={}.ncdb".format(covdb_path))
-            nvc_opts.append("--cover-spec=nvc_cover_spec")
+            nvc_elab_opts.append("--cover=all,include-mems,exclude-unreachable,count-from-undefined")
+            nvc_elab_opts.append("--cover-file={}".format(covdb_path))
+            nvc_elab_opts.append("--cover-spec=nvc_cover_spec")
 
-        nvc_opts.append("--no-collapse")
-        nvc_opts.append("--jit")
+        nvc_elab_opts.append("--no-collapse")
+        nvc_elab_opts.append("--jit")
+
+        sim_opts["nvc.elab_flags"] = nvc_elab_opts
+        sim_opts["nvc.heap_size"] = '256m'
+        sim_opts["nvc.sim_flags"] = ['--ieee-warnings=off']
 
         # Create the test
-        tb.add_config(test["name"], generics=filtered_generics,
-                                    sim_options={"ghdl.sim_flags": opts,
-                                                 "nvc.elab_flags": nvc_opts})
-
+        tb.add_config(test_name, generics=filtered_generics, sim_options=sim_opts)
 
 if __name__ == '__main__':
     load_sim_cfg()
@@ -182,32 +165,31 @@ if __name__ == '__main__':
         print("./run.py should have at least one arguments (target from sim/ts_sim_config.yml)!")
         sys.exit(1)
 
-    # First argument is always target -> Drop it, rest is for VUnit
-    tgt_name = sys.argv[1]
+    # First argument is always target pattern -> Drop it, rest is for VUnit
+    tgt_pattern = sys.argv[1]
     sys.argv.remove(sys.argv[1])
 
-    if (tgt_name not in SIM_CFG["targets"]):
-        print(f"Target {tgt_name} does not exist in ts_sim_config.yml!")
-        print(f"""Available targets are:{SIM_CFG["targets"].keys()}""")
-        sys.exit(1)
-
-    tgt = SIM_CFG["targets"][tgt_name]
-
-
-    ###########################################################################
-    # Invoke VUnit
-    ###########################################################################
     vu = VUnit.from_argv()
     vu.add_vhdl_builtins()
 
-    load_tgt_slfs(vu, tgt)
-    load_tgt_tlf(vu, tgt, tgt_name)
+    first = True
 
-    set_elab_options(vu, tgt, tgt_name)
+    for tgt_name,tgt in SIM_CFG["targets"].items():
 
-    vu.set_sim_option("nvc.heap_size", '256m', allow_empty=True)
-    vu.set_sim_option("nvc.sim_flags", ['--ieee-warnings=off'], allow_empty=True)
+        if (not re.match(tgt_pattern, tgt_name)):
+            continue
 
+        print(f"Target {tgt_name} matches pattern {tgt_pattern}")
+
+        # Load source list files only from first target that matches!
+        # Assumes targets have equal SLFs which is true for various
+        if first:
+            load_tgt_slfs(vu, tgt)
+            first = not first
+
+        load_tgt_tlf(vu, tgt, tgt_name)
+
+    set_glob_options(vu)
 
     # Run
     vu.main()

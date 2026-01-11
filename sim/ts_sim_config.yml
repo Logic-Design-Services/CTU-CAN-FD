@@ -35,15 +35,8 @@ check_exit_code: false
 # This is to propagate seed to the TB
 seed_generic: seed
 
-comp_options:
-    ghdl: "-fpsl -frelaxed-rules --ieee=synopsys"
-
 elab_options:
     vcs: "+warn=noDUP_PARM_ASSGN"
-    ghdl: "-Wl,-no-pie -fpsl -frelaxed-rules --ieee=synopsys"
-
-sim_options:
-    ghdl: "--ieee-asserts=disable"
 
 generics:
     finish_on_error: 0
