@@ -16,7 +16,7 @@ The latest released version is 2.7.
 ## License
 
 CTU CAN FD RTL and TB are published under following license :
-[![License](https://img.shields.io/badge/License--black.svg)]( https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License--black.svg)]( https://github.com/Logic-Design-Services/CTU-CAN-FD/blob/master/LICENSE)
 
 Commercial usage of RTL and TB requires License agreement which is provided
 for a license fee. For further details please reach out to ondrej.ille@gmail.com.
@@ -42,10 +42,10 @@ Last but not least, RTL is DFT insertion ready and contains additional support
 for manufacturing testability by a functional test.
 
 Architecture of CTU CAN FD is described in:
-[![System architecture](https://img.shields.io/badge/System_architecture--blue.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/System_Architecture.pdf)
+[![System architecture](https://img.shields.io/badge/System_architecture--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/system-architecture.pdf)
 
 Functional description of CTU CAN FD is described in:
-[![Datasheet](https://img.shields.io/badge/Datasheet--blue.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/Datasheet.pdf)
+[![Datasheet](https://img.shields.io/badge/Datasheet--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/datasheet.pdf)
 
 ## Synthesis
 
@@ -89,7 +89,7 @@ In addition to ISO 11898-1 compliance, all other features of CTU CAN FD are veri
 There are 3 types of tests available in CTU CAN FD test-bench:
 - Feature tests (VHDL)
 - Reference tests (VHDL)
-- Compliance tests (C++ library linked to simulation, [ISO16845 Compliance library](https://github.com/Blebowski/iso-16845-compliance-tests)).
+- Compliance tests (C++ library linked to simulation, [ISO16845 Compliance library](https://github.com/Logic-Design-Services/iso-16845-compliance-tests)).
 
 The tests are executed in multiple regression runs in a CI pipeline.
 
@@ -110,7 +110,7 @@ The code coverage and functional coverage can be seen in:
 [![Coverage](https://img.shields.io/badge/code%20coverage--orange.svg)](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/code_coverage_report/index.html)
 
 Description of test-bench and CTU CAN FD VIP is in:
-[![Testbench architecture](https://img.shields.io/badge/Testbench--blue.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/Testbench.pdf)
+[![Testbench architecture](https://img.shields.io/badge/Testbench--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/tb_architecture.pdf)
 
 Documentation of all the tests with mapping to a feature being verified:
 [![Verification Requirement Matrix](https://img.shields.io/badge/Verification-Requirement-Matrix--orange.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/regression_results/VRM.html )
@@ -124,7 +124,7 @@ See the instructions below in "How to run CTU CAN FD testbench" subsection.
 
 1. Compile files from `src/slf_rtl.yml` YAML file into `ctu_can_fd_rtl` VHDL library.
    Compile the files in order they are listed in `src/slf_rtl.yml`.
-2. Integrate `can_top_level` entity in your design. See [![System architecture](https://img.shields.io/badge/System_architecture--blue.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/System_Architecture.pdf) for details of CTU CAN FD interface.
+2. Integrate `can_top_level` entity in your design. See [![System architecture](https://img.shields.io/badge/System_architecture--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/system-architecture.pdf) for details of CTU CAN FD interface.
 
 
 ## How to run CTU CAN FD testbench ?
@@ -226,7 +226,7 @@ There is a docker image which contains all dependencies needed available at:
 ## Linux driver
 
 CTU CAN FD has SocketCAN Linux driver which is described in:
-[![Linux driver](https://img.shields.io/badge/Linux_driver--blue.svg)](http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/linux_driver/build/ctucanfd-driver.html)
+[![Linux driver](https://img.shields.io/badge/Linux_driver--blue.svg)](https://logic-design-services.github.io/CTU-CAN-FD/linux_driver/ctucanfd-driver.html)
 
 Driver consists from 3 parts:
 - Network
