@@ -1,0 +1,69 @@
+name: Build documentation
+
+on: [push, pull_request]
+
+jobs:
+
+  Build-HW-docs:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/logic-design-services/lyx-docu
+
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: Fix git safe.directory issue
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: "Build HW documentation"
+        run: |
+          export LC_ALL=en_US.UTF-8
+          export LANG=en_US.UTF-8
+          make -C doc/core
+          rm -rf pages
+          mkdir pages
+          mv doc/core/Progdokum.pdf pages
+          mv doc/core/ctu_can_fd_architecture.pdf pages
+          mv doc/core/tb_architecture.pdf pages
+
+      - name: "Build Linux Driver documentation"
+        run: |
+          export LC_ALL=en_US.UTF-8
+          export LANG=en_US.UTF-8
+          make -C doc/driver
+          rm -rf pages/linux_driver
+          mkdir pages/linux_driver
+          mv doc/driver/build/* pages/linux_driver
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: github-pages
+          path: pages
+
+  Deploy-to-Pages:
+    needs: Build-HW-docs
+
+    # Run only on main branch -> It has rights to push to the pages
+    if: ${{ github.ref == 'refs/heads/master' }}
+
+    permissions:
+      pages: write      # to deploy to  Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
