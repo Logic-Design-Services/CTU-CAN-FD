@@ -1,0 +1,21 @@
+name: Consistency checks
+
+on: [push, pull_request]
+
+jobs:
+
+  Check-Vivado-component:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+
+      - name: "Check Vivado component"
+        run: |
+          scripts/gen_vivado_component.py
+          cd scripts && ./update_reg_map
+          git diff --exit-code || (echo "Vivado component file or register map products are not up-to-date. Either run scripts/gen_vivado_component.py and scripts/update_reg_map or download the files from this job's artifacts."; exit 1)
