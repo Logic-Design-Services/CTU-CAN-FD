@@ -4,9 +4,20 @@ d="$(dirname "$0")"
 
 # Note: the script uses relative paths and must be called from this directory
 cd "$d"
+
+echo "********************************************************************************"
+echo "Generate register map"
+echo "********************************************************************************"
+
 python3 update_reg_map.py --xactSpec ../spec/CTU/ip/CAN_FD_IP_Core/2.1/CAN_FD_IP_Core.2.1.xml \
     --updVHDLPackage True \
     --updHeaderFile True \
     --updLyxDocs True \
     --updRTLRegMap True \
     --updTbPackage True
+
+echo "********************************************************************************"
+echo "Replace license in the generated RTL register map:"
+echo "********************************************************************************"
+
+python3 license_updater.py ../LICENSE ['.vhd'] ['src/memory_registers/generated']
