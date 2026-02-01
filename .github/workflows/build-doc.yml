@@ -29,9 +29,9 @@ jobs:
           make -C doc/core
           rm -rf pages
           mkdir pages
-          mv doc/core/Progdokum.pdf pages/datasheet.pdf
-          mv doc/core/ctu_can_fd_architecture.pdf pages
-          mv doc/core/tb_architecture.pdf pages
+          mv doc/core/Progdokum.pdf pages/ctu_can_fd_datasheet.pdf
+          mv doc/core/ctu_can_fd_architecture.pdf pages/ctu_can_fd_architecture.pdf
+          mv doc/core/tb_architecture.pdf pages/ctu_can_fd_testbench.pdf
 
       - name: "Build Linux Driver documentation"
         run: |
