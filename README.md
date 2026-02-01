@@ -122,9 +122,17 @@ See the instructions below in "How to run CTU CAN FD testbench" subsection.
 
 ## How to integrate CTU CAN FD RTL ?
 
+### Manual integration
+
+In command line / script based tools, integrate CTU CAN FD by:
 1. Compile files from `src/slf_rtl.yml` YAML file into `ctu_can_fd_rtl` VHDL library.
-   Compile the files in order they are listed in `src/slf_rtl.yml`.
+   Compile the files in order they are listed in `src/slf_rtl.yml`. This is typically
+   done by TCL command like `read_vhdl` in various ASIC or FPGA toolchains.
 2. Integrate `can_top_level` entity in your design. See [![System architecture](https://img.shields.io/badge/System_architecture--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_architecture.pdf) for details of CTU CAN FD interface.
+
+### Vivado integration
+
+If you preffer schematic design, you can use Vivado schematic component in `src/component.xml`.
 
 
 ## How to run CTU CAN FD testbench ?
