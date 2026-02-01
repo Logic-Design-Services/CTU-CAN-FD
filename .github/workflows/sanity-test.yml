@@ -1,0 +1,33 @@
+name: Sanity test
+
+on: [pull_request]
+
+jobs:
+
+  Sanity_test:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/logic-design-services/digital-simulation
+
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+
+      - name: "Build compliance library"
+        run: |
+          cd test/main_tb/iso-16845-compliance-tests
+          ./build.sh
+
+      - name: "Run Device ID test"
+        run: |
+          cd test
+          export CTU_TB_TOP_TARGET="tb_ctu_can_fd_rtl_vunit"
+          ./run.py tb_rtl_small_asic_max_feature ctu_can_fd_tb.tb_top_ctu_can_fd.tb_rtl_small_asic_max_feature.device_id -v
