@@ -31,3 +31,9 @@ jobs:
           cd test
           export CTU_TB_TOP_TARGET="tb_ctu_can_fd_rtl_vunit"
           ./run.py tb_rtl_small_asic_max_feature ctu_can_fd_tb.tb_top_ctu_can_fd.tb_rtl_small_asic_max_feature.device_id -v
+
+      - name: "Run ISO demo test"
+        run: |
+          cd test
+          export CTU_TB_TOP_TARGET="tb_ctu_can_fd_rtl_vunit"
+          ./run.py tb_rtl_small_asic_max_compliance ctu_can_fd_tb.tb_top_ctu_can_fd.tb_rtl_small_asic_max_compliance.demo -v
