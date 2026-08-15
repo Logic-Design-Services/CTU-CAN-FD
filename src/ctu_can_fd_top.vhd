@@ -244,9 +244,6 @@ architecture rtl of ctu_can_fd_top is
     -- Soft reset ((Synchronised reset + Soft Reset)
     signal res_soft_n                       :    std_logic;
 
-    -- Sample control (Nominal, Data, Secondary)
-    signal sp_control                       :    std_logic_vector(1 downto 0);
-
     -- Core is enabled
     signal mr_settings_ena                  :    std_logic;
 
@@ -472,7 +469,7 @@ architecture rtl of ctu_can_fd_top is
     -- CAN Core <-> Interrupt manager
     -----------------------------------------------------------------------------------------------
     -- Error appeared
-    signal err_detected                     :   std_logic;
+    signal err_detected_d                   :   std_logic;
 
     -- Fault confinement state functionality changed
     signal fcs_changed                      :   std_logic;
@@ -490,10 +487,10 @@ architecture rtl of ctu_can_fd_top is
     signal br_shifted                       :   std_logic;
 
     -----------------------------------------------------------------------------------------------
-    -- CAN Core <-> Prescaler Interface
+    -- CAN Core <-> Bit Timing Logic Interface
     -----------------------------------------------------------------------------------------------
-    -- RX Triggers (Sample)
-    signal rx_triggers                      :   std_logic_vector(C_SAMPLE_TRIGGER_COUNT - 1 downto 0);
+    -- RX Trigger (Sample)
+    signal rx_trigger                       :   std_logic;
 
     -- TX Trigger (Sync)
     signal tx_trigger                       :   std_logic;
@@ -505,11 +502,12 @@ architecture rtl of ctu_can_fd_top is
     -- No positive resynchronisation
     signal no_pos_resync                    :   std_logic;
 
-    -- Enable Nominal Bit time counters.
-    signal nbt_ctrs_en                      :   std_logic;
+    -- Current bit-rate
+    signal bit_rate_d                       :   t_bit_rate;
+    signal bit_rate_q                       :   t_bit_rate;
 
-    -- Enable Data Bit time counters.
-    signal dbt_ctrs_en                      :   std_logic;
+    -- Secondary sampling point enabled
+    signal is_secondary_sample              :   std_logic;
 
     -----------------------------------------------------------------------------------------------
     -- Bus Sampling <-> Memory Registers Interface
@@ -607,17 +605,10 @@ architecture rtl of ctu_can_fd_top is
 
     signal rxb_port_b_data_out              :   std_logic_vector(31 downto 0);
 
-    signal pc_rx_trigger                    :   std_logic;
-
     signal mr_tx_command_txbi               :   std_logic_vector(G_TXT_BUF_COUNT - 1 downto 0);
     signal mr_tx_priority                   :   t_txt_bufs_priorities(G_TXT_BUF_COUNT - 1 downto 0);
 
 begin
-
-    -- Test probe for observation
-    test_probe.rx_trigger_nbs <= pc_rx_trigger;
-    test_probe.rx_trigger_wbs <= rx_triggers(0);
-    test_probe.tx_trigger <= tx_trigger;
 
     -----------------------------------------------------------------------------------------------
     -- Reset synchroniser
@@ -1117,7 +1108,7 @@ begin
         rst_n                           => res_soft_n,                              -- IN
 
         -- Interrupt sources
-        err_detected                    => err_detected,                            -- IN
+        err_detected_d                  => err_detected_d,                          -- IN
         fcs_changed                     => fcs_changed,                             -- IN
         err_warning_limit_pulse         => err_warning_limit_pulse,                 -- IN
         arbitration_lost                => arbitration_lost,                        -- IN
@@ -1175,7 +1166,6 @@ begin
     -----------------------------------------------------------------------------------------------
     i_mac_top : entity ctu_can_fd_rtl.mac_top
     generic map (
-        G_SAMPLE_TRIGGER_COUNT          => C_SAMPLE_TRIGGER_COUNT,
         G_CTRL_CTR_WIDTH                => C_CTRL_CTR_WIDTH,
         G_RETR_LIM_CTR_WIDTH            => C_RETR_LIM_CTR_WIDTH,
         G_CRC15_POL                     => C_CRC15_POL,
@@ -1265,18 +1255,18 @@ begin
         arbitration_lost                => arbitration_lost,                        -- OUT
         tran_valid                      => tran_valid,                              -- OUT
         br_shifted                      => br_shifted,                              -- OUT
-        err_detected                    => err_detected,                            -- OUT
+        err_detected_d                  => err_detected_d,                          -- OUT
         fcs_changed                     => fcs_changed,                             -- OUT
         err_warning_limit_pulse         => err_warning_limit_pulse,                 -- OUT
 
         -- Prescaler interface
-        rx_triggers                     => rx_triggers,                             -- IN
+        rx_trigger                      => rx_trigger,                              -- IN
         tx_trigger                      => tx_trigger,                              -- IN
         sync_control                    => sync_control,                            -- OUT
         no_pos_resync                   => no_pos_resync,                           -- OUT
-        sp_control                      => sp_control,                              -- OUT
-        nbt_ctrs_en                     => nbt_ctrs_en,                             -- OUT
-        dbt_ctrs_en                     => dbt_ctrs_en,                             -- OUT
+        bit_rate_d                      => bit_rate_d,                              -- OUT
+        bit_rate_q                      => bit_rate_q,                              -- OUT
+        is_secondary_sample             => is_secondary_sample,                     -- OUT
 
         -- CAN Bus serial data stream
         rx_data_wbs                     => rx_data_wbs,                             -- IN
@@ -1290,8 +1280,7 @@ begin
         dbt_measure_start               => dbt_measure_start,                       -- OUT
         gen_first_ssp                   => gen_first_ssp,                           -- OUT
         sync_edge                       => sync_edge,                               -- IN
-        bit_err_enable                  => bit_err_enable,                          -- OUT
-        pc_rx_trigger                   => pc_rx_trigger                            -- OUT
+        bit_err_enable                  => bit_err_enable                           -- OUT
     );
 
 
@@ -1300,15 +1289,10 @@ begin
     -----------------------------------------------------------------------------------------------
     i_btl_top : entity ctu_can_fd_rtl.btl_top
     generic map (
-        G_TSEG1_NBT_WIDTH               => C_TSEG1_NBT_WIDTH,
-        G_TSEG2_NBT_WIDTH               => C_TSEG2_NBT_WIDTH,
-        G_BRP_NBT_WIDTH                 => C_BRP_NBT_WIDTH,
-        G_SJW_NBT_WIDTH                 => C_SJW_NBT_WIDTH,
-        G_TSEG1_DBT_WIDTH               => C_TSEG1_DBT_WIDTH,
-        G_TSEG2_DBT_WIDTH               => C_TSEG2_DBT_WIDTH,
-        G_BRP_DBT_WIDTH                 => C_BRP_DBT_WIDTH,
-        G_SJW_DBT_WIDTH                 => C_SJW_DBT_WIDTH,
-        G_SAMPLE_TRIGGER_COUNT          => C_SAMPLE_TRIGGER_COUNT
+        G_TSEG1_WIDTH                   => C_TSEG1_WIDTH,
+        G_TSEG2_WIDTH                   => C_TSEG2_WIDTH,
+        G_BRP_WIDTH                     => C_BRP_WIDTH,
+        G_SJW_WIDTH                     => C_SJW_WIDTH
     )
     port map (
         -- Clock and Asynchronous reset
@@ -1316,8 +1300,6 @@ begin
         rst_n                           => res_core_n,                              -- IN
 
         -- Memory registers interface
-        mr_settings_ena                 => mr_settings_ena,                         -- IN
-
         mr_btr_prop                     => mr_ctrl_out.btr_prop,                    -- IN
         mr_btr_ph1                      => mr_ctrl_out.btr_ph1,                     -- IN
         mr_btr_ph2                      => mr_ctrl_out.btr_ph2,                     -- IN
@@ -1332,14 +1314,13 @@ begin
 
         -- Control Interface
         sync_edge                       => sync_edge,                               -- IN
-        sp_control                      => sp_control,                              -- IN
+        bit_rate_d                      => bit_rate_d,                              -- IN
+        bit_rate_q                      => bit_rate_q,                              -- IN
         sync_control                    => sync_control,                            -- IN
         no_pos_resync                   => no_pos_resync,                           -- IN
-        nbt_ctrs_en                     => nbt_ctrs_en,                             -- IN
-        dbt_ctrs_en                     => dbt_ctrs_en,                             -- IN
 
         -- Trigger signals
-        rx_triggers                     => rx_triggers,                             -- OUT
+        rx_trigger                      => rx_trigger,                              -- OUT
         tx_trigger                      => tx_trigger,                              -- OUT
 
         -- Status outputs
@@ -1380,7 +1361,7 @@ begin
         trv_delay                       => trv_delay,                               -- OUT
 
         -- Prescaler interface
-        rx_trigger                      => rx_triggers(1),                          -- IN
+        rx_trigger                      => rx_trigger,                              -- IN
         tx_trigger                      => tx_trigger,                              -- IN
         sync_edge                       => sync_edge,                               -- OUT
         tq_edge                         => tq_edge,                                 -- IN
@@ -1388,7 +1369,7 @@ begin
         -- CAN Core Interface
         tx_data_wbs                     => tx_data_wbs,                             -- IN
         rx_data_wbs                     => rx_data_wbs,                             -- OUT
-        sp_control                      => sp_control,                              -- IN
+        is_secondary_sample             => is_secondary_sample,                     -- IN
         ssp_reset                       => ssp_reset,                               -- IN
         tran_delay_meas                 => tran_delay_meas,                         -- IN
         bit_err                         => bit_err,                                 -- OUT
