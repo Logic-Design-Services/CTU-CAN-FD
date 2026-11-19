@@ -26,3 +26,6 @@ sim/build/**
 sim/coverage_output**/*
 **.jou
 **.log
+test/html/*
+test/work/*
+synthesis/Vivado/ci_benchmark/*design_config/*
