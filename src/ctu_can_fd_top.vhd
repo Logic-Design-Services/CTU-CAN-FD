@@ -619,6 +619,8 @@ begin
     port map (
         clk             => clk_sys,
         arst            => rst_n,
+        scan_mode       => scan_mode,
+        
         rst             => rst_n_sync
     );
     rst_n_out <= rst_n_sync;

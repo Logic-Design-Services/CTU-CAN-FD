@@ -86,6 +86,9 @@ entity rst_sync is
         -- Asynchronous reset
         arst                : in  std_logic;
 
+        -- Scan mode
+        scan_mode           : in  std_logic;
+
         -- Synchronous reset
         rst                 : out std_logic
     );
@@ -96,6 +99,8 @@ architecture rtl of rst_sync is
     -- Synchroniser registers
     signal rff : std_logic;
 
+    signal rst_i : std_logic;
+
 begin
 
     -- Reset synchroniser process
@@ -103,11 +108,21 @@ begin
     begin
         if (arst = G_RESET_POLARITY) then
             rff <= G_RESET_POLARITY;
-            rst <= G_RESET_POLARITY;
+            rst_i <= G_RESET_POLARITY;
         elsif (rising_edge(clk)) then
             rff <= not (G_RESET_POLARITY);
-            rst <= rff;
+            rst_i <= rff;
         end if;
     end process;
+
+    -- Scan mode mux
+    i_mux2_rst_tst : entity ctu_can_fd_rtl.mux2
+    port map (
+        a                  => rst_i,
+        b                  => arst,
+        sel                => scan_mode,
+
+        z                  => rst
+    );
 
 end rtl;

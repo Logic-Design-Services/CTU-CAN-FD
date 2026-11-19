@@ -38,6 +38,13 @@ jobs:
           make -C doc/system_architecture
           mv doc/system_architecture/ctu_can_fd_architecture.pdf pages/ctu_can_fd_architecture.pdf
 
+      - name: "Build Integration Guide"
+        run: |
+          export LC_ALL=en_US.UTF-8
+          export LANG=en_US.UTF-8
+          make -C doc/integration_guide
+          mv doc/integration_guide/ctu_can_fd_integration_guide.pdf pages/ctu_can_fd_integration_guide.pdf
+
       - name: "Build Testbench documentation"
         run: |
           export LC_ALL=en_US.UTF-8
@@ -47,8 +54,6 @@ jobs:
 
       - name: "Build Linux Driver documentation"
         run: |
-          export LC_ALL=en_US.UTF-8
-          export LANG=en_US.UTF-8
           rm -rf pages/linux_driver
           mkdir pages/linux_driver
           make -C doc/driver

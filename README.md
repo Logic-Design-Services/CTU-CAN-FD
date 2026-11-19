@@ -48,6 +48,9 @@ Architecture of CTU CAN FD is described in:
 Functional description of CTU CAN FD is described in:
 [![Datasheet](https://img.shields.io/badge/Datasheet--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_datasheet.pdf)
 
+Guidelines for integrating CTU CAN FD into a system are described in:
+[![Integration guide](https://img.shields.io/badge/Integration_guide--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_integration_guide.pdf)
+
 ## Synthesis
 
 CTU CAN FD has been synthesized into Xilinx and Intel FPGAs on several FPGA families
@@ -132,11 +135,7 @@ See the instructions below in "How to run CTU CAN FD testbench" subsection.
 
 ### Manual integration
 
-In command line / script based tools, integrate CTU CAN FD by:
-1. Compile files from `src/slf_rtl.yml` YAML file into `ctu_can_fd_rtl` VHDL library.
-   Compile the files in order they are listed in `src/slf_rtl.yml`. This is typically
-   done by TCL command like `read_vhdl` in various ASIC or FPGA toolchains.
-2. Integrate `can_top_level` entity in your design. See [![System architecture](https://img.shields.io/badge/System_architecture--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_architecture.pdf) for details of CTU CAN FD interface.
+See [![Integration guide](https://img.shields.io/badge/Integration_guide--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_integration_guide.pdf) for integration guidelines.
 
 ### Vivado integration
 

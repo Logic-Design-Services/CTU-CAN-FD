@@ -1,0 +1,2621 @@
+#LyX 2.5 created this file. For more info see https://www.lyx.org/
+\lyxformat 643
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass book
+\begin_preamble
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{colortbl}
+\definecolor{gray}{RGB}{230,230, 230}
+\usepackage{subcaption}
+\usepackage{cprotect}
+% Added by lyx2lyx
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+\end_preamble
+\use_default_options true
+\begin_modules
+customHeadersFooters
+\end_modules
+\maintain_unincluded_children no
+\language english
+\language_package default
+\inputencoding auto-legacy
+\fontencoding auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "lmtt" "default"
+\font_math "auto" "auto"
+\font_default_family sfdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing other 1.1
+\use_hyperref true
+\pdf_author "Ille Ondrej"
+\pdf_subject "CAN FD IP function"
+\pdf_keywords "CAN, Flexible data rate,"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification default
+\crossref_package refstyle
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\backgroundcolor none
+\fontcolor none
+\notefontcolor lightgray
+\boxbgcolor red
+\table_border_color default
+\table_odd_row_color default
+\table_even_row_color default
+\table_alt_row_colors_start 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 3cm
+\rightmargin 2cm
+\bottommargin 3cm
+\headheight 2cm
+\secnumdepth 2
+\tocdepth 5
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle headings
+\tablestyle default
+\tracking_changes false
+\output_changes true
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\docbook_mathml_version 0
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+% number the pages at the beginning in roman
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+frontmatter
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+% Number chapters as 
+\begin_inset Quotes eld
+\end_inset
+
+1.
+ xxx
+\begin_inset Quotes erd
+\end_inset
+
+ instead of 
+\begin_inset Quotes eld
+\end_inset
+
+Chapter 1
+\backslash
+nxxx
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+makeatletter
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+def
+\backslash
+@makechapterhead#1{%
+\end_layout
+
+\begin_layout Plain Layout
+  
+\backslash
+vspace*{50
+\backslash
+p@}%
+\end_layout
+
+\begin_layout Plain Layout
+  {
+\backslash
+parindent 
+\backslash
+z@ 
+\backslash
+raggedright 
+\backslash
+normalfont
+\end_layout
+
+\begin_layout Plain Layout
+    
+\backslash
+ifnum 
+\backslash
+c@secnumdepth >
+\backslash
+m@ne
+\end_layout
+
+\begin_layout Plain Layout
+      
+\backslash
+if@mainmatter
+\end_layout
+
+\begin_layout Plain Layout
+        %
+\backslash
+huge
+\backslash
+bfseries 
+\backslash
+@chapapp
+\backslash
+space 
+\backslash
+thechapter
+\end_layout
+
+\begin_layout Plain Layout
+        
+\backslash
+Huge
+\backslash
+bfseries 
+\backslash
+@chapapp{} 
+\backslash
+thechapter.
+\backslash
+space%
+\end_layout
+
+\begin_layout Plain Layout
+        %
+\backslash
+par
+\backslash
+nobreak
+\end_layout
+
+\begin_layout Plain Layout
+        %
+\backslash
+vskip 20
+\backslash
+p@
+\end_layout
+
+\begin_layout Plain Layout
+      
+\backslash
+fi
+\end_layout
+
+\begin_layout Plain Layout
+    
+\backslash
+fi
+\end_layout
+
+\begin_layout Plain Layout
+    
+\backslash
+interlinepenalty
+\backslash
+@M
+\end_layout
+
+\begin_layout Plain Layout
+    
+\backslash
+Huge 
+\backslash
+bfseries #1
+\backslash
+par
+\backslash
+nobreak
+\end_layout
+
+\begin_layout Plain Layout
+    
+\backslash
+vskip 40
+\backslash
+p@
+\end_layout
+
+\begin_layout Plain Layout
+  }}
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+def
+\backslash
+chaptername{}
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+makeatother
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+
+\series bold
+\size giant
+\color black
+CTU CAN
+\noun on
+ FD 
+\begin_inset Newline newline
+\end_inset
+
+IP CORE
+\noun default
+\color inherit
+ 
+\series default
+\size default
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+\size larger
+\color black
+
+\begin_inset VSpace bigskip
+\end_inset
+
+Integration Guide
+\end_layout
+
+\begin_layout Author
+\begin_inset VSpace defskip
+\end_inset
+
+SELOSYS l.t.d.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Left Header
+
+\size larger
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="top">
+<column alignment="left" valignment="top" width="0pt">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell multirow="3" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size larger
+CTU CAN FD IP Core - Integration Guide
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Version 3.0,
+ Commit:
+ 
+\begin_inset CommandInset include
+LatexCommand input
+filename "version.tex"
+literal "true"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="3">
+<features islongtable="true" longtabularalignment="center">
+<column alignment="center" valignment="top" width="1.5cm">
+<column alignment="center" valignment="top" width="2cm">
+<column alignment="center" valignment="top" width="12.5cm">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Document Version
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Date
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Change description
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+11-2026
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Initial version
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+% classis page numbering
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+mainmatter
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter*
+Format
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+addcontentsline{toc}{chapter}{Format}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Throughout this document following notation is kept:
+\end_layout
+
+\begin_layout Itemize
+Common text is written with this font.
+\end_layout
+
+\begin_layout Itemize
+Source files are mentioned with italic,
+ e.g.
+ 
+\shape italic
+sig_sync.vhd
+\shape default
+.
+\end_layout
+
+\begin_layout Itemize
+Register names are written in all caps,
+ e.g.
+ MODE[SAM].
+\end_layout
+
+\begin_layout Itemize
+Top-level generics are described boldom and italic,
+ e.g.
+ 
+\series bold
+\shape italic
+G_PARITY_EN
+\series default
+\shape default
+.
+\end_layout
+
+\begin_layout Itemize
+Signal names are written with red color,
+ e.g.
+ 
+\color red
+sys_clk
+\color inherit
+.
+\end_layout
+
+\begin_layout Chapter
+Introduction
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+ 
+\backslash
+thispagestyle{fancy}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This document provides guidelines on how to integrate CTU CAN FD into another HW design (e.g.
+ SoC) on ASIC or FPGA.
+ The SW integration is beyond the scope of this document.
+\end_layout
+
+\begin_layout Standard
+To compile and integrate CTU CAN FD RTL in your system,
+ do:
+\end_layout
+
+\begin_layout Itemize
+Clone CTU CAN FD GIT repository from 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-4"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Compile all files from 
+\shape italic
+src/slf_rtl.yml
+\shape default
+ to a VHDL library called ctu_can_fd_rtl.
+ The files must be compiled in the order present in the 
+\shape italic
+src/slf_rtl.yml
+\shape default
+.
+ This is typically done by TCL command like 
+\begin_inset Quotes eld
+\end_inset
+
+read_vhdl
+\begin_inset Quotes erd
+\end_inset
+
+ in ASIC or FPGA toolchains.
+\end_layout
+
+\begin_layout Itemize
+Instantiate and connect one of the following entities in your system:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+ctu_can_fd_top,
+ 
+\end_layout
+
+\begin_layout Itemize
+ctu_can_fd_top_avalon,
+ 
+\end_layout
+
+\begin_layout Itemize
+ctu_can_fd_top_ahb
+\end_layout
+
+\begin_layout Itemize
+ctu_can_fd_top_apb
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+See 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Signals-and-Generics"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-2"
+literal "false"
+
+\end_inset
+
+ for CTU CAN FD top level signals and parameters.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Chapter
+Signals and Parameters
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Signals-and-Generics"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Signals
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD has following logical interfaces:
+\end_layout
+
+\begin_layout Itemize
+Memory bus slave interface
+\end_layout
+
+\begin_layout Itemize
+Interrupt
+\end_layout
+
+\begin_layout Itemize
+Timestamp
+\end_layout
+
+\begin_layout Itemize
+Scan control
+\end_layout
+
+\begin_layout Itemize
+Test probe
+\end_layout
+
+\begin_layout Itemize
+CAN bus
+\end_layout
+
+\begin_layout Description
+Note Clock and reset signals are not mentioned here as they are described in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Clocking-and-Reset"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Memory bus slave interface
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD has single 32-bit memory bus slave interface.
+ This interface never stalls.
+ CTU CAN FD can always consume the data provided or read the data requested within the next cycle.
+ Therefore,
+ the interface behaves like a RAM memory with byte-enable signals.
+ There are following top-level wrappers for commonly known interfaces:
+\end_layout
+
+\begin_layout Itemize
+
+\shape italic
+ctu_can_fd_top.vhd
+\shape default
+ - Default,
+ RAM-like interface
+\end_layout
+
+\begin_layout Itemize
+
+\shape italic
+ctu_can_fd_top_avalon.vhd
+\shape default
+ - Altera Avalon interface
+\end_layout
+
+\begin_layout Itemize
+
+\shape italic
+ctu_can_fd_top_ahb.vhd
+\shape default
+ - AMBA High speed bus interface
+\end_layout
+
+\begin_layout Itemize
+
+\shape italic
+ctu_can_fd_top_apb.vhd
+\shape default
+ - AMBA Peripheral bus interface
+\end_layout
+
+\begin_layout Standard
+For more details on memory bus interfaces (timing diagrams or signal namings) see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-2"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Interrupt
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD has single interrupt output.
+ The interrupt output is named differently for each memory bus interface wrapper (
+\color red
+int
+\color inherit
+ or 
+\color red
+irq
+\color inherit
+).
+ The interrupt is registered (therefore glitch-free).
+\end_layout
+
+\begin_layout Subsection
+Timestamp
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD can use external time-base to sample received frames,
+ or do time-triggered transmission.
+ The integrating system shall provide 64-bit upcounting binary counter on 
+\color red
+timestamp
+\color inherit
+ input to represent the time-base.
+ If the integrator wants to use no time-base,
+ they shall tie all bits of the 
+\color red
+timestamp
+\color inherit
+ input to high.
+\end_layout
+
+\begin_layout Subsection
+Scan control
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD supports scan-chain insertion.
+ The 
+\color red
+scan_mode
+\color inherit
+ input is used to distinguish that device is in scan mode.
+ See 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Design-for-Test"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+ for more details on design-for-test.
+\end_layout
+
+\begin_layout Subsection
+Test probe
+\end_layout
+
+\begin_layout Standard
+
+\color red
+test_probe
+\color inherit
+ is a verification signal used only by CTU CAN FD testbench.
+ This signal is present only on RAM-like interface wrapper.
+ When integrating CTU CAN FD,
+ you can leave this signal unconnected.
+ In case you needed to synchronize to CAN bus timing,
+ you can use fields of this signal for:
+\end_layout
+
+\begin_layout Itemize
+
+\color red
+tx_trigger
+\color inherit
+ - Active for single clock cycle at start of SYNC segment of CAN bit.
+\end_layout
+
+\begin_layout Itemize
+
+\color red
+rx_trigger_wbs
+\color inherit
+ - Active for single clock cycle at start of Sample point.
+ Sample points of stuff bits are included.
+\end_layout
+
+\begin_layout Itemize
+
+\color red
+rx_trigger_nbs
+\color inherit
+ - Active for single clock cycle at start of Sample point.
+ Sample points of stuff bits are filtered.
+\end_layout
+
+\begin_layout Standard
+These signals are synchronous to system clock,
+ however there is no guarantee on timing.
+ If you want to use them in your design,
+ it is recommended to register them at the expense of one system clock cycle latency.
+\end_layout
+
+\begin_layout Subsection
+CAN bus
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD connects to the CAN bus by 
+\color red
+can_tx
+\color inherit
+ and 
+\color red
+can_rx
+\color inherit
+ signals.
+ 
+\color red
+can_rx
+\color inherit
+ is treated as asynchronous signal and resynchronized by CTU CAN FD (see more in 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Signal-synchronizers"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+).
+ 
+\color red
+can_tx
+\shape italic
+\color inherit
+ 
+\shape default
+is synchronous to system clock,
+ but it is not registered.
+ When MODE and SETTINGS registers of CTU CAN FD are not changed at run-time,
+ the 
+\color red
+can_tx
+\color inherit
+ is glitch free.
+\end_layout
+
+\begin_layout Section
+Configuration parameters
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD has multiple top-level parameters that shall be configured at the time of CTU CAN FD integration.
+ You can find the list of generics in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab: configuration-parameters"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+alignment document
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="13" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="4.2cm">
+<column alignment="left" valignment="top" width="1.8cm">
+<column alignment="left" valignment="top" width="10cm">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Parameter name
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+cellcolor{gray}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+cellcolor{gray}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Description
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+cellcolor{gray}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_RX_BUF_SIZE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+32 - 4096
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Size of RX buffer (number of 32bit words it can store).
+ SW can read this value from RX_MEM_INFO[RX_BUFF_SIZE].
+ Shall be power of 2.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_FILT_A_EN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Filter A is / is not present.
+ If present,
+ FILTER_STATUS[SFA] = 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_FILT_B_EN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Filter B is / is not present.
+ If present,
+ FILTER_STATUS[SFB] = 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_FILT_C_EN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Filter C is / is not present.
+ If present,
+ FILTER_STATUS[SFC] = 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_FILT_RANGE_EN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Range fitler is / is not present.
+ If present,
+ FILTER_STATUS[SFR] = 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_TRAFFIC_CTRS_EN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Traffic counters are / are not present.
+ If present,
+ STATUS[STCNT] = 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_TXT_BUF_COUNT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2-8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Number of TXT buffers available.
+ Can be read from TXTB_INFO register.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_TEST_REGS_EN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Test registers for memory testability (Test Registers memory region) are / are not present .
+ If present,
+ STATUS[STRCNT] = 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_PARITY_EN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Add parity bits to each word of TXT Buffer and RX buffer RAMs.
+ If Parity protection is present,
+ STATUS[SPRT] = 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_RESET_BUF_RAMS
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+When true,
+ TXT Buffer and RX buffer RAMs are resettable by HW reset.
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_ACTIVE_TS_BITS
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+integer
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Number of active bits of CTU CAN FD timebase - 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_TECHNOLOGY
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+integer
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0 - ASIC target,
+ 1 - FPGA target
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Configuration parameters
+\begin_inset CommandInset label
+LatexCommand label
+name "tab: configuration-parameters"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+
+\shape italic
+G_RX_BUF_SIZE
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD stores frames received on CAN bus to a FIFO called RX buffer that is located within the CTU CAN FD.
+ The FIFO is implemented as synchronous dual-port RAM memory with no forwarding in case of simultaneous read and write to the same address.
+ The width of the memory word is 32.
+ The depth is given by 
+\series bold
+\shape slanted
+G_RX_BUF_SIZE
+\series default
+\shape default
+.
+ The memory is implementd in 
+\shape italic
+i_dp_inf_ram.vhd
+\shape default
+.
+ The memory is reset to zero when 
+\series bold
+\shape italic
+G_RESET_BUF_RAMS=
+\series default
+\shape default
+true.
+ Whether the memory is configured to be reset or not,
+ the memory is always written before it can be read by the user.
+ If memory has undefined data in it and SW attempts to read it,
+ the undefined data are gated.
+ For design-for-test implications see 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Design-for-Test"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+As the area of the RX buffer is significant,
+ it is recommended to use appropriat size.
+ To find out the appropriate size,
+ understanding how RX buffer works is important.
+ On CAN bus,
+ the frames can be received back-to-back,
+ without any idle state.
+ CTU CAN FD stores these frames to RX buffer until the RX buffer is full.
+ If the RX buffer overflows,
+ the received frame is lost.
+ When SW reads the frame from RX buffer,
+ it is discared from the RX buffer.
+ Therefore size of the RX buffer is inversly proportional to the worst-case reaction time of SW in the system that integrates CTU CAN FD.
+ This depends on factors such as:
+\end_layout
+
+\begin_layout Itemize
+HW latency of memory accesses made by the SW.
+ Latency of access to e.g.
+ a PCIe card with CTU CAN FD on it is very different compared to latency of an SoC bus if CTU CAN FD is an on-die peripheral.
+\end_layout
+
+\begin_layout Itemize
+Operating system scheduler latency.
+\end_layout
+
+\begin_layout Itemize
+Delay of ISR routine to read out the received frame.
+\end_layout
+
+\begin_layout Standard
+A 64-byte CAN FD frame spans 20 words in RX buffer.
+ Therefore using 
+\series bold
+\shape italic
+G_RX_BUF_SIZE=
+\series default
+\shape default
+32,
+ allows storing only one 64-byte CAN FD frame.
+ Reception of second 64-byte CAN FD frame will overflow the RX buffer if the SW does not manage to read out the first frame fast enough.
+ To analyze RX buffer behavior we use following terminology:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $t_{NOM}$
+\end_inset
+
+ - Nominal bit-rate bit duration
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $t_{DAT}$
+\end_inset
+
+ - Data bit-rate bit duration
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $t_{SW}$
+\end_inset
+
+ - Worst case SW reaction time (including HW propagation,
+ ISR,
+ scheduling latency and frame readout) to read CAN frame
+\end_layout
+
+\begin_layout Standard
+where all the values must have the same unit of time,
+ then 
+\series bold
+\shape italic
+G_RX_BUF_SIZE
+\series default
+\shape default
+ should be set to meet following:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{t_{SW}}{33*t_{NOM}+86*t_{DAT}}*20>\mbox{\textit{\textbf{G\_RX\_BUF\_SIZE}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $t_{NOM}=2\:us$
+\end_inset
+
+ (500 Kbit/s)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $t_{DAT}=0.5\:us$
+\end_inset
+
+ (2 Mbit/s)
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $t_{SW}=200\:us$
+\end_inset
+
+ (should be safely reachable on real-time OS)
+\begin_inset Formula 
+\[
+\frac{200}{33*2+86*0.5}*20>\mbox{\textit{\textbf{G\_RX\_BUF\_SIZE}}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+36>\mbox{\textit{\textbf{G\_RX\_BUF\_SIZE}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Therefore we set 
+\series bold
+\shape italic
+G_RX_BUF_SIZE=
+\series default
+\shape default
+64.
+ Note that on non-realtime operating systems the scheduler delay will be significantly higher than 200 us.
+\end_layout
+
+\begin_layout Section
+
+\shape italic
+G_FILT_*_EN
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD can filter received RX frames by 3 bit filters (A,B,C) and one range filter.
+ 
+\series bold
+\shape italic
+G_FILT_*_EN 
+\series default
+\shape default
+generics either enable or disable these filter to be synthesized into the design.
+ When enabled,
+ the filters can be configured at run-time to receive frames whose CAN identifier matches a mask (bit filter),
+ or are within decimal range (range filter).
+ Filters add little HW area compared to size of RX buffer or number of TXT Buffers.
+\end_layout
+
+\begin_layout Section
+
+\shape italic
+G_TRAFFIC_CTRS_EN
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD can measure transmitted and received frames in HW.
+ When 
+\series bold
+\shape italic
+G_TRAFFIC_CTRS_EN
+\series default
+\shape default
+=true,
+ CTU CAN XL contains these counters.
+ There is one counter for received frames and one for trasnmitted frames.
+ Each counter is 32-bit wide.
+\end_layout
+
+\begin_layout Section
+
+\shape italic
+G_TXT_BUF_CNT
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD transmits CAN frames from TXT buffers.
+ Each TXT buffer can hold one 64-byte CAN frame to be transmitted.
+ Each TXT buffer contains a synchronous dual-port RAM memory with no forwarding in case of simultaneous read and write to the same address.
+ Width of the memory is 32-bit and depth is 21 words.
+ The memory is implementd in 
+\shape italic
+dp_inf_ram.vhd
+\shape default
+.
+ The memory is reset to zero when 
+\series bold
+\shape italic
+G_RESET_BUF_RAMS
+\series default
+\shape default
+=true
+\series bold
+\shape italic
+ 
+\series default
+\shape default
+.
+ It is responsibility of SW driver to make sure the memory is initialized when using corresponding TXT buffer to transmit a frame.
+ For design-for-test implications of TXT buffer memory see 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Design-for-Test"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+
+\shape italic
+G_TEST_REGS_EN
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD supports functional DFT testability of TXT buffer and RX buffer memories.
+ When 
+\series bold
+\shape italic
+G_TEST_REGS_EN
+\series default
+\shape default
+ = true,
+ this feature is present.
+ For more details on DFT,
+ see 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Design-for-Test"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+
+\shape italic
+G_PARITY_EN
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD supports parity on TXT buffer and RX buffer memories.
+ When 
+\series bold
+\shape italic
+G_PARITY_EN
+\series default
+\shape default
+=true,
+ the parity is enabled.
+ If enabled,
+ there exists a parity bit for each word of TXT buffer and RX buffer memories.
+ The extra bit is not held in the memory itself,
+ but in side-array of flip-flops.
+ When the memory is written,
+ the parity bit is set.
+ When the memory is read,
+ the bit is checked and can notify SW of bit-flip.
+ The parity can only detect single event effects,
+ there is no support for correction.
+ Using parity is usefull when synthesizing the design with TMR (each flip-flop is trippled),
+ but wanting to use actual RAM blocks for TXT and RX buffers.
+\end_layout
+
+\begin_layout Section
+
+\shape italic
+G_RESET_BUF_RAMS
+\end_layout
+
+\begin_layout Standard
+When 
+\series bold
+\shape italic
+G_RESET_BUF_RAMS
+\series default
+\shape default
+=true,
+ CTU CAN FD TXT and RX buffer RAMs have asynchronous reset.
+ This is usefull to:
+\end_layout
+
+\begin_layout Itemize
+Prevent inferring SRAM blocks on FPGAs
+\end_layout
+
+\begin_layout Itemize
+Forcing the memory be out of flip-flops that have set and reset,
+ and are therefore ellegible for scan-chain insertion.
+ For more details on design-for-test see 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "chap:Design-for-Test"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+
+\shape italic
+G_ACTIVE_TS_BITS
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD can sample timestamp of received frames or do time-triggered transmission of CAN FD frames.
+ Such time-base shall be provided by the system that integrates CTU CAN FD.
+ 
+\series bold
+\shape italic
+G_ACTIVE_TS_BITS
+\series default
+\shape default
+ shall be set to number of active bits of such time-base minus 1.
+ E.g.
+ when 
+\color red
+timestamp
+\color inherit
+ input is driven by 32 bit counter and its upper 32-bits are driven by zero,
+ 
+\series bold
+\shape italic
+G_ACTIVE_TS_BITS 
+\series default
+\shape default
+shall be set to 31.
+\end_layout
+
+\begin_layout Section
+
+\shape italic
+G_TECHNOLOGY
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD supports either ASIC or FPGA synthesis.
+ The difference between ASIC and FPGA synthesis is the use of hand-instantiated clock-gaters (see 
+\shape italic
+clk_gate.vhd
+\shape default
+) for gating clock to:
+\end_layout
+
+\begin_layout Itemize
+Memory registers when they are not being accessed
+\end_layout
+
+\begin_layout Itemize
+RX buffer RAM when it is not being accessed
+\end_layout
+
+\begin_layout Itemize
+TXT buffer RAMs when they are not being accessed
+\end_layout
+
+\begin_layout Chapter
+Clocking and Reset
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Clocking-and-Reset"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Clocking
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD has single clock domain - system clock.
+ The clock signal is called differently depending on the memory bus wrapper used (
+\color red
+clk_sys
+\color inherit
+,
+ 
+\color red
+clk
+\color inherit
+,
+ 
+\color red
+hclk
+\color inherit
+,
+ 
+\color red
+aclk
+\color inherit
+),
+ but it is always the same clock.
+ The CTU CAN FD design is fully synchronous.
+ 
+\end_layout
+
+\begin_layout Subsection
+Clock tolerance
+\end_layout
+
+\begin_layout Standard
+CAN bus bit timing requires certain oscillator tolerances to be met by the oscillator that clocks the CAN bit timing logic.
+ For more details see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-3"
+literal "false"
+
+\end_inset
+
+.
+ Since CTU CAN FD uses single clock for CAN bit timing as well as memory bus,
+ the same tolerance requirements apply on the memory bus clocking.
+ Therefore it is unsuitable to use on-chip CMOS oscillator as source of clock for CTU CAN FD.
+ If you absolutely must use on-chip oscillator to clock the memory bus infrastracture,
+ CTU CAN FD shall be wrapped by CDC that resynchronizes the memory bus to another clock domain with appropriate clock source tolerance that is used to clock CTU CAN FD.
+\end_layout
+
+\begin_layout Subsection
+Clock architecture
+\end_layout
+
+\begin_layout Standard
+All flip-clops in CTU CAN FD are positive-edge triggered flip flops.
+ CTU CAN FD does not:
+\end_layout
+
+\begin_layout Itemize
+multiply or divide clocks
+\end_layout
+
+\begin_layout Itemize
+multiplex clocks
+\end_layout
+
+\begin_layout Itemize
+use 
+\begin_inset Quotes eld
+\end_inset
+
+clock-as-data
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+data-as-clock
+\begin_inset Quotes erd
+\end_inset
+
+ (e.g.
+ ripple counters)
+\end_layout
+
+\begin_layout Itemize
+has no generated clocks
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD extensively uses clock enables that are written such that synthesizer can infer flip-flops with enable pin or clock-gates.
+ When 
+\series bold
+\shape italic
+G_TECHNOLOGY
+\series default
+\shape default
+=0,
+ CTU CAN FD uses manually instantiated clock gates to save dynamic power.
+ These clock-gates are latch+AND style clock gates.
+\end_layout
+
+\begin_layout Subsection
+Signal synchronizers
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Signal-synchronizers"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD uses single two flip-flop signal synchronizer (
+\shape italic
+sig_sync.vhd
+\shape default
+) to synchronize input data from 
+\color red
+can_rx
+\color inherit
+ before processing them.
+ Extending the synchronizer with third flip-flop (e.g.
+ due to MTBF in your target technology),
+ is possible at your own risk with following implications:
+\end_layout
+
+\begin_layout Itemize
+CTU CAN FD testbench accounts for two cycle delay (particularly compliance tests),
+ so inserting third flip-flop will make many tests fail.
+\end_layout
+
+\begin_layout Itemize
+The minimal position of secondary sampling point will increment by 1 (see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-1"
+literal "false"
+
+\end_inset
+
+ for description of secondary sampling point).
+\end_layout
+
+\begin_layout Standard
+In case the system clock frequency,
+ your technology and rate of changes on CAN bus is such that your MTBF calculations provide low values,
+ rather than incrementing the number of flip-flops to 3,
+ it is recommended either of:
+\end_layout
+
+\begin_layout Itemize
+Use dedicated synchronizer cell that has two clock cycles delay and better MTBF than two discrete flip-flops
+\end_layout
+
+\begin_layout Itemize
+Put negative edge triggered flip-flop between the two flip-flops of the synchronizer by modifying the RTL.
+\end_layout
+
+\begin_layout Subsection
+Clock frequency
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD has been synthesized to variety of FPGA families and several ASIC process nodes.
+ The synthesis for FPGA is part of CTU CAN FD continous integration.
+ See 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-4"
+literal "false"
+
+\end_inset
+
+ for area and timing results.
+ CTU CAN FD has been used on frequencies ranging from 80 - 100 MHz which is realistic target suficient for sub 100 nm ASIC PDKs and modern FPGA families.
+\end_layout
+
+\begin_layout Section
+Reset
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD has single external reset.
+ The reset signal is named differently depending on the used memory bus wrapper (
+\color red
+res_n
+\color inherit
+,
+ 
+\color red
+hresetn
+\color inherit
+,
+ 
+\color red
+arstn
+\color inherit
+).
+ For memory bus wrapper kinds the reset is assumed to be asynchrnous reset,
+ and is synchronized by an internal 2 flip-flop reset synchronizer with asynchronous assert and synchronous deassert.
+ The input reset signal therefore must be glitch free to prevent spurious resets.
+ 
+\end_layout
+
+\begin_layout Subsection
+Reset architecture
+\end_layout
+
+\begin_layout Standard
+There are following types of flip-flops in CTU CAN FD:
+\end_layout
+
+\begin_layout Itemize
+With asynchronous active low reset.
+ These are all flip-flops apart from TXT / RX buffer memories in 
+\shape italic
+dp_inf_ram.vhd
+\shape default
+.
+\end_layout
+
+\begin_layout Itemize
+Without reset when 
+\series bold
+\shape italic
+G_RESET_BUF_RAMS
+\series default
+\shape default
+=false.
+ These are only flip-flops in 
+\shape italic
+dp_inf_ram.vhd.
+\end_layout
+
+\begin_layout Chapter
+Design for Test
+\begin_inset CommandInset label
+LatexCommand label
+name "chap:Design-for-Test"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD is design-for-test (DFT) friendly,
+ and DFT has been previously inserted to CTU CAN FD.
+ When inserting DFT,
+ the integrator shall map top-level signal 
+\color red
+scan_mode
+\color inherit
+ to switch the design into scan mode.
+ When 
+\color red
+scan_mode
+\color inherit
+=1:
+\end_layout
+
+\begin_layout Itemize
+All hand instantiated clock gates are open
+\end_layout
+
+\begin_layout Itemize
+All generated resets (flip-flop A output used as asynchronous reset to flip-flop B) are replaced by the reset of the flip-flop A.
+\end_layout
+
+\begin_layout Itemize
+Register synchronizer output is muxed and raw input reset is used on the output instead of second flip flop of the synchronizer.
+\end_layout
+
+\begin_layout Section
+Memories and their testability
+\end_layout
+
+\begin_layout Standard
+CTU CAN FD contains following synchronous dual port memories with 32-bit word width:
+\end_layout
+
+\begin_layout Itemize
+TXT buffer memories - 
+\series bold
+\shape italic
+G_TXT_BUF_CNT
+\series default
+\shape default
+ instances,
+ 21 word deep.
+\end_layout
+
+\begin_layout Itemize
+RX buffer memories - Single instance,
+ 
+\series bold
+\shape italic
+G_RX_BUF_SIZE
+\series default
+\shape default
+ words deep.
+\end_layout
+
+\begin_layout Standard
+On FPGAs,
+ these memories are written to be inferred to SRAM/BRAM blocks.
+ On ASIC the recommended approach differs based on:
+\end_layout
+
+\begin_layout Itemize
+whether you want to insert scan chains
+\end_layout
+
+\begin_layout Itemize
+value of
+\series bold
+\shape italic
+ G_RESET_BUF_RAMS
+\series default
+\shape default
+ generic
+\end_layout
+
+\begin_layout Itemize
+whether you want to replace the memories by PDK specific hard macro
+\end_layout
+
+\begin_layout Subsection
+Replacing memories by hard macro
+\end_layout
+
+\begin_layout Standard
+If integrator replaces the memories by hard macro,
+ he shall make sure that:
+\end_layout
+
+\begin_layout Itemize
+The RX buffer memory matches the size given by the 
+\series bold
+\shape italic
+G_RX_BUF_SIZE
+\series default
+\shape default
+ generic.
+\end_layout
+
+\begin_layout Itemize
+The TXT buffer memory is at least 21 words deep (typically will be 32).
+\end_layout
+
+\begin_layout Itemize
+Used memories are dual port memories with synchronous read write.
+ In case of simultaneous read and write to the same address,
+ the memories return the old value.
+\end_layout
+
+\begin_layout Standard
+When replacing memories by hard macro,
+ value of 
+\series bold
+\shape italic
+G_RESET_BUF_RAMS
+\series default
+\shape default
+ generic has no effect.
+ You may want to set 
+\series bold
+\shape italic
+G_TEST_REGS_EN
+\series default
+\shape default
+=true as this allows you to functionally test the macros (unless you insert some form of MBIST to the macro).
+ If you want to insert scan chains to rest of CTU CAN FD logic,
+ you will need to insert memory wrapper either in RTL or in DFT tool.
+\end_layout
+
+\begin_layout Subsection
+Keeping native memories
+\end_layout
+
+\begin_layout Standard
+When you do not replace memories by hard-macro,
+ CTU CAN FDs memories will be synthesized out of flip-flops.
+ If you set
+\series bold
+\shape italic
+ G_RESET_BUF_RAMS
+\series default
+\shape default
+ = true,
+ the flip-flops will be reset,
+ otherwise they will have no reset.
+ Following approaches are reasonable in this case:
+\end_layout
+
+\begin_layout Itemize
+Insert scan chains to rest of CTU CAN FD logic,
+ but not the flip flops of the memories.
+ Insert wrappers around memories in RTL or DFT tool.
+ Set 
+\series bold
+\shape italic
+G_RESET_BUF_RAMS
+\series default
+\shape default
+ = false and 
+\series bold
+\shape italic
+G_TEST_REGS_EN
+\series default
+\shape default
+=true.
+ Test the memories by functional test (see the sub-chaper 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Memory-testability-support"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+tuple "list"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+Insert scan chains to all CTU CAN FD logic (including memories).
+ Set 
+\series bold
+\shape italic
+G_RESET_BUF_RAMS
+\series default
+\shape default
+ = true and 
+\series bold
+\shape italic
+G_TEST_REGS_EN
+\series default
+\shape default
+=false.
+ Test the memories as part of ATPG scan testing.
+\end_layout
+
+\begin_layout Subsection
+Memory testability support
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Memory-testability-support"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When 
+\series bold
+\shape italic
+G_TEST_REGS_EN
+\series default
+\shape default
+=true CTU CAN FD memory space will contain additional memory region called 
+\begin_inset Quotes eld
+\end_inset
+
+Test Registers
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This region makes SW capable of arbitrarily reading/writing both TXT and RX buffer memories.
+ With this option enabled,
+ SoC level SW can be used to execute memory test (e.g.
+ march pattern).
+ For more details on this functionality reffer to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-1"
+literal "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Chapter
+Verification of HW integration
+\end_layout
+
+\begin_layout Standard
+When integrating CTU CAN XL in a system,
+ it is recommended the integrator:
+\end_layout
+
+\begin_layout Itemize
+Re-runs CTU CAN FD regression (see README.md in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-4"
+literal "false"
+
+\end_inset
+
+) if you made any HW integration changes (replace clock gates,
+ synchronizers,
+ RAM memories).
+\end_layout
+
+\begin_layout Itemize
+Do integration test in SoC level verification that attempts to communicate with another CAN device (e.g.
+ CAN VIP).
+ Integrators can use CTU CAN FD VIP for this purpose,
+ however this is non-trivial.
+ Contact us for support if you need to do this.
+\end_layout
+
+\begin_layout Itemize
+Do logic equivalency check between the SoC RTL and the post-PnR gate level netlist.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-1"
+
+\end_inset
+
+CTU CAN FD,
+ Datasheet.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-2"
+literal "false"
+
+\end_inset
+
+CTU CAN FD,
+ System architecture.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-3"
+
+\end_inset
+
+ISO11898-1 2015 - Road vehicles,
+ Controller area network,
+ Part 1,
+ Data link layer and signalling
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-4"
+
+\end_inset
+
+CTU CAN FD repository 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+https://github.com/Logic-Design-Services/CTU-CAN-FD
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
