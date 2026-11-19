@@ -17,6 +17,8 @@
 - Added new Avalon top level interface (`ctu_can_fd_top_avalon`).
 - Rewrote the AHB wrapper not to have `hreadyout` combinatorially dependant
   on `hready` input and therefore avoid combinatorial loop.
+- RTL: Make `rst_sync` to be more scan friendly - mux output in Scan mode.
+- DOC: Add Integration guide.
 
 ## Version 2.7 - 7.1.2026
 - RTL: Optimized to remove dead-code and unreachable code

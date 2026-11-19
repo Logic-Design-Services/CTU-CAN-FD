@@ -2308,6 +2308,10 @@ All hand instantiated clock gates are open
 All generated resets (flip-flop A output used as asynchronous reset to flip-flop B) are replaced by the reset of the flip-flop A.
 \end_layout
 
+\begin_layout Itemize
+Register synchronizer output is muxed and raw input reset is used on the output instead of second flip flop of the synchronizer.
+\end_layout
+
 \begin_layout Section
 Memories and their testability
 \end_layout
