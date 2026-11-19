@@ -20,7 +20,7 @@ CTU CAN FD RTL and TB are published under following license :
 [![License](https://img.shields.io/badge/License--black.svg)]( https://github.com/Logic-Design-Services/CTU-CAN-FD/blob/master/LICENSE)
 
 Commercial usage of RTL and TB requires License agreement which is provided
-for a license fee. For further details please reach out to ondrej.ille@gmail.com.
+by [SELOSYS](https://selosys.cz/) for a license fee. For further details please reach out to info@selosys.cz.
 
 Linux driver for CTU CAN FD is published under GPLv2 license.
 

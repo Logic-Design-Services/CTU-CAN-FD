@@ -1,5 +1,5 @@
-#LyX 2.3 created this file. For more info see http://www.lyx.org/
-\lyxformat 544
+#LyX 2.5 created this file. For more info see https://www.lyx.org/
+\lyxformat 643
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -12,16 +12,19 @@
 \definecolor{gray}{RGB}{230,230, 230}
 \usepackage{subcaption}
 \usepackage{cprotect}
+% Added by lyx2lyx
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
 \end_preamble
 \use_default_options true
 \begin_modules
 customHeadersFooters
 \end_modules
-\maintain_unincluded_children false
+\maintain_unincluded_children no
 \language english
 \language_package default
-\inputencoding auto
-\fontencoding global
+\inputencoding auto-legacy
+\fontencoding auto
 \font_roman "default" "default"
 \font_sans "default" "default"
 \font_typewriter "lmtt" "default"
@@ -29,7 +32,9 @@ customHeadersFooters
 \font_default_family sfdefault
 \use_non_tex_fonts false
 \font_sc false
-\font_osf false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
 \use_microtype false
@@ -73,9 +78,19 @@ customHeadersFooters
 \use_indices false
 \paperorientation portrait
 \suppress_date false
-\justification true
-\use_refstyle 1
+\justification default
+\crossref_package refstyle
+\use_formatted_ref 0
 \use_minted 0
+\use_lineno 0
+\backgroundcolor none
+\fontcolor none
+\notefontcolor lightgray
+\boxbgcolor red
+\table_border_color default
+\table_odd_row_color default
+\table_even_row_color default
+\table_alt_row_colors_start 1
 \index Index
 \shortcut idx
 \color #008000
@@ -87,8 +102,8 @@ customHeadersFooters
 \headheight 2cm
 \secnumdepth 2
 \tocdepth 5
-\paragraph_separation skip
-\defskip smallskip
+\paragraph_separation indent
+\paragraph_indentation default
 \is_math_indent 0
 \math_numbering_side default
 \quotes_style english
@@ -96,11 +111,17 @@ customHeadersFooters
 \papercolumns 1
 \papersides 1
 \paperpagestyle headings
+\tablestyle default
 \tracking_changes false
 \output_changes false
+\change_bars false
+\postpone_fragile_content false
 \html_math_output 0
 \html_css_as_file 0
 \html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\docbook_mathml_version 0
 \end_header
 
 \begin_body
@@ -110,12 +131,10 @@ customHeadersFooters
 status open
 
 \begin_layout Plain Layout
-
 % number the pages at the beginning in roman
 \end_layout
 
 \begin_layout Plain Layout
-
 
 \backslash
 frontmatter
@@ -126,7 +145,6 @@ frontmatter
 \end_layout
 
 \begin_layout Plain Layout
-
 % Number chapters as 
 \begin_inset Quotes eld
 \end_inset
@@ -151,13 +169,11 @@ nxxx
 
 \begin_layout Plain Layout
 
-
 \backslash
 makeatletter
 \end_layout
 
 \begin_layout Plain Layout
-
 
 \backslash
 def
@@ -166,7 +182,6 @@ def
 \end_layout
 
 \begin_layout Plain Layout
-
   
 \backslash
 vspace*{50
@@ -175,7 +190,6 @@ p@}%
 \end_layout
 
 \begin_layout Plain Layout
-
   {
 \backslash
 parindent 
@@ -188,7 +202,6 @@ normalfont
 \end_layout
 
 \begin_layout Plain Layout
-
     
 \backslash
 ifnum 
@@ -199,14 +212,12 @@ m@ne
 \end_layout
 
 \begin_layout Plain Layout
-
       
 \backslash
 if@mainmatter
 \end_layout
 
 \begin_layout Plain Layout
-
         %
 \backslash
 huge
@@ -221,7 +232,6 @@ thechapter
 \end_layout
 
 \begin_layout Plain Layout
-
         
 \backslash
 Huge
@@ -236,7 +246,6 @@ space%
 \end_layout
 
 \begin_layout Plain Layout
-
         %
 \backslash
 par
@@ -245,7 +254,6 @@ nobreak
 \end_layout
 
 \begin_layout Plain Layout
-
         %
 \backslash
 vskip 20
@@ -254,21 +262,18 @@ p@
 \end_layout
 
 \begin_layout Plain Layout
-
       
 \backslash
 fi
 \end_layout
 
 \begin_layout Plain Layout
-
     
 \backslash
 fi
 \end_layout
 
 \begin_layout Plain Layout
-
     
 \backslash
 interlinepenalty
@@ -277,7 +282,6 @@ interlinepenalty
 \end_layout
 
 \begin_layout Plain Layout
-
     
 \backslash
 Huge 
@@ -290,7 +294,6 @@ nobreak
 \end_layout
 
 \begin_layout Plain Layout
-
     
 \backslash
 vskip 40
@@ -299,12 +302,10 @@ p@
 \end_layout
 
 \begin_layout Plain Layout
-
   }}
 \end_layout
 
 \begin_layout Plain Layout
-
 
 \backslash
 def
@@ -313,7 +314,6 @@ chaptername{}
 \end_layout
 
 \begin_layout Plain Layout
-
 
 \backslash
 makeatother
@@ -363,12 +363,18 @@ Testbench Architecture
 \begin_inset VSpace defskip
 \end_inset
 
-LOGIC DESIGN SERVICES l.t.d.
+SELOSYS Ltd.
 \begin_inset Newline newline
 \end_inset
 
 
-\begin_inset space ~
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+www.selosys.cz
+\end_layout
+
 \end_inset
 
 
@@ -462,10 +468,12 @@ CTU CAN FD IP Core - Testbench
 \begin_inset Text
 
 \begin_layout Plain Layout
-Version 0.3, Commit:
+Version 0.3,
+ Commit:
 \begin_inset CommandInset include
 LatexCommand input
 filename "version.tex"
+literal "true"
 
 \end_inset
 
@@ -638,7 +646,8 @@ Ondrej Ille
 \begin_inset Text
 
 \begin_layout Plain Layout
-Proof-read, add compilation guide.
+Proof-read,
+ add compilation guide.
  Update figures and add 
 \begin_inset Quotes eld
 \end_inset
@@ -683,12 +692,10 @@ LatexCommand tableofcontents
 status open
 
 \begin_layout Plain Layout
-
 % classis page numbering
 \end_layout
 
 \begin_layout Plain Layout
-
 
 \backslash
 mainmatter
@@ -708,7 +715,6 @@ Introduction
 status open
 
 \begin_layout Plain Layout
-
  
 \backslash
 thispagestyle{fancy}
@@ -722,7 +728,8 @@ thispagestyle{fancy}
 \begin_layout Standard
 This document describes test-bench of CTU CAN FD.
  It provides guide to integrate main CTU CAN FD test-bench into other (e.g.
- SoC level) test-bench, and it explains types of tests available.
+ SoC level) test-bench,
+ and it explains types of tests available.
  CTU CAN FD contains following tests / test-benches:
 \end_layout
 
@@ -734,21 +741,24 @@ Main test-bench with following types of tests:
 \begin_layout Itemize
 Compliance tests - Verify compliance of CTU CAN FD to ISO11868-1 2015.
  Contains all tests from ISO 16845-1 2016.
- To run these tests, you need Compliance test library compiled and linked
- to simulation via PLI.
+ To run these tests,
+ you need Compliance test library compiled and linked to simulation via PLI.
  This library is a submodule of CTU CAN FD repository.
 \end_layout
 
 \begin_layout Itemize
-Feature tests - Verify features of CTU CAN FD thah are not directly related
- to compliance with ISO11898-1 2015 (e.g.
- TX/RX buffers, Interrupts, special modes, frame filtering, etc.).
+Feature tests - Verify features of CTU CAN FD thah are not directly related to compliance with ISO11898-1 2015 (e.g.
+ TX/RX buffers,
+ Interrupts,
+ special modes,
+ frame filtering,
+ etc.).
 \end_layout
 
 \begin_layout Itemize
-Reference tests - Each test applies stimulus recorded from reference implementat
-ion of CAN protocol, checks that CTU CAN FD can receive such sequence, and
- accepts frame correctly (black-box testing of cooperability).
+Reference tests - Each test applies stimulus recorded from reference implementation of CAN protocol,
+ checks that CTU CAN FD can receive such sequence,
+ and accepts frame correctly (black-box testing of cooperability).
  
 \end_layout
 
@@ -759,13 +769,14 @@ RX buffer unit test - RX buffer has its own block-level test-bench.
 \end_layout
 
 \begin_layout Standard
-This document focuses on main CTU CAN FD test-bench, and further reffers
- to it only as test-bench.
+This document focuses on main CTU CAN FD test-bench,
+ and further reffers to it only as test-bench.
  It has following features:
 \end_layout
 
 \begin_layout Itemize
-Testbench is written in VHDL, compliant with VHDL 2008.
+Testbench is written in VHDL,
+ compliant with VHDL 2008.
  
 \end_layout
 
@@ -773,15 +784,13 @@ Testbench is written in VHDL, compliant with VHDL 2008.
 Reference model of CAN bus communication that is used in compliance tests,
  is written in C++ 17.
  Reference model is part of Compliance test library.
- Compliance library is comiled as shared object library (.so), and linked
- to the simulation.
- Test-bench communicates with Compliance library via VPI interface (GHDL
- specific) or VHPI interface (IEEE 1076 standard).
+ Compliance library is comiled as shared object library (.so),
+ and linked to the simulation.
+ Test-bench communicates with Compliance library via VPI interface (GHDL specific) or VHPI interface (IEEE 1076 standard).
  There is a separate library for each supported simulator.
- For compiling Compliance test library, reffer to documentation in commercial
- delivery of Compliance library.
- Compilation is required for configuring the path of CTU CAN FD VIP inside
- TB.
+ For compiling Compliance test library,
+ reffer to documentation in commercial delivery of Compliance library.
+ Compilation is required for configuring the path of CTU CAN FD VIP inside TB.
  
 \end_layout
 
@@ -810,8 +819,7 @@ Vunit - Unit test framework for VHDL.
 \end_layout
 
 \begin_layout Standard
-Reffer to CTU CAN FD repository for ready-made docker image with all the
- dependencies installed.
+Reffer to CTU CAN FD repository for ready-made docker image with all the dependencies installed.
 \end_layout
 
 \begin_layout Section
@@ -839,8 +847,10 @@ Test-bench consists of following parts:
 \end_layout
 
 \begin_layout Itemize
-CTU CAN FD VIP - contains all test code, test sequences, libraries, packages
- and agents.
+CTU CAN FD VIP - contains all test code,
+ test sequences,
+ libraries,
+ packages and agents.
  CTU CAN FD VIP communicates with Compliance test library via a PLI interface.
 \end_layout
 
@@ -849,7 +859,8 @@ CTU CAN FD (DUT) - contains RTL.
 \end_layout
 
 \begin_layout Standard
-Further in this document, CTU CAN FD VIP is reffered to only as VIP.
+Further in this document,
+ CTU CAN FD VIP is reffered to only as VIP.
  CTU CAN FD design is reffered to as DUT.
  Block diagram of CTU CAN FD test-bench is shown in Figure 
 \begin_inset CommandInset ref
@@ -858,6 +869,7 @@ reference "fig:Test-bench-block-diagram"
 plural "false"
 caps "false"
 noprefix "false"
+nolink "false"
 
 \end_inset
 
@@ -867,6 +879,7 @@ noprefix "false"
 \begin_layout Standard
 \begin_inset Float figure
 placement h
+alignment document
 wide false
 sideways false
 status open
@@ -1076,6 +1089,7 @@ reference "tab: vip-interface-signals"
 plural "false"
 caps "false"
 noprefix "false"
+nolink "false"
 
 \end_inset
 
@@ -1085,6 +1099,7 @@ noprefix "false"
 \begin_layout Standard
 \begin_inset Float table
 placement H
+alignment document
 wide false
 sideways false
 status open
@@ -1113,7 +1128,6 @@ status open
 
 \begin_layout Plain Layout
 
-
 \backslash
 cellcolor{gray}
 \end_layout
@@ -1134,7 +1148,6 @@ Signals
 status open
 
 \begin_layout Plain Layout
-
 
 \backslash
 cellcolor{gray}
@@ -1157,7 +1170,6 @@ status open
 
 \begin_layout Plain Layout
 
-
 \backslash
 cellcolor{gray}
 \end_layout
@@ -1178,7 +1190,6 @@ Description
 status open
 
 \begin_layout Plain Layout
-
 
 \backslash
 cellcolor{gray}
@@ -1338,7 +1349,9 @@ can_tx
 \begin_inset Text
 
 \begin_layout Plain Layout
-Compliance , Reference, Feature test agents
+Compliance ,
+ Reference,
+ Feature test agents
 \end_layout
 
 \end_inset
@@ -1930,7 +1943,8 @@ test_success
 \begin_inset Text
 
 \begin_layout Plain Layout
-Test result (1 - passed, 0 - failed).
+Test result (1 - passed,
+ 0 - failed).
 \end_layout
 
 \end_inset
@@ -2008,8 +2022,7 @@ can_rx
 \end_layout
 
 \begin_layout Itemize
-VIP generates memory transactions on its Memory bus to access registers
- of DUT.
+VIP generates memory transactions on its Memory bus to access registers of DUT.
 \end_layout
 
 \begin_layout Itemize
@@ -2050,6 +2063,7 @@ reference "fig:Test-bench-block-diagram"
 plural "false"
 caps "false"
 noprefix "false"
+nolink "false"
 
 \end_inset
 
@@ -2098,11 +2112,14 @@ test_success
 test_success
 \series default
 \shape default
- = '1', the test passed, otherwise test failed.
+ = '1',
+ the test passed,
+ otherwise test failed.
 \end_layout
 
 \begin_layout Standard
 All tests follow basic test sequence:
+
 \series bold
 \shape italic
  test_start
@@ -2113,10 +2130,9 @@ All tests follow basic test sequence:
 \end_layout
 
 \begin_layout Enumerate
-Compliance tests - Control over TB is handed over PLI to Compliance test
- library (shared object library linked to simulation).
- Compliance test library forks its own test thread, and executes test sequence
- in this thread.
+Compliance tests - Control over TB is handed over PLI to Compliance test library (shared object library linked to simulation).
+ Compliance test library forks its own test thread,
+ and executes test sequence in this thread.
  Thread communicates with rest of the test-bench via PLI (see 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -2124,13 +2140,15 @@ reference "subsec:PLI-Interface"
 plural "false"
 caps "false"
 noprefix "false"
+nolink "false"
 
 \end_inset
 
-), and controls Clock agent, Memory bus agent and Compliance test agent
- (CAN agent).
- When test sequence ends, it signals this back to Test controller agent
- that passes the result of test back to 
+),
+ and controls Clock agent,
+ Memory bus agent and Compliance test agent (CAN agent).
+ When test sequence ends,
+ it signals this back to Test controller agent that passes the result of test back to 
 \series bold
 \shape italic
 test_done
@@ -2146,12 +2164,11 @@ test_success
 \end_layout
 
 \begin_layout Enumerate
-Feature tests - Test controller agent requests Feature test agent to start
- running the test.
- Feature test agent uses all the other agents connected to DUT, and executes
- test sequence.
- After the test sequence, feature test agent gives control back to Test
- controller agent that passes the result back to 
+Feature tests - Test controller agent requests Feature test agent to start running the test.
+ Feature test agent uses all the other agents connected to DUT,
+ and executes test sequence.
+ After the test sequence,
+ feature test agent gives control back to Test controller agent that passes the result back to 
 \series bold
 \shape italic
 test_done
@@ -2167,12 +2184,10 @@ test_success
 \end_layout
 
 \begin_layout Enumerate
-Reference tests - Test controller agent requests running the test from Reference
- test agent.
- Reference test agent applies reference test sequences to DUT via Compliance
- test agents driver.
- When Reference test agent sequence ends, it gives control back to Test
- controller agent that passes the result back to 
+Reference tests - Test controller agent requests running the test from Reference test agent.
+ Reference test agent applies reference test sequences to DUT via Compliance test agents driver.
+ When Reference test agent sequence ends,
+ it gives control back to Test controller agent that passes the result back to 
 \series bold
 \shape italic
 test_done
@@ -2192,8 +2207,7 @@ Communication mechanisms
 \end_layout
 
 \begin_layout Standard
-Agents in VIP communicate together via communication channel implemented
- in 
+Agents in VIP communicate together via communication channel implemented in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2236,9 +2250,9 @@ receive_finish
 \end_inset
 
  functions).
- Messages can be sent by any process at any time, however only one message
- can be sent at a time (it is not possible to send multiple messages at
- the same time), over single channel.
+ Messages can be sent by any process at any time,
+ however only one message can be sent at a time (it is not possible to send multiple messages at the same time),
+ over single channel.
  Destination agent is selected with each message being sent.
  Communication is synchronous (
 \begin_inset Quotes eld
@@ -2265,8 +2279,8 @@ Report mechanisms
 \end_layout
 
 \begin_layout Standard
-Test-bench contains package (tb_report_pkg.vhd) that is used to report, and
- execute checks in the implemented tests.
+Test-bench contains package (tb_report_pkg.vhd) that is used to report,
+ and execute checks in the implemented tests.
  Any call to 
 \begin_inset Quotes eld
 \end_inset
@@ -2275,7 +2289,8 @@ error_m
 \begin_inset Quotes erd
 \end_inset
 
-, 
+,
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2312,7 +2327,8 @@ VIP contains own log verbosity mechanism.
 \end_layout
 
 \begin_layout Description
-verbosity_debug All logs are shown, including 
+verbosity_debug All logs are shown,
+ including 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2332,7 +2348,8 @@ info_m
 \begin_inset Quotes erd
 \end_inset
 
-, 
+,
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2340,7 +2357,8 @@ warning_m
 \begin_inset Quotes erd
 \end_inset
 
-, and 
+,
+ and 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2401,7 +2419,8 @@ error_m
 \end_layout
 
 \begin_layout Standard
-With any verbosity level, calls to 
+With any verbosity level,
+ calls to 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2417,7 +2436,8 @@ check_false(true,...)
 \begin_inset Quotes erd
 \end_inset
 
- are always logged, since this means a test fail condition occured.
+ are always logged,
+ since this means a test fail condition occured.
  Verbosity level used by VIP can be configured by a call to 
 \begin_inset Quotes eld
 \end_inset
@@ -2450,17 +2470,17 @@ seed
 \series default
 \shape default
  generic of VIP.
- The Vunit framework used to run CTU CAN FD development generates random
- value for 
+ The Vunit framework used to run CTU CAN FD development generates random value for 
 \series bold
 \shape italic
 seed
 \series default
 \shape default
  generic.
- Randomization is applied in majority of feature tests, and compliance tests.
- CAN frame fields which have predefined value in ISO16845-1 2016 for each
- test, are not randomized (to meet conditions of ISO 16845-1 2016).
+ Randomization is applied in majority of feature tests,
+ and compliance tests.
+ CAN frame fields which have predefined value in ISO16845-1 2016 for each test,
+ are not randomized (to meet conditions of ISO 16845-1 2016).
 \end_layout
 
 \begin_layout Section
@@ -2479,7 +2499,8 @@ clk_sys
 \series default
 \shape default
  clock.
- Period, jitter and duty cycle of generated clock can be configured.
+ Period,
+ jitter and duty cycle of generated clock can be configured.
  Clock agent provides option to wait for one clock cycle.
  Clock agent is used by all test types.
  The clocks generated by clock agent are used to clock the DUT.
@@ -2506,8 +2527,7 @@ Memory bus agent
 \end_layout
 
 \begin_layout Standard
-Memory bus agent generates memory transactions compatible with DUTs RAM-like
- interface (see 
+Memory bus agent generates memory transactions compatible with DUTs RAM-like interface (see 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "key-1"
@@ -2523,12 +2543,14 @@ reference "fig:RAM-like-example"
 plural "false"
 caps "false"
 noprefix "false"
+nolink "false"
 
 \end_inset
 
 .
  This interface is compatible with Avalon interface.
- 8, 16 and 32 bit accesses are supported.
+ 8,
+ 16 and 32 bit accesses are supported.
  Read and Write accesses are supported.
  Read accesses are always blocking (see access functions in 
 \begin_inset Quotes eld
@@ -2541,13 +2563,14 @@ mem_bus_agent_pkg.vhd
 ).
  Write accesses can be blocking or non-blocking.
  Memory bus agent supports burst accesses.
- Memory bus agent contains FIFO where accesses can be posted, and then executed
- in bulk.
+ Memory bus agent contains FIFO where accesses can be posted,
+ and then executed in bulk.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 placement h
+alignment document
 wide false
 sideways false
 status open
@@ -2593,7 +2616,8 @@ CAN agent
 \end_layout
 
 \begin_layout Standard
-CAN agent is used by two test types: compliance tests and reference tests.
+CAN agent is used by two test types:
+ compliance tests and reference tests.
  CAN agent drives DUTs 
 \series bold
 \shape italic
@@ -2607,8 +2631,8 @@ can_tx
 \series default
 \shape default
  signals are as expected.
- Sequences which are driven/monitored by CAN agent, are produced by either
- of:
+ Sequences which are driven/monitored by CAN agent,
+ are produced by either of:
 \end_layout
 
 \begin_layout Itemize
@@ -2645,8 +2669,9 @@ can_tx
 
 \begin_layout Standard
 Driver and monitor each contain FIFO which hold items to be driven and monitored.
- If there are multiple items in FIFO, they are driven/monitored one after
- another, therefore creating sequence of bits (similar to UVM sequence,
+ If there are multiple items in FIFO,
+ they are driven/monitored one after another,
+ therefore creating sequence of bits (similar to UVM sequence,
  and sequence item).
  Such sequence represents CAN frames.
  Each driven item consists of:
@@ -2687,8 +2712,8 @@ time Duration for which this item is monitored.
 
 \begin_layout Description
 sample_rate Sampling rate used to monitor this item.
- Monitored item is not checked permanently, but in discrete moments separated
- by sampling rate.
+ Monitored item is not checked permanently,
+ but in discrete moments separated by sampling rate.
  If 
 \series bold
 \shape italic
@@ -2700,17 +2725,16 @@ can_tx
 \end_layout
 
 \begin_layout Standard
-ISO 11898-1 2015 model in compliance test library translates CAN frames
- to sequences of driver and monitor items.
- To send CAN frame to DUT, compliance test library translates bits of the
- frame into sequence of driver items, and drives them via CAN agents driver.
- Similarly, to check transmitted frame, compliance test library translates
- the expected CAN frame to sequence of items monitored by CAN agents monitor.
- Typically, compliance test library translates single bit on CAN bus to
- single driven/monitored item.
- Sampling rate of monitored items is equal to single time quanta (since
- ISO 16845 defines that time quanta should be used as granularity of checking
- 
+ISO 11898-1 2015 model in compliance test library translates CAN frames to sequences of driver and monitor items.
+ To send CAN frame to DUT,
+ compliance test library translates bits of the frame into sequence of driver items,
+ and drives them via CAN agents driver.
+ Similarly,
+ to check transmitted frame,
+ compliance test library translates the expected CAN frame to sequence of items monitored by CAN agents monitor.
+ Typically,
+ compliance test library translates single bit on CAN bus to single driven/monitored item.
+ Sampling rate of monitored items is equal to single time quanta (since ISO 16845 defines that time quanta should be used as granularity of checking 
 \series bold
 \shape italic
 can_tx
@@ -2725,16 +2749,16 @@ Driver and monitor typically operate simultaneously.
 \end_layout
 
 \begin_layout Itemize
-Transmit frame to DUT, and check that DUT issues dominant acknowledge at
- correct time.
+Transmit frame to DUT,
+ and check that DUT issues dominant acknowledge at correct time.
  
 \end_layout
 
 \begin_layout Standard
-If both driver and monitor contain the same CAN frame (monitored frame was
- converted to all Recessive bits with ACK bit dominant), then the example
- above is achieved.
- Alternatively, monitor can be delayed from driver by configurable time.
+If both driver and monitor contain the same CAN frame (monitored frame was converted to all Recessive bits with ACK bit dominant),
+ then the example above is achieved.
+ Alternatively,
+ monitor can be delayed from driver by configurable time.
  This feature allows compensating input delay of DUT.
 \end_layout
 
@@ -2759,8 +2783,8 @@ Start driver and monitor.
 \end_layout
 
 \begin_layout Enumerate
-Wait until driver and monitor are finished (during this time, communication
- channel is blocked).
+Wait until driver and monitor are finished (during this time,
+ communication channel is blocked).
 \end_layout
 
 \begin_layout Enumerate
@@ -2773,20 +2797,19 @@ check result
 \end_inset
 
  command to monitor.
- This will print error into simulator log, if any mismatches occured in
- monitored sequence (causing test to fail).
+ This will print error into simulator log,
+ if any mismatches occured in monitored sequence (causing test to fail).
 \end_layout
 
 \begin_layout Standard
-An example of CAN agent operation in which Driver transmits a frame to DUT
- and monitor checks that DUT issues ACK in correct moment is shown in Figure
- 
+An example of CAN agent operation in which Driver transmits a frame to DUT and monitor checks that DUT issues ACK in correct moment is shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:CAN-agent-example"
 plural "false"
 caps "false"
 noprefix "false"
+nolink "false"
 
 \end_inset
 
@@ -2796,6 +2819,7 @@ noprefix "false"
 \begin_layout Standard
 \begin_inset Float figure
 placement h
+alignment document
 wide false
 sideways false
 status open
@@ -2848,18 +2872,17 @@ timestamp
 \series default
 \shape default
  signal of VIP.
- Timestamp agent generates up-counting sequence of values, synchronous to
- 
+ Timestamp agent generates up-counting sequence of values,
+ synchronous to 
 \series bold
 \shape italic
 clk_sys
 \series default
 \shape default
 .
- Counting step, and number of cycles needed to advance to next value (prescaler)
- can be configured.
- Timestamp agent is used by feature tests which verify timestamping of RX
- frames or time triggered transmission.
+ Counting step,
+ and number of cycles needed to advance to next value (prescaler) can be configured.
+ Timestamp agent is used by feature tests which verify timestamping of RX frames or time triggered transmission.
 \end_layout
 
 \begin_layout Subsection
@@ -2897,8 +2920,7 @@ test_probe
 \series default
 \shape default
  to observe CTU CAN FDs signals indicating sample point and start of bit.
- Test-probe agent provides functions for synchronizing with DUTs start of
- bit or sample point.
+ Test-probe agent provides functions for synchronizing with DUTs start of bit or sample point.
  Test probe agent is used by feature tests.
  Test probe agent also drives 
 \series bold
@@ -2915,8 +2937,8 @@ Feature test agent
 
 \begin_layout Standard
 Feature test agent is active only in feature tests.
- When testbench invokes features test agent, the agent calls test specific
- sequence (
+ When testbench invokes features test agent,
+ the agent calls test specific sequence (
 \begin_inset Quotes eld
 \end_inset
 
@@ -2924,7 +2946,8 @@ Feature test agent is active only in feature tests.
 \begin_inset Quotes erd
 \end_inset
 
- files contain test sequences), based on name of the test (
+ files contain test sequences),
+ based on name of the test (
 \series bold
 test_name
 \series default
@@ -2934,8 +2957,8 @@ test_name
 
 \begin_layout Itemize
 Contains another instance of CTU CAN FD.
- This instance is reffered to as Test node, and DUT communicates with this
- node as part of feature tests.
+ This instance is reffered to as Test node,
+ and DUT communicates with this node as part of feature tests.
 \end_layout
 
 \begin_layout Itemize
@@ -2979,8 +3002,7 @@ can_tx
 \end_layout
 
 \begin_layout Standard
-These capabilities are used by feature test sequence to verify functionality
- of DUT.
+These capabilities are used by feature test sequence to verify functionality of DUT.
  Feature tests use higher level API (higher than direct register access),
  to access functionality of DUT (see 
 \begin_inset Quotes eld
@@ -2999,10 +3021,8 @@ Reference test agent
 
 \begin_layout Standard
 Reference test agent is used by reference tests.
- It executes test sequence from dedicated reference data set (reference_data_set
-_*_pkg.vhd).
- Each reference data set contains 1000 frames which were transmitted by
- a reference CAN implementation and recorded.
+ It executes test sequence from dedicated reference data set (reference_data_set_*_pkg.vhd).
+ Each reference data set contains 1000 frames which were transmitted by a reference CAN implementation and recorded.
 \end_layout
 
 \begin_layout Subsection
@@ -3025,24 +3045,25 @@ Compliance tests
 \end_layout
 
 \begin_layout Standard
-Functional diagram of the test-bench during compliance tests is shown in
- Figure 
+Functional diagram of the test-bench during compliance tests is shown in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:test-bench-compliance"
 plural "false"
 caps "false"
 noprefix "false"
+nolink "false"
 
 \end_inset
 
 .
  Compliance tests execute all tests from ISO 16845-1 2016.
- Therefere, compliance tests provide claims of CTU CAN FD compliance towards
- ISO 11898-1 2015.
+ Therefere,
+ compliance tests provide claims of CTU CAN FD compliance towards ISO 11898-1 2015.
  CAN bus bit rate used by these tests is configured via VIPs generics.
  Several compliance tests have limitations with regards to allowed bit rate.
- To see these limitations, reffer to test list files in 
+ To see these limitations,
+ reffer to test list files in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3051,19 +3072,17 @@ test/tlf_compliance_*.yml
 \end_inset
 
 ).
- These limitations are given by architecture of CTU CAN FD compliance testing
- solution.
- It is intetion to remove these limitations in the next development of CTU
- CAN FD.
- Several tests override the default bit rate to meet conditions of the test
- given by ISO11898-1 2015 (e.g.
- test 7.6.23 calculates new bit rate from configured one, since test requires
- it to use certain bit rate ratios).
+ These limitations are given by architecture of CTU CAN FD compliance testing solution.
+ It is intetion to remove these limitations in the next development of CTU CAN FD.
+ Several tests override the default bit rate to meet conditions of the test given by ISO11898-1 2015 (e.g.
+ test 7.6.23 calculates new bit rate from configured one,
+ since test requires it to use certain bit rate ratios).
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 placement h
+alignment document
 wide false
 sideways false
 status open
@@ -3105,40 +3124,41 @@ name "fig:test-bench-compliance"
 \end_layout
 
 \begin_layout Standard
-When a compliance test is started, testbench gives control to compliance
- test library via PLI interface.
+When a compliance test is started,
+ testbench gives control to compliance test library via PLI interface.
  Compliance test library forks a thread where the test runs.
- Therefore, there are two contexts in compliance tests:
+ Therefore,
+ there are two contexts in compliance tests:
 \end_layout
 
 \begin_layout Itemize
-Simulator context - Simulation is executed in this context, events are scheduled
-, and PLI callbacks are executed.
+Simulator context - Simulation is executed in this context,
+ events are scheduled,
+ and PLI callbacks are executed.
 \end_layout
 
 \begin_layout Itemize
-Test context - Test sequence from compliance test library is executed in
- this context.
+Test context - Test sequence from compliance test library is executed in this context.
 \end_layout
 
 \begin_layout Standard
-Test sequence running in test context communicates with the simulation via
- shared memory interface.
- The shared memory interface guarantees that PLI handles will only be accessed
- from simulator context.
- Thus, the PLI handles will not be corrupted.
+Test sequence running in test context communicates with the simulation via shared memory interface.
+ The shared memory interface guarantees that PLI handles will only be accessed from simulator context.
+ Thus,
+ the PLI handles will not be corrupted.
 \end_layout
 
 \begin_layout Standard
 Compliance test library contains model of ISO11898-1 2015.
- The model is a golden reference used to generate test sequences that are
- executed by CAN agent inside digital simulator.
+ The model is a golden reference used to generate test sequences that are executed by CAN agent inside digital simulator.
  Reference model has following features:
 \end_layout
 
 \begin_layout Itemize
-Full support of ISO 11898-1 2015 (all three variants: CAN FD enabled, CAN
- FD tolerant, Classical CAN)
+Full support of ISO 11898-1 2015 (all three variants:
+ CAN FD enabled,
+ CAN FD tolerant,
+ Classical CAN)
 \end_layout
 
 \begin_layout Itemize
@@ -3151,12 +3171,12 @@ Can lenght / shorten bits to verify DUTs synchronization.
 \end_layout
 
 \begin_layout Itemize
-Error insertion (all error types and positions can be modelled) and glitch
- insertion.
+Error insertion (all error types and positions can be modelled) and glitch insertion.
 \end_layout
 
 \begin_layout Standard
-For more detailed architecture of compliance test library, reffer to 
+For more detailed architecture of compliance test library,
+ reffer to 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "key-2"
@@ -3179,10 +3199,12 @@ name "subsec:PLI-Interface"
 \end_layout
 
 \begin_layout Standard
-As PLI interface, VIP supports VHPI interface (IEEE 1076 standardized).
- There are two variants of VHPI: One for NVC, and one for VCS.
- PLI interface consists of signals that are used to communicate between
- testbench and compliance library.
+As PLI interface,
+ VIP supports VHPI interface (IEEE 1076 standardized).
+ There are two variants of VHPI:
+ One for NVC,
+ and one for VCS.
+ PLI interface consists of signals that are used to communicate between testbench and compliance library.
  Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3190,13 +3212,15 @@ reference "tab: pli-interface-signals"
 plural "false"
 caps "false"
 noprefix "false"
+nolink "false"
 
 \end_inset
 
  lists these signals.
- Compliance test library, acts as master on this interface.
- It pushes transactions to a shared memory location (inside Compliance test
- library), and simulator side of this interface 
+ Compliance test library,
+ acts as master on this interface.
+ It pushes transactions to a shared memory location (inside Compliance test library),
+ and simulator side of this interface 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3212,19 +3236,20 @@ pli_clk
 \shape default
 .
  Simulator then drives them to PLI signals in VIP.
- Test controller agent then interprets these signals, and sends commands
- to target agent via standard communication channel.
- This approach guarantees that internal structures of digital simulator
- are modified only from simulator context.
- PLI interface provides means for accessing functionality of agents within
- TB.
- Compliance library can therefore control clock/reset generation, transactions
- to DUT, CAN agent, etc.
+ Test controller agent then interprets these signals,
+ and sends commands to target agent via standard communication channel.
+ This approach guarantees that internal structures of digital simulator are modified only from simulator context.
+ PLI interface provides means for accessing functionality of agents within TB.
+ Compliance library can therefore control clock/reset generation,
+ transactions to DUT,
+ CAN agent,
+ etc.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 placement H
+alignment document
 wide false
 sideways false
 status open
@@ -3248,7 +3273,6 @@ status open
 
 \begin_layout Plain Layout
 
-
 \backslash
 cellcolor{gray}
 \end_layout
@@ -3269,7 +3293,6 @@ Description
 status open
 
 \begin_layout Plain Layout
-
 
 \backslash
 cellcolor{gray}
@@ -3586,9 +3609,9 @@ Reference tests use CAN agent to apply a bit-sequent to DUTs
 can_rx
 \series default
 .
- This sequence was recorded from reference CAN controller implementation
- upon transmission of random frame.
- After this sequence is applied, test reads received CAN frame from DUT,
+ This sequence was recorded from reference CAN controller implementation upon transmission of random frame.
+ After this sequence is applied,
+ test reads received CAN frame from DUT,
  and checks it matches CAN frame which was supposed to be received.
  This approach provides 
 \begin_inset Quotes eld
@@ -3599,7 +3622,8 @@ black-box
 \end_inset
 
  like testing functionality.
- Reference tests contain 10 data sets, each with 1000 pre-recorded CAN frames.
+ Reference tests contain 10 data sets,
+ each with 1000 pre-recorded CAN frames.
  Data set is chosen by 
 \begin_inset Quotes eld
 \end_inset
@@ -3625,8 +3649,7 @@ Wait till driver finishes.
 \end_layout
 
 \begin_layout Enumerate
-Read CAN frame received by DUT and compare it with reference frame from
- data-set.
+Read CAN frame received by DUT and compare it with reference frame from data-set.
  This frame corresponds to bit sequence from point 1.
 \end_layout
 
@@ -3650,10 +3673,14 @@ features
 \begin_inset Quotes erd
 \end_inset
 
- of CTU CAN FD as: Interrupts, register map, special modes, TX/RX buffers,
+ of CTU CAN FD as:
+ Interrupts,
+ register map,
+ special modes,
+ TX/RX buffers,
  etc.
- These features are usually not directly related to ISO11898-1 2015, and
- they are specific to CTU CAN FD.
+ These features are usually not directly related to ISO11898-1 2015,
+ and they are specific to CTU CAN FD.
  Functional diagram of TB during feature tests is shown in 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3661,6 +3688,7 @@ reference "fig:test-bench-feature"
 plural "false"
 caps "false"
 noprefix "false"
+nolink "false"
 
 \end_inset
 
@@ -3668,8 +3696,8 @@ noprefix "false"
 \end_layout
 
 \begin_layout Standard
-In feature tests, DUT communicates on CAN bus with another instance of CTU
- CAN FD located inside Feature test agent (Test node).
+In feature tests,
+ DUT communicates on CAN bus with another instance of CTU CAN FD located inside Feature test agent (Test node).
  This setup allows invoking various situations in DUT.
  An example of such test sequence is following:
 \end_layout
@@ -3680,19 +3708,19 @@ Test reads size of DUTs RX buffer.
 
 \begin_layout Itemize
 Test invokes transmission of CAN frames by Test Node.
- Amount of frames transmitted is selected to achieve overflow of RX buffer
- in DUT.
+ Amount of frames transmitted is selected to achieve overflow of RX buffer in DUT.
 \end_layout
 
 \begin_layout Itemize
-During transmission of frames, test monitors that RX buffer overflow occurs
- upon reception of frame which should fill RX buffer memory (not before),
+During transmission of frames,
+ test monitors that RX buffer overflow occurs upon reception of frame which should fill RX buffer memory (not before),
  therefore veryfing that overflow occurs properly.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float figure
 placement h
+alignment document
 wide false
 sideways false
 status open
@@ -3765,7 +3793,6 @@ ISO 16845 Compliance test library -
 status open
 
 \begin_layout Plain Layout
-
 https://github.com/Blebowski/iso-16845-compliance-tests
 \end_layout
 
