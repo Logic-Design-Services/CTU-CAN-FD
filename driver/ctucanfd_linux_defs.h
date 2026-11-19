@@ -38,6 +38,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <endian.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -69,14 +70,6 @@ typedef __s8  s8;
 typedef __s16 s16;
 typedef __s32 s32;
 typedef __s64 s64;
-
-#ifndef __cplusplus
-typedef _Bool			bool;
-enum {
-	false	= 0,
-	true	= 1
-};
-#endif
 
 #define __WARN_printf printf
 #ifndef WARN
