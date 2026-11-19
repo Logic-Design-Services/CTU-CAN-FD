@@ -297,7 +297,7 @@ def main():
 	print ("")
 
 	## Check valid input arguments
-	arg_count = 4  ## 3 arguments + script itself
+	arg_count = 5  ## 3 arguments + script itself
 	if (len(sys.argv) != arg_count):
 		print(" Incorrect amount of arguments!")
 		print_help()

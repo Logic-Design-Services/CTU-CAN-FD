@@ -1,14 +1,15 @@
 --------------------------------------------------------------------------------
 --
 -- CTU CAN FD IP Core
--- Copyright (C) 2021-present Ondrej Ille
+-- Copyright (C) 2021-2023 Ondrej Ille
+-- Copyright (C) 2023-2026 Logic Design Services Ltd.
+-- Copyright (C) 2026-     SELOSYS Ltd.
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this VHDL component and associated documentation files (the "Component"),
 -- to use, copy, modify, merge, publish, distribute the Component for
--- educational, research, evaluation, self-interest purposes. Using the
--- Component for commercial purposes is forbidden unless previously agreed with
--- Copyright holder.
+-- non-commercial purposes. Using the Component for commercial purposes is
+-- forbidden unless previously agreed with Copyright holder.
 --
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Component.
