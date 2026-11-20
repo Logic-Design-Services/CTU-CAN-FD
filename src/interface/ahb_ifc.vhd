@@ -115,7 +115,7 @@ entity ahb_ifc is
         hmastlock        : in std_logic;
         hready           : in std_logic;
         hreadyout        : out std_logic;
-        hresp            : out std_logic;
+        hresp            : out std_logic_vector(1 downto 0);
         hrdata           : out std_logic_vector(31 downto 0)
     );
 end entity;
