@@ -122,9 +122,7 @@ See the instructions below in "How to run CTU CAN FD testbench" subsection.
 
 ## How to integrate CTU CAN FD RTL ?
 
-1. Compile files from `src/slf_rtl.yml` YAML file into `ctu_can_fd_rtl` VHDL library.
-   Compile the files in order they are listed in `src/slf_rtl.yml`.
-2. Integrate `can_top_level` entity in your design. See [![System architecture](https://img.shields.io/badge/System_architecture--blue.svg)]( http://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/System_Architecture.pdf) for details of CTU CAN FD interface.
+See [![Integration guide](https://img.shields.io/badge/Integration_Guide--blue.svg)]( doc/pdf/ctu_can_fd_integration_guide_2v7.pdf) for details on how to integrate CTU CAN FD.
 
 
 ## How to run CTU CAN FD testbench ?
