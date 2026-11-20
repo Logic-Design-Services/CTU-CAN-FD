@@ -108,6 +108,8 @@ def ctu_can_update_header(specPath, licensePath, memMap, wordWidthBit, outPath, 
 	headerGeneratorWrapper.outFile = outPath
 	headerGeneratorWrapper.headName = headName
 	headerGeneratorWrapper.use_kern_style = useKernStyle
+	headerGeneratorWrapper.prefix = "ctu_can_fd"
+	headerGeneratorWrapper.kernel_reg_name_prefix = "CTUCANFD"
 
 	headerGeneratorWrapper.do_update()
 
@@ -158,6 +160,11 @@ def ctu_can_update_vhdl_tb_package(specPath, licensePath, memMap,
 	tbAddrGeneratorWrapper.wordWidth = wordWidthBit
 	tbAddrGeneratorWrapper.outFile = outPath
 	tbAddrGeneratorWrapper.packName = packName
+
+	tbAddrGeneratorWrapper.defsLibrary = "ctu_can_fd_tb"
+	tbAddrGeneratorWrapper.defsPackage = "tb_reg_map_defs_pkg"
+	tbAddrGeneratorWrapper.regMapLibrary = "ctu_can_fd_rtl"
+	tbAddrGeneratorWrapper.regMapPackage = "can_fd_register_map"
 
 	tbAddrGeneratorWrapper.do_update()
 
