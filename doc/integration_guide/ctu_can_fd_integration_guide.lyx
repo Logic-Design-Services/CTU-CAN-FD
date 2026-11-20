@@ -459,7 +459,7 @@ CTU CAN FD IP Core - Integration Guide
 \begin_inset Text
 
 \begin_layout Plain Layout
-Version 3.0,
+Version 3.0-devel,
  Commit:
  
 \begin_inset CommandInset include
@@ -525,7 +525,7 @@ Change description
 \begin_inset Text
 
 \begin_layout Plain Layout
-1.0
+3.0-devel
 \end_layout
 
 \end_inset
@@ -871,6 +871,12 @@ ctu_can_fd_top_ahb.vhd
 ctu_can_fd_top_apb.vhd
 \shape default
  - AMBA Peripheral bus interface
+\end_layout
+
+\begin_layout Description
+Note APB,
+ Avalon and RAM-like interfaces never stall.
+ AHB interface stalls for one clock cycle on each read access.
 \end_layout
 
 \begin_layout Standard
