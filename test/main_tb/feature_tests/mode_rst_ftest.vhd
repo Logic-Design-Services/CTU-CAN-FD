@@ -305,7 +305,8 @@ package body mode_rst_ftest is
         ctu_get_hw_config(hw_cfg, DUT_NODE, chn);
 
         for i in 0 to Control_registers_list'length - 1 loop
-            if (Control_registers_list(i).reg_type = reg_read_write) then
+            if (Control_registers_list(i).reg_type = reg_read_write or
+                Control_registers_list(i).address = SETTINGS_ADR) then
 
                 march_data_8  := x"AA";
                 march_data_16 := x"AAAA";
@@ -439,7 +440,8 @@ package body mode_rst_ftest is
         -----------------------------------------------------------------------
         info_m("Step 4");
         for i in 0 to Control_registers_list'length - 1 loop
-            if (Control_registers_list(i).reg_type = reg_read_write) then
+            if (Control_registers_list(i).reg_type = reg_read_write or
+                Control_registers_list(i).address = SETTINGS_ADR) then
 
                 march_data_8  := x"55";
                 march_data_16 := x"5555";

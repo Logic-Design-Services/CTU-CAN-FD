@@ -83,7 +83,7 @@
 --  @1. Iterate 4 scenarios of protocol compliance:
 --          A) CAN 2.0:                 MODE[FDE] = 0 , SETTINGS[PEX] = 0
 --          B) CAN FD Tolerant:         MODE[FDE] = 0 , SETTINGS[PEX] = 1
---          C) CAN FD Eanbled:          MODE[FDE] = 1 , SETTINGS[PEX] = 0
+--          C) CAN FD Enabled:          MODE[FDE] = 1 , SETTINGS[PEX] = 0
 --          D) CAN FD Enabled + PEX:    MODE[FDE] = 1 , SETTINGS[PEX] = 1
 --      @1.1 Disable DUT to make it "Bus-off". Configure DUTs nominal bit
 --           time presaler to 10 clock cycles. Enable DUT again.
@@ -120,13 +120,14 @@ package body glitch_filtering_2_ftest is
         variable bus_timing         :     t_ctu_bit_time_cfg;
         variable fault_state        :     t_ctu_fault_state;
         variable mode_1             :     t_ctu_mode := t_ctu_mode_rst_val;
+        variable enabled            :     boolean;
     begin
 
         -------------------------------------------------------------------------------------------
         --  @1. Iterate 4 scenarios of protocol compliance:
         --          A) CAN 2.0:                 MODE[FDE] = 0 , SETTINGS[PEX] = 0
         --          B) CAN FD Tolerant:         MODE[FDE] = 0 , SETTINGS[PEX] = 1
-        --          C) CAN FD Eanbled:          MODE[FDE] = 1 , SETTINGS[PEX] = 0
+        --          C) CAN FD Enabled:          MODE[FDE] = 1 , SETTINGS[PEX] = 0
         --          D) CAN FD Enabled + PEX:    MODE[FDE] = 1 , SETTINGS[PEX] = 1
         -------------------------------------------------------------------------------------------
         for settings_pex in boolean'left to boolean'right loop
@@ -143,9 +144,16 @@ package body glitch_filtering_2_ftest is
             -- @1.1 Disable DUT to make it "Bus-off". Configure DUTs nominal bit
             --      time presaler to 10 clock cycles. Enable DUT again.
             ---------------------------------------------------------------------------------------
-            info_m("Step 2.1");
+            info_m("Step 1.1");
 
             ctu_turn(false, DUT_NODE, chn);
+            -- Need to wait one cycle DUT is disabled since this has one cycle delay due to 
+            -- architecture of register map (SETTINGS[ENA] is inside generated map, but posted clearing
+            -- logic on no frame transmission is separate flop with one cycle delay).
+            loop
+                ctu_is_enabled(enabled, DUT_NODE, chn);
+                exit when enabled = false;
+            end loop;
 
             bus_timing.prop_nbt := 5;
             bus_timing.ph1_nbt := 5;
@@ -170,6 +178,8 @@ package body glitch_filtering_2_ftest is
             -- @1.2 Wait for 5 bits, and till DUTs sample point. Wait for 15 system clock
             --      periods and insert dominant glitch lasting 15 clock cycles.
             ---------------------------------------------------------------------------------------
+            info_m("Step 1.2");
+
             for i in 1 to 5 loop
                 ctu_wait_sample_point(DUT_NODE, chn);
             end loop;
@@ -190,6 +200,8 @@ package body glitch_filtering_2_ftest is
             -- @1.3 Wait for 7 more bits. Check that in Scenario A, DUT became Error
             --      active. In all other scenarios, check DUT is still Bus-off.
             ---------------------------------------------------------------------------------------
+            info_m("Step 1.3");
+
             for i in 1 to 7 loop
                 ctu_wait_sample_point(DUT_NODE, chn);
             end loop;

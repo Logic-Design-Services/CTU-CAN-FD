@@ -498,7 +498,7 @@ literal "true"
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="42" columns="3">
+<lyxtabular version="3" rows="43" columns="3">
 <features islongtable="true" longtabularalignment="center">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="2cm">
@@ -1748,7 +1748,7 @@ Name of top-level generics changed.
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1757,7 +1757,7 @@ Name of top-level generics changed.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1766,7 +1766,7 @@ Name of top-level generics changed.
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1777,6 +1777,35 @@ G_TECHNOLOGY
 \series default
 \shape default
  to list of parameters.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20-11-2026
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Add soft power down support (SETTINGS[ENA] changes to 0 only in interframe space).
 \end_layout
 
 \end_inset
@@ -3415,11 +3444,19 @@ Enable CTU CAN FD by writing SETTINGS[ENA] = 1.
 \end_layout
 
 \begin_layout Enumerate
-Poll on FAULT_STATE register,
- or wait on Fault confinement state changed interrupt (INT_STAT[FCSI]).
- Integration is finished when FAULT_STATE[ERA]=1 (CTU CAN FD becomes error-active).
+Poll on either of following conditions:
 \end_layout
 
+\begin_deeper
+\begin_layout Enumerate
+FAULT_STATE[ERA]=1
+\end_layout
+
+\begin_layout Enumerate
+Interrupt due to INT_STAT[FCSI].
+\end_layout
+
+\end_deeper
 \begin_layout Enumerate
 Initialization is finished,
  SW driver can send and receive frames.
@@ -3434,53 +3471,22 @@ CTU CAN FD de-initialization sequence shall consist of following steps:
 \end_layout
 
 \begin_layout Enumerate
-Ensure that no TXT buffer is in any of 
-\begin_inset Quotes eld
-\end_inset
-
-Ready
-\begin_inset Quotes erd
-\end_inset
-
-,
- 
-\begin_inset Quotes eld
-\end_inset
-
-TX in progress
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-Abort in progress
-\begin_inset Quotes erd
-\end_inset
-
- states.
- To do this SW issues 
-\series bold
-Set abort
-\series default
- command (see 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:CAN-frame-transmission"
-plural "false"
-caps "false"
-noprefix "false"
-nolink "false"
-
-\end_inset
-
-) to TXT buffers,
- and does not insert next frames for transmission into TXT Buffers.
+Write SETTINGS[ENA]=0.
 \end_layout
 
 \begin_layout Enumerate
-Write SETTINGS[ENA]=0.
+Poll until SETTINGS[ENA]=0.
+\end_layout
+
+\begin_layout Description
+Note When CTU CAN FD is disabled (SETTINGS[ENA]=0),
+ and SW writes SETTINGS[ENA]=1,
+ the SETTINGS[ENA] becomes 1 with one System clock period delay.
+ However,
+ when SETTINGS[ENA]=1,
+ and SW writes SETTINGS[ENA]=0,
+ the bit will become 0 only when CTU CAN FD finishes transmitting or receiving current frame (if any frame is being transmitted or received).
+ This behavior is to prevent CTU CAN FD being disabled in the middle of CAN frame.
 \end_layout
 
 \begin_layout Section

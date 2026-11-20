@@ -19,6 +19,8 @@
   on `hready` input and therefore avoid combinatorial loop.
 - RTL: Make `rst_sync` to be more scan friendly - mux output in Scan mode.
 - DOC: Add Integration guide.
+- SETTINGS[ENA] now clears to zero only when there is no frame in progress.
+  This prevents error frame upon disabling in the middle of frame.
 
 ## Version 2.7 - 7.1.2026
 - RTL: Optimized to remove dead-code and unreachable code

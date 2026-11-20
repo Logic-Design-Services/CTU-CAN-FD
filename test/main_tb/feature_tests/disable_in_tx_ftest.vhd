@@ -71,19 +71,19 @@
 -- @TestInfoStart
 --
 -- @Purpose:
---  Feature test which disables node while it is transmitting frame. Test
---  implemented to achieve full coverage of operation control
+--  Feature test which disables node while it is transmitting frame.
 --
 -- @Verifies:
---  @1. Device can be disabled while transmitting.
+--  @1. When attempting to disable DUT while transmission is in progress,
+--      DUT will finish transmission of current frame.
 --
 -- @Test sequence:
 --  @1. Generate random frame and send it by DUT.
 --  @2. Wait until frame starts in DUT, and disable DUT.
---  @3. Wait until bus is idle in Test Node (Test Node will transmitt error 
---      frame).
---  @4. Enable DUT again, and transmitt another frame. Wait until it is send,
---      and check it is received by Test Node.
+--  @3. Check that DUT is still enabled, and that it is transmitter.
+--  @4. Poll until DUT is disabled. Check that while DUT is enabled, the
+--      DUT is still a transmitter.
+--  @5. Read frame from Test Node and check it matches transmitted frame.
 --
 -- @TestInfoEnd
 --------------------------------------------------------------------------------
@@ -110,11 +110,12 @@ package body disable_in_tx_ftest is
     procedure disable_in_tx_ftest_exec(
         signal      chn             : inout  t_com_channel
     ) is
-        variable r_data     : std_logic_vector(31 downto 0) := (OTHERS => '0');
         variable can_frame  : t_ctu_frame;
         variable can_frame_2: t_ctu_frame;
         variable outcome    : boolean;
         variable frame_sent : boolean;
+        variable enabled    : boolean;
+        variable status     : t_ctu_status;
     begin
 
         -----------------------------------------------------------------------
@@ -130,37 +131,44 @@ package body disable_in_tx_ftest is
         -----------------------------------------------------------------------
         info_m("Step 2");
 
-        ctu_wait_ff(ff_control, DUT_NODE, chn);
+        ctu_wait_ff(ff_sof, DUT_NODE, chn);
         ctu_turn(false, DUT_NODE, chn);
 
         -----------------------------------------------------------------------
-        -- @3. Wait until bus is idle in Test Node (Test Node will transmitt
-        --     error frame).
+        -- @3. Check that DUT is still enabled, and that it is transmitter.
         -----------------------------------------------------------------------
         info_m("Step 3");
-        
-        ctu_wait_bus_idle(TEST_NODE, chn);
-        wait for 1000 ns;
+
+        ctu_is_enabled(enabled, DUT_NODE, chn);
+        check_m(enabled, "DUT still enabled after disable request!");
+
+        ctu_get_status(status, DUT_NODE, chn);
+        check_m(status.transmitter, "DUT is transmitter!");
 
         -----------------------------------------------------------------------
-        -- @4. Enable DUT again, and transmitt another frame. Wait until it is
-        --     send, and check it is received by Test Node.
+        -- @4. Poll until DUT is disabled. Check that while DUT is enabled,
+        --     the DUT is still a transmitter.
         -----------------------------------------------------------------------
         info_m("Step 4");
-        
-        ctu_turn(true, DUT_NODE, chn);
-        ctu_wait_err_active(DUT_NODE, chn);
 
-        generate_can_frame(can_frame);
-        ctu_send_frame(can_frame, 1, DUT_NODE, chn, frame_sent);
-        ctu_wait_frame_sent(DUT_NODE, chn);
+        loop
+            ctu_get_status(status, DUT_NODE, chn);
+            ctu_is_enabled(enabled, DUT_NODE, chn);
+            exit when (not enabled);
+            check_m(status.transmitter, "DUT transmitter while enabled!");
+        end loop;
+
+        -----------------------------------------------------------------------
+        -- @5. Read frame from Test Node and check it matches transmitted
+        --     frame.
+        -----------------------------------------------------------------------
+        info_m("Step 5");
 
         ctu_wait_bus_idle(TEST_NODE, chn);
         ctu_wait_bus_idle(DUT_NODE, chn);
 
         ctu_read_frame(can_frame_2, TEST_NODE, chn);
         compare_can_frames(can_frame, can_frame_2, false, outcome);
-
         check_m(outcome, "TX/RX frames equal");
 
   end procedure;

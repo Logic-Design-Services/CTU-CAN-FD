@@ -207,6 +207,12 @@ entity mr_top is
         -- Debug record from Protocol control
         pc_dbg                          : in  t_protocol_control_dbg;
 
+        -- Core is enabled
+        mr_settings_ena                 : out std_logic;
+
+        -- Clear enable for SETTINGS[ENA]
+        mr_settings_ena_clr_ena         : in  std_logic;
+
         -- RX buffer test data in
         mr_tst_rdata_tst_rdata_rxb      : in  std_logic_vector(31 downto 0);
 
@@ -343,6 +349,8 @@ architecture rtl of mr_top is
 
     -- SCS and SWR
     signal scs_and_swr                  : std_logic;
+
+    signal settings_ena_q               : std_logic;
 
 begin
 
@@ -558,7 +566,7 @@ begin
     reg_lock_1_active <= not mr_ctrl_out_i.mode_tstm;
 
     -- Lock 2 - Locked when SETTINGS[ENA] = 1
-    reg_lock_2_active <= mr_ctrl_out_i.settings_ena;
+    reg_lock_2_active <= settings_ena_q;
 
     -----------------------------------------------------------------------------------------------
     -- Two reset registers:
@@ -590,7 +598,7 @@ begin
 
     -- Reset of the rest of core is the same as soft reset, but it is also active when
     -- SETTINGS[ENA] = '0'. Thus disabled node has all of its logic in reset!
-    res_core_d_n <= '0' when (mr_ctrl_out_i.mode_rst = '1' or mr_ctrl_out_i.settings_ena = '0')
+    res_core_d_n <= '0' when (mr_ctrl_out_i.mode_rst = '1' or settings_ena_q = '0')
                         else
                     '1';
 
@@ -678,6 +686,36 @@ begin
     -- VERSION
     mr_ctrl_in.version_ver_minor <= G_VERSION_MINOR;
     mr_ctrl_in.version_ver_major <= G_VERSION_MAJOR;
+
+    -- SETTINGS
+    -- All bits of SETTINGS register apart from ENA are regular read/write.
+    -- ENA has immediate set to 1, but turn to 0 only when signalled by MAC.
+    mr_ctrl_in.settings_pchke   <= mr_ctrl_out_i.settings_pchke;
+    mr_ctrl_in.settings_fdrf    <= mr_ctrl_out_i.settings_fdrf;
+    mr_ctrl_in.settings_tbfbo   <= mr_ctrl_out_i.settings_tbfbo;
+    mr_ctrl_in.settings_pex     <= mr_ctrl_out_i.settings_pex;
+    mr_ctrl_in.settings_nisofd  <= mr_ctrl_out_i.settings_nisofd;
+    mr_ctrl_in.settings_ilbp    <= mr_ctrl_out_i.settings_ilbp;
+    mr_ctrl_in.settings_rtrth   <= mr_ctrl_out_i.settings_rtrth;
+    mr_ctrl_in.settings_rtrle   <= mr_ctrl_out_i.settings_rtrle;
+
+    mr_ctrl_in.settings_ena     <= settings_ena_q; 
+
+    p_settings_ena : process(clk_sys, soft_res_q_n)
+    begin
+        if (soft_res_q_n = '0') then
+            settings_ena_q <= '0';
+        elsif (rising_edge(clk_sys)) then
+            if (settings_ena_q = '0' and mr_ctrl_out_i.settings_ena = '1') then
+                settings_ena_q <= '1';
+            elsif (settings_ena_q = '1' and mr_ctrl_out_i.settings_ena = '0' and 
+                   mr_settings_ena_clr_ena = '1') then
+                settings_ena_q <= '0';
+            end if;
+        end if;
+    end process;
+    
+    mr_settings_ena <= settings_ena_q;
 
     -- STATUS
     mr_ctrl_in.status_idle <= '1' when (cc_stat.is_bus_off = '1') else

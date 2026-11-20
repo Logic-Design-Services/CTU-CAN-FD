@@ -146,6 +146,7 @@ entity mac_pc_fsm is
         -- Status values
         mr_status_pexs          : out std_logic;
         pc_dbg                  : out t_protocol_control_dbg;
+        mr_settings_ena_clr_ena : out std_logic;
 
         -------------------------------------------------------------------------------------------
         -- Data-path interface
@@ -1513,6 +1514,8 @@ begin
         rec_lbpf_d              <= rec_lbpf_q;
         rec_ivld_i              <= rec_ivld_q;
 
+        mr_settings_ena_clr_ena <= '0';
+
         if (err_frm_req = '1') then
             tick_state_reg <= '1';
             ctrl_ctr_pload_i <= '1';
@@ -1577,6 +1580,7 @@ begin
                 bit_err_disable <= '1';
                 ctrl_ctr_ena <= '1';
                 perform_hsync <= '1';
+                mr_settings_ena_clr_ena <= '1';
 
                 -- Restart integration upon reception of DOMINANT bit or upon synchronization edge
                 -- detected!
@@ -2324,6 +2328,7 @@ begin
                 pc_dbg.is_intermission <= '1';
                 retr_ctr_add_block_clr <= '1';
                 bit_err_disable <= '1';
+                mr_settings_ena_clr_ena <= '1';
 
                 -- If we are bus-off, go to reintegration wait!
                 if (is_bus_off = '1') then
@@ -2413,6 +2418,7 @@ begin
                 crc_spec_enable_i <= '1';
                 bit_err_disable <= '1';
                 pc_dbg.is_suspend <= '1';
+                mr_settings_ena_clr_ena <= '1';
 
                 if (rx_data_nbs = DOMINANT) then
                     tick_state_reg <= '1';
@@ -2447,6 +2453,7 @@ begin
                 perform_hsync <= '1';
                 crc_spec_enable_i <= '1';
                 bit_err_disable <= '1';
+                mr_settings_ena_clr_ena <= '1';
 
                 if (is_bus_off = '0') then
                     if (rx_data_nbs = DOMINANT) then
@@ -2490,6 +2497,7 @@ begin
             ---------------------------------------------------------------------------------------
             when s_pc_reintegrating_wait =>
                 bit_err_disable <= '1';
+                mr_settings_ena_clr_ena <= '1';
 
                 if (mr_command_ercrst_q = '1') then
                     tick_state_reg <= '1';
@@ -2506,6 +2514,7 @@ begin
                 ctrl_ctr_ena <= '1';
                 perform_hsync <= '1';
                 bit_err_disable <= '1';
+                mr_settings_ena_clr_ena <= '1';
 
                 -- Restart integration upon reception of DOMINANT bit or upon synchronization edge.
                 if (rx_data_nbs = DOMINANT or sync_edge = '1') then
