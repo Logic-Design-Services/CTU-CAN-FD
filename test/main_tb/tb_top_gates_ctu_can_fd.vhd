@@ -130,16 +130,17 @@ entity tb_top_ctu_can_fd is
         cfg_ssp_offset          : natural := 10;
 
         -- DUT configuration
-        G_RX_BUF_SIZE          : natural := 64;
-        G_TXT_BUF_COUNT        : natural range 2 to 8 := 4;
-        G_FILT_A_EN               : boolean := true;
-        G_FILT_B_EN               : boolean := true;
-        G_FILT_C_EN               : boolean := true;
-        G_FILT_RANGE_EN               : boolean := true;
-        G_TRAFFIC_CTRS_EN        : boolean := true;
-        G_PARITY_EN              : boolean := true;
-        G_TECHNOLOGY       : natural := C_TECH_ASIC;
-        G_RESET_BUF_RAMS       : boolean := false;
+        G_RX_BUF_SIZE           : natural := 64;
+        G_TXT_BUF_COUNT         : natural range 2 to 8 := 4;
+        G_FILT_A_EN             : boolean := true;
+        G_FILT_B_EN             : boolean := true;
+        G_FILT_C_EN             : boolean := true;
+        G_FILT_RANGE_EN         : boolean := true;
+        G_TRAFFIC_CTRS_EN       : boolean := true;
+        G_PARITY_EN             : boolean := true;
+        G_TECHNOLOGY            : natural := C_TECH_ASIC;
+        G_RST_SYNC              : boolean := false;
+        G_RESET_BUF_RAMS        : boolean := false;
 
         -- Seed
         seed                    : natural := 0
@@ -387,6 +388,7 @@ begin
         info("  Range filter: " & boolean'image(G_FILT_RANGE_EN));
         info("  Traffic counters: " & boolean'image(G_TRAFFIC_CTRS_EN));
         info("  Target technology: " & integer'image(G_TECHNOLOGY));
+        info("  Reset synchronous: " & boolean'image(G_RST_SYNC));
         info("  Reset Buffer RAMS: " & boolean'image(G_RESET_BUF_RAMS));
         info("");
         info("Bit timing settings (Nominal):");

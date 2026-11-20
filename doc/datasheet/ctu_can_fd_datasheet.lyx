@@ -1806,6 +1806,13 @@ G_TECHNOLOGY
 
 \begin_layout Plain Layout
 Add soft power down support (SETTINGS[ENA] changes to 0 only in interframe space).
+ Add 
+\series bold
+\shape italic
+G_RST_SYNC
+\series default
+\shape default
+.
 \end_layout
 
 \end_inset
@@ -2528,7 +2535,7 @@ status open
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="13" columns="3">
+<lyxtabular version="3" rows="14" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="4.2cm">
 <column alignment="left" valignment="top" width="1.8cm">
@@ -2963,6 +2970,42 @@ integer
 
 \begin_layout Plain Layout
 Number of active bits of CTU CAN FD timebase - 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_RST_SYNC
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+True - External reset is not synchronized
+\end_layout
+
+\begin_layout Plain Layout
+False - External reset is synchronized
 \end_layout
 
 \end_inset

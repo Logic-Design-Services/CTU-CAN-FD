@@ -496,7 +496,7 @@ literal "true"
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="25" columns="4">
+<lyxtabular version="3" rows="26" columns="4">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="3cm">
@@ -1484,7 +1484,7 @@ rst_n
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1493,7 +1493,7 @@ rst_n
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1502,7 +1502,7 @@ rst_n
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1511,11 +1511,55 @@ rst_n
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Minor clarifications and fixed
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.25
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20-11-2026
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Added 
+\series bold
+\shape italic
+G_RST_SYNC
+\series default
+\shape default
+.
 \end_layout
 
 \end_inset
@@ -6127,7 +6171,7 @@ status open
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="13" columns="5">
+<lyxtabular version="3" rows="14" columns="5">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="0pt">
@@ -6884,7 +6928,7 @@ rst_n
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -6896,7 +6940,7 @@ G_ACTIVE_TS_BITS
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -6905,7 +6949,7 @@ integer
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -6914,7 +6958,7 @@ integer
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -6923,11 +6967,62 @@ integer
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
 Number of active timestamp bits minus - 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_RST_SYNC
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+boolean
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+When true,
+ external reset is assumed to be synchronous and not resynchronized.
 \end_layout
 
 \end_inset
@@ -7220,6 +7315,22 @@ rst_n_out
  = 1).
  Asserting External reset does not require System clock to be running.
  De-asserting reset requires System clock to be running.
+ When 
+\series bold
+\shape italic
+G_RST_SYNC
+\series default
+\shape default
+ = true,
+ the External reset is assumed to be synchronous to system clock and not resynchronized.
+ When
+\series bold
+\shape italic
+ G_RST_SYNC
+\series default
+\shape default
+ = false,
+ the external reset is assumed to be asynchronous and synchronized to system clock by reset synchronizer internally.
 \end_layout
 
 \end_inset
@@ -8171,6 +8282,16 @@ name "tab:Resynchronisers-list"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Description
+Note The External reset synchronizer is present only when 
+\series bold
+\shape italic
+G_RST_SYNC
+\series default
+\shape default
+ = false.
 \end_layout
 
 \begin_layout Section

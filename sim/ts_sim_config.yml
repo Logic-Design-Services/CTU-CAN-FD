@@ -126,6 +126,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: true
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -178,6 +179,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -230,6 +232,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -282,6 +285,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 1
@@ -341,6 +345,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: true
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -393,6 +398,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: true
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -445,6 +451,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -497,6 +504,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_FPGA
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 1
@@ -556,6 +564,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: true
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -608,6 +617,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: true
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -660,6 +670,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -712,6 +723,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_FPGA
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 1
@@ -784,6 +796,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: true
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -839,6 +852,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: true
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -894,6 +908,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: true
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -949,6 +964,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: true
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -1011,6 +1027,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -1066,6 +1083,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -1121,6 +1139,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -1176,6 +1195,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -1238,6 +1258,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -1293,6 +1314,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -1348,6 +1370,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -1403,6 +1426,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_ASIC
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 0
@@ -1471,6 +1495,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: true
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: true
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # C_TECH_FPGA
             /TB_TOP_CTU_CAN_FD/G_TECHNOLOGY: 1
@@ -1529,6 +1554,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # DUT Bit timing settings
             /TB_TOP_CTU_CAN_FD/cfg_brp: 1
@@ -1583,6 +1609,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # DUT Bit timing settings
             /TB_TOP_CTU_CAN_FD/cfg_brp: 4
@@ -1641,6 +1668,7 @@ targets:
             /TB_TOP_CTU_CAN_FD/G_TRAFFIC_CTRS_EN: false
             /TB_TOP_CTU_CAN_FD/G_PARITY_EN: false
             /TB_TOP_CTU_CAN_FD/G_RESET_BUF_RAMS: false
+            /TB_TOP_CTU_CAN_FD/G_RST_SYNC: false
 
             # DUT Bit timing settings
             /TB_TOP_CTU_CAN_FD/cfg_brp: 4

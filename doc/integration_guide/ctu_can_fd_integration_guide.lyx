@@ -1085,7 +1085,7 @@ status open
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="13" columns="3">
+<lyxtabular version="3" rows="14" columns="3">
 <features tabularvalignment="middle">
 <column alignment="left" valignment="top" width="4.2cm">
 <column alignment="left" valignment="top" width="1.8cm">
@@ -1521,6 +1521,39 @@ integer
 
 \begin_layout Plain Layout
 Number of active bits of CTU CAN FD timebase - 1.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\shape italic
+G_RST_SYNC
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+true/false
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+When true,
+ the external reset signal is assumed to be synchronous to system clock.
 \end_layout
 
 \end_inset
@@ -2242,11 +2275,41 @@ hresetn
 \color red
 arstn
 \color inherit
-).
- For memory bus wrapper kinds the reset is assumed to be asynchrnous reset,
+),
+ but it always reffers to the same reset.
+ When 
+\series bold
+\shape italic
+G_RST_SYNC
+\series default
+\shape default
+ = true,
+ the external reset is assumed to be synchronous to system clock.
+ When 
+\series bold
+\shape italic
+G_RST_SYNC
+\series default
+\shape default
+ = false,
+ the external reset is assume to be asynchronous,
  and is synchronized by an internal 2 flip-flop reset synchronizer with asynchronous assert and synchronous deassert.
- The input reset signal therefore must be glitch free to prevent spurious resets.
+ In both cases the external reset signal 
+\series bold
+must
+\series default
+ be glitch free to prevent spurious resets.
  
+\end_layout
+
+\begin_layout Description
+Note It is beneficial to use 
+\series bold
+\shape italic
+G_RST_SYNC
+\series default
+\shape default
+ = true when there is sytem-wide reset synchronizer that synchronizes the reset source to the system clock domain.
 \end_layout
 
 \begin_layout Subsection
