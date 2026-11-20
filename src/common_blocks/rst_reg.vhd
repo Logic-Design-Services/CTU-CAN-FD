@@ -110,7 +110,7 @@ architecture rtl of rst_reg is
 
 begin
 
-    i_rx_shift_res_reg : entity ctu_can_fd_rtl.dff_arst
+    i_res_reg : entity ctu_can_fd_rtl.dff_arst
     generic map (
         G_RESET_POLARITY   => G_RESET_POLARITY,
 
@@ -126,7 +126,7 @@ begin
         reg_q              => q_i           -- OUT
     );
 
-    i_mux2_res_tst : entity ctu_can_fd_rtl.mux2
+    i_mux2_rst_tst : entity ctu_can_fd_rtl.mux2
     port map (
         a                  => q_i,
         b                  => arst,
