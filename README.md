@@ -125,7 +125,7 @@ You can see artifacts from the latest regresision run at:
 [![Regression artifacts](https://img.shields.io/badge/Regression%20Artifacts--orange.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ )
 
 You can find the regression CI jobs at:
-[![Regression CI](https://img.shields.io/badge/Regression%20CI--orange.svg)]( https://github.com/Logic-Design-Services/CTU-CAN-FD/actions/workflows/ctu_can_fd_regression.yml )
+[![Regression CI](https://img.shields.io/badge/Regression%20CI--orange.svg)]( https://github.com/Logic-Design-Services/CTU-CAN-FD/actions/workflows/regression-test.yml )
 
 
 See the instructions below in "How to run CTU CAN FD testbench" subsection.
