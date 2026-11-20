@@ -133,6 +133,9 @@ entity ctu_can_fd_top is
         -- Reset TXT / RX Buffer RAMs
         G_RESET_BUF_RAMS        : boolean                   := false;
 
+        -- External reset is synchronous to System clock
+        G_RST_SYNC              : boolean                   := false;
+
         -- Target technology (ASIC or FPGA)
         G_TECHNOLOGY            : natural                   := C_TECH_FPGA
     );
@@ -619,18 +622,25 @@ begin
     -----------------------------------------------------------------------------------------------
     -- Reset synchroniser
     -----------------------------------------------------------------------------------------------
-    i_rst_sync : entity ctu_can_fd_rtl.rst_sync
-    generic map (
-        G_RESET_POLARITY  => '0'
-    )
-    port map (
-        clk             => clk_sys,
-        arst            => rst_n,
-        scan_mode       => scan_mode,
-        
-        rst             => rst_n_sync
-    );
-    rst_n_out <= rst_n_sync;
+    g_rst_asynchronus : if (G_RST_SYNC = false) generate
+        i_rst_sync : entity ctu_can_fd_rtl.rst_sync
+        generic map (
+            G_RESET_POLARITY  => '0'
+        )
+        port map (
+            clk             => clk_sys,
+            arst            => rst_n,
+            scan_mode       => scan_mode,
+            
+            rst             => rst_n_sync
+        );
+        rst_n_out <= rst_n_sync;
+    end generate;
+
+    g_rst_synchronous : if (G_RST_SYNC = true) generate
+        rst_n_sync <= rst_n;
+        rst_n_out <= rst_n;
+    end generate;
 
     -----------------------------------------------------------------------------------------------
     -- Memory registers

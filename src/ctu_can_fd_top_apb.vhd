@@ -120,6 +120,9 @@ entity ctu_can_fd_top_apb is
         -- Reset TXT / RX Buffer RAMs
         G_RESET_BUF_RAMS        : boolean                   := false;
 
+        -- External reset is synchronous to System clock
+        G_RST_SYNC              : boolean                   := false;
+
         -- Target technology (ASIC or FPGA)
         G_TECHNOLOGY            : natural                   := C_TECH_FPGA
     );
@@ -172,6 +175,7 @@ begin
         G_PARITY_EN             => G_PARITY_EN,
         G_ACTIVE_TS_BITS        => G_ACTIVE_TS_BITS,
         G_RESET_BUF_RAMS        => G_RESET_BUF_RAMS,
+        G_RST_SYNC              => G_RST_SYNC,
         G_TECHNOLOGY            => G_TECHNOLOGY
     )
     port map (
