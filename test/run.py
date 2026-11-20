@@ -173,6 +173,14 @@ if __name__ == '__main__':
 
     set_elab_options(vu, tgt)
 
+    nvc_glob_flags = []
+    nvc_glob_flags.append('-M')
+    nvc_glob_flags.append('512M')
+    nvc_glob_flags.append('--load=main_tb/iso-16845-compliance-tests/build/Debug/src/cosimulation/libNVC_VHPI_COSIM_LIB.so')
+    nvc_glob_flags.append("--ieee-warnings=off")
+    nvc_glob_flags.append("--messages=compact")
+    vu.set_sim_option("nvc.global_flags", nvc_glob_flags, allow_empty=True)
+    
     vu.set_sim_option("nvc.heap_size", '256m', allow_empty=True)
     vu.set_sim_option("nvc.elab_flags", ['-j'])
     vu.set_sim_option("nvc.sim_flags", ['--ieee-warnings=off'], allow_empty=True)
