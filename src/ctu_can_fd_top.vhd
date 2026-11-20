@@ -244,6 +244,9 @@ architecture rtl of ctu_can_fd_top is
     -- Sample control (Nominal, Data, Secondary)
     signal sp_control                       :    std_logic_vector(1 downto 0);
 
+    -- Core is enabled
+    signal mr_settings_ena                  :    std_logic;
+
     -----------------------------------------------------------------------------------------------
     -- RX Buffer <-> Memory registers Interface
     -----------------------------------------------------------------------------------------------
@@ -568,6 +571,9 @@ architecture rtl of ctu_can_fd_top is
     -- Debug record from Protocol control
     signal pc_dbg                           :   t_protocol_control_dbg;
 
+    -- Clear enable for SETTINGS[ENA]
+    signal mr_settings_ena_clr_ena          :   std_logic;
+
     -- Interrupt values (actual interrupt status)
     signal mr_int_stat_rxi_o                :   std_logic;
     signal mr_int_stat_txi_o                :   std_logic;
@@ -676,6 +682,8 @@ begin
         mr_tst_out                      => mr_tst_out,                      -- OUT
         cc_stat                         => cc_stat,                         -- IN
         pc_dbg                          => pc_dbg,                          -- IN
+        mr_settings_ena                 => mr_settings_ena,                 -- OUT
+        mr_settings_ena_clr_ena         => mr_settings_ena_clr_ena,         -- IN
         mr_tst_rdata_tst_rdata_rxb      => mr_tst_rdata_tst_rdata_rxb,      -- IN
         mr_tst_rdata_tst_rdata_txb      => mr_tst_rdata_tst_rdata_txb,      -- IN
 
@@ -1182,7 +1190,7 @@ begin
         mr_mode_tstm                    => mr_ctrl_out.mode_tstm,                    -- IN
         mr_mode_sam                     => mr_ctrl_out.mode_sam,                     -- IN
 
-        mr_settings_ena                 => mr_ctrl_out.settings_ena,                 -- IN
+        mr_settings_ena                 => mr_settings_ena,                          -- IN
         mr_settings_nisofd              => mr_ctrl_out.settings_nisofd,              -- IN
         mr_settings_rtrth               => mr_ctrl_out.settings_rtrth,               -- IN
         mr_settings_rtrle               => mr_ctrl_out.settings_rtrle,               -- IN
@@ -1208,6 +1216,7 @@ begin
         -- Status signals
         cc_stat                         => cc_stat,                                 -- OUT
         pc_dbg                          => pc_dbg,                                  -- OUT
+        mr_settings_ena_clr_ena         => mr_settings_ena_clr_ena,                 -- OUT
 
         -- Tx Arbitrator and TXT Buffers interface
         tran_word                       => tran_word,                               -- IN
@@ -1297,7 +1306,7 @@ begin
         rst_n                           => res_core_n,                              -- IN
 
         -- Memory registers interface
-        mr_settings_ena                 => mr_ctrl_out.settings_ena,                -- IN
+        mr_settings_ena                 => mr_settings_ena,                         -- IN
 
         mr_btr_prop                     => mr_ctrl_out.btr_prop,                    -- IN
         mr_btr_ph1                      => mr_ctrl_out.btr_ph1,                     -- IN
@@ -1347,14 +1356,14 @@ begin
         rst_n                           => res_core_n,                              -- IN
 
         -- DFT support
-        scan_mode                     => scan_mode,                             -- IN
+        scan_mode                     => scan_mode,                                 -- IN
 
         -- Physical layer interface
         can_rx                          => can_rx,                                  -- IN
         can_tx                          => can_tx,                                  -- OUT
 
         -- Memory registers interface
-        mr_settings_ena                 => mr_ctrl_out.settings_ena,                -- IN
+        mr_settings_ena                 => mr_settings_ena,                         -- IN
         mr_ssp_cfg_ssp_offset           => mr_ctrl_out.ssp_cfg_ssp_offset,          -- IN
         mr_ssp_cfg_ssp_src              => mr_ctrl_out.ssp_cfg_ssp_src,             -- IN
 
@@ -1390,7 +1399,7 @@ begin
     -- psl default clock is rising_edge(clk_sys);
 
     -- psl no_tx_dominant_when_disabled_asrt : assert never
-    --  (mr_ctrl_out.settings_ena = '0' and can_tx = DOMINANT)
+    --  (mr_settings_ena = '0' and can_tx = DOMINANT)
     --  report "Dominant bit can't be transmitted when Node is disabled!";
 
     -- psl no_tx_dominant_when_bus_monitoring_asrt : assert never

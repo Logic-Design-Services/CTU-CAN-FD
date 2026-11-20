@@ -147,6 +147,9 @@ entity mac_pc_top is
         -- Protocol exception status
         mr_status_pexs          : out std_logic;
 
+        -- Clear enable for SETTINGS[ENA]
+        mr_settings_ena_clr_ena : out std_logic;
+        
         -- Protocol control debug information
         pc_dbg                  : out t_protocol_control_dbg;
 
@@ -609,7 +612,8 @@ begin
         mr_mode_sam             => mr_mode_sam,             -- IN
 
         mr_status_pexs          => mr_status_pexs,          -- OUT
-
+        mr_settings_ena_clr_ena => mr_settings_ena_clr_ena, -- OUT
+        
         pc_dbg                  => pc_dbg_i,                -- OUT
 
         -- Data-path interface

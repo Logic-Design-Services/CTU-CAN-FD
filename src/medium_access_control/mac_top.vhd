@@ -168,6 +168,7 @@ entity mac_top is
         -------------------------------------------------------------------------------------------
         cc_stat                 : out t_can_core_stat;
         pc_dbg                  : out t_protocol_control_dbg;
+        mr_settings_ena_clr_ena : out std_logic;
 
         -------------------------------------------------------------------------------------------
         -- Tx Arbitrator and TXT Buffers interface
@@ -520,6 +521,7 @@ begin
 
         pc_dbg                  => pc_dbg,                      -- OUT
         mr_status_pexs          => mr_status_pexs,              -- OUT
+        mr_settings_ena_clr_ena => mr_settings_ena_clr_ena,     -- OUT
 
         -- TXT Buffers interface
         tran_word               => tran_word,                   -- IN

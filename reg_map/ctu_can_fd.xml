@@ -674,7 +674,7 @@
 					<ipxact:addressOffset>'h6</ipxact:addressOffset>
 					<ipxact:size>16</ipxact:size>
 					<ipxact:volatile>true</ipxact:volatile>
-					<ipxact:access>read-write</ipxact:access>
+					<ipxact:access>read-writeOnce</ipxact:access>
 					<ipxact:field>
 						<ipxact:name>RTRLE</ipxact:name>
 						<ipxact:displayName>RTRLE</ipxact:displayName>

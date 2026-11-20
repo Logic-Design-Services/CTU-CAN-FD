@@ -951,6 +951,21 @@ package feature_test_agent_pkg is
 
 
     ----------------------------------------------------------------------------
+    -- Check whether CTU_CAN_FD Core is enabled (SETTINGS[ENA]).
+    --
+    -- Arguments:
+    --  enabled         Returns "true" when SETTINGS[ENA] is set, "false"
+    --                  otherwise.
+    --  node            Node which shall be accessed (Test node or DUT).
+    ----------------------------------------------------------------------------
+    procedure ctu_is_enabled(
+        variable enabled        : out   boolean;
+        constant node           : in    t_feature_node;
+        signal   channel        : inout t_com_channel
+    );
+
+
+    ----------------------------------------------------------------------------
     -- Enables/Disabled Retransmitt limiting in CTU CAN FD Core.
     --
     -- Arguments:
@@ -2543,8 +2558,22 @@ package body feature_test_agent_pkg is
             data(ENA_IND) := CTU_CAN_DISABLED;
         end if;
         ctu_write(data, MODE_ADR, node, channel);
-        ctu_read(readback, MODE_ADR, node, channel);
-        assert readback = data;
+    end procedure;
+
+
+    procedure ctu_is_enabled(
+        variable enabled        : out   boolean;
+        constant node           : in    t_feature_node;
+        signal   channel        : inout t_com_channel
+    )is
+        variable data           :       std_logic_vector(15 downto 0);
+    begin
+        ctu_read(data, SETTINGS_ADR, node, channel);
+        if (data(ENA_IND mod 16) = CTU_CAN_ENABLED) then
+            enabled := true;
+        else
+            enabled := false;
+        end if;
     end procedure;
 
 

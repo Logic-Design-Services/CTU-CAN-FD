@@ -3128,15 +3128,15 @@ begin
         control_registers_in.version_ver_minor &
         control_registers_in.device_id_device_id when "000000",
         '0' & '0' & '0' & '0' &
-        control_registers_out_i.settings_pchke &
-        control_registers_out_i.settings_fdrf &
-        control_registers_out_i.settings_tbfbo &
-        control_registers_out_i.settings_pex &
-        control_registers_out_i.settings_nisofd &
-        control_registers_out_i.settings_ena &
-        control_registers_out_i.settings_ilbp &
-        control_registers_out_i.settings_rtrth &
-        control_registers_out_i.settings_rtrle &
+        control_registers_in.settings_pchke &
+        control_registers_in.settings_fdrf &
+        control_registers_in.settings_tbfbo &
+        control_registers_in.settings_pex &
+        control_registers_in.settings_nisofd &
+        control_registers_in.settings_ena &
+        control_registers_in.settings_ilbp &
+        control_registers_in.settings_rtrth &
+        control_registers_in.settings_rtrle &
         '0' & '0' & '0' &
         control_registers_out_i.mode_erfm &
         control_registers_out_i.mode_sam &

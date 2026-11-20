@@ -197,6 +197,15 @@ package can_registers_pkg is
      device_id_device_id         : std_logic_vector(15 downto 0);
      version_ver_minor           : std_logic_vector(7 downto 0);
      version_ver_major           : std_logic_vector(7 downto 0);
+     settings_rtrle              : std_logic;
+     settings_rtrth              : std_logic_vector(3 downto 0);
+     settings_ilbp               : std_logic;
+     settings_ena                : std_logic;
+     settings_nisofd             : std_logic;
+     settings_pex                : std_logic;
+     settings_tbfbo              : std_logic;
+     settings_fdrf               : std_logic;
+     settings_pchke              : std_logic;
      status_rxne                 : std_logic;
      status_dor                  : std_logic;
      status_txnf                 : std_logic;

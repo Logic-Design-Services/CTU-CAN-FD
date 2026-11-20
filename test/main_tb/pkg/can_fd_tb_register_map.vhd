@@ -108,7 +108,7 @@ package can_fd_tb_register_map is
      is_implem => "00000000000000000001111111111111"),
     (address   => SETTINGS_ADR,
      size      => 16,
-     reg_type  => reg_read_write,
+     reg_type  => reg_read_write_once,
      reset_val => "00000010000000000000000000000000",
      is_implem => "00000000000000000000000000000000"),
     (address   => STATUS_ADR,
