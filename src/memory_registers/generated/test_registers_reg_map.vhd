@@ -109,6 +109,7 @@ architecture rtl of test_registers_reg_map is
   constant ADDR_VECT
                  : std_logic_vector(23 downto 0) := "000011000010000001000000";
   signal r_data_comb : std_logic_vector(31 downto 0);
+  signal r_data_sel : std_logic_vector(5 downto 0);
   signal read_data_mask_n : std_logic_vector(31 downto 0);
   signal test_registers_out_i : Test_registers_out_t;
   signal write_en : std_logic_vector(3 downto 0);
@@ -309,7 +310,8 @@ begin
     ----------------------------------------------------------------------------
     -- Read data multiplexor
     ----------------------------------------------------------------------------
-    with address(7 downto 2) select r_data_comb <=
+    r_data_sel <= address(7 downto 2);
+    with r_data_sel select r_data_comb <=
         '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' & '0' &
         test_registers_out_i.tst_control_twrstb &
         test_registers_out_i.tst_control_tmaena when "000000",
