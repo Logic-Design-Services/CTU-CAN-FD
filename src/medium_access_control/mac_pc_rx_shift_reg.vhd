@@ -275,7 +275,7 @@ begin
     port map (
         clk                  => clk_sys,                    -- IN
         rst_n                => rst_n_i_q_scan,             -- IN
-        input                => rx_data_nbs,                -- IN
+        sr_input             => rx_data_nbs,                -- IN
         byte_clock_ena       => rx_shift_cmd,               -- IN
         byte_input_sel       => rx_shift_in_sel_demuxed,    -- IN
 
