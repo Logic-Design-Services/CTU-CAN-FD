@@ -187,7 +187,7 @@ entity im_top is
         -------------------------------------------------------------------------------------------
         -- Interrupt output
         -------------------------------------------------------------------------------------------
-        int                             : out std_logic
+        irq                             : out std_logic
     );
 end entity;
 
@@ -200,7 +200,7 @@ architecture rtl of im_top is
     constant C_ZERO_MASK                    : std_logic_vector(G_INT_COUNT - 1 downto 0) := (others => '0');
 
     -- Internal value of an interrupt
-    signal int_i                            : std_logic;
+    signal irq_i                            : std_logic;
 
     -- Internal value of INT_ENA
     signal mr_int_ena_set_int_ena_set_o_i   : std_logic_vector(G_INT_COUNT - 1 downto 0);
@@ -221,7 +221,7 @@ begin
     -----------------------------------------------------------------------------------------------
     -- Driving Interrupt output when there is at least one active interrupt enabled.
     -----------------------------------------------------------------------------------------------
-    int_i  <= '0' when ((int_status_i and mr_int_ena_set_int_ena_set_o_i) = C_ZERO_MASK)
+    irq_i  <= '0' when ((int_status_i and mr_int_ena_set_int_ena_set_o_i) = C_ZERO_MASK)
                   else
               '1';
 
@@ -307,9 +307,9 @@ begin
     port map(
         arst                    => rst_n,                                   -- IN
         clk                     => clk_sys,                                 -- IN
-        reg_d                   => int_i,                                   -- IN
+        reg_d                   => irq_i,                                   -- IN
 
-        reg_q                   => int                                      -- OUT
+        reg_q                   => irq                                      -- OUT
     );
 
     -- Propagation to output

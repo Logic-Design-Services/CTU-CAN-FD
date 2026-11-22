@@ -196,7 +196,7 @@ begin
         sbe                     => byteenable,
 
         -- Interrupt Interface
-        int                     => irq,
+        irq                     => irq,
 
         -- CAN Bus Interface
         can_tx                  => can_tx,

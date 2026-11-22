@@ -170,7 +170,7 @@ entity ctu_can_fd_top_ahb is
         -----------------------------------------------------------------------
         -- Interrupt
         -----------------------------------------------------------------------
-        int              : out std_logic
+        irq              : out std_logic
     );
 end entity ctu_can_fd_top_ahb;
 
@@ -220,7 +220,7 @@ begin
         swr             => ctu_can_swr,
         sbe             => ctu_can_sbe,
 
-        int             => int,
+        irq             => irq,
 
         CAN_tx          => CAN_tx,
         CAN_rx          => CAN_rx,
