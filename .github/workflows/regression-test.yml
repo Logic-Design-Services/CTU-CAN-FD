@@ -16,7 +16,7 @@ jobs:
   build_compliance_lib:
     runs-on: [self-hosted, lds_runner]
     container: &sim_container
-      image: ghcr.io/logic-design-services/digital-simulation
+      image: ghcr.io/selosys/digital-simulation
       options: --user 1000:1000
     permissions:
       contents: read

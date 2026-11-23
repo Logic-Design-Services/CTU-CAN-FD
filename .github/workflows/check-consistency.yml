@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/logic-design-services/digital-simulation
+      image: ghcr.io/selosys/digital-simulation
 
     permissions:
       contents: read

@@ -7,7 +7,7 @@ jobs:
   build_hw_docs:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/logic-design-services/lyx-docu
+      image: ghcr.io/selosys/lyx-docu
 
     permissions:
       contents: read

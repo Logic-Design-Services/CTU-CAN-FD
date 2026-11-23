@@ -17,7 +17,7 @@ The latest released version is 2.7. Significant changes are marked in
 ## License
 
 CTU CAN FD RTL and TB are published under following license :
-[![License](https://img.shields.io/badge/License--black.svg)]( https://github.com/Logic-Design-Services/CTU-CAN-FD/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/License--black.svg)]( https://github.com/SELOSYS/CTU-CAN-FD/blob/master/LICENSE)
 
 Commercial usage of RTL and TB requires License agreement which is provided
 by [SELOSYS](https://selosys.cz/) for a license fee. For further details please reach out to info@selosys.cz.
@@ -43,13 +43,13 @@ Last but not least, RTL is DFT insertion ready and contains additional support
 for manufacturing testability by a functional test.
 
 Architecture of CTU CAN FD is described in:
-[![System architecture](https://img.shields.io/badge/System_architecture--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_architecture.pdf)
+[![System architecture](https://img.shields.io/badge/System_architecture--blue.svg)]( https://selosys.github.io/CTU-CAN-FD/ctu_can_fd_architecture.pdf)
 
 Functional description of CTU CAN FD is described in:
-[![Datasheet](https://img.shields.io/badge/Datasheet--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_datasheet.pdf)
+[![Datasheet](https://img.shields.io/badge/Datasheet--blue.svg)]( https://selosys.github.io/CTU-CAN-FD/ctu_can_fd_datasheet.pdf)
 
 Guidelines for integrating CTU CAN FD into a system are described in:
-[![Integration guide](https://img.shields.io/badge/Integration_guide--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_integration_guide.pdf)
+[![Integration guide](https://img.shields.io/badge/Integration_guide--blue.svg)]( https://selosys.github.io/CTU-CAN-FD/ctu_can_fd_integration_guide.pdf)
 
 ## Synthesis
 
@@ -65,20 +65,20 @@ configurations:
 #### Small:
 
 2 TXT Buffers, 32 word RX Buffer, no frame filters
-Results: [Area](https://logic-design-services.github.io/CTU-CAN-FD/synthesis/minimal_design_config/utilization.rpt)
-[Timing](https://logic-design-services.github.io/CTU-CAN-FD/synthesis/minimal_design_config/timing_summary.rpt)
+Results: [Area](https://selosys.github.io/CTU-CAN-FD/synthesis/minimal_design_config/utilization.rpt)
+[Timing](https://selosys.github.io/CTU-CAN-FD/synthesis/minimal_design_config/timing_summary.rpt)
 
 #### Medium:
 
 4 TXT Buffers, 128 word RX Buffer, only one bit filter
-Results: [Area](https://logic-design-services.github.io/CTU-CAN-FD/synthesis/medium_design_config/utilization.rpt)
-[Timing](https://logic-design-services.github.io/CTU-CAN-FD/synthesis/medium_design_config/timing_summary.rpt)
+Results: [Area](https://selosys.github.io/CTU-CAN-FD/synthesis/medium_design_config/utilization.rpt)
+[Timing](https://selosys.github.io/CTU-CAN-FD/synthesis/medium_design_config/timing_summary.rpt)
 
 #### Big:
 
 8 TXT Buffers, 1024 word RX Buffer, all frame filters
-Results: [Area](https://logic-design-services.github.io/CTU-CAN-FD/synthesis/big_design_config/utilization.rpt)
-[Timing](https://logic-design-services.github.io/CTU-CAN-FD/synthesis/big_design_config/timing_summary.rpt)
+Results: [Area](https://selosys.github.io/CTU-CAN-FD/synthesis/big_design_config/utilization.rpt)
+[Timing](https://selosys.github.io/CTU-CAN-FD/synthesis/big_design_config/timing_summary.rpt)
 
 Note that design is constrained to 100 MHz with no timing violations, combinatorial loops
 or latches inferred (FPGA config without clock gate is used). These results together with
@@ -93,7 +93,7 @@ In addition to ISO 11898-1 compliance, all other features of CTU CAN FD are veri
 There are 3 types of tests available in CTU CAN FD test-bench:
 - Feature tests (VHDL)
 - Reference tests (VHDL)
-- Compliance tests (C++ library linked to simulation, [ISO16845 Compliance library](https://github.com/Logic-Design-Services/iso-16845-compliance-tests)).
+- Compliance tests (C++ library linked to simulation, [ISO16845 Compliance library](https://github.com/SELOSYS/iso-16845-compliance-tests)).
 
 Note that ISO16845 Compliance library is not public. If you are interested in 
 running compliance tests for CTU CAN FD please reach out to us. Feature tests
@@ -115,21 +115,21 @@ as measured by NVC and VCS simulators.
 Functional coverage is implemented by PSL assertions.
 
 The code coverage and functional coverage can be seen in:
-[![Coverage](https://img.shields.io/badge/Code%20Coverage--orange.svg)](https://logic-design-services.github.io/CTU-CAN-FD/code_coverage_report/index.html)
+[![Coverage](https://img.shields.io/badge/Code%20Coverage--orange.svg)](https://selosys.github.io/CTU-CAN-FD/code_coverage_report/index.html)
 
 Description of test-bench and CTU CAN FD VIP is in:
-[![Testbench documentation](https://img.shields.io/badge/Testbench--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_testbench.pdf)
+[![Testbench documentation](https://img.shields.io/badge/Testbench--blue.svg)]( https://selosys.github.io/CTU-CAN-FD/ctu_can_fd_testbench.pdf)
 
 Documentation of all the tests with mapping to a feature being verified:
-[![Verification Requirement Matrix](https://img.shields.io/badge/Verification%20Requirement%20Matrix--orange.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/regression_results/VRM.html )
+[![Verification Requirement Matrix](https://img.shields.io/badge/Verification%20Requirement%20Matrix--orange.svg)]( https://selosys.github.io/CTU-CAN-FD/regression_results/VRM.html )
 
 CTU CAN FD is simulated as RTL, and as post-synthesis gate-level netlist with Xilinx UNISIM library.
 
 You can see artifacts from the latest regresision run at:
-[![Regression artifacts](https://img.shields.io/badge/Regression%20Artifacts--orange.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ )
+[![Regression artifacts](https://img.shields.io/badge/Regression%20Artifacts--orange.svg)]( https://selosys.github.io/CTU-CAN-FD/ )
 
 You can find the regression CI jobs at:
-[![Regression CI](https://img.shields.io/badge/Regression%20CI--orange.svg)]( https://github.com/Logic-Design-Services/CTU-CAN-FD/actions/workflows/regression-test.yml )
+[![Regression CI](https://img.shields.io/badge/Regression%20CI--orange.svg)]( https://github.com/SELOSYS/CTU-CAN-FD/actions/workflows/regression-test.yml )
 
 
 See the instructions below in "How to run CTU CAN FD testbench" subsection.
@@ -139,7 +139,7 @@ See the instructions below in "How to run CTU CAN FD testbench" subsection.
 
 ### Manual integration
 
-See [![Integration guide](https://img.shields.io/badge/Integration_guide--blue.svg)]( https://logic-design-services.github.io/CTU-CAN-FD/ctu_can_fd_integration_guide.pdf) for integration guidelines.
+See [![Integration guide](https://img.shields.io/badge/Integration_guide--blue.svg)]( https://selosys.github.io/CTU-CAN-FD/ctu_can_fd_integration_guide.pdf) for integration guidelines.
 
 ### Vivado integration
 
@@ -239,13 +239,13 @@ Vunit, VHDL unit test framework:
 Python 3 and following modules: pyvcd attrs jinja2 parsy pyyaml click yattag json2html
 
 There is a docker image which contains all dependencies needed available at:
-[Simulation docker](https://github.com/orgs/Logic-Design-Services/packages/container/package/digital-simulation).
+[Simulation docker](https://github.com/orgs/SELOSYS/packages/container/package/digital-simulation).
 
 
 ## Linux driver
 
 CTU CAN FD has SocketCAN Linux driver which is described in:
-[![Linux driver](https://img.shields.io/badge/Linux_driver--blue.svg)](https://logic-design-services.github.io/CTU-CAN-FD/linux_driver/ctucanfd-driver.html)
+[![Linux driver](https://img.shields.io/badge/Linux_driver--blue.svg)](https://selosys.github.io/CTU-CAN-FD/linux_driver/ctucanfd-driver.html)
 
 Driver consists from 3 parts:
 - Network
