@@ -115,6 +115,7 @@ architecture rtl of control_registers_reg_map is
   constant ADDR_VECT
                  : std_logic_vector(233 downto 0) := "100110100101100100100011100010100001100000011111011110011101011100011011011010011001011000010111010110010101010100010011010010010001010000001111001110001101001100001011001010001001001000000111000110000101000100000011000010000001000000";
   signal r_data_comb : std_logic_vector(31 downto 0);
+  signal r_data_sel : std_logic_vector(5 downto 0);
   signal read_data_mask_n : std_logic_vector(31 downto 0);
   signal control_registers_out_i : Control_registers_out_t;
   signal write_en : std_logic_vector(3 downto 0);
@@ -3123,7 +3124,8 @@ begin
     ----------------------------------------------------------------------------
     -- Read data multiplexor
     ----------------------------------------------------------------------------
-    with address(7 downto 2) select r_data_comb <=
+    r_data_sel <= address(7 downto 2);
+    with r_data_sel select r_data_comb <=
         control_registers_in.version_ver_major &
         control_registers_in.version_ver_minor &
         control_registers_in.device_id_device_id when "000000",

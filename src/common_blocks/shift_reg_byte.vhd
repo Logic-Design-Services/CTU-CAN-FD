@@ -105,7 +105,7 @@ entity shift_reg_byte is
         -- Control signals
         -------------------------------------------------------------------------------------------
         -- Shift register input
-        input               : in  std_logic;
+        sr_input            : in  std_logic;
 
         -- Clock enable for shifting each byte of the shift register.
         byte_clock_ena      : in  std_logic_vector(G_NUM_BYTES - 1 downto 0);
@@ -136,14 +136,14 @@ begin
     begin
 
         g_first_byte : if (i = 0) generate
-            shift_reg_in(i) <= input;
+            shift_reg_in(i) <= sr_input;
         end generate;
 
         -- Shift register input mux
         g_next_bytes : if (i > 0) generate
             shift_reg_in(i) <= shift_reg_q(i - 1)(7) when (byte_input_sel(i) = '0')
                                                      else
-                                               input;
+                                               sr_input;
         end generate;
 
         -------------------------------------------------------------------------------------------

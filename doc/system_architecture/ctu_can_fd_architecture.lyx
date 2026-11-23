@@ -496,7 +496,7 @@ literal "true"
 \noindent
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="26" columns="4">
+<lyxtabular version="3" rows="27" columns="4">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="1.5cm">
 <column alignment="center" valignment="top" width="3cm">
@@ -1522,7 +1522,7 @@ Minor clarifications and fixed
 </cell>
 </row>
 <row>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1531,7 +1531,7 @@ Minor clarifications and fixed
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1540,7 +1540,7 @@ Minor clarifications and fixed
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1549,7 +1549,7 @@ Minor clarifications and fixed
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" color="default" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -1557,6 +1557,56 @@ Added
 \series bold
 \shape italic
 G_RST_SYNC
+\series default
+\shape default
+.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.26
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+23-11-2026
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" color="default" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Renamed 
+\series bold
+\shape italic
+int
+\series default
+\shape default
+ to 
+\series bold
+\shape italic
+irq
 \series default
 \shape default
 .
@@ -6944,7 +6994,7 @@ G_ACTIVE_TS_BITS
 \begin_inset Text
 
 \begin_layout Plain Layout
-integer
+eger
 \end_layout
 
 \end_inset
@@ -13121,7 +13171,7 @@ bus-off
 \begin_inset Text
 
 \begin_layout Plain Layout
-SW is notified of such an event by FCS interrupt,
+SW is notified of such an event by FCS ,
  then SW reads FAULT_STATE register and finds out that unit is 
 \color red
 bus-off
@@ -32372,7 +32422,7 @@ Occurence of events within CTU CAN FD is captured to Interrupt status register (
  it causes 
 \series bold
 \shape italic
-int
+irq
 \series default
 \shape default
  output of CTU CAN FD to go high when this interrupt is enabled.
@@ -32380,7 +32430,7 @@ int
  Value of 
 \series bold
 \shape italic
-int
+irq
 \series default
 \shape default
  output is given by logical OR of all enabled interrupts which have Interrupt status equal to logic 1.

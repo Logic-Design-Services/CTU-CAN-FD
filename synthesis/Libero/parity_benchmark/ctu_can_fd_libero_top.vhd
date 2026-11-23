@@ -128,7 +128,7 @@ entity ctu_can_fd_libero_top is
         -- Interrupt Interface
         -----------------------------------------------------------------------
         -- Interrupt output
-        int         : out std_logic;
+        irq         : out std_logic;
 
         -----------------------------------------------------------------------
         -- CAN Bus Interface
@@ -207,7 +207,7 @@ begin
         sbe             => sbe,
 
         -- Interrupt Interface
-        int             => int,
+        irq             => irq,
 
         -- CAN Bus Interface
         can_tx          => can_tx,

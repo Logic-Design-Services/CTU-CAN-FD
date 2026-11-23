@@ -185,7 +185,7 @@ entity ctu_can_fd_top is
         -- Interrupt Interface
         -----------------------------------------------------------------------
         -- Interrupt output
-        int         : out std_logic;
+        irq         : out std_logic;
 
         -----------------------------------------------------------------------
         -- CAN Bus Interface
@@ -1167,7 +1167,7 @@ begin
         mr_int_mask_set_int_mask_set_o  => mr_int_mask_set_int_mask_set_o,          -- OUT
 
         -- Interrupt output
-        int                             => int                                      -- OUT
+        irq                             => irq                                      -- OUT
     );
 
     -----------------------------------------------------------------------------------------------

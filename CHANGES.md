@@ -22,6 +22,8 @@
 - SETTINGS[ENA] now clears to zero only when there is no frame in progress.
   This prevents error frame upon disabling in the middle of frame.
 - Added configurable synchronicity of external reset.
+- **BREAKING CHANGE**: RTL: `int` port was renamed to `irq` to avoid conflict
+  with System Verilog keyword.
 
 ## Version 2.7 - 7.1.2026
 - RTL: Optimized to remove dead-code and unreachable code

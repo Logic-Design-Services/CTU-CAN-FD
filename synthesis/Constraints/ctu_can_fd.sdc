@@ -94,6 +94,6 @@ set_input_delay -clock SYS_CLK [expr $SYS_CLK_PERIOD/4] [get_ports sbe*]
 
 set_output_delay -clock SYS_CLK [expr $SYS_CLK_PERIOD/4] [get_ports data_out*]
 set_output_delay -clock SYS_CLK [expr $SYS_CLK_PERIOD/4] [get_ports can_tx]
-set_output_delay -clock SYS_CLK [expr $SYS_CLK_PERIOD/4] [get_ports int]
+set_output_delay -clock SYS_CLK [expr $SYS_CLK_PERIOD/4] [get_ports irq]
 set_output_delay -clock SYS_CLK [expr $SYS_CLK_PERIOD/4] [get_ports rst_n_out]
 

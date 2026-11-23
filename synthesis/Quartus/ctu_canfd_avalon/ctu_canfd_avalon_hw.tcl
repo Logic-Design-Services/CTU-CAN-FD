@@ -214,7 +214,7 @@ set_interface_property interrupt_sender PORT_NAME_MAP ""
 set_interface_property interrupt_sender CMSIS_SVD_VARIABLES ""
 set_interface_property interrupt_sender SVD_ADDRESS_GROUP ""
 
-add_interface_port interrupt_sender int irq Output 1
+add_interface_port interrupt_sender irq irq Output 1
 
 
 #

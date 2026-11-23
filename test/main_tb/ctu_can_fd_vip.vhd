@@ -145,7 +145,7 @@ entity ctu_can_fd_vip is
         swr                 : out   std_logic;
         sbe                 : out   std_logic_vector(3 DOWNTO 0);
 
-        int                 : in    std_logic;
+        irq                 : in    std_logic;
 
         can_tx              : in    std_logic;
         can_rx              : out   std_logic;
@@ -247,7 +247,7 @@ begin
     ---------------------------------------------------------------------------
     i_interrupt_agent : interrupt_agent
     port map(
-        int   => int
+        irq   => irq
     );
 
     ---------------------------------------------------------------------------

@@ -1507,7 +1507,7 @@ package feature_test_agent_pkg is
 
     ----------------------------------------------------------------------------
     -- Read interrupt mask. "true" indicates interrupt is masked, thus it does
-    -- not affect "int" output of CTU CAN FD Core.
+    -- not affect "irq" output of CTU CAN FD Core.
     --
     -- Arguments:
     --  interrupts      Variable in which interrupt mask will be returned.
@@ -1522,7 +1522,7 @@ package feature_test_agent_pkg is
 
     ----------------------------------------------------------------------------
     -- Write interrupt mask. "true" indicates interrupt is masked, thus it does
-    -- not affect "int" output of CTU CAN FD Core.
+    -- not affect "irq" output of CTU CAN FD Core.
     --
     -- Arguments:
     --  interrupts      Interrupt mask to write.

@@ -273,7 +273,7 @@ worth noting if debugging enable-bit races). Note: the file's header comment des
 from an earlier design, not a live parameter.
 
 `int_manager.vhd` maps 12 named causes (RXI/TXI/EWLI/DOI/FCSI/ALI/BEI/OFI/RXFI/BSI/
-RBNEI/TXBHCI) to `int_module` instances, asserts `int` output whenever any enabled status
+RBNEI/TXBHCI) to `int_module` instances, asserts `irq` output whenever any enabled status
 bit is set, registered through one extra flip-flop for glitch-free output.
 
 ### Bus interfaces

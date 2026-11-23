@@ -211,7 +211,7 @@ begin
         sbe         => sbe,
 
         -- Interrupt Interface - not needed for test node
-        int         => open,
+        irq         => open,
 
         -- CAN Bus Interface
         can_tx      => test_node_can_tx,
