@@ -59,12 +59,13 @@ def set_comp_options(sf, file):
 
     sf.add_compile_option("nvc.a_flags", ['--psl'])
 
-def set_glob_options(vu):
+def set_glob_options(vu, add_compliance_lib):
     # NVC
     nvc_glob_flags = []
     nvc_glob_flags.append('-M')
     nvc_glob_flags.append('512M')
-    nvc_glob_flags.append('--load=main_tb/iso-16845-compliance-tests/build/Debug/src/cosimulation/libNVC_VHPI_COSIM_LIB.so')
+    if add_compliance_lib:
+        nvc_glob_flags.append('--load=main_tb/iso-16845-compliance-tests/build/Debug/src/cosimulation/libNVC_VHPI_COSIM_LIB.so')
     nvc_glob_flags.append("--ieee-warnings=off")
     nvc_glob_flags.append("--messages=compact")
 
@@ -158,16 +159,33 @@ def load_tgt_tlf(vu, tgt, tgt_name):
         # Create the test
         tb.add_config(test_name, generics=filtered_generics, sim_options=sim_opts)
 
+def is_valid_target(pattern):
+    for tgt_name in SIM_CFG["targets"].keys():
+        if (re.match(pattern, tgt_name)):
+            return True
+    return False
+
+def print_targets():
+    print("Available targets are:")
+    for tgt_name in SIM_CFG["targets"].keys():
+        print(f" - {tgt_name}")
+
 if __name__ == '__main__':
     load_sim_cfg()
 
     if (len(sys.argv) < 2):
-        print("./run.py should have at least one arguments (target from sim/ts_sim_config.yml)!")
+        print("./run.py first argument must be target from sim/ts_sim_config.yml !")
+        print_targets()
         sys.exit(1)
 
     # First argument is always target pattern -> Drop it, rest is for VUnit
     tgt_pattern = sys.argv[1]
     sys.argv.remove(sys.argv[1])
+
+    if not is_valid_target(tgt_pattern):
+        print(f"{tgt_pattern} does not match any target name!")
+        print_targets()
+        sys.exit(1)
 
     vu = VUnit.from_argv()
     vu.add_vhdl_builtins()
@@ -189,7 +207,8 @@ if __name__ == '__main__':
 
         load_tgt_tlf(vu, tgt, tgt_name)
 
-    set_glob_options(vu)
+    add_compliance_lib = True if "compliance" in tgt_pattern else False
+    set_glob_options(vu, add_compliance_lib)
 
     # Run
     vu.main()

@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/logic-design-services/digital-simulation
+      image: ghcr.io/selosys/digital-simulation
 
     permissions:
       contents: read
@@ -19,12 +19,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          submodules: 'recursive'
 
-      - name: "Build compliance library"
+      - name: "Get ISO compliance tests submodule commit"
+        id: iso_sha
         run: |
-          cd test/main_tb/iso-16845-compliance-tests
-          ./build.sh
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          echo "sha=$(git rev-parse HEAD:test/main_tb/iso-16845-compliance-tests)" >> "$GITHUB_OUTPUT"
+
+      - name: "Checkout ISO compliance tests submodule"
+        id: iso_checkout
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: SELOSYS/iso-16845-compliance-tests
+          ref: ${{ steps.iso_sha.outputs.sha }}
+          path: test/main_tb/iso-16845-compliance-tests
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
+          submodules: recursive
+          fetch-depth: 1
 
       - name: "Run Device ID test"
         run: |
@@ -32,7 +44,14 @@ jobs:
           export CTU_TB_TOP_TARGET="tb_ctu_can_fd_rtl_vunit"
           ./run.py tb_rtl_small_asic_max_feature ctu_can_fd_tb.tb_top_ctu_can_fd.tb_rtl_small_asic_max_feature.device_id -v
 
+      - name: "Build compliance library"
+        if: steps.iso_checkout.outcome == 'success'
+        run: |
+          cd test/main_tb/iso-16845-compliance-tests
+          ./build.sh
+
       - name: "Run ISO demo test"
+        if: steps.iso_checkout.outcome == 'success'
         run: |
           cd test
           export CTU_TB_TOP_TARGET="tb_ctu_can_fd_rtl_vunit"
