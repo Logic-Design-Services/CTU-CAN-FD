@@ -27,6 +27,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Build compliance library
@@ -53,6 +54,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Run synthesis
@@ -111,6 +113,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -152,6 +155,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -193,6 +197,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -253,6 +258,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -305,6 +311,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -355,6 +362,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -405,6 +413,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -455,6 +464,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -524,6 +534,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -575,6 +586,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -625,6 +637,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -675,6 +688,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -745,6 +759,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -797,6 +812,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download compliance lib
@@ -861,6 +877,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download coverage artifacts
@@ -910,6 +927,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download test result artifacts
@@ -950,6 +968,7 @@ jobs:
         with:
           repository: Logic-Design-Services/CTU-CAN-FD
           submodules: recursive
+          token: ${{ secrets.ISO_COMPLIANCE_TESTS_PAT }}
           fetch-depth: 1
 
       - name: Download all artifacts

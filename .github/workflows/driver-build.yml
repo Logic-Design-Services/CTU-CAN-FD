@@ -12,7 +12,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          submodules: 'recursive'
 
       - name: Install Kernel Headers on Runner
         run: |
