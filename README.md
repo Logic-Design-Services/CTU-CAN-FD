@@ -95,6 +95,10 @@ There are 3 types of tests available in CTU CAN FD test-bench:
 - Reference tests (VHDL)
 - Compliance tests (C++ library linked to simulation, [ISO16845 Compliance library](https://github.com/Logic-Design-Services/iso-16845-compliance-tests)).
 
+Note that ISO16845 Compliance library is not public. If you are interested in 
+running compliance tests for CTU CAN FD please reach out to us. Feature tests
+and Reference tests will work also without compliance library.
+
 The tests are executed in multiple regression runs in a CI pipeline.
 
 Alltogether, there is more than 350 different tests that run in multiple variants.

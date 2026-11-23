@@ -59,12 +59,13 @@ def set_comp_options(sf, file):
 
     sf.add_compile_option("nvc.a_flags", ['--psl'])
 
-def set_glob_options(vu):
+def set_glob_options(vu, add_compliance_lib):
     # NVC
     nvc_glob_flags = []
     nvc_glob_flags.append('-M')
     nvc_glob_flags.append('512M')
-    nvc_glob_flags.append('--load=main_tb/iso-16845-compliance-tests/build/Debug/src/cosimulation/libNVC_VHPI_COSIM_LIB.so')
+    if add_compliance_lib:
+        nvc_glob_flags.append('--load=main_tb/iso-16845-compliance-tests/build/Debug/src/cosimulation/libNVC_VHPI_COSIM_LIB.so')
     nvc_glob_flags.append("--ieee-warnings=off")
     nvc_glob_flags.append("--messages=compact")
 
@@ -189,7 +190,8 @@ if __name__ == '__main__':
 
         load_tgt_tlf(vu, tgt, tgt_name)
 
-    set_glob_options(vu)
+    add_compliance_lib = True if "compliance" in tgt_name else False
+    set_glob_options(vu, add_compliance_lib)
 
     # Run
     vu.main()
