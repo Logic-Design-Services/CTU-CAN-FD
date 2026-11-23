@@ -190,7 +190,7 @@ if __name__ == '__main__':
 
         load_tgt_tlf(vu, tgt, tgt_name)
 
-    add_compliance_lib = True if "compliance" in tgt_name else False
+    add_compliance_lib = True if "compliance" in tgt_pattern else False
     set_glob_options(vu, add_compliance_lib)
 
     # Run
