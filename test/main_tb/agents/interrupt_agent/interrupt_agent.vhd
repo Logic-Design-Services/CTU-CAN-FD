@@ -86,7 +86,7 @@ use ctu_can_fd_tb.tb_shared_vars_pkg.all;
 
 entity interrupt_agent is
     port (
-        int   :   in std_logic
+        irq   :   in std_logic
     );
 end entity;
 
@@ -121,10 +121,10 @@ begin
             com_channel_data.set_param(interrupt_polarity);
 
         when INTERRUPT_AGNT_CMD_CHECK_ASSERTED =>
-            check_m(int = interrupt_polarity, INTERRUPT_AGENT_TAG &" ** Interrupt asserted **");
+            check_m(irq = interrupt_polarity, INTERRUPT_AGENT_TAG &" ** Interrupt asserted **");
 
         when INTERRUPT_AGNT_CMD_CHECK_NOT_ASSERTED =>
-            check_false_m(int = interrupt_polarity, INTERRUPT_AGENT_TAG &" ** Interrupt NOT asserted **");
+            check_false_m(irq = interrupt_polarity, INTERRUPT_AGENT_TAG &" ** Interrupt NOT asserted **");
 
         when others =>
             info_m("Invalid message type: " & integer'image(cmd));

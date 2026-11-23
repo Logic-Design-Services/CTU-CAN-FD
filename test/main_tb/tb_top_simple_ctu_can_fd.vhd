@@ -153,7 +153,7 @@ architecture tb of tb_top_ctu_can_fd is
    signal srd           : std_logic;
    signal sbe           : std_logic_vector(3 DOWNTO 0);
 
-   signal int           : std_logic;
+   signal irq           : std_logic;
 
    signal can_tx        : std_logic;
    signal can_rx        : std_logic;
@@ -225,7 +225,7 @@ architecture tb of tb_top_ctu_can_fd is
        swr                 : out   std_logic;
        sbe                 : out   std_logic_vector(3 DOWNTO 0);
 
-       int                 : in    std_logic;
+       irq                 : in    std_logic;
 
        can_tx              : in    std_logic;
        can_rx              : out   std_logic;
@@ -272,7 +272,7 @@ begin
         sbe         => sbe,
 
         -- Interrupt Interface
-        int         => int,
+        irq         => irq,
 
         -- CAN Bus Interface
         can_tx      => can_tx,
@@ -345,7 +345,7 @@ begin
         sbe         => sbe,
 
         -- Interrupt
-        int         => int,
+        irq         => irq,
 
         -- CAN bus
         can_tx      => can_tx,

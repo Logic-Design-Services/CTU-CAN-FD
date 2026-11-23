@@ -280,7 +280,7 @@ begin
 
             scan_mode        => '0',
 
-            int              => open
+            irq              => open
         );
 
     hclk <= not hclk after 5 ns;

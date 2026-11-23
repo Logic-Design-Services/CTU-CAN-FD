@@ -14,7 +14,7 @@ FD RTL (see `ctu-can-fd-rtl-architecture` skill for the DUT itself).
 Three interchangeable top entities, all declaring the same `tb_top_ctu_can_fd`
 interface, each instantiating the DUT and `ctu_can_fd_vip.vhd` side by side (VIP does
 NOT wrap the DUT — they're siblings connected only via top-level signals: `clk_sys`,
-`rst_n`, memory bus, `can_tx`/`can_rx`, `int`, `timestamp`, `test_probe`, `scan_mode`):
+`rst_n`, memory bus, `can_tx`/`can_rx`, `irq`, `timestamp`, `test_probe`, `scan_mode`):
 
 - **`tb_top_simple_ctu_can_fd.vhd`** — no VUnit dependency. A plain `process` pulses
   `test_start`, waits for `test_done`, calls `std.env.finish`.

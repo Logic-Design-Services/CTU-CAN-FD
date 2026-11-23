@@ -90,7 +90,7 @@ package interrupt_agent_pkg is
     ---------------------------------------------------------------------------
     component interrupt_agent is
     port (
-        int   :   in std_logic
+        irq   :   in std_logic
     );
     end component;
 

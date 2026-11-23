@@ -897,15 +897,11 @@ Interrupt
 
 \begin_layout Standard
 CTU CAN FD has single interrupt output.
- The interrupt output is named differently for each memory bus interface wrapper (
-\color red
-int
-\color inherit
- or 
+ The interrupt output is named 
 \color red
 irq
 \color inherit
-).
+.
  The interrupt is registered (therefore glitch-free).
 \end_layout
 
