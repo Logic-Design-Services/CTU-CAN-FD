@@ -208,9 +208,6 @@ begin
     -----------------------------------------------------------------------------------------------
     -- Time quanta counter
     -----------------------------------------------------------------------------------------------
-    tq_edge_i <= '1' when (tq_cnt_q = C_TQ_COUNTER_ZERO) else
-                 '0';
-
     tq_cnt_pload <= '1' when (tq_edge_i = '1' or tx_trigger_i = '1' or rx_trigger_i = '1') else
                     '0';
 
@@ -226,8 +223,14 @@ begin
     begin
         if (rst_n = '0') then
             tq_cnt_q <= (others => '0');
+            tq_edge_i <= '0';
         elsif (rising_edge(clk_sys)) then
             tq_cnt_q <= tq_cnt_d;
+            if (tq_cnt_d = C_TQ_COUNTER_ZERO) then
+                tq_edge_i <= '1';
+            else
+                tq_edge_i <= '0';
+            end if;
         end if;
     end process;
 
