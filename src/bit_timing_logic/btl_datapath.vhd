@@ -185,7 +185,7 @@ architecture rtl of btl_datapath is
 
     signal tseg1_prop               : unsigned(G_TSEG1_WIDTH - 1 downto 0);
     signal tseg1_ph1                : unsigned(G_TSEG1_WIDTH - 1 downto 0);
-    signal tseg1_minus_1            : unsigned(G_TSEG1_WIDTH - 1 downto 0);
+    signal tseg1_q                : unsigned(G_TSEG1_WIDTH - 1 downto 0);
     signal tseg2_ph2                : unsigned(G_TSEG2_WIDTH - 1 downto 0);
     signal tseg2_minus_1            : unsigned(G_TSEG2_WIDTH - 1 downto 0);
     signal sjw                      : unsigned(G_SJW_WIDTH - 1 downto 0);
@@ -238,11 +238,11 @@ begin
     -- Segment counter
     -----------------------------------------------------------------------------------------------
     -- TODO: This logic could be written better with less additions and subtractions!
-    segm_cnt_tseg1 <=              tseg1_minus_1 - 1 when (h_sync_edge_valid = '1' or
+    segm_cnt_tseg1 <=                  tseg1_q - 1 when (h_sync_edge_valid = '1' or
                                                            preload_shorter_tseg1 = '1') else
                       segm_cnt_q + phase_err_sat - 1 when (tq_edge = '1' and
                                                            pos_resync_edge_valid = '1') else
-                      tseg1_minus_1;
+                      tseg1_q;
 
     segm_cnt_tseg2 <= segm_cnt_q - phase_err_sat - 1 when (neg_resync_edge_valid = '1') else
                       resize(tseg2_minus_1, C_BT_WIDTH);
@@ -306,20 +306,28 @@ begin
 
     -------------------------------------------------------------------------------------------
     -- Time segments length computations
-    -- TSEG1 can be muxed based on "old" value of bit-rate since it does not change at the
-    -- end of bit (TODO: This will be different for CAN XL )!
+    -- TSEG1 can be registered since in CAN 2.0 or CAN FD bit-rate is always
+    -- switched in sample point. Thus at the time when TSEG1 value is needed for preload, the 
+    -- registered value must have updated.
     -- TSEG2 must be muxed based on "new" value (active at sample point) since at the moment
     -- of BRS, segm_cnt must be preloaded to length in "new" bit-rate.
     -------------------------------------------------------------------------------------------
     tseg1_prop <=
-        resize(unsigned(mr_btr_prop), G_TSEG1_WIDTH) when (bit_rate_q = BIT_RATE_NOMINAL) else
+        resize(unsigned(mr_btr_prop), G_TSEG1_WIDTH) when (bit_rate_d = BIT_RATE_NOMINAL) else
         resize(unsigned(mr_btr_fd_prop_fd), G_TSEG1_WIDTH);
 
     tseg1_ph1 <=
-        resize(unsigned(mr_btr_ph1), G_TSEG1_WIDTH) when (bit_rate_q = BIT_RATE_NOMINAL) else
+        resize(unsigned(mr_btr_ph1), G_TSEG1_WIDTH) when (bit_rate_d = BIT_RATE_NOMINAL) else
         resize(unsigned(mr_btr_fd_ph1_fd), G_TSEG1_WIDTH);
 
-    tseg1_minus_1 <= tseg1_prop + tseg1_ph1;
+    p_tseg1_reg : process (clk_sys, rst_n)
+    begin
+        if (rst_n = '0') then
+            tseg1_q <= (others => '0');
+        elsif (rising_edge(clk_sys)) then
+            tseg1_q <= tseg1_prop + tseg1_ph1;
+        end if;
+    end process;
 
     tseg2_ph2 <= resize(unsigned(mr_btr_ph2), G_TSEG2_WIDTH) when (bit_rate_d = BIT_RATE_NOMINAL) else
                  resize(unsigned(mr_btr_fd_ph2_fd), G_TSEG2_WIDTH);
@@ -397,7 +405,7 @@ begin
     --  2. TSEG2 and follow-up time quanta will be only 1!
     rx_trigger_set <= '1' when (is_tseg1 = '1' and segm_cnt_d = 0 and tq_edge_i = '1' and
                                 rx_trigger_q = '0') else
-                      '1' when (is_tseg2 = '1' and tseg1_minus_1 = x"00" and tx_trigger_i = '1') else
+                      '1' when (is_tseg2 = '1' and tseg1_q = x"00" and tx_trigger_i = '1') else
                       '0';
 
     -- RX Trigger can be registered since it only occurs after planned segment length counted
