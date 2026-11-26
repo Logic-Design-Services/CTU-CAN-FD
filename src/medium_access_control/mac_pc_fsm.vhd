@@ -2873,8 +2873,8 @@ begin
     -- We must switch back to nominal by combinatorially detected error since this is active in
     -- sample point where RX trigger is active!
     bit_rate_d_i <= BIT_RATE_NOMINAL when (switch_to_nominal = '1' or err_detected_d = '1') else
-                       BIT_RATE_FD when (switch_to_data = '1') else
-                          bit_rate_q_i;
+                         BIT_RATE_FD when (switch_to_data = '1') else
+                         bit_rate_q_i;
 
     p_bit_rate_and_ssp_reg : process(clk_sys, rst_n)
     begin

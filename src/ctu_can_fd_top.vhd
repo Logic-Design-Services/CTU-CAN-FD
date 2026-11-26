@@ -1265,7 +1265,6 @@ begin
         sync_control                    => sync_control,                            -- OUT
         no_pos_resync                   => no_pos_resync,                           -- OUT
         bit_rate_d                      => bit_rate_d,                              -- OUT
-        bit_rate_q                      => bit_rate_q,                              -- OUT
         is_secondary_sample             => is_secondary_sample,                     -- OUT
 
         -- CAN Bus serial data stream
@@ -1315,7 +1314,6 @@ begin
         -- Control Interface
         sync_edge                       => sync_edge,                               -- IN
         bit_rate_d                      => bit_rate_d,                              -- IN
-        bit_rate_q                      => bit_rate_q,                              -- IN
         sync_control                    => sync_control,                            -- IN
         no_pos_resync                   => no_pos_resync,                           -- IN
 

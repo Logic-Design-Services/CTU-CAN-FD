@@ -299,7 +299,6 @@ entity mac_top is
 
         -- Bit rate control
         bit_rate_d              : out t_bit_rate;
-        bit_rate_q              : out t_bit_rate;
 
         -- Sample point control
         is_secondary_sample     : out std_logic;
@@ -465,6 +464,8 @@ architecture rtl of mac_top is
 
     -- Error warning limit status
     signal mr_status_ewl            : std_logic;
+
+    signal bit_rate_q               : t_bit_rate;
 
 begin
 

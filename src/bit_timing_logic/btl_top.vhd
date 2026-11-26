@@ -117,7 +117,6 @@ entity btl_top is
         -------------------------------------------------------------------------------------------
         sync_edge               : in  std_logic;
         bit_rate_d              : in  t_bit_rate;
-        bit_rate_q              : in  t_bit_rate;
         sync_control            : in  std_logic_vector(1 downto 0);
         no_pos_resync           : in  std_logic;
 
@@ -187,7 +186,6 @@ begin
         -- Control Interface from PC FSM
         sync_edge               => sync_edge,               -- IN
         bit_rate_d              => bit_rate_d,              -- IN
-        bit_rate_q              => bit_rate_q,              -- IN
         sync_control            => sync_control,            -- IN
         no_pos_resync           => no_pos_resync,           -- IN
 

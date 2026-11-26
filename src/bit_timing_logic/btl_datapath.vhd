@@ -116,7 +116,6 @@ entity btl_datapath is
         -------------------------------------------------------------------------------------------
         sync_edge               : in  std_logic;
         bit_rate_d              : in  t_bit_rate;
-        bit_rate_q              : in  t_bit_rate;
         sync_control            : in  std_logic_vector(1 downto 0);
         no_pos_resync           : in  std_logic;
 
@@ -289,8 +288,20 @@ begin
     -- (when RX trigger should be normally active), positive resynchronization occurs. At that
     -- time we gate RX trigger if SJW > 0 (since we prolong TSEG1). Such SJW choice must use
     -- the "old" bit-rate, not the "new to be switched to"!
-    sjw <= unsigned(mr_btr_sjw) when (bit_rate_q = BIT_RATE_NOMINAL) else
-           unsigned(mr_btr_fd_sjw_fd);
+    -- To improve timing, we mux it based of bit_rate_d, and register.
+
+    p_sjw_reg : process(clk_sys, rst_n)
+    begin
+        if (rst_n = '0') then
+            sjw <= (others => '0');
+        elsif (rising_edge(clk_sys)) then
+            if (bit_rate_d = BIT_RATE_NOMINAL) then
+                sjw <= unsigned(mr_btr_sjw);
+            else
+                sjw <= unsigned(mr_btr_fd_sjw_fd);
+            end if;
+        end if;
+    end process;
 
     sjw_mt_zero <= '1' when (sjw > 0) else
                    '0';

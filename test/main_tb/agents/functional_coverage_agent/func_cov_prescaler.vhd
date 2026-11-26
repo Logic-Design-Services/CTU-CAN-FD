@@ -97,8 +97,8 @@ architecture tb of func_cov_prescaler is
     -- Aliases to "btl_top" top
     -----------------------------------------------------------------------------------------------
 
-    alias bit_rate_q is
-        << signal .tb_top_ctu_can_fd.i_dut.i_btl_top.bit_rate_q : t_bit_rate >>;
+    alias bit_rate_d is
+        << signal .tb_top_ctu_can_fd.i_dut.i_btl_top.bit_rate_d : t_bit_rate >>;
 
 --    alias tseg1_nbt is
 --        << signal .tb_top_ctu_can_fd.i_dut.i_btl_top.tseg1_nbt : std_logic_vector(7 downto 0) >>;
@@ -161,10 +161,10 @@ begin
     -----------------------------------------------------------------------------------------------
 
     -- psl nominal_sample_cov : cover
-    --  {bit_rate_q = BIT_RATE_NOMINAL};
+    --  {bit_rate_d = BIT_RATE_NOMINAL};
 
     -- psl data_sample_cov : cover
-    --  {bit_rate_q = BIT_RATE_FD};
+    --  {bit_rate_d = BIT_RATE_FD};
 
 
     -----------------------------------------------------------------------------------------------
