@@ -366,7 +366,7 @@ begin
 
     data_err_ctr_ce <= '1' when (mr_ctr_pres_efd_q = '1') or
                                 ((inc_one = '1' or inc_eight = '1') and
-                                 (bit_rate_q = BIT_RATE_NOMINAL))
+                                 (bit_rate_q = BIT_RATE_FD))
                            else
                        '0';
 
