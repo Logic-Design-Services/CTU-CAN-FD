@@ -149,6 +149,7 @@ architecture rtl of bm_ssp_generator is
     signal sspc_q               : unsigned(G_SSP_CTRS_WIDTH - 1 downto 0);
     signal sspc_ce              : std_logic;
     signal sspc_expired         : std_logic;
+    signal sspc_to_expire       : std_logic;
     signal sspc_threshold       : unsigned(G_SSP_CTRS_WIDTH - 1 downto 0);
     signal sspc_add             : unsigned(G_SSP_CTRS_WIDTH - 1 downto 0);
 
@@ -265,6 +266,9 @@ begin
     sspc_expired <= '1' when (sspc_q >= sspc_threshold) else
                     '0';
 
+    sspc_to_expire <= '1' when (sspc_q = sspc_threshold - 1) else
+                      '0';
+
     sspc_add <= sspc_q + 1;
 
     -------------------------------------------------------------------------------------------
@@ -293,8 +297,18 @@ begin
     -------------------------------------------------------------------------------------------
     -- Generation of SSP trigger
     -------------------------------------------------------------------------------------------
-    sample_sec <= '1' when (sspc_expired = '1' and sspc_ena_q = '1') else
-                  '0';
+    p_sample_sec_reg : process(clk_sys, rst_n)
+    begin
+        if (rst_n = '0') then
+            sample_sec <= '0';
+        elsif (rising_edge(clk_sys)) then
+            if (sspc_to_expire = '1' and sspc_ena_q = '1') then
+                sample_sec <= '1';
+            else
+                sample_sec <= '0';
+            end if;
+        end if;
+    end process;
 
     -------------------------------------------------------------------------------------------
     -- Assertions
