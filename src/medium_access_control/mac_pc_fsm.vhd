@@ -2885,7 +2885,8 @@ begin
             bit_rate_q_i <= bit_rate_d_i;
 
             if (switch_to_data = '1' and is_transmitter = '1' and
-                mr_ssp_cfg_ssp_src /= SSP_SRC_NO_SSP) then
+                mr_ssp_cfg_ssp_src /= SSP_SRC_NO_SSP and 
+                err_detected_d = '0') then
                 is_secondary_sample <= '1';
             elsif (switch_to_nominal = '1' or err_detected_d = '1') then
                 is_secondary_sample <= '0';
