@@ -1216,8 +1216,9 @@ begin
         -- Status signals
         cc_stat                         => cc_stat,                                 -- OUT
         pc_dbg                          => pc_dbg,                                  -- OUT
+        test_probe                      => test_probe,                              -- OUT
         mr_settings_ena_clr_ena         => mr_settings_ena_clr_ena,                 -- OUT
-
+        
         -- Tx Arbitrator and TXT Buffers interface
         tran_word                       => tran_word,                               -- IN
         tran_dlc                        => tran_dlc,                                -- IN
