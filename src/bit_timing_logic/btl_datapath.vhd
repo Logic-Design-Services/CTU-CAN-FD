@@ -222,7 +222,7 @@ begin
     begin
         if (rst_n = '0') then
             tq_cnt_q <= (others => '0');
-            tq_edge_i <= '0';
+            tq_edge_i <= '1';
         elsif (rising_edge(clk_sys)) then
             tq_cnt_q <= tq_cnt_d;
             if (tq_cnt_d = C_TQ_COUNTER_ZERO) then

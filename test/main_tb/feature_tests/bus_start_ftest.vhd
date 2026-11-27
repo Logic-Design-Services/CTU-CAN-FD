@@ -158,6 +158,9 @@ package body bus_start_ftest is
         ------------------------------------------------------------------------
         info_m("Step 2: Check integration of DUT");
 
+        -- First RX trigger occurs immediately, not after 1 bit!
+        ctu_wait_sample_point(DUT_NODE, chn);
+
         for i in 0 to 10 loop
             ctu_wait_sample_point(DUT_NODE, chn);
             wait for 21 ns; -- For DFF to update
